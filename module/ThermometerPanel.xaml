@@ -1,0 +1,67 @@
+﻿<materialDesign:Card x:Class="ApexVisIns.module.ThermometerPanel"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:intgrvision="clr-namespace:ApexVisIns"
+                     d:DataContext="{d:DesignInstance Type=intgrvision:Thermometer}"
+                     mc:Ignorable="d" 
+                     Loaded="Card_Loaded"
+                     d:DesignHeight="450" d:DesignWidth="800">
+
+    <materialDesign:Card.Resources>
+        <intgrvision:Thermometer x:Key="Thermometer" Interval="100"/>
+    </materialDesign:Card.Resources>
+
+    <DockPanel Background="Transparent" DataContext="{StaticResource Thermometer}">
+        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+            <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"
+                                    ToolTip="Temperature" ToolTipService.Placement="Left" Cursor="Help"/>
+
+            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="溫度計" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+
+            <!--手動開啟 SerialPort-->
+            <Button x:Name="OpenSerialPortBtn" DockPanel.Dock="Right" VerticalAlignment="Stretch" Padding="0" Click="OpenSerialPortBtn_Click" Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsSerialPortOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="Height" Value="26" />
+                    </Style>
+                </Button.Style>
+
+                <materialDesign:PackIcon Kind="SerialPort" Width="30" Height="26" RenderTransformOrigin="0.5 0.5" Foreground="{StaticResource ColorPrimary}">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <RotateTransform Angle="60"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+            </Button>
+            <!--佔位用-->
+            <TextBlock Text="{x:Null}"/>
+        </DockPanel>
+        <!--//-->
+        <Separator DockPanel.Dock="Top" Margin="0 8"/>
+        <!--//-->
+        <CheckBox Margin="6 0 0 0" IsChecked="True" Content="啟用" Style="{StaticResource MaterialDesignAccentCheckBox}" Cursor="Hand" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+
+        <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" 
+                   Text="{Binding Temperature, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1} ℃, FallbackValue=0}">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsSerialPortOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                            <Setter Property="Foreground" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </DockPanel>
+</materialDesign:Card>

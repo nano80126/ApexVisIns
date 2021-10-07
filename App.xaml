@@ -1,0 +1,151 @@
+﻿<Application x:Class="ApexVisIns.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cvt="clr-namespace:ApexVisIns.Converter"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Green" SecondaryColor="LightBlue"/>
+                <!--//-->
+                <ResourceDictionary Source="/Style/Scrollbar.xaml"/>
+                <!--<ResourceDictionary Source="/Style/Scrollbar_old.xaml"/>-->
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--<ResourceDictionary Source="/Style/Scrollbar.xaml" x:Name="customScroll"/>-->
+        
+            <!--#region Custom Colors -->
+            <SolidColorBrush x:Key="ColorPrimary" Color="#1976D2"/>
+            <SolidColorBrush x:Key="ColorPrimaryTransparent" Color="#881976D2"/>
+            <SolidColorBrush x:Key="ColorSecondary" Color="#424242"/>
+            <SolidColorBrush x:Key="ColorSecondaryTransparent" Color="#88424242"/>
+            <SolidColorBrush x:Key="ColorGray" Color="#9E9E9E"/>
+            <SolidColorBrush x:Key="ColorGrayTransparent" Color="#889E9E9E"/>
+            <SolidColorBrush x:Key="ColorBlueGray" Color="#607D8B"/>
+            <SolidColorBrush x:Key="ColorBlueGrayTranparent" Color="#88607D8B"/>
+            <SolidColorBrush x:Key="ColorAccent" Color="#82B1FF"/>
+            <SolidColorBrush x:Key="ColorAccentTransparent" Color="#8882B1FF"/>
+            <SolidColorBrush x:Key="ColorError" Color="#FF5252"/>
+            <SolidColorBrush x:Key="ColorErrorTransparent" Color="#88FF5252"/>
+            <SolidColorBrush x:Key="ColorPink" Color="#E91E63"/>
+            <SolidColorBrush x:Key="ColorPinkTransparent" Color="#88E91E63"/>
+            <SolidColorBrush x:Key="ColorWarning" Color="#FFC107"/>
+            <SolidColorBrush x:Key="ColorWarningTransparent" Color="#88FFC107"/>
+            <SolidColorBrush x:Key="ColorInfo" Color="#2196F3"/>
+            <SolidColorBrush x:Key="ColorInfoTransparent" Color="#882196F3"/>
+            <SolidColorBrush x:Key="ColorCyan" Color="#00BCD4"/>
+            <SolidColorBrush x:Key="ColorCyanTransparent" Color="#8800BCD4"/>
+            <SolidColorBrush x:Key="ColorSuccess" Color="#4CAF50"/>
+            <SolidColorBrush x:Key="ColorSuccessTransparent" Color="#884CAF50"/>
+            <SolidColorBrush x:Key="ColorPurple" Color="#9C27B0"/>
+            <SolidColorBrush x:Key="ColorPurpleTransparent" Color="#889C27B0"/>
+            <SolidColorBrush x:Key="ColorDeepPurple" Color="#673AB7"/>
+            <SolidColorBrush x:Key="ColorDeepPurpleTransparent" Color="#88673AB7"/>
+            <SolidColorBrush x:Key="ColorBrown" Color="#795548"/>
+            <SolidColorBrush x:Key="ColorBrownTransparent" Color="#88795548"/>
+            <SolidColorBrush x:Key="ColorTeal" Color="#009688"/>
+            <SolidColorBrush x:Key="ColorTealTransparent" Color="#88009688"/>
+            <SolidColorBrush x:Key="ColorYellow" Color="#FFEB3B"/>
+            <SolidColorBrush x:Key="ColorYellowTransparent" Color="#88FFEB3B"/>
+            <SolidColorBrush x:Key="ColorOrange" Color="#FF9800"/>
+            <SolidColorBrush x:Key="ColorOrangeTransparent" Color="#88FF9800"/>
+            <SolidColorBrush x:Key="ColorDeepOrange" Color="#FF5722"/>
+            <SolidColorBrush x:Key="ColorDeepOrangeTransparent" Color="#88FF5722"/>
+            <!--#endregion-->
+
+            <!--#region Control Colors -->
+            <SolidColorBrush x:Key="ColorToolBar" Color="#22969696"/>
+            <!--#endregion-->
+
+            <!--#region Convertor -->
+            <cvt:BooleanInverter x:Key="BooleanInverter"/>
+            <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
+            <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
+            <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
+            <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
+            <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
+            <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
+            <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
+            <!--#endregion-->
+
+            <!-- // -->
+            <Style x:Key="MainWindowBorder" TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="{StaticResource MaterialDesignLightBackground}"/>
+                <Setter Property="BorderBrush" Value="#888"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <!-- // -->
+            <Style x:Key="MainWindowTitle" TargetType="{x:Type TextBlock}">
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="Margin" Value="20 0"/>
+                <Setter Property="FontStyle" Value="Italic"/>
+                <Setter Property="Foreground">
+                    <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5 1" StartPoint="0.5 0">
+                            <GradientStop Color="Gray"/>
+                            <GradientStop Color="WhiteSmoke" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <!-- // -->
+            <Style x:Key="WindowButton" TargetType="{x:Type Button}">
+                <Setter Property="Width" Value="30"></Setter>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Foreground" Value="{StaticResource ColorPrimary}"/>
+                <Setter Property="Background" Value="#EEE"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="15" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0.5" Opacity="0.8">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#ABABAB" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <!-- // -->
+            <Style x:Key="Headline" TargetType="{x:Type TextBlock}">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <!--//-->
+            <Style x:Key="ComplexPackIcon" TargetType="{x:Type Canvas}">
+                <Setter Property="Width" Value="30"/>
+                <Setter Property="Height" Value="26"/>
+            </Style>
+            <!--//-->
+            <Style x:Key="GeneralPackIcon" TargetType="materialDesign:PackIcon">
+                <Setter Property="Width" Value="30"/>
+                <Setter Property="Height" Value="26"/>
+            </Style>
+            <!--//-->
+            <Style x:Key="PanelTopCard" TargetType="materialDesign:Card">
+                <Setter Property="Margin" Value="2 0 2 8"/>
+                <Setter Property="Padding" Value="8 8 8 8"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="FontFamily" Value="consolas"/>
+                <Setter Property="Background" Value="LightCyan"/>
+                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
+            </Style>
+            <!--//-->
+            <Style x:Key="PanelBottomCard" TargetType="materialDesign:Card" BasedOn="{StaticResource PanelTopCard}">
+                <Setter Property="Margin" Value="2 8 2 0"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

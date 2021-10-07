@@ -1,0 +1,109 @@
+﻿<materialDesign:Card x:Class="ApexVisIns.module.BFRTestingPanel"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:bfr="clr-namespace:ApexVisIns.BFR"
+                     d:DataContext="{d:DesignInstance Type=bfr:Trail}"
+                     mc:Ignorable="d" 
+                     Loaded="Card_Loaded"
+                     d:DesignHeight="450" d:DesignWidth="800">
+    <!--<materialDesign:Card.Resources>
+        <bfr:Trail x:Key="BFR"/>
+    </materialDesign:Card.Resources>-->
+
+    <DockPanel Background="Transparent">
+        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+            <materialDesign:PackIcon Kind="TimerOutline" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"
+                                     ToolTip="Experiment" ToolTipService.Placement="Right" Cursor="Help"/>
+            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" 
+                       Text="測試結束條件" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+        </DockPanel>
+        <!--//-->
+        <Separator DockPanel.Dock="Top" Margin="0 8 0 0"/>
+        <!--//-->
+        <Grid DockPanel.Dock="Top" Background="Transparent" MouseDown="Grid_MouseDown" Margin="0 4 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontFamily" Value=" consolas"/>
+                </Style>
+                <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource MaterialDesignAccentRadioButton}">
+                    <Setter Property="Margin" Value="0 6"/>
+                </Style>
+                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                    <Setter Property="FontFamily" Value="consolas"/>
+                    <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2"/>
+                    <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="Margin" Value="0 4"/>
+                    <Setter Property="Width" Value="100"/>
+                </Style>
+            </Grid.Resources>
+            <RadioButton Grid.Row="0" Grid.Column="0" GroupName="RadioGroup1" Content="溫度" FontWeight="Bold" Cursor="Hand"
+                         IsEnabled="{Binding Running, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"
+                         IsChecked="{Binding Path=TemperatureEnable, Mode=TwoWay}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" 
+                     materialDesign:TextFieldAssist.PrefixText="≧"
+                     materialDesign:TextFieldAssist.SuffixText="℃" GotFocus="TextBox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture" 
+                     KeyUp="TextBox_KeyUp"
+                     Text="{Binding Path=Temperature, UpdateSourceTrigger=Default, Mode=TwoWay, StringFormat={}{0:0.0}}" Cursor="IBeam">
+                <TextBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                        <Binding Path="TemperatureEnable" Mode="OneWay"/>
+                        <Binding Path="Running" Mode="OneWay" Converter="{StaticResource BooleanInverter}"/>
+                    </MultiBinding>
+                </TextBox.IsEnabled>
+
+
+                <!--IsEnabled="{Binding Path=TempEnable, Mode=OneWay}"-->
+
+            </TextBox>
+            <RadioButton Grid.Row="1" GroupName="RadioGroup1" Content="無限制" FontWeight="Bold" Cursor="Hand"
+                         IsEnabled="{Binding Running, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"
+                         IsChecked="{Binding Unrestricted, Mode=TwoWay}"/>
+        </Grid>
+        <!--//-->
+        <Separator DockPanel.Dock="Top" Margin="0 4 0 0" />
+        <!--//-->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconButton}">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Height" Value="32"/>
+                    <Setter Property="Width" Value="32"/>
+                    <!--<Setter Property="Margin" Value="8 0 0 0"/>-->
+                    <Setter Property="ToolTipService.Placement" Value="Right"/>
+                    <Setter Property="ToolTipService.HorizontalOffset" Value="8"/>
+                </Style>
+            </StackPanel.Resources>
+
+            <Button x:Name="StartBFRbtn" ToolTip="開始測試" ToolTipService.Placement="Right" Foreground="{StaticResource ColorSuccess}" Click="StartBFRbtn_Click">
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                        <Binding Path="Running" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource BooleanInverter}"/>
+                        <Binding Path="Runnable" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Button.IsEnabled>
+
+                <materialDesign:PackIcon Kind="Play" Width="26" Height="26"/>
+            </Button>
+
+            <Button x:Name="StopBFRbtn" ToolTip="結束測試" ToolTipService.Placement="Right" Foreground="{StaticResource ColorError}" Click="StopBFRbtn_Click"
+                    IsEnabled="{Binding Running, UpdateSourceTrigger=PropertyChanged}" Cursor="Hand">
+                <materialDesign:PackIcon Kind="Stop" Width="26" Height="26"/>
+            </Button>
+        </StackPanel>
+    </DockPanel>
+</materialDesign:Card>
