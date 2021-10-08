@@ -2,8 +2,7 @@
 
 Apex 外觀瑕疵檢測 
 
-
-###檢測項目
+### 檢測項目
 
 * 耳朵
 	* 毛邊
@@ -12,6 +11,7 @@ Apex 外觀瑕疵檢測
 
 * 窗戶
 	* 毛邊
+
 
 * 管件
 	* 亮紋
@@ -24,6 +24,7 @@ Apex 外觀瑕疵檢測
 ### TO DO LIST
 
 
+
 ### BUGS
 
 * [x] 滑鼠中見移動 ROI 有偏移
@@ -31,7 +32,6 @@ Apex 外觀瑕疵檢測
 	* Add Keyboard.ClearFocus()
 * [ ] Hotkey may be invalid
 * [ ] 影像抖動 
-
 
 ###  RELEASE MODE 
 

@@ -80,7 +80,6 @@ namespace ApexVisIns.algorithm
 
         public Apex(string path) : base(path) {}
 
-
         public void GetCannyROI(Rect roi)
         {
             try
@@ -90,7 +89,7 @@ namespace ApexVisIns.algorithm
                 Mat canny = new();
 
                 Cv2.BilateralFilter(clone, blur, 5, 50, 100);
-                Cv2.Canny(blur, canny, 80, 30, 3);
+                Cv2.Canny(blur, canny, 50, 30, 3);
 
                 Cv2.ImShow("canny", canny);
             }
