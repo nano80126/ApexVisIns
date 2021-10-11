@@ -29,7 +29,7 @@ namespace ApexVisIns
 
         #region Cameras
         public BaslerCam BaslerCam;
-        public UvcCam UvcCam;
+        //public UvcCam UvcCam;
         #endregion
 
         #region Resources
@@ -75,7 +75,7 @@ namespace ApexVisIns
             // Right Top
             ThermometerPanel.MainWindow = this;
             // Tabs
-            ListViewTab.MainWindow = this;
+            //ListViewTab.MainWindow = this;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

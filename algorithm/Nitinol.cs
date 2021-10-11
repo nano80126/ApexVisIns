@@ -178,7 +178,7 @@ namespace ApexVisIns
                             // Y 軸變形量, X 軸溫度
                             BFRTrail.AddRecordNewTemperature(StructBFR.pt1.X, StructBFR.pt2.X, Thermometer.Temperature);
                             // 更新 Chart
-                            ListViewTab.RenderPlot();
+                            //ListViewTab.RenderPlot();
                         }
                         // 自由測試
                         else if (BFRTrail.Unrestricted)
@@ -188,7 +188,7 @@ namespace ApexVisIns
                                 // Y 軸變形量, X 軸溫度
                                 BFRTrail.AddRecord(StructBFR.pt1.X, StructBFR.pt2.X, StructBFR.FakeTemp++);
                                 // 更新 Chart 
-                                ListViewTab.RenderPlot();
+                                //ListViewTab.RenderPlot();
                             }
                         }
 

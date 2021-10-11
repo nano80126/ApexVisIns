@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:ApexVisIns"
-        xmlns:cvt="clr-namespace:ApexVisIns.Converter"
         xmlns:bfr="clr-namespace:ApexVisIns.BFR"
         xmlns:uc="clr-namespace:ApexVisIns.module"
-        xmlns:tab="clr-namespace:ApexVisIns.tab"
+        xmlns:content="clr-namespace:ApexVisIns.content"
         mc:Ignorable="d"
         
         TextElement.Foreground="{StaticResource MaterialDesignLightForeground}"
@@ -44,28 +43,16 @@
         <RoutedUICommand x:Key="SwitchTab2" Text="Switch to Tab2"/>
         <!--#endregion-->
         
-        <!--#region Converter, 移動到 App.xamml -->
-        <!--
-        <cvt:BooleanInverter x:Key="BooleanInverter"/>
-        <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
-        <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
-        <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
-        <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
-        <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
-        <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
-        <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
-        -->
-        <!--#endregion-->
-
         <!--#region Camera -->
+        <!-- Camera 1-->
         <local:BaslerCam x:Key="BaslerCam" Width="2040" Height="2040">
             <local:BaslerCam.Config>
                 <local:BaslerConfig Name="Default"/>
             </local:BaslerCam.Config>
         </local:BaslerCam>
         <local:CameraEnumer x:Key="CameraEnumer"/>
-
-        <local:UvcCam x:Key="UvcCam" Width="1920" Height="1080"/>
+        
+        
         <!--#endregion-->
 
         <!--#region Objects -->
@@ -178,7 +165,6 @@
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ColorZoneAssist.Mode="Custom" 
                         materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
                         SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                
                 
                 
                 <!--#region Image Tab -->
@@ -638,9 +624,9 @@
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
 
-                    <StackPanel x:Name="Tab2Panel" Orientation="Vertical" UseLayoutRounding="True">
-                        <tab:DataList x:Name="ListViewTab" VerticalAlignment="Top" DataContext="{StaticResource BFRTrail}"/>
-                    </StackPanel>
+                    <content:MainTab x:Name="Tab1"/>
+                    <!--<StackPanel x:Name="Tab2Panel" Orientation="Vertical" UseLayoutRounding="True">
+                    </StackPanel>-->
 
                 </TabItem>
                 <!--#endregion-->
