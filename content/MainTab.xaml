@@ -162,7 +162,7 @@
             </Grid.RowDefinitions>
 
             <!-- Control Panel -->
-            <Border Grid.Row="0" Grid.Column="0" Background="{x:Null}">
+            <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource ColorErrorTransparent}">
                 <materialDesign:Card Style="{StaticResource GeneralCard}">
                     <DockPanel Background="Transparent">
                         <!-- Panel Header -->
@@ -187,10 +187,10 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
                                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
                                     <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Headline}">
                                             <Setter Property="Text" Value="測試狀態"/>
                                         </Style>
                                     </TextBlock.Style>
@@ -205,7 +205,24 @@
                             </StackPanel>
 
                             <!-- // row 0, col 1, 保留 -->
-                         
+
+                            <StackPanel Grid.Column="1" Grid.RowSpan="2">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                    <Run FontSize="20" FontWeight="Bold">經過時間:</Run>
+                                    <LineBreak/>
+                                    <!--<Run Text="{Binding 12:00:00, StringFormat=0:HH:mm:ss}"></Run>-->
+                                    <LineBreak/>
+                                    <!--//-->
+                                    
+                                    <Run FontSize="20" FontWeight="Bold">檢驗數量:</Run>
+                                    <LineBreak></LineBreak>
+                                    <Run Text="0"/>
+                                    <LineBreak></LineBreak>
+                                    <!--//-->
+
+                                </TextBlock>    
+                            </StackPanel>
                             <!-- // row 1, col 1, 保留 -->
                         </Grid>
                     </DockPanel>
