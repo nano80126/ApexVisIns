@@ -23,6 +23,7 @@ Apex 外觀瑕疵檢測
 
 ### TO DO LIST
 
+* Change color of scoll bar
 
 
 ### BUGS

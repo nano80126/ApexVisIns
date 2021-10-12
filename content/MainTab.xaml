@@ -162,9 +162,54 @@
             </Grid.RowDefinitions>
 
             <!-- Control Panel -->
-            <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource ColorErrorTransparent}">
+            <Border Grid.Row="0" Grid.Column="0" Background="{x:Null}">
                 <materialDesign:Card Style="{StaticResource GeneralCard}">
-                    
+                    <DockPanel Background="Transparent">
+                        <!-- Panel Header -->
+                        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+                            <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"/>
+                            <!--  -->
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="控制板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                            <!--  -->   
+                            <TextBlock Text="{x:Null}"/>
+                        </DockPanel>    
+                        <!-- Seperator -->
+                        <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                        <!-- Panel Body -->
+                        <Grid x:Name="Body" DockPanel.Dock="Top" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Text" Value="測試狀態"/>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+                                <Button Content="開始檢測" Width="200" Margin="0 12 0 0"  
+                                        Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                <Button Content="停止檢測" Width="200" Margin="0 12 0 0"
+                                        Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            </StackPanel>
+
+                            <!-- // row 0, col 1, 保留 -->
+                         
+                            <!-- // row 1, col 1, 保留 -->
+                        </Grid>
+                    </DockPanel>
+                    <!--//-->
                 </materialDesign:Card> 
             </Border>
 
@@ -188,7 +233,9 @@
                 <TextBlock>camera 4</TextBlock>
             </Border>
 
-            <Border Grid.Row="3" Grid.ColumnSpan="3" Background="{StaticResource ColorSuccessTransparent}"></Border>
+            <Border Grid.Row="3" Grid.ColumnSpan="3" Background="{StaticResource ColorSuccessTransparent}">
+                
+            </Border>
             
             <!--Record List-->
             <Border Grid.RowSpan="4" Grid.Column="3" Background="{StaticResource ColorBlueGrayTranparent}">
