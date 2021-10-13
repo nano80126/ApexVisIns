@@ -80,17 +80,24 @@ namespace ApexVisIns.algorithm
 
         public Apex(string path) : base(path) {}
 
+        public void GetSharpROI(Rect roi)
+        {
+
+
+        }
+
         public void GetCannyROI(Rect roi)
         {
             try
             {
                 using Mat clone = new(img, roi);
-                using Mat blur = new();
+                Mat blur = new();
                 Mat canny = new();
 
                 Cv2.BilateralFilter(clone, blur, 5, 50, 100);
-                Cv2.Canny(blur, canny, 50, 30, 3);
+                Cv2.Canny(blur, canny, 150, 10, 3);
 
+                Cv2.ImShow("blur", blur);
                 Cv2.ImShow("canny", canny);
             }
             catch (OpenCVException)

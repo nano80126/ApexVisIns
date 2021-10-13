@@ -26,6 +26,13 @@ Apex 外觀瑕疵檢測
 * Change color of scoll bar
 
 
+### Performance Test
+
+* 比較 Task 和 ThreadPool 校能差別
+
+
+
+
 ### BUGS
 
 * [x] 滑鼠中見移動 ROI 有偏移
