@@ -193,19 +193,21 @@ namespace ApexVisIns
                     IsProcessing = true;
                     // // // // // // // // // // // // // // // // // //
 #if DEBUG
-                    //processSw.Restart();
+                    processSw.Restart();
 #endif
                     #region 圖像處理邏輯
                     //Debug.WriteLine($"{mat.Width} {mat.Height}");
                     //ProcessNitinol(mat);
+
+
                     ProcessApex(mat);
 
                     //ProcessApex(mat);
                     //mat.SaveImage("apex1.jpg");
-                #endregion
+                    #endregion
 #if DEBUG
-                    //Debug.WriteLine($"Processing takes {processSw.ElapsedMilliseconds} ms");
-                    //processSw.Stop();
+                    Debug.WriteLine($"Processing takes {processSw.ElapsedMilliseconds} ms");
+                    processSw.Stop();
 #endif
                     // // // // // // // // // // // // // // // // // //
                     IsProcessing = false;

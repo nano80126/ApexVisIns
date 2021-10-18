@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 using Point = OpenCvSharp.Point;
 using System.Drawing;
 using OpenCvSharp;
+using System.Diagnostics;
 
 namespace ApexVisIns
 {
@@ -22,45 +22,20 @@ namespace ApexVisIns
             try
             {
                 Rect roi = AssistRect.GetRect();
-
                 if (roi.Width * roi.Height > 0)
                 {
+                    //Mat roiImg = new(mat, roi);
+
                     Dispatcher.Invoke(() =>
                     {
-                        
-                        img.GetCannyROI(roi, 50, 0);
+                        //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
 
-                        //img.GetSharpROI(roi);
-
-
-
-                        Mat med = new();
-                        Mat med2 = new();
-                        Mat dif = new();
-                        Mat range = new();
-
-                        Mat roiImg = new(img.GetMat(), roi);
-
-                        Cv2.MedianBlur(roiImg, med, 3);
-                        Cv2.MedianBlur(roiImg, med2, 21);
-                        Cv2.Absdiff(med, med2, dif);
-
-                        BackgroundSubtractorMOG2 mog = BackgroundSubtractorMOG2.Create();
-                        Mat mask = new();
-
-                        mog.Apply(med, mask);
-                        mog.Apply(med2, mask);
-
-                        Cv2.ImShow("med", med);
-                        Cv2.ImShow("med2", med2);
-
-                        Cv2.ImShow("dif", dif);
-                        Cv2.ImShow("mask", mask);
-
-                        //Cv2.ImShow("bw", bw);
-                        //Cv2.ImShow("dst", dst);
+                        img.GetBackgroundMogROI(roi, 11);
+                        img.GetCannyROI(roi, 120, 60);
                     });
                 }
+
+
 
                 Dispatcher.Invoke(() =>
                 {
@@ -70,22 +45,33 @@ namespace ApexVisIns
                     }
                 });
             }
-            catch (OpenCVException)
+            catch (OpenCVException ex)
             {
-
+                Dispatcher.Invoke(() =>
+                {
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message, MsgInformer.Message.MessageType.Error);
+                    ImageSource = img.GetMat().ToImageSource();
+                });
             }
-            catch (OpenCvSharpException)
+            catch (OpenCvSharpException ex)
             {
-
+                Dispatcher.Invoke(() =>
+                {
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVS, ex.Message, MsgInformer.Message.MessageType.Error);
+                    ImageSource = img.GetMat().ToImageSource();
+                });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Dispatcher.Invoke(() =>
+                {
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.EX, ex.Message, MsgInformer.Message.MessageType.Error);
+                    ImageSource = img.GetMat().ToImageSource();
+                });
             }
             finally
             {
-
-
+                img.Dispose();
             }
         }
     }
@@ -101,7 +87,7 @@ namespace ApexVisIns.algorithm
 
         public Apex(Bitmap bmp) : base(bmp) { }
 
-        public Apex(OpenCvSharp.Mat mat) : base(mat) { }
+        public Apex(Mat mat) : base(mat) { }
 
         public Apex(string path) : base(path) { }
 
@@ -143,13 +129,13 @@ namespace ApexVisIns.algorithm
             try
             {
                 using Mat clone = new(img, roi);
-                Mat blur = new();
+                using Mat blur = new();
                 Mat canny = new();
 
                 Cv2.BilateralFilter(clone, blur, 5, 50, 100);
                 Cv2.Canny(blur, canny, th1, th2, 3);
 
-                Cv2.ImShow("blur", blur);
+                //Cv2.ImShow("blur", blur);
                 Cv2.ImShow("canny", canny);
             }
             catch (OpenCVException)
@@ -161,6 +147,35 @@ namespace ApexVisIns.algorithm
                 throw;
             }
         }
+
+
+        public Mat GetBackgroundMogROI(Rect roi, int blurSize)
+        {
+            try
+            {
+                using Mat clone = new(img, roi);
+
+                BackgroundSubtractorMOG2 mog = BackgroundSubtractorMOG2.Create();
+                Mat mask = new(roi.Height, roi.Width, MatType.CV_8UC1, Scalar.Black);
+                using Mat blur = new(roi.Height, roi.Width, MatType.CV_8UC1, Scalar.Black);
+
+                Cv2.MedianBlur(clone, blur, blurSize);
+
+                mog.Apply(clone, mask);
+                mog.Apply(blur, mask);
+
+                return mask;
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
 
         public Mat Threshbold_mog(Mat mat, OpenCvSharp.Size window)
         {
@@ -201,6 +216,20 @@ namespace ApexVisIns.algorithm
             {
                 throw;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                srcImg.Dispose();
+            }
+            _disposed = true;
         }
     }
 }

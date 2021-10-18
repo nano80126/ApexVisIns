@@ -148,10 +148,10 @@
             </Grid.Style>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -187,43 +187,66 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
+                            <!-- // row 0, col 0, 檢測運作狀態 -->
+                            <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
                                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
                                     <TextBlock.Style>
                                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Headline}">
-                                            <Setter Property="Text" Value="測試狀態"/>
+                                            <Setter Property="Text" Value="檢測狀態"/>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
                             </Border>
 
-                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-                                <Button Content="開始檢測" Width="200" Margin="0 12 0 0"  
-                                        Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                                <Button Content="停止檢測" Width="200" Margin="0 12 0 0"
-                                        Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            <!-- // row 1, col 0, 啟動 / 停止檢測 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                                <Button Content="開始檢測" Width="{Binding ElementName=TestStatusBorder, Path=ActualWidth}" Margin="0 12"  
+                                        Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}"  FontSize="16"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                <Button Content="停止檢測" Width="{Binding ElementName=TestStatusBorder, Path=ActualWidth}" Margin="0 12"
+                                        Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" FontSize="16"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             </StackPanel>
 
-                            <!-- // row 0, col 1, 保留 -->
-
-                            <StackPanel Grid.Column="1" Grid.RowSpan="2">
+                            <!-- // row 0, col 1, 經過時間 / 檢驗數量 -->
+                            <StackPanel Grid.Column="1" Grid.Row="0">
                                 <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                           FontSize="20" FontWeight="Bold"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
-                                    <Run FontSize="20" FontWeight="Bold">經過時間:</Run>
+                                    <!--//-->
+                                    <Run>經過時間</Run>
                                     <LineBreak/>
-                                    <!--<Run Text="{Binding 12:00:00, StringFormat=0:HH:mm:ss}"></Run>-->
+                                    <Run Text="12:00:00"/>
                                     <LineBreak/>
                                     <!--//-->
-                                    
-                                    <Run FontSize="20" FontWeight="Bold">檢驗數量:</Run>
-                                    <LineBreak></LineBreak>
+                                    <Run>檢驗數量</Run>
+                                    <LineBreak/>
                                     <Run Text="0"/>
-                                    <LineBreak></LineBreak>
+                                    <LineBreak/>
                                     <!--//-->
-
                                 </TextBlock>    
                             </StackPanel>
-                            <!-- // row 1, col 1, 保留 -->
+                            
+                            <!-- // row 1, col 1, OK / NG 數量 -->
+                            <DockPanel Grid.Column= "1" Grid.Row="1" HorizontalAlignment="Stretch">
+                                <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                           FontSize="20" FontWeight="Bold"
+                                           FontFamily="Consolas" LineHeight="32" Foreground="Green"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                    <Run Text="OK 數量"/>
+                                    <LineBreak/>
+                                    <Run Text="0"/>
+                                </TextBlock>
+
+                                <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                                           FontSize="20" FontWeight="Bold" 
+                                           FontFamily="Consolas" LineHeight="32" Foreground="Red"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                    <Run Text="NG 數量"/>
+                                    <LineBreak/>
+                                    <Run Text="0"/>
+                                </TextBlock>
+                            </DockPanel>
                         </Grid>
                     </DockPanel>
                     <!--//-->
@@ -231,35 +254,60 @@
             </Border>
 
             <!-- Image 1 -->
-            <Border Grid.Row="0" Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
-                <TextBlock>camera 1</TextBlock>
+            <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" Background="{StaticResource ColorPrimaryTransparent}">
+                <Viewbox x:Name="Image1Viewbox">
+                    <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor},UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                </Viewbox>
             </Border>
             
             <!-- Image 2 -->
-            <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource ColorInfoTransparent}">
-                <TextBlock>camera 2</TextBlock>
+            <Border Grid.Row="0" Grid.Column="2" x:Name="Image2Border" Background="{StaticResource ColorInfoTransparent}">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                    <Run>Camera 2</Run>
+                    <LineBreak/>
+                    <Run Text="{Binding ElementName=Image1Border, Path=ActualWidth, Mode=OneWay}"/>
+                    <Run>x</Run>
+                    <Run Text="{Binding ElementName=Image1Border, Path=ActualHeight, Mode=OneWay}"/>
+                </TextBlock>
             </Border>
 
             <!-- Image 3 -->
-            <Border Grid.Row="1" Grid.ColumnSpan="3" Background="{StaticResource ColorOrangeTransparent}">
-                <TextBlock>camera 3</TextBlock>
+            <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" Background="{StaticResource ColorOrangeTransparent}">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                    <Run Text="Camera 3"/>
+                    <LineBreak/>
+                    <Run Text="{Binding ElementName=Image3Border, Path=ActualWidth, Mode=OneWay}"/>
+                    <Run>x</Run>
+                    <Run Text="{Binding ElementName=Image3Border, Path=ActualHeight, Mode=OneWay}"/>
+                </TextBlock>
             </Border>
 
             <!--Image 4-->
-            <Border Grid.Row="2" Grid.ColumnSpan="3" Background="{StaticResource ColorDeepOrange}">
-                <TextBlock>camera 4</TextBlock>
+            <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" Background="{StaticResource ColorDeepOrange}">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">camera 4</TextBlock>
             </Border>
 
-            <Border Grid.Row="3" Grid.ColumnSpan="3" Background="{StaticResource ColorSuccessTransparent}">
-                
+            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" Background="{StaticResource ColorSuccessTransparent}">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                    <Run Text="Procedure Block"/>
+                    <LineBreak/>
+                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualWidth, Mode=OneWay}"/>
+                    <Run>x</Run>
+                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualHeight, Mode=OneWay}"/>
+                </TextBlock>
             </Border>
-            
+
             <!--Record List-->
             <Border Grid.RowSpan="4" Grid.Column="3" Background="{StaticResource ColorBlueGrayTranparent}">
-                <TextBlock>Record List</TextBlock>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>
             </Border>
         </Grid>
         <!--</StackPanel>-->
     </Border>
 
 </StackPanel>
+ 
