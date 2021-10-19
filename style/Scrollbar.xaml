@@ -125,7 +125,7 @@
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarVerticalThumb}" Margin="1 0" Background="{StaticResource HorizontalNormalBrush}" BorderBrush="{StaticResource HorizontalNormalBorderBrush}" />
+                    <Thumb Style="{StaticResource ScrollBarVerticalThumb}" Margin="1 0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand" />
@@ -151,7 +151,7 @@
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand" />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarHorizontalThumb}" Margin="0 1" Background="{StaticResource NormalBrush}" BorderBrush="{StaticResource NormalBorderBrush}" />
+                    <Thumb Style="{StaticResource ScrollBarHorizontalThumb}" Margin="0 1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand" />
@@ -180,8 +180,8 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="FavsScrollViewer" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Style x:Key="ScrollViewerSuccess" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="OverridesDefaultStyle" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
@@ -196,8 +196,10 @@
                         </Grid.RowDefinitions>
                         <ScrollContentPresenter Grid.Row="0" Grid.Column="0"/>
                         <ScrollBar Name="PART_VerticalScrollBar" Orientation="Vertical" Grid.Row="0" Grid.Column="1" Value="{TemplateBinding VerticalOffset}" 
+                                   Background="#884CAF50" BorderBrush="#4CAF50"
                                    Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
                         <ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Value="{TemplateBinding HorizontalOffset}" 
+                                   Background="#884CAF50" BorderBrush="#4CAF50"
                                    Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
                     </Grid>
                 </ControlTemplate>
