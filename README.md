@@ -28,10 +28,16 @@ Apex 外觀瑕疵檢測
 
 ### Tab
 
-* 主 Tab ()
+* Main Tab
+	* Control Panel
+	* Image Panel
+	* Record Panel
+	* Procedure Panel
 * Config Tab
 	* 新增相機
 	* 相機Config
+* Debug Tab
+	* For Programming
 
 
 ### TO DO LIST

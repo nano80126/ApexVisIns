@@ -619,16 +619,23 @@
                 </TabItem>
                 <!--#endregion-->
                 <!--//-->
-                <!--#region Chart Tab -->
+                <!--#region Main Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-
                     <content:MainTab x:Name="Tab1"/>
                     <!--<StackPanel x:Name="Tab2Panel" Orientation="Vertical" UseLayoutRounding="True">
                     </StackPanel>-->
-
+                </TabItem>
+                <!--#endregion-->
+                <!--//-->
+                <!--#region Programming Tab -->
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                    <TabItem.Header>
+                        <materialDesign:PackIcon Kind="Cogs" Width="30" Height="26" Foreground="White"/>
+                    </TabItem.Header>
+                    <!--<content:MainTab-->
                 </TabItem>
                 <!--#endregion-->
             </TabControl>

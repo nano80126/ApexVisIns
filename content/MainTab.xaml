@@ -1,9 +1,9 @@
 ﻿<StackPanel x:Class="ApexVisIns.content.MainTab"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             mc:Ignorable="d" 
             d:DesignHeight="450" d:DesignWidth="800"
             UseLayoutRounding="True"
@@ -187,7 +187,7 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- // row 0, col 0, 檢測運作狀態 -->
+                            <!-- Row 0, Col 0, 檢測運作狀態 -->
                             <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
                                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
                                     <TextBlock.Style>
@@ -198,7 +198,7 @@
                                 </TextBlock>
                             </Border>
 
-                            <!-- // row 1, col 0, 啟動 / 停止檢測 -->
+                            <!-- Row 1, Col 0, 啟動 / 停止檢測 -->
                             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
                                 <Button Content="開始檢測" Width="{Binding ElementName=TestStatusBorder, Path=ActualWidth}" Margin="0 12"  
                                         Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}"  FontSize="16"
@@ -208,7 +208,7 @@
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             </StackPanel>
 
-                            <!-- // row 0, col 1, 經過時間 / 檢驗數量 -->
+                            <!-- Row 0, Col 1, 經過時間 / 檢驗數量 -->
                             <StackPanel Grid.Column="1" Grid.Row="0">
                                 <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
                                            FontSize="20" FontWeight="Bold"
@@ -227,7 +227,7 @@
                                 </TextBlock>    
                             </StackPanel>
                             
-                            <!-- // row 1, col 1, OK / NG 數量 -->
+                            <!-- Row 1, Col 1, OK / NG 數量 -->
                             <DockPanel Grid.Column= "1" Grid.Row="1" HorizontalAlignment="Stretch">
                                 <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                            FontSize="20" FontWeight="Bold"
