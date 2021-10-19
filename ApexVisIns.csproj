@@ -53,7 +53,6 @@
 
   <ItemGroup>
     <Folder Include="content\MainTab\" />
-    <Folder Include="content\Programming\" />
   </ItemGroup>
 
 </Project>

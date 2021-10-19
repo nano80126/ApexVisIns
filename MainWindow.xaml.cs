@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using OpenCvSharp;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -29,6 +30,7 @@ namespace ApexVisIns
 
         #region Cameras
         public BaslerCam BaslerCam;
+        public static BaslerCam[] BaslerCams;
         //public UvcCam UvcCam;
         #endregion
 
@@ -37,7 +39,7 @@ namespace ApexVisIns
         public AssistRect AssistRect;
         public AssistPoint[] AssistPoints;
         public Indicator Indicator;
-        public MsgInformer MsgInformer;
+        public static MsgInformer MsgInformer;
         #endregion
 
         #region BFR
@@ -91,6 +93,7 @@ namespace ApexVisIns
 
             #region Camera
             BaslerCam = FindResource(nameof(BaslerCam)) as BaslerCam;
+            BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
             #endregion
 
             #region Find Resource
@@ -102,6 +105,12 @@ namespace ApexVisIns
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
+
+
+            foreach (BaslerCam item in BaslerCams)
+            {
+                Debug.WriteLine($"{item.SerialNumber} {item.ConfigName} {item.Config.Name} {item.Width}");
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

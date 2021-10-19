@@ -43,13 +43,13 @@ Apex 外觀瑕疵檢測
 ### TO DO LIST
 
 * Change color of scoll bar
-
+* 移除 UVC / COIL 內容 
+* 載入初始 Camera config from .json
+	* 需要建立 class for json object
 
 ### Performance Test
 
 * 比較 Task 和 ThreadPool 校能差別
-
-
 
 
 ### BUGS

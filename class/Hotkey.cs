@@ -100,15 +100,36 @@ namespace ApexVisIns
             AssistRect.Enable = !AssistRect.Enable;
         }
 
+        /// <summary>
+        /// Switch to Tab 1
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SwitchTab1Command(object sender, ExecutedRoutedEventArgs e)
         {
             OnTabIndex = 0;
         }
 
+        /// <summary>
+        /// Switch to Tab 2
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SwitchTab2Command(object sender, ExecutedRoutedEventArgs e)
         {
             OnTabIndex = 1;
         }
+
+        /// <summary>
+        /// Switch to Tab 3
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SwitchTab3Command(object sender, ExecutedRoutedEventArgs e)
+        {
+            OnTabIndex = 2;
+        }
+
 
 #if false
         private void PopupboxCanExecute(object sender, CanExecuteRoutedEventArgs e)

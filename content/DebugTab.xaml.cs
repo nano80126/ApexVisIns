@@ -25,41 +25,6 @@ namespace ApexVisIns.content
             InitializeComponent();
         }
 
-        private void ToggleCrosshair_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void ToggleAssistRect_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void SingleShot_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RatioTextblock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void ContinouseShot_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void CamConnect_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void CamConnect_Unchecked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
