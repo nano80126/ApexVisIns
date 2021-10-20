@@ -409,7 +409,7 @@
                                                 <ScrollViewer x:Name="ImageScroller" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
                                                   Background="{x:Null}" PreviewMouseWheel="ImageScroller_PreviewMouseWheel">
                                                     <ScrollViewer.Style>
-                                                        <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource FavsScrollViewer}">
+                                                        <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource ScrollViewerSuccess}">
                                                             <Setter Property="Height" Value="720"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
