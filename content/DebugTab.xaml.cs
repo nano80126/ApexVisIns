@@ -78,28 +78,6 @@ namespace ApexVisIns.content
         }
 
 
-        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
-        {
-            #region Find Resource
-            if (Crosshair == null)
-            {
-                Crosshair = TryFindResource("Crosshair2") as Crosshair;
-            }
-
-            if (AssistRect == null)
-            {
-                AssistRect = TryFindResource("AssistRect2") as AssistRect;
-            }
-
-            if (Indicator == null)
-            {
-                Indicator = TryFindResource("Indicator2") as Indicator;
-            }
-            #endregion
-        }
-
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
         }
