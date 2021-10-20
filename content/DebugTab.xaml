@@ -45,7 +45,8 @@
         <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>
         <!--#endregion-->
     </StackPanel.CommandBindings>
-    
+
+    <!--#region Toolbar -->
     <DockPanel x:Name="ToolbarPanel"  HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region MainToolbar-->
         <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
@@ -68,7 +69,7 @@
                             IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                             ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                             MinWidth="135" Margin="0 0 12 0">
-                    <!-- --> 
+                    <!-- -->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -209,14 +210,99 @@
         </ToolBarTray>
         <!--#endregion-->
         <!--#region SubToolbar -->
-        <ToolBarTray>
-
+        <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0" FlowDirection="RightToLeft" >
+            <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" 
+                     Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+                <!--//-->
+            </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
     </DockPanel>
-    
-    
-    
-    
-    
+    <!--#endregion-->
+
+    <!--#region Contect -->
+    <Border BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="1 0" UseLayoutRounding="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--#region Image Panel -->
+                <Border x:Name="ImageBorder" Grid.Column="1" Grid.RowSpan="2" BorderThickness="1 0 " BorderBrush="{StaticResource ColorOrange}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical">
+                        <Grid x:Name="ImageGrid">
+                            <ScrollViewer x:Name="ImageScroller" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Background="{x:Null}"
+                                          PreviewMouseWheel="ImageScroller_PreviewMouseWheel">
+                                <ScrollViewer.Style>
+                                    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource ScrollViewerPrimary}">
+                                        <Setter Property="Height" Value="720"/>
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                                <Setter Property="Height" Value="900"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ScrollViewer.Style>
+
+                                <Viewbox x:Name="ImageViewbox">
+                                    <Canvas x:Name="ImageCanvas" Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                            Width="{Binding Width, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}" 
+                                            Height="{Binding Height, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"
+                                            PreviewMouseDown="ImageCanvas_MouseDown" PreviewMouseUp="ImageCanvas_MouseUp" PreviewMouseMove="ImageCanvas_MouseMove"
+                                            MouseLeave="ImageCanvas_MouseLeave">
+                                        
+                                        <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+
+                                        <!--#region Assist Rectangle -->
+                                        <Rectangle x:Name="AssistRectangle" DataContext="{StaticResource AssistRect2}"
+                                                   Stroke="{Binding Stroke , FallbackValue={StaticResource ColorDeepOrange}}"
+                                                   StrokeThickness="{Binding StrokeThickness}" 
+                                                   Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}" 
+                                                   Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}"
+                                                   Width="{Binding Width, UpdateSourceTrigger=PropertyChanged, FallbackValue=10}"
+                                                   Height="{Binding Height, UpdateSourceTrigger=PropertyChanged, FallbackValue=10}" 
+                                                   Visibility="{Binding Enable, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                        <!--#endregion-->
+
+                                        <!--#region Crosshair Lines -->
+                                        <!-- Horizontal, 綁定 ImageCanvas (X1, X2, Y1, Y2)  & CrosshairOn (Visibility) -->
+                                        <Line x:Name="CrosshairH" 
+                                            X1="0" X2="{Binding ElementName=ImageCanvas, Path=Width,Mode=OneWay}"
+                                            Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                            Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                            Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
+                                        <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2)  & CrosshairOn (Visibility) -->
+                                        <Line x:Name="CrosshairV" 
+                                            X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
+                                            X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                            Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
+                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                            Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                        <!--#endregion-->
+                                        
+                                        
+
+                                    </Canvas>
+                                </Viewbox>
+                            </ScrollViewer>
+                        </Grid>    
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+            </Grid>
+        </StackPanel>
+    </Border>
+    <!--#endregion-->
 </StackPanel>
