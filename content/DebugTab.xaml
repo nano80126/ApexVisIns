@@ -4,7 +4,9 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:ApexVisIns"
             mc:Ignorable="d" 
+            Loaded="StackPanel_Loaded"
             d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel.Resources>
         <!--#region Toolbar -->
@@ -14,6 +16,14 @@
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
         <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
         <!--#endregion-->
+        
+        <!-- Crosshair -->
+        <local:Crosshair x:Key="Crosshair2" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
+        <!-- 輔助 Rect -->
+        <local:AssistRect x:Key="AssistRect2" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
+        <!-- 輔助標示器 -->
+        <local:Indicator x:Key="Indicator2"/>
+
     </StackPanel.Resources>
 
     <StackPanel.InputBindings>
@@ -201,8 +211,12 @@
         <!--#region SubToolbar -->
         <ToolBarTray>
 
-
         </ToolBarTray>
         <!--#endregion-->
     </DockPanel>
+    
+    
+    
+    
+    
 </StackPanel>

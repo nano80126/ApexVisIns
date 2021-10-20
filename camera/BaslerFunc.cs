@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Basler.Pylon;
-
+using OpenCvSharp;
 
 namespace ApexVisIns
 {
@@ -14,6 +17,9 @@ namespace ApexVisIns
     /// </summary>
     public class BaslerFunc
     {
+        private readonly PixelDataConverter pxConverter = new();
+
+
         public static bool Basler_Connect(BaslerCam cam, string serialNumber)
         {
             try
@@ -27,8 +33,6 @@ namespace ApexVisIns
                 //
                 cam.Open();
                 cam.PropertyChange();
-
-
             }
             catch (Exception ex)
             {
@@ -39,7 +43,7 @@ namespace ApexVisIns
         }
 
 
-        public bool Basler_Disconnect(BaslerCam cam)
+        public static bool Basler_Disconnect(BaslerCam cam)
         {
             try
             {
@@ -57,7 +61,7 @@ namespace ApexVisIns
             return false;
         }
 
-        public void Basler_SingleGrab(BaslerCam cam)
+        public static void Basler_SingleGrab(BaslerCam cam)
         {
             try
             {
@@ -84,7 +88,7 @@ namespace ApexVisIns
             }
         }
 
-        public void Basler_ContinousGrab(BaslerCam cam)
+        public static void Basler_ContinousGrab(BaslerCam cam)
         {
             try
             {
@@ -178,10 +182,23 @@ namespace ApexVisIns
 
             // 設定擷取模式為連續
             cam.Parameters[PLGigECamera.AcquisitionMode].SetValue(PLGigECamera.AcquisitionMode.Continuous);
+
+            // 設定 Trigger
+            cam.Parameters[PLGigECamera.TriggerSelector].SetValue(PLGigECamera.TriggerSelector.FrameStart);
+            cam.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+            cam.Parameters[PLGigECamera.TriggerSource].SetValue(PLGigECamera.TriggerSource.Software);
             #endregion
 
 
-            throw new NotImplementedException();
+            #region Grabber Event
+            baslerCam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
+            baslerCam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
+            baslerCam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+
+            #endregion
+                
+            // 觸發 PropertyChange
+            baslerCam.PropertyChange();
         }
 
         /// <summary>
@@ -203,9 +220,100 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private static void Camera_CameraClosed(object sender, EventArgs e)
         {
+            Camera cam = sender as Camera;
+            string serialNumber = cam.CameraInfo[CameraInfoKey.SerialNumber];
+
+            BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
+
+            baslerCam.Camera.StreamGrabber.GrabStarted -= StreamGrabber_GrabStarted;
+            baslerCam.Camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
+            baslerCam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void StreamGrabber_GrabStarted(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Grabber Start");
+
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
 
 
-            throw new NotImplementedException();
+
+
+            #region Reset Struct
+
+
+            #endregion
+        }
+
+
+        private static void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
+        {
+
+
+
+        }
+
+
+        private static void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
+        {
+
+
+
+        }
+
+
+        /// <summary>
+        /// Convert Basler Camera Data to Mat Color
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public Bitmap GrabResultToBitmap(IGrabResult result)
+        {
+            Bitmap bitmap = new(result.Width, result.Height, PixelFormat.Format24bppRgb);
+            BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+
+            // pxConverter.OutputPixelFormat = PixelType.Mono8;
+            pxConverter.OutputPixelFormat = PixelType.RGB8packed;
+            // Console.WriteLine($"stride: {bmpData.Stride}, width: {bmpData.Width}, height: {bmpData.Height}");
+            IntPtr intPtr = bmpData.Scan0;
+            // pxConverter.Convert(intPtr, bmpData.Stride * bmpData.Height, result);
+            pxConverter.Convert(intPtr, bmpData.Width * bmpData.Height * 3, result);
+            bitmap.UnlockBits(bmpData);
+
+            return bitmap;
+        }
+
+
+        /// <summary>
+        /// Convert Basler Camera Data to Mat Mono
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public Mat GrabResultToMatMono(IGrabResult result)
+        {
+            Mat mat = new(result.Height, result.Width, MatType.CV_8UC1);
+            pxConverter.OutputPixelFormat = PixelType.Mono8;
+            pxConverter.Convert(mat.Ptr(0), result.Width * result.Height, result);
+            return mat;
+        }
+
+
+        /// <summary>
+        /// Convert Basler Camera Data to Mat Color
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public Mat GraResultToMatColor(IGrabResult result)
+        {
+            Mat mat = new(result.Height, result.Width, MatType.CV_8UC3);
+            pxConverter.OutputPixelFormat = PixelType.RGB8packed;
+            pxConverter.Convert(mat.Ptr(0), result.Width * result.Height * 3, result);
+            return mat;
         }
     }
 }

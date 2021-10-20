@@ -18,18 +18,24 @@ namespace ApexVisIns.content
             ToggleButton Toggle = sender as ToggleButton;
 
             BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
-            //Toggle.IsChecked = 
+            int idx = CamSelector.SelectedIndex;
 
+            Toggle.IsChecked = BaslerFunc.Basler_Connect(MainWindow.BaslerCams[idx], info.SerialNumber);
         }
-
 
         private void CamConnect_Unchecked(object sender, RoutedEventArgs e)
         {
+            ToggleButton Toggle = sender as ToggleButton;
+            int idx = CamSelector.SelectedIndex;
 
+            Toggle.IsChecked = BaslerFunc.Basler_Disconnect(MainWindow.BaslerCams[idx]);
         }
 
         private void ToggleCrosshair_Click(object sender, RoutedEventArgs e)
         {
+            
+
+
 
         }
 
