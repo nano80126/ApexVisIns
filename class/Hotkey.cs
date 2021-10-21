@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -26,8 +27,9 @@ namespace ApexVisIns
         }
         private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !(bool)CamConnect.IsChecked;
-            //#if BASLER
+            //e.CanExecute = !(bool)CamConnect.IsChecked;
+            e.CanExecute = !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
+            //#if BASLER 
             //            // 相機不為開啟狀態
             //            e.CanExecute = !BaslerCam.IsConnected;
             //#elif UVC

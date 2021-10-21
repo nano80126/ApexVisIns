@@ -208,9 +208,14 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private static void Camera_CameraClosing(object sender, EventArgs e)
         {
+            Camera cam = sender as Camera;
+            string serialNumber = cam.CameraInfo[CameraInfoKey.SerialNumber];
 
+            BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
 
-            throw new NotImplementedException();
+            baslerCam.Camera.StreamGrabber.GrabStarted -= StreamGrabber_GrabStarted;
+            baslerCam.Camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
+            baslerCam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
         }
 
         /// <summary>
@@ -220,14 +225,16 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private static void Camera_CameraClosed(object sender, EventArgs e)
         {
+            // 不變更 Title 
+
+            // 暫不啟用 Enumerator
+
             Camera cam = sender as Camera;
             string serialNumber = cam.CameraInfo[CameraInfoKey.SerialNumber];
 
             BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
 
-            baslerCam.Camera.StreamGrabber.GrabStarted -= StreamGrabber_GrabStarted;
-            baslerCam.Camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
-            baslerCam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+            baslerCam.PropertyChange();
         }
 
         /// <summary>

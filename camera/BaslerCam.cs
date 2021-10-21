@@ -225,12 +225,14 @@ namespace ApexVisIns
             Camera = new Camera(argument);
         }
 
+
         public override void Open()
         {
             _ = Camera == null
                 ? throw new ArgumentNullException("Camera is a null object, initialize it before calling this function")
                 : Camera.Open();
         }
+
 
         public override void Close()
         {
@@ -257,8 +259,6 @@ namespace ApexVisIns
         //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         //}
     }
-
-
 
 
     public class BaslerConfig : INotifyPropertyChanged

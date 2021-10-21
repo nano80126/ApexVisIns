@@ -29,7 +29,7 @@ namespace ApexVisIns
         #endregion
 
         #region Cameras
-        public BaslerCam BaslerCam;
+        public static BaslerCam BaslerCam;
         public static BaslerCam[] BaslerCams;
         //public UvcCam UvcCam;
         #endregion

@@ -4,10 +4,13 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:uc="clr-namespace:ApexVisIns.module"
             xmlns:local="clr-namespace:ApexVisIns"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
-            d:DesignHeight="450" d:DesignWidth="800">
+            d:DesignHeight="450" d:DesignWidth="800"
+            
+            x:Name="DebugTabPanel">
     <StackPanel.Resources>
         <!--#region Toolbar -->
         <RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
@@ -68,6 +71,7 @@
                             materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                             IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                             ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            SelectionChanged="CamSelector_SelectionChanged"
                             MinWidth="135" Margin="0 0 12 0">
                     <!-- -->
                     <ComboBox.ItemTemplate>
@@ -151,12 +155,18 @@
                 <!--//-->
                 <Separator/>
                 <!--縮放率 (Zoom Ratio)-->
+                <!--
                 <Border>
                     <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown">
-                        <Run Text="{Binding ZoomRatio, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, 
+                        <Run Text="{Binding ZoomRatio, RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, 
                             Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}"/>
                         <Run Text="%"/>
                     </TextBlock>
+                </Border>
+                -->
+                <Border>
+                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown"
+                               Text="{Binding Path=ZoomRatio, ElementName=DebugTabPanel, Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}"/>
                 </Border>
                 <!--//-->
                 <Separator/>
@@ -166,13 +176,12 @@
                 </Border>
                 <!--//-->
                 <Separator/>
-
                 <!--切換Crosshair-->
                 <Button VerticalAlignment="Center" Click="ToggleCrosshair_Click" ToolTip="(F1) Show Crosshair" materialDesign:RippleAssist.IsDisabled="True" Height="36">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enable, Source={StaticResource Crosshair}}" Value="True">
+                                <DataTrigger Binding="{Binding Enable, Source={StaticResource Crosshair2}}" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                                     <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
                                 </DataTrigger>
@@ -187,7 +196,7 @@
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enable, Source={StaticResource AssistRect}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding Enable, Source={StaticResource AssistRect2}, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                                     <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
                                 </DataTrigger>
@@ -281,26 +290,104 @@
                                             X1="0" X2="{Binding ElementName=ImageCanvas, Path=Width,Mode=OneWay}"
                                             Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                             Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
-                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                            Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
+                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                            Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
                                         <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2)  & CrosshairOn (Visibility) -->
                                         <Line x:Name="CrosshairV" 
                                             X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
                                             X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                             Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
-                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                            Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                            Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
                                         <!--#endregion-->
-                                        
-                                        
 
                                     </Canvas>
                                 </Viewbox>
                             </ScrollViewer>
                         </Grid>    
+                        
+                        <!--#region ImageFooter -->
+                        <DockPanel x:Name="AssistFooter" HorizontalAlignment="Stretch" Margin="0" Height="20" MinWidth="20" Background="{x:Null}">
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource Indicator2}">
+                                <TextBlock VerticalAlignment="Center" TextAlignment="Center" MinWidth="120" FontSize="16" FontFamily="consolas">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0,4:D} , {1,4:D}">
+                                            <Binding Path="X" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                            <Binding Path="Y" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                            <!--//-->
+                            <Separator DockPanel.Dock="Left" Width="1" Height="12" Margin="12 0" Background="Gray" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                            <!--//-->
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" DataContext="{StaticResource Indicator2}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="0 0 15 0"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="MinWidth" Value="65"/>
+                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="FontFamily" Value="consolas"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <!--Text="{Binding R, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=R: {0:0}, FallbackValue=0}"-->
+                                <TextBlock Foreground="Red">
+                                    <TextBlock.Text>
+                                        <Binding Path="R" UpdateSourceTrigger="PropertyChanged" StringFormat="R: {0,3:D}" FallbackValue="0"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <!--Text="{Binding G, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=G: {0:0}, FallbackValue=0}"-->
+                                <TextBlock Foreground="Green">
+                                    <TextBlock.Text>
+                                        <Binding Path="G" UpdateSourceTrigger="PropertyChanged" StringFormat="G: {0,3:D}" FallbackValue="0"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <!--Text="{Binding B, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=B: {0:0}, FallbackValue=0}"-->
+                                <TextBlock Foreground="Blue">
+                                    <TextBlock.Text>
+                                        <Binding Path="B" UpdateSourceTrigger="PropertyChanged" StringFormat="B: {0,3:D}" FallbackValue="0"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!--// 輔助 Rect 使用 (靠右)-->
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource AssistRect}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="0 0 15 0"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="MinWidth" Value="65"/>
+                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="FontFamily" Value="consolas"/>
+                                    </Style>
+                                </StackPanel.Resources>
+
+                                <TextBlock Text="{Binding X, UpdateSourceTrigger=PropertyChanged, StringFormat=X: {0:0}, FallbackValue=0}"/>
+                                <TextBlock Text="{Binding Y, UpdateSourceTrigger=PropertyChanged, StringFormat=Y: {0:0}, FallbackValue=0}"/>
+                                <TextBlock Text="{Binding Width, UpdateSourceTrigger=PropertyChanged, StringFormat=W: {0:0}, FallbackValue=0}"/>
+                                <TextBlock Text="{Binding Height, UpdateSourceTrigger=PropertyChanged, StringFormat=H: {0:0}, FallbackValue=0}"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <!--#endregion-->
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
+
+                <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
+                    <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}"/>
+                </StackPanel>
+                <!--//-->
+
+                <!--//-->
+                <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
+
+                    
+                </StackPanel>
+                <!--//-->
+
             </Grid>
         </StackPanel>
     </Border>

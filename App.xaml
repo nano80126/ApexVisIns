@@ -72,6 +72,7 @@
             <!--#endregion-->
 
             <!--#region Public Resource -->
+            <!-- 相機 DEBUG 測試使用 -->
             <local:BaslerCam x:Key="BaslerCam" Width="2040" Height="2040">
                 <local:BaslerCam.Config>
                     <local:BaslerConfig Name="Default"/>
@@ -80,6 +81,7 @@
 
             <!-- 相機陣列 -->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
+                <!-- // -->
                 <local:BaslerCam Width="2040" Height="2040">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
