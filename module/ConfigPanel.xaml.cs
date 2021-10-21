@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using ApexVisIns.content;
 
 namespace ApexVisIns.module
 {
@@ -21,6 +22,10 @@ namespace ApexVisIns.module
         /// 繼承 主視窗
         /// </summary>
         public MainWindow MainWindow { get; set; }
+        /// <summary>
+        /// 上層視窗 (待確認)
+        /// </summary>
+        public DebugTab DebugTab { get; set; }
         /// <summary>
         /// Config 路徑
         /// </summary>
@@ -46,7 +51,7 @@ namespace ApexVisIns.module
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
-            _ = MainWindow.TitleGrid.Focus();
+            _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
         private void Initialize_JsonFile()

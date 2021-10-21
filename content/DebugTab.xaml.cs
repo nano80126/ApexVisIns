@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,13 +35,39 @@ namespace ApexVisIns.content
         private static double TempY;
         #endregion
 
+
+        public bool HasAccess
+        {
+            get => (bool)GetValue(HasAccessProperty);
+            set => SetValue(HasAccessProperty, value);
+        }
+
+        public static readonly DependencyProperty HasAccessProperty = DependencyProperty.Register("HasAccess", typeof(bool), typeof(DebugTab), new PropertyMetadata(false));
+
+
         public DebugTab()
         {
             InitializeComponent();
+
+            InitializePanels();
+        }
+
+        private void InitializePanels()
+        {
+            //ConfigPanel.MainWindow = this.Parent;
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
+            #region Get Parent
+            MainWindow parent = Window.GetWindow(this) as MainWindow;
+            if (parent  != null)
+            {
+                Debug.WriteLine(parent);
+            }
+            #endregion
+
+
             #region Find Resource
             if (Crosshair == null)
             {
@@ -57,7 +84,6 @@ namespace ApexVisIns.content
                 Indicator = TryFindResource("Indicator2") as Indicator;
             }
             #endregion
-
 
             #region Reset ZoomRetio
             ZoomRatio = 100;

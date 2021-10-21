@@ -52,12 +52,12 @@
                                 Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed" 
                                 PlacementMode="BottomAndAlignLeftEdges" >
             <!--IsEnabled="True"-->
-            <materialDesign:PopupBox.IsEnabled>
+            <!--<materialDesign:PopupBox.IsEnabled>
                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                     <Binding Path="IsOpen" FallbackValue="False"/>
                     <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False"/>
                 </MultiBinding>
-            </materialDesign:PopupBox.IsEnabled>
+            </materialDesign:PopupBox.IsEnabled>-->
 
             <materialDesign:PopupBox.ToggleContent>
                 <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}">
@@ -113,11 +113,11 @@
                 </StackPanel>
                 <!--row 1, Config Selector -->
                 <ComboBox x:Name="ConfigSelector" Grid.Row="1" Grid.ColumnSpan="1" MinWidth="135" 
-                                                          materialDesign:HintAssist.Hint="Config" FontWeight="SemiBold"
-                                                          materialDesign:ComboBoxAssist.ShowSelectedItem="True"
-                                                          materialDesign:HintAssist.Background="{Binding ElementName=ConfigGrid, Path=Background}"
-                                                          SelectionChanged="ConfigSelector_SelectionChanged"
-                                                          ItemsSource="{Binding Path=ConfigList, Mode=OneWay}">
+                        materialDesign:HintAssist.Hint="Config" FontWeight="SemiBold"
+                        materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                        materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
+                        SelectionChanged="ConfigSelector_SelectionChanged"
+                        ItemsSource="{Binding Path=ConfigList, Mode=OneWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0">
@@ -128,7 +128,7 @@
                 </ComboBox>
 
                 <Button Grid.Row="1" Grid.Column="1" x:Name="ConfigDelBtn" Content="刪除" Foreground="{StaticResource ColorOrange}" 
-                        Margin="8 0" Height="{Binding ElementName=ConfigSelector, Path=ActualHeight}"
+                        Margin="8 0" Height="{Binding ActualHeight, ElementName=ConfigSelector, FallbackValue=0}"
                         IsEnabled="{Binding ElementName=ConfigSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
                         Style="{StaticResource MaterialDesignFlatAccentButton}" Click="ConfigDelBtn_Click" />
                 <!--row 2, Width -->
@@ -149,14 +149,14 @@
                 <!--row 5, 曝光時間 -->
                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="8 0 0 0" Text="Exposure Time" />
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="ConfigExposureTime" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
-                                                         materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"
-                                                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
+                         materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"
+                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--Text="{Binding Path=Config.ExposureTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!--row 6, 組態名稱 -->
                 <TextBox Grid.Row="6" Grid.ColumnSpan="2" x:Name="ConfigName" Width="auto" Padding="0 3"
-                                                         materialDesign:HintAssist.Hint="Configuration Name"
-                                                         materialDesign:HintAssist.Background="{Binding ElementName=ConfigGrid, Path=Background}"
-                                                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
+                         materialDesign:HintAssist.Hint="Configuration Name"
+                         materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid,AncestorLevel=1}, Path=Background}"
+                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--Text="{Binding Path=Config.Name, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"-->
                 <!--row 7, Action buttons -->
                 <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Vertical">
