@@ -20,6 +20,16 @@ namespace ApexVisIns.content
     /// </summary>
     public partial class MainTab : StackPanel
     {
+        #region Resources
+
+
+        #endregion
+
+        #region Variables
+        public MainWindow MainWindow { get; set; }
+        #endregion
+
+
         public MainTab()
         {
             InitializeComponent();

@@ -47,6 +47,12 @@ Apex 外觀瑕疵檢測
 * 載入初始 Camera config from .json
 	* 需要建立 class for json object
 
+* 建立樹狀圖 (draw.io)
+	* DataContext
+
+* 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
++	* 否 => 拆除移至Toolbar.cs
+
 ### Performance Test
 
 * 比較 Task 和 ThreadPool 校能差別
@@ -54,11 +60,8 @@ Apex 外觀瑕疵檢測
 
 ### BUGS
 
-* [x] 滑鼠中見移動 ROI 有偏移
-* [x] Popupbox can't blur
-	* Add Keyboard.ClearFocus()
-* [ ] Hotkey may be invalid
-* [ ] 影像抖動 
+* DebugTab
+	 * ConfigPanel 比較邏輯需更改 (Textbox & Config)
 
 ###  RELEASE MODE 
 

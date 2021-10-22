@@ -14,6 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Basler.Pylon;
+using Basler;
+
 
 namespace ApexVisIns.content
 {
@@ -30,20 +33,23 @@ namespace ApexVisIns.content
         #endregion
 
         #region Varibles
+        public MainWindow MainWindow { get; set; }
+
+        private static BaslerCam Cam;
+
         private static bool MoveImage;
         private static double TempX;
         private static double TempY;
+        private ImageSource _imgSrc;
         #endregion
 
+        //public bool HasAccess
+        //{
+        //    get => (bool)GetValue(HasAccessProperty);
+        //    set => SetValue(HasAccessProperty, value);
+        //}
 
-        public bool HasAccess
-        {
-            get => (bool)GetValue(HasAccessProperty);
-            set => SetValue(HasAccessProperty, value);
-        }
-
-        public static readonly DependencyProperty HasAccessProperty = DependencyProperty.Register("HasAccess", typeof(bool), typeof(DebugTab), new PropertyMetadata(false));
-
+        //public static readonly DependencyProperty HasAccessProperty = DependencyProperty.Register("HasAccess", typeof(bool), typeof(DebugTab), new PropertyMetadata(false));
 
         public DebugTab()
         {
@@ -54,19 +60,19 @@ namespace ApexVisIns.content
 
         private void InitializePanels()
         {
-            //ConfigPanel.MainWindow = this.Parent;
+            // ConfigPanel.MainWindow = this.Parent;
+            ConfigPanel.DebugTab = this;
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region Get Parent
-            MainWindow parent = Window.GetWindow(this) as MainWindow;
-            if (parent  != null)
-            {
-                Debug.WriteLine(parent);
-            }
+            #region
+            //MainWindow parent = Window.GetWindow(this) as MainWindow;
+            //if (parent  != null)
+            //{
+            //    Debug.WriteLine(parent);
+            //}
             #endregion
-
 
             #region Find Resource
             if (Crosshair == null)
@@ -90,39 +96,12 @@ namespace ApexVisIns.content
             #endregion
         }
 
-        public double ZoomRatio
-        {
-            get => ImageViewbox == null ? 0 : ImageViewbox.Width / ImageCanvas.Width * 100;
-            set
-            {
-                int v = (int)Math.Floor(value);
-
-                if (20 > v)
-                {
-                    ImageViewbox.Width = 0.2 * ImageCanvas.Width;
-                }
-                else if (v > 200)
-                {
-                    ImageViewbox.Width = 2 * ImageCanvas.Width;
-                }
-                else
-                {
-                    double ratio = value / 100;
-                    ImageViewbox.Width = ratio * ImageCanvas.Width;
-                }
-                OnPropertyChanged(nameof(ZoomRatio));
-            }
-        }
-
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
 
-
         }
-
-
 
         /// <summary>
         /// Preview Mouse Scroll Event 
@@ -337,12 +316,48 @@ namespace ApexVisIns.content
             }
         }
 
+
+        #region Properties
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-      
+        public double ZoomRatio
+        {
+            get => ImageViewbox == null ? 0 : ImageViewbox.Width / ImageCanvas.Width * 100;
+            set
+            {
+                int v = (int)Math.Floor(value);
+
+                if (20 > v)
+                {
+                    ImageViewbox.Width = 0.2 * ImageCanvas.Width;
+                }
+                else if (v > 200)
+                {
+                    ImageViewbox.Width = 2 * ImageCanvas.Width;
+                }
+                else
+                {
+                    double ratio = value / 100;
+                    ImageViewbox.Width = ratio * ImageCanvas.Width;
+                }
+                OnPropertyChanged(nameof(ZoomRatio));
+            }
+        }
+
+
+        public ImageSource ImageSource
+        {
+            get => _imgSrc;
+            set
+            {
+                _imgSrc = value;
+                OnPropertyChanged(nameof(ImageSource));
+            }
+        }
+        #endregion
     }
 }

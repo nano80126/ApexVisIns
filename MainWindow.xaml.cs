@@ -78,6 +78,10 @@ namespace ApexVisIns
             ThermometerPanel.MainWindow = this;
             // Tabs
             //ListViewTab.MainWindow = this;
+
+            #region Tabs
+            DebugTab.MainWindow = this;
+            #endregion
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -362,7 +366,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         int X = -40;
 
         /// <summary>
@@ -408,6 +411,16 @@ namespace ApexVisIns
             //        SpinWait.SpinUntil(() => false, 500);
             //    }
             //});
+        }
+
+        private void DebugTab_GotFocus(object sender, RoutedEventArgs e)
+        {
+            //Debug.WriteLine("DebugTab_GotFocus");
+        }
+
+        private void DebugTab_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            //Debug.WriteLine("DebugTab_GotKeyboardFocus");
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Basler.Pylon;
 using MaterialDesignThemes.Wpf;
+using System.Diagnostics;
 using System.Windows;
 
 namespace ApexVisIns.module
@@ -11,6 +12,7 @@ namespace ApexVisIns.module
     {
         public MainWindow MainWindow { get; set; }
 
+
         public OffsetPanel()
         {
             InitializeComponent();
@@ -18,7 +20,8 @@ namespace ApexVisIns.module
 
         private void CamLeftMove_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if ((DataContext as BaslerCam)?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -32,7 +35,8 @@ namespace ApexVisIns.module
 
         private void CamTopMove_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if ((DataContext as BaslerCam)?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -46,7 +50,8 @@ namespace ApexVisIns.module
 
         private void CamRightMove_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if ((DataContext as BaslerCam)?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -60,7 +65,8 @@ namespace ApexVisIns.module
 
         private void CamBottomMove_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if ((DataContext as BaslerCam)?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -74,10 +80,16 @@ namespace ApexVisIns.module
 
         private void CamCenterMove_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //Debug.WriteLine($"{MainWindow.BaslerCam} {MainWindow.BaslerCam.IsConnected}");
+            //foreach (BaslerCam cam in MainWindow.BaslerCams)
+            //{
+            //    Debug.WriteLine($"{cam} {cam.IsConnected}");
+            //}
+
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if ((DataContext as BaslerCam)?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
-
 
                 int offset_x = (cam.WidthMax - cam.Width) / 2 % 2 == 0 ? (cam.WidthMax - cam.Width) / 2 : (cam.WidthMax - cam.Width) / 2 - 1;
                 int offset_y = (cam.HeightMax - cam.Height) / 2 % 2 == 0 ? (cam.HeightMax - cam.Height) / 2 : (cam.HeightMax - cam.Height) / 2 - 1;

@@ -12,6 +12,7 @@ namespace ApexVisIns
         private ImageSource _imgSrc;
 
         private int _onTabIndex;
+        private static ImageSource _imgSrc2;
 
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace ApexVisIns
                     double ratio = value / 100;
                     ImageViewbox.Width = ratio * ImageCanvas.Width;
                 }
-                OnPropertyChanged("ZoomRatio");
+                OnPropertyChanged(nameof(ZoomRatio));
             }
         }
 
@@ -66,12 +67,19 @@ namespace ApexVisIns
                 OnPropertyChanged(nameof(ImageSource));
             }
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        //public event PropertyChangedEventHandler PropertyChanged;
+
+        //private static void OnPropertyChanged(string propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
     }
 
 

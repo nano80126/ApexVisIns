@@ -192,7 +192,7 @@ namespace ApexVisIns.Converter
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             string first = values[0] as string;
-            return values.Length >= 2 && values.All(value => value.Equals(first));
+            return values.Length >= 2 && values.All(value => value.ToString().Equals(first));
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

@@ -9,7 +9,6 @@
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             d:DesignHeight="450" d:DesignWidth="800"
-            
             x:Name="DebugTabPanel">
     <StackPanel.Resources>
         <!--#region Toolbar -->
@@ -53,8 +52,9 @@
     <DockPanel x:Name="ToolbarPanel"  HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region MainToolbar-->
         <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
-            <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}"
-                     Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+            <!-- DataContext 動態變更, CamSelectort SelectedIndex Changed 觸發 -->
+            <ToolBar x:Name="Toolbar" Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}"
+                     Height="38" ToolBarTray.IsLocked="True" Focusable="False" DataContext="{StaticResource BaslerCam}">
                 <ToolBar.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="BorderBrush" Value="DarkBlue"/>
@@ -66,14 +66,14 @@
                 </ToolBar.Resources>
                 <!--相機選擇-->
                 <ComboBox x:Name="CamSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}" 
-                            Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
-                            materialDesign:HintAssist.Hint="Camera" 
-                            materialDesign:ComboBoxAssist.ShowSelectedItem="False"
-                            IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
-                            ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                            SelectionChanged="CamSelector_SelectionChanged"
-                            MinWidth="135" Margin="0 0 12 0">
-                    <!-- -->
+                          Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                          materialDesign:HintAssist.Hint="Camera" 
+                          materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                          IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
+                          ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                          SelectionChanged="CamSelector_SelectionChanged"
+                          MinWidth="135" Margin="0 0 12 0">
+                    <!--  -->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -83,15 +83,15 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <!--開啟相機-->
-                <ToggleButton x:Name="CamConnect" ToolTip="(Ctrl+O) Open Device" MinWidth="45"
-                                      Cursor="Hand" Focusable="False" IsChecked="False" Background="LimeGreen" Checked="CamConnect_Checked" Unchecked="CamConnect_Unchecked">
+                <ToggleButton x:Name="CamConnect" ToolTip="(Ctrl+O) Open Device" MinWidth="45" Cursor="Hand" 
+                              IsChecked="False" Focusable="False" Background="LimeGreen" Checked="CamConnect_Checked" Unchecked="CamConnect_Unchecked">
                     <ToggleButton.Style>
                         <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=CamSelector, Path=SelectedIndex, UpdateSourceTrigger=PropertyChanged}" Value="-1">
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -103,11 +103,11 @@
                 <Separator/>
                 <!--單張擷取-->
                 <Button Name="SingleShot" VerticalAlignment="Center" Click="SingleShot_Click" Focusable="False" Foreground="Black" 
-                                            ToolTip="(F5) Single Shot" Style="{StaticResource MaterialDesignFlatButton}">
+                        ToolTip="(F5) Single Shot" Style="{StaticResource MaterialDesignFlatButton}">
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                            <Binding Path="IsOpen" Source="{StaticResource BaslerCam}" FallbackValue="False" Mode="OneWay"/>
-                            <Binding Path="IsGrabbing" Source="{StaticResource BaslerCam}" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"></Binding>
+                            <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
+                            <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"></Binding>
                         </MultiBinding>
                     </Button.IsEnabled>
 
@@ -121,19 +121,19 @@
                 </Button>
                 <!--連續擷取-->
                 <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black"
-                                            IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"
-                                            ToolTip="(F6) Continuous Shot" Style="{StaticResource MaterialDesignFlatButton}">
+                        IsEnabled="{Binding IsOpen, FallbackValue=False}" 
+                        ToolTip="(F6) Continuous Shot" Style="{StaticResource MaterialDesignFlatButton}">
                     <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"-->
                     <materialDesign:PackIcon Width="30" Height="26">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Style.Triggers>
                                     <!--
-                                                        <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
-                                                            <Setter Property="Kind" Value="VideocamOffOutline"/>
-                                                        </DataTrigger>
-                                                        -->
-                                    <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
+                                        <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
+                                            <Setter Property="Kind" Value="VideocamOffOutline"/>
+                                        </DataTrigger>
+                                    -->
+                                    <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False}" Value="True">
                                         <Setter Property="Kind" Value="VideocamOffOutline"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -172,7 +172,7 @@
                 <Separator/>
                 <!--影像張數 (Frames)-->
                 <Border>
-                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" Text="{Binding Frames, Source={StaticResource BaslerCam}, Mode=OneWay, FallbackValue=0}"/>
+                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" Text="{Binding Frames, Mode=OneWay, FallbackValue=0}"/>
                 </Border>
                 <!--//-->
                 <Separator/>
@@ -264,14 +264,18 @@
 
                                 <Viewbox x:Name="ImageViewbox">
                                     <Canvas x:Name="ImageCanvas" Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                            Width="{Binding Width, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}" 
-                                            Height="{Binding Height, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"
+                                            DataContext="{Binding ElementName=Toolbar, Path=DataContext}"
+                                            d:DataContext="{d:DesignInstance Type=local:BaslerCam}"
+                                            Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}" 
+                                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
                                             PreviewMouseDown="ImageCanvas_MouseDown" PreviewMouseUp="ImageCanvas_MouseUp" PreviewMouseMove="ImageCanvas_MouseMove"
                                             MouseLeave="ImageCanvas_MouseLeave">
                                         
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                                Source="{Binding ImageSource, ElementName=DebugTabPanel, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                               />
+                                               <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
 
                                         <!--#region Assist Rectangle -->
                                         <Rectangle x:Name="AssistRectangle" DataContext="{StaticResource AssistRect2}"
@@ -377,7 +381,11 @@
                 <!--#endregion-->
 
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
-                    <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}"/>
+                    <!--DataContext="{StaticResource BaslerCam}"-->
+                    <!--DataContext 與 Toolbar 同步-->
+                    <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{Binding  ElementName=Toolbar, Path=DataContext}" />
+
+                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
                 </StackPanel>
                 <!--//-->
 

@@ -27,6 +27,10 @@ namespace ApexVisIns.module
         /// </summary>
         public DebugTab DebugTab { get; set; }
         /// <summary>
+        /// Basler Camera Obj
+        /// </summary>
+        public BaslerCam Cam { get; set; }
+        /// <summary>
         /// Config 路徑
         /// </summary>
         private string ConfigsDirectory { get; } = @"./configs";
@@ -51,9 +55,13 @@ namespace ApexVisIns.module
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
+            // Focus MainWindow 
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
+        /// <summary>
+        /// 載入 Config Json File
+        /// </summary>
         private void Initialize_JsonFile()
         {
             if (Directory.Exists(ConfigsDirectory))
@@ -67,9 +75,10 @@ namespace ApexVisIns.module
                     //{
                     //    BaslerCam.ConfigList.Add(file);
                     //}
-                    if (!MainWindow.BaslerCam.ConfigList.Contains(file))
+                    // if (!MainWindow.BaslerCam.ConfigList.Contains(file))
+                    if (!Cam.ConfigList.Contains(file))
                     {
-                        MainWindow.BaslerCam.ConfigList.Add(file);
+                        Cam.ConfigList.Add(file);
                     }
                 }
             }
@@ -81,15 +90,23 @@ namespace ApexVisIns.module
 
         private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
         {
+            Cam = DataContext as BaslerCam;
+            SyncConfiguration(Cam.Config, Cam);
             Initialize_JsonFile();
+
+            // Debug.WriteLine($"{Cam.Width} {Cam.Height}");
+            // Debug.WriteLine($"{Cam.WidthMax} {Cam.HeightMax}");
+            // Debug.WriteLine($"{Cam.OffsetX} {Cam.OffsetY}");
+            // Debug.WriteLine($"{}");
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            /// /// 
-            if (MainWindow.BaslerCam?.Camera != null)
+            // // 
+            // if (MainWindow.BaslerCam?.Camera != null)
+            if (Cam?.Camera != null)
             {
-                SyncConfiguration(MainWindow.BaslerCam.Config, MainWindow.BaslerCam);
+                SyncConfiguration(Cam.Config, Cam);
             }
             ConfigSelector.SelectedIndex = -1;
         }
@@ -124,18 +141,18 @@ namespace ApexVisIns.module
                     BaslerConfig config = JsonSerializer.Deserialize<BaslerConfig>(json);
 
                     #region 更新當前 Basler Config
-                    BaslerCam baslerCam = MainWindow.BaslerCam;
-                    baslerCam.Config.Name = config.Name;
+                    // BaslerCam baslerCam = MainWindow.BaslerCam;
+                    Cam.Config.Name = config.Name;
                     ConfigName.Text = config.Name;
-                    baslerCam.Config.Width = config.Width;
+                    Cam.Config.Width = config.Width;
                     ConfigWidth.Text = $"{config.Width}";
-                    baslerCam.Config.Height = config.Height;
+                    Cam.Config.Height = config.Height;
                     ConfigHeight.Text = $"{config.Height}";
-                    baslerCam.Config.FPS = config.FPS;
+                    Cam.Config.FPS = config.FPS;
                     ConfigFPS.Text = $"{config.FPS}";
-                    baslerCam.Config.ExposureTime = config.ExposureTime;
+                    Cam.Config.ExposureTime = config.ExposureTime;
                     ConfigExposureTime.Text = $"{config.ExposureTime}";
-                    baslerCam.Config.Save();
+                    Cam.Config.Save();
                     #endregion
                 }
                 else
@@ -149,85 +166,86 @@ namespace ApexVisIns.module
         private void ConfigSaveBtn_Click(object sender, RoutedEventArgs e)
         {
             // 按下儲存 Property才會變更
-            BaslerCam baslerCam = MainWindow.BaslerCam;
-            baslerCam.Config.Width = Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture);
-            baslerCam.Config.Height = Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture);
-            baslerCam.Config.FPS = Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture);
-            baslerCam.Config.ExposureTime = Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture);
-            baslerCam.Config.Name = ConfigName.Text;
-            baslerCam.Config.Save();
+            // BaslerCam baslerCam = MainWindow.BaslerCam;
+            // BaslerCam baslerCam = DataContext as BaslerCam;
+            Cam.Config.Width = Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture);
+            Cam.Config.Height = Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture);
+            Cam.Config.FPS = Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture);
+            Cam.Config.ExposureTime = Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture);
+            Cam.Config.Name = ConfigName.Text;
+            Cam.Config.Save();
 
-            string path = $@"./configs/{baslerCam.Config.Name}.json";
+            string path = $@"./configs/{Cam.Config.Name}.json";
             bool IsExist = File.Exists(path);
 
-            string jsonStr = JsonSerializer.Serialize(baslerCam.Config, new JsonSerializerOptions() { WriteIndented = true });
+            string jsonStr = JsonSerializer.Serialize(Cam.Config, new JsonSerializerOptions() { WriteIndented = true });
             File.WriteAllText(path, jsonStr);
 
             if (!IsExist) // 若原先不存在，則新增
             {
-                baslerCam.ConfigList.Add(baslerCam.Config.Name);
+                Cam.ConfigList.Add(Cam.Config.Name);
             }
 
             //
-            //Debug.WriteLine($"{BaslerCam.Config.Width} , {ConfigWidth.Text}");
-            //Debug.WriteLine($"{BaslerCam.Config.Height} , {ConfigHeight.Text}");
-            //Debug.WriteLine($"{BaslerCam.Config.FPS} , {ConfigFPS.Text}");
-            //Debug.WriteLine($"{BaslerCam.Config.ExposureTime} , {ConfigExposureTime.Text}");
-            //Debug.WriteLine($"{BaslerCam.Config.Name} , {ConfigName.Text}");
+            Debug.WriteLine($"{Cam.Config.Width} , {ConfigWidth.Text} {Cam.Config.Width.ToString() == ConfigWidth.Text}");
+            Debug.WriteLine($"{Cam.Config.Height} , {ConfigHeight.Text} {Cam.Config.Height.ToString() == ConfigHeight.Text}");
+            Debug.WriteLine($"{Cam.Config.FPS} , {ConfigFPS.Text} {Cam.Config.FPS.ToString() == ConfigFPS.Text}");
+            Debug.WriteLine($"{Cam.Config.ExposureTime} , {ConfigExposureTime.Text} {Cam.Config.ExposureTime.ToString() == ConfigExposureTime.Text}");
+            Debug.WriteLine($"{Cam.Config.Name} , {ConfigName.Text} {Cam.Config.Name.ToString() == ConfigName.Text}");
         }
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam?.Camera != null)
+            //if (MainWindow.BaslerCam?.Camera != null)
+            if (Cam?.Camera != null)
             {
-                BaslerCam baslerCam = MainWindow.BaslerCam;
-                Camera camera = MainWindow.BaslerCam.Camera;
+                // BaslerCam baslerCam = MainWindow.BaslerCam;
+                Camera camera = Cam.Camera;
 
-                //BaslerCam.ConfigName = BaslerCam.Config.Name;
-                baslerCam.ConfigName = ConfigName.Text;
+                // BaslerCam.ConfigName = BaslerCam.Config.Name;
+                Cam.ConfigName = ConfigName.Text;
 
                 // 歸零 offset
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
-
 
                 // 嘗試寫入 Width
                 if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
                 {
                     camera.Parameters[PLGigECamera.Width].SetToMaximum();
                 }
-                baslerCam.Config.Width = baslerCam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                Cam.Config.Width = Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
                 // 嘗試寫入 Height
                 if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture)))
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();
                 }
-                baslerCam.Config.Height = baslerCam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+                Cam.Config.Height = Cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
 
                 // Width、Height 已變更, 更新 Offset Max 
-                baslerCam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
-                baslerCam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
+                Cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
+                Cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
 
                 // 寫入 FPS
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture));
-                baslerCam.Config.FPS = baslerCam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                Cam.Config.FPS = Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
 
                 // 寫入曝光時間
                 camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture));   // 10000 is default exposure time of acA2040
-                baslerCam.Config.ExposureTime = baslerCam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+                Cam.Config.ExposureTime = Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 
-                baslerCam.PropertyChange();
+                Cam.PropertyChange();
 
                 // offset 置中 
-                //CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                // CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                // MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 
-                MainWindow.Indicator.Image = null;
-                // 重置 Image
-                MainWindow.ImageSource = null;
-                // 重置縮放率
-                MainWindow.ZoomRatio = 100;
+                // MainWindow.Indicator.Image = null;
+                //// 重置 Image
+                // MainWindow.ImageSource = null;
+                //// 重置縮放率
+                // MainWindow.ZoomRatio = 100;
             }
         }
 
@@ -249,7 +267,8 @@ namespace ApexVisIns.module
                 {
                     File.Delete(path);
 
-                    _ = MainWindow.BaslerCam.ConfigList.Remove(file);
+                    // _ = MainWindow.BaslerCam.ConfigList.Remove(file);
+                    _ = Cam.ConfigList.Remove(file);
                     // 從 config list 移除
                 }
             }

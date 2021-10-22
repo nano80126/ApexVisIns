@@ -132,7 +132,6 @@ namespace ApexVisIns
             OnTabIndex = 2;
         }
 
-
 #if false
         private void PopupboxCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {

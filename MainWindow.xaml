@@ -33,11 +33,11 @@
         <RoutedUICommand x:Key="MaxAction" Text="Max"/>
         <!--#endregion-->
         <!--#region Toobar -->
-        <RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
+        <!--<RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
         <RoutedUICommand x:Key="SingleShot" Text="Single Shot"/>
         <RoutedUICommand x:Key="ContinuousShot" Text="Continuous Shot"/>
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
-        <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
+        <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>-->
         <!--Tab-->
         <RoutedUICommand x:Key="SwitchTab1" Text="Switch to Tab1"/>
         <RoutedUICommand x:Key="SwitchTab2" Text="Switch to Tab2"/>
@@ -90,11 +90,11 @@
         <KeyBinding Gesture="F10" Command="{StaticResource MinAction}"/>
         <KeyBinding Gesture="F11" Command="{StaticResource MaxAction}"/>
         <!--Toolbar-->
-        <KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource OpenDevice}"/>
+        <!--<KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource OpenDevice}"/>
         <KeyBinding Key="F5" Command="{StaticResource SingleShot}"/>
         <KeyBinding Key="F6" Command="{StaticResource ContinuousShot}"/>
         <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
-        <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
+        <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>-->
         <!--Tab-->
         <KeyBinding Modifiers="Ctrl" Key="D1" Command="{StaticResource SwitchTab1}"/><!--D1 means 1 -->
         <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab2}"/><!--D2 means 2 -->
@@ -108,11 +108,11 @@
         <CommandBinding Command="{StaticResource MinAction}" CanExecute="CanExcute" Executed="MinCommand"/>
         <CommandBinding Command="{StaticResource MaxAction}" CanExecute="CanExcute" Executed="MaxCommand"/>
         <!--Toolbar-->
-        <CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
+        <!--<CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
         <CommandBinding Command="{StaticResource SingleShot}" CanExecute="SingleShotCanExecute" Executed="SingleShotCommand"/>
         <CommandBinding Command="{StaticResource ContinuousShot}" CanExecute="ContinousShotCanExecute" Executed="ContinousShotCommand"/>
         <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="CanExcute" Executed="CrosshairOnCommnad"/>
-        <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>
+        <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>-->
         <!--Switch Tab-->
         <CommandBinding Command="{StaticResource SwitchTab1}" CanExecute="CanExcute" Executed="SwitchTab1Command"/>
         <CommandBinding Command="{StaticResource SwitchTab2}" CanExecute="CanExcute" Executed="SwitchTab2Command"/>
@@ -169,7 +169,6 @@
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ColorZoneAssist.Mode="Custom" 
                         materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
                         SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                
                 
                 <!--#region Image Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}">
@@ -627,7 +626,8 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-                    <content:MainTab x:Name="MainTab"/>
+                    
+                    <content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                     <!--<StackPanel x:Name="Tab2Panel" Orientation="Vertical" UseLayoutRounding="True">
                     </StackPanel>-->
                 </TabItem>
@@ -639,7 +639,7 @@
                         <materialDesign:PackIcon Kind="Cogs" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
 
-                    <content:DebugTab x:Name="DebugTab" HasAccess="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Path=windo}"/>
+                    <content:DebugTab x:Name="DebugTab" Focusable="True" FocusVisualStyle="{x:Null}" />
                 </TabItem>
                 <!--#endregion-->
             </TabControl>
