@@ -383,7 +383,7 @@
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--DataContext="{StaticResource BaslerCam}"-->
                     <!--DataContext 與 Toolbar 同步-->
-                    <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{Binding  ElementName=Toolbar, Path=DataContext}" />
+                    <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />
 
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
                 </StackPanel>

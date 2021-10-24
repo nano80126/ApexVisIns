@@ -5,18 +5,17 @@
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:intgrvision="clr-namespace:ApexVisIns"
-                     xmlns:cvt="clr-namespace:ApexVisIns.Converter"
-                     d:DataContext="{d:DesignInstance Type=intgrvision:BaslerCam}"
+                     xmlns:local="clr-namespace:ApexVisIns"
+                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                     d:DataContext="{d:DesignInstance Type=local:BaslerCam}"
                      mc:Ignorable="d" 
-                     d:DesignHeight="450" d:DesignWidth="800">
+                     d:DesignHeight="450" d:DesignWidth="800"
+                     Loaded="Card_Loaded"
+                     Unloaded="Card_Unloaded">
     <materialDesign:Card.Resources>
-        <cvt:BooleanInverter x:Key="BooleanInverter"/>
-        <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
-        <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
-        <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
-        <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
+        <!--//-->
+        <local:BaslerConfig x:Key="BaslerConfig" Name="Default"/>
     </materialDesign:Card.Resources>
-
 
     <DockPanel Background="Transparent">
         <DockPanel x:Name="Header" DockPanel.Dock="Top">
@@ -52,12 +51,12 @@
                                  Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed" 
                                  PlacementMode="BottomAndAlignLeftEdges" >
             <!--IsEnabled="True"-->
-            <materialDesign:PopupBox.IsEnabled>
+            <!--<materialDesign:PopupBox.IsEnabled>
                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                     <Binding Path="IsOpen" FallbackValue="False"/>
                     <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False"/>
                 </MultiBinding>
-            </materialDesign:PopupBox.IsEnabled>
+            </materialDesign:PopupBox.IsEnabled>-->
 
             <materialDesign:PopupBox.ToggleContent>
                 <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}">
@@ -127,36 +126,43 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <Button Grid.Row="1" Grid.Column="1" x:Name="ConfigDelBtn" Content="刪除" Foreground="{StaticResource ColorOrange}" 
-                        Margin="8 0"
-                        Height="{Binding ActualHeight, ElementName=ConfigSelector}"
-                        IsEnabled="{Binding ElementName=ConfigSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1, FallbackValue=False}"
-                        Style="{StaticResource MaterialDesignFlatAccentButton}" Click="ConfigDelBtn_Click" />
+                <Button Grid.Row="1" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0"
+                        Content="刪除" Foreground="{StaticResource ColorOrange}" 
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        Click="ConfigDelBtn_Click">
+                <!--IsEnabled="{Binding ElementName=ConfigSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"-->
+
+                </Button>
                 <!-- Row 2, Width -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8 0 0 0" Text="Width" />
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="ConfigWidth" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
-                                                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
+                         Text="{Binding Source={StaticResource BaslerConfig}, Path=Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--    Text="{Binding Path=Config.Width, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 3, Height -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="8 0 0 0" Text="Height" />
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="ConfigHeight"  Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
-                                                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
+                         Text="{Binding Source={StaticResource BaslerConfig}, Path=Height, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--    Text="{Binding Path=Config.Height, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 4, FPS -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="8 0 0 0" Text="FPS" />
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="ConfigFPS"  Padding="0 3"
-                                                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
+                         Text="{Binding Source={StaticResource BaslerConfig}, Path=FPS, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+                         GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--    Text="{Binding Path=Config.FPS, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"-->
                 <!-- Row 5, 曝光時間 -->
                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="8 0 0 0" Text="Exposure Time" />
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="ConfigExposureTime" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
                          materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"
+                         Text="{Binding Source={StaticResource BaslerConfig}, Path=ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
                          GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--    Text="{Binding Path=Config.ExposureTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 6, 組態名稱 -->
                 <TextBox Grid.Row="6" Grid.ColumnSpan="2" x:Name="ConfigName" Width="auto" Padding="0 3"
                          materialDesign:HintAssist.Hint="Configuration Name"
                          materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid,AncestorLevel=1}, Path=Background}"
+                         Text="{Binding Source={StaticResource BaslerConfig}, Path=Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
                 <!--    Text="{Binding Path=Config.Name, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"-->
                 <!-- Row 7, Action buttons -->
@@ -165,76 +171,87 @@
                     <Separator Background="Black" Margin="8 0" />
                     <!-- // -->
                     <DockPanel Margin="8 0 8 8">
-                        <materialDesign:Badged>
+                        <materialDesign:Badged DataContext="{Binding}" d:DataContext="{d:DesignInstance Type=local:BaslerCam}">
                             <materialDesign:Badged.Style>
                                 <Style TargetType="materialDesign:Badged">
                                     <Style.Triggers>
-                                        <!--
-                                        <DataTrigger Binding="{Binding Config.Saved, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" Value="True">
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=Check}"/>
-                                        </DataTrigger>
-                                        -->
-                                        <!--#region DataTigger -->
-                                        <DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource StringCompareConverter}">
-                                                    <Binding Path="Text" ElementName="ConfigName"/>
-                                                    <Binding Path="Config.Name"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
+                                        <!--<DataTrigger Binding="{Binding ElementName=ConfigCard, Path=ConfigChanged}" Value="True">
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>
+                                        </DataTrigger>-->
                                         <DataTrigger Value="False">
                                             <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}">
-                                                    <Binding Path="Text" ElementName="ConfigWidth"/>
+                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW" >
+                                                    <Binding Path="Width" Source="{StaticResource BaslerConfig}"/>
                                                     <Binding Path="Config.Width"/>
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
                                         </DataTrigger>
+                                        <!--//-->
                                         <DataTrigger Value="False">
                                             <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}">
-                                                    <Binding Path="Text" ElementName="ConfigHeight"/>
+                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
+                                                    <Binding Path="Height" Source="{StaticResource BaslerConfig}"/>
                                                     <Binding Path="Config.Height"/>
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
                                         </DataTrigger>
-                                        <!--<DataTrigger Value="False">
+                                        <!--//-->
+                                        <DataTrigger Value="False">
                                             <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}">
-                                                    <Binding Path="Text" ElementName="ConfigFPS" FallbackValue=""/>
-                                                    <Binding Path="Config.FPS" StringFormat="{}{0}"/>
+                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
+                                                    <Binding Path="FPS" Source="{StaticResource BaslerConfig}"/>
+                                                    <Binding Path="Config.FPS"/>
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
                                         </DataTrigger>
+                                        <!--//-->
                                         <DataTrigger Value="False">
                                             <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}">
-                                                    <Binding Path="Text" ElementName="ConfigExposureTime"/>
-                                                    <Binding Path="Config.ExposureTime" StringFormat="{}{0}"/>
+                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
+                                                    <Binding Path="ExposureTime" Source="{StaticResource BaslerConfig}"/>
+                                                    <Binding Path="Config.ExposureTime"/>
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
+                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
+                                        </DataTrigger>
+                                        <!--//-->
+                                        <DataTrigger Value="False">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding Converter="{StaticResource StringCompareConverter}" ConverterCulture="zh-TW">
+                                                    <Binding Path="Name" Source="{StaticResource BaslerConfig}"/>
+                                                    <Binding Path="Config.Name"/>
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
+                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
+                                        </DataTrigger>
+
+                                        <!--<DataTrigger Value="False">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding Converter="{StaticResource StringCompareConverter}" Mode="OneWay" UpdateSourceTrigger="LostFocus">
+                                                    <Binding Path="Name" Source="{StaticResource BaslerConfig}" UpdateSourceTrigger="PropertyChanged"/>
+                                                    <Binding Path="Config.Name" UpdateSourceTrigger="PropertyChanged"/>
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
                                         </DataTrigger>-->
-                                        <!--#endregion-->
                                     </Style.Triggers>
                                     <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=Check}"/>
                                 </Style>
                             </materialDesign:Badged.Style>
 
-                            <Button DockPanel.Dock="Left" x:Name="ConfigSaveBtn" Content="儲存" Foreground="{StaticResource ColorPrimary}" Style="{StaticResource MaterialDesignFlatButton}" 
+                            <Button DockPanel.Dock="Left" x:Name="ConfigSaveBtn" Padding="16 4" Content="儲存" Foreground="{StaticResource ColorPrimary}" 
+                                    Style="{StaticResource MaterialDesignToolButton}"
                                     Click="ConfigSaveBtn_Click"/>
                         </materialDesign:Badged>
 
-                        <Button DockPanel.Dock="Right" x:Name="ConfigCancelBtn" HorizontalAlignment="Right" Content="取消" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" 
-                                Foreground="{StaticResource ColorError}" Style="{StaticResource MaterialDesignFlatButton}" />
+                        <Button DockPanel.Dock="Right" x:Name="ConfigCancelBtn" Padding="16 4" HorizontalAlignment="Right" Content="取消" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" 
+                                Foreground="{StaticResource ColorError}" Style="{StaticResource MaterialDesignToolButton}" />
 
-                        <Button DockPanel.Dock="Right" x:Name="ConfigWriteBtn" HorizontalAlignment="Right" Content="寫入" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" 
-                                Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignFlatButton}" 
+                        <Button DockPanel.Dock="Right" x:Name="ConfigWriteBtn" Padding="16 4" HorizontalAlignment="Right" Content="寫入" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" 
+                                Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignToolButton}" 
                                 Click="ConfigWriteBtn_Click" />
                         
                     </DockPanel>

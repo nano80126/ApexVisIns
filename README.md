@@ -53,10 +53,23 @@ Apex 外觀瑕疵檢測
 * 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
 +	* 否 => 拆除移至Toolbar.cs
 
+* DebugTab 綁定回BaslerCam
+	* 一次只會有一台相機
+
+* Config 根據型號儲存
+
+### Config Logic
+
+* Camera connected => Updata camera property => update camera config property
+
+* Config Panel => Config Panel open => load json file in directory 
+
+* Config Panel => Save button click => save json file 
+
+
 ### Performance Test
 
 * 比較 Task 和 ThreadPool 校能差別
-
 
 ### BUGS
 

@@ -110,11 +110,16 @@ namespace ApexVisIns
             BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
 
+            //foreach (BaslerCam item in BaslerCams)
+            //{
+            //    Debug.WriteLine($"{item.SerialNumber} {item.ConfigName} {item.Config.Name} {item.Width}");
+            //}
 
-            foreach (BaslerCam item in BaslerCams)
-            {
-                Debug.WriteLine($"{item.SerialNumber} {item.ConfigName} {item.Config.Name} {item.Width}");
-            }
+            //for (int i = 0; i < AppTabControl.Items.Count; i++)
+            //{
+            //    OnTabIndex = i;
+            //}
+            //OnTabIndex = 0;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

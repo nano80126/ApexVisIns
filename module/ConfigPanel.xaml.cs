@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using ApexVisIns.content;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace ApexVisIns.module
 {
@@ -30,6 +32,11 @@ namespace ApexVisIns.module
         /// Basler Camera Obj
         /// </summary>
         public BaslerCam Cam { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public BaslerConfig Config { get; set; }
         /// <summary>
         /// Config 路徑
         /// </summary>
@@ -38,6 +45,42 @@ namespace ApexVisIns.module
         public ConfigPanel()
         {
             InitializeComponent();
+        }
+
+        private void Card_Loaded(object sender, RoutedEventArgs e)
+        {
+            Cam = DataContext as BaslerCam;
+
+            if (Config == null)
+            {
+                Config = FindResource("BaslerConfig") as BaslerConfig;
+            }
+
+            SetBinding();
+        }
+
+        private void Card_Unloaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 綁定 Binding
+        /// 因為 TabItem 一開始不會建立, 需要從後端綁定
+        /// </summary>
+        private void SetBinding()
+        {
+            Binding binding = new()
+            {
+                Mode = BindingMode.OneWay,
+                ElementName = "ConfigSelector",
+                Path = new PropertyPath("SelectedIndex"),
+                Converter = new Converter.NotEqualConverter(),
+                ConverterParameter = -1,
+                FallbackValue = false,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            _ = ConfigDelBtn.SetBinding(IsEnabledProperty, binding);
         }
 
         private void Textbox_GotFocus(object sender, RoutedEventArgs e)
@@ -57,6 +100,29 @@ namespace ApexVisIns.module
             Keyboard.ClearFocus();
             // Focus MainWindow 
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
+        }
+
+        private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
+        {
+            Cam = DataContext as BaslerCam;
+            //SyncConfiguration(Cam.Config, Cam);
+            Initialize_JsonFile();
+
+            // Debug.WriteLine($"{Cam.Width} {Cam.Height}");
+            // Debug.WriteLine($"{Cam.WidthMax} {Cam.HeightMax}");
+            // Debug.WriteLine($"{Cam.OffsetX} {Cam.OffsetY}");
+            // Debug.WriteLine($"{}");
+        }
+
+        private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
+        {
+            // // 
+            // if (MainWindow.BaslerCam?.Camera != null)
+            if (Cam?.Camera != null)
+            {
+                SyncConfiguration(Cam.Config, Cam);
+            }
+            ConfigSelector.SelectedIndex = -1;
         }
 
         /// <summary>
@@ -88,41 +154,28 @@ namespace ApexVisIns.module
             }
         }
 
-        private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
-        {
-            Cam = DataContext as BaslerCam;
-            SyncConfiguration(Cam.Config, Cam);
-            Initialize_JsonFile();
 
-            // Debug.WriteLine($"{Cam.Width} {Cam.Height}");
-            // Debug.WriteLine($"{Cam.WidthMax} {Cam.HeightMax}");
-            // Debug.WriteLine($"{Cam.OffsetX} {Cam.OffsetY}");
-            // Debug.WriteLine($"{}");
-        }
-
-        private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
-        {
-            // // 
-            // if (MainWindow.BaslerCam?.Camera != null)
-            if (Cam?.Camera != null)
-            {
-                SyncConfiguration(Cam.Config, Cam);
-            }
-            ConfigSelector.SelectedIndex = -1;
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="camera"></param>
         public void SyncConfiguration(BaslerConfig config, BaslerCam camera)
         {
-            config.Name = camera.ConfigName;
-            ConfigName.Text = camera.ConfigName;
-            config.Width = camera.Width;
-            ConfigWidth.Text = $"{camera.Width}";
-            config.Height = camera.Height;
-            ConfigHeight.Text = $"{camera.Height}";
-            config.FPS = camera.FPS;
-            ConfigFPS.Text = $"{camera.FPS:F1}";
-            config.ExposureTime = camera.ExposureTime;
-            ConfigExposureTime.Text = $"{config.ExposureTime}";
+            //config.Name = camera.ConfigName;
+            //ConfigName.Text = camera.ConfigName;
+            //config.Width = camera.Width;
+            //ConfigWidth.Text = $"{camera.Width}";
+            //config.Height = camera.Height;
+            //ConfigHeight.Text = $"{camera.Height}";
+            //config.FPS = camera.FPS;
+            //ConfigFPS.Text = $"{camera.FPS:F1}";
+            //config.ExposureTime = camera.ExposureTime;
+            //ConfigExposureTime.Text = $"{config.ExposureTime}";
+
+            //Config.Name = Cam.Config.Name;
+            
+
         }
 
         private void ConfigSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -168,6 +221,7 @@ namespace ApexVisIns.module
             // 按下儲存 Property才會變更
             // BaslerCam baslerCam = MainWindow.BaslerCam;
             // BaslerCam baslerCam = DataContext as BaslerCam;
+#if false
             Cam.Config.Width = Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture);
             Cam.Config.Height = Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture);
             Cam.Config.FPS = Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture);
@@ -184,14 +238,15 @@ namespace ApexVisIns.module
             if (!IsExist) // 若原先不存在，則新增
             {
                 Cam.ConfigList.Add(Cam.Config.Name);
-            }
+            } 
+#endif
 
             //
-            Debug.WriteLine($"{Cam.Config.Width} , {ConfigWidth.Text} {Cam.Config.Width.ToString() == ConfigWidth.Text}");
-            Debug.WriteLine($"{Cam.Config.Height} , {ConfigHeight.Text} {Cam.Config.Height.ToString() == ConfigHeight.Text}");
-            Debug.WriteLine($"{Cam.Config.FPS} , {ConfigFPS.Text} {Cam.Config.FPS.ToString() == ConfigFPS.Text}");
-            Debug.WriteLine($"{Cam.Config.ExposureTime} , {ConfigExposureTime.Text} {Cam.Config.ExposureTime.ToString() == ConfigExposureTime.Text}");
-            Debug.WriteLine($"{Cam.Config.Name} , {ConfigName.Text} {Cam.Config.Name.ToString() == ConfigName.Text}");
+            Debug.WriteLine($"Width: {Cam.Config.Width} , {Cam.Width} {Config.Width}");
+            Debug.WriteLine($"Height: {Cam.Config.Height} , {Cam.Height} {Config.Height}");
+            Debug.WriteLine($"FPS: {Cam.Config.FPS} , {Cam.FPS} , {Config.FPS}");
+            Debug.WriteLine($"Exposure Time: {Cam.Config.ExposureTime} , {Cam.ExposureTime} , {Config.ExposureTime} ");
+            Debug.WriteLine($"Name: {Cam.Config.Name} , {Cam.ConfigName} , {Config.Name}");
         }
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
@@ -273,5 +328,7 @@ namespace ApexVisIns.module
                 }
             }
         }
+
+     
     }
 }

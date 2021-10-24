@@ -164,14 +164,15 @@
             <!--#endregion-->
             <!--//-->
             <!--#region TabControl -->
-            <TabControl DockPanel.Dock="Top" Grid.Row="1"
+            <TabControl x:Name="AppTabControl"
+                        DockPanel.Dock="Top" Grid.Row="1"
                         VerticalAlignment="Stretch" 
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ColorZoneAssist.Mode="Custom" 
                         materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
                         SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 
                 <!--#region Image Tab -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="False" Visibility="Collapsed">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ImageArea" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>

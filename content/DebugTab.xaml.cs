@@ -35,7 +35,8 @@ namespace ApexVisIns.content
         #region Varibles
         public MainWindow MainWindow { get; set; }
 
-        private static BaslerCam Cam;
+        //private static BaslerCam Cam;
+        //private static BaslerConfig Config;
 
         private static bool MoveImage;
         private static double TempX;

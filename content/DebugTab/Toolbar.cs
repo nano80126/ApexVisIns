@@ -20,11 +20,11 @@ namespace ApexVisIns.content
         #region Toolbar 事件
         private void CamSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
-            int idx = comboBox.SelectedIndex;
+            //ComboBox comboBox = sender as ComboBox;
+            //int idx = comboBox.SelectedIndex;
 
-            Toolbar.DataContext = MainWindow.BaslerCams[idx];
-            Cam = MainWindow.BaslerCams[idx];
+            //Toolbar.DataContext = MainWindow.BaslerCams[idx];
+            //Cam = MainWindow.BaslerCams[idx];
             // ConfigPanel.DataContext = MainWindow.BaslerCams[idx];
         }
 
@@ -36,8 +36,8 @@ namespace ApexVisIns.content
             int idx = CamSelector.SelectedIndex;
 
             //Toggle.IsChecked = BaslerFunc.Basler_Connect(MainWindow.BaslerCams[idx], info.SerialNumber);
-            Toggle.IsChecked = Basler_Connect(MainWindow.BaslerCams[idx], info.SerialNumber);
-            // Toggle.IsChecked = BaslerFunc.Basler_Connect(MainWindow.BaslerCam, info.SerialNumber);
+            //Toggle.IsChecked = Basler_Connect(MainWindow.BaslerCams[idx], info.SerialNumber);
+            Toggle.IsChecked = Basler_Connect(MainWindow.BaslerCam, info.SerialNumber);
         }
 
         private void CamConnect_Unchecked(object sender, RoutedEventArgs e)
@@ -46,18 +46,18 @@ namespace ApexVisIns.content
             int idx = CamSelector.SelectedIndex;
 
             //Toggle.IsChecked = BaslerFunc.Basler_Disconnect(MainWindow.BaslerCams[idx]);
-            Toggle.IsChecked = Basler_Disconnect(MainWindow.BaslerCams[idx]);
-            // Toggle.IsChecked = BaslerFunc.Basler_Disconnect(MainWindow.BaslerCam);
+            //Toggle.IsChecked = Basler_Disconnect(MainWindow.BaslerCams[idx]);
+            Toggle.IsChecked = Basler_Disconnect(MainWindow.BaslerCam);
         }
 
         private void SingleShot_Click(object sender, RoutedEventArgs e)
         {
-            Basler_SingleGrab(Cam);
+            Basler_SingleGrab(MainWindow.BaslerCam);
         }
 
         private void ContinouseShot_Click(object sender, RoutedEventArgs e)
         {
-            Basler_ContinousGrab(Cam);
+            Basler_ContinousGrab(MainWindow.BaslerCam);
         }
 
         private void ToggleCrosshair_Click(object sender, RoutedEventArgs e)
@@ -197,6 +197,9 @@ namespace ApexVisIns.content
 
             /// Find camera of specific serial number
             //BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
+            BaslerCam Cam = MainWindow.BaslerCam;
+
+            Cam.ModelName = modelName;
 
             Cam.WidthMax = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
             Cam.HeightMax = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
@@ -279,6 +282,8 @@ namespace ApexVisIns.content
             //baslerCam.Camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
             //baslerCam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
 
+            BaslerCam Cam = MainWindow.BaslerCam;
+
             Cam.Camera.StreamGrabber.GrabStarted -= StreamGrabber_GrabStarted;
             Cam.Camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
             Cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
@@ -286,6 +291,7 @@ namespace ApexVisIns.content
 
         private void Camera_CameraClosed(object sender, EventArgs e)
         {
+            BaslerCam Cam = MainWindow.BaslerCam;
             Cam.PropertyChange();
         }
         #endregion
@@ -296,14 +302,16 @@ namespace ApexVisIns.content
         {
             Debug.WriteLine("Grabber Start");
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
-            Cam.PropertyChange(nameof(Cam.IsGrabbing));
+
+
+            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
         }
 
         private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
         {
             Debug.WriteLine("Grabber Stop");
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber stoped");
-            Cam.PropertyChange(nameof(Cam.IsGrabbing));
+            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
         }
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
@@ -316,7 +324,7 @@ namespace ApexVisIns.content
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);   // 轉 MatMono 
 
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
-                Cam.Frames = (int)grabResult.ImageNumber;
+                MainWindow.BaslerCam.Frames = (int)grabResult.ImageNumber;
 
                 //MainWindow.Dispatcher.Invoke(() =>
                 //{

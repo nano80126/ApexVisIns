@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -205,11 +206,27 @@ namespace ApexVisIns.Converter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (double.TryParse(values[0] as string, out double first)) 
-            {
-                return values.Length >= 2 && values.All(value => System.Convert.ToDouble(value).Equals(first));
-            }
-            return false;
+            //foreach (var v in values)
+            //{
+            //    Debug.WriteLine($"v: {v}, v type: {v.GetType()} {targetType} {parameter}");
+            //}
+
+            object first = values[0];
+            return values.Length >= 2 && values.All(value => value.Equals(first));
+
+            //foreach (var v in values)
+            //{
+            //    Debug.WriteLine($"v: {v}, v type: {v.GetType()}");
+            //}
+
+            //if (double.TryParse(values[0] as string, out double first)) 
+            //{
+            //    Debug.WriteLine($"value[0]: {values[0]} value[1]: {values[1]}");
+            //    //Debug.WriteLine(values.Length >= 2 && values.All(value => System.Convert.ToDouble(value).Equals(first)));
+
+            //    return values.Length >= 2 && values.All(value => System.Convert.ToDouble(value).Equals(first));
+            //}
+            //return false;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

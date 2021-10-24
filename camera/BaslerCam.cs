@@ -173,9 +173,9 @@ namespace ApexVisIns
         public bool IsGrabbing => Camera != null && Camera.StreamGrabber.IsGrabbing;
 
         /// <summary>
-        /// 組態名稱
+        /// 型號名稱
         /// </summary>
-        //public string ConfigName { get; set; } = "Default";
+        public string ModelName { get; set; }
         /// <summary>
         /// S / N
         /// </summary>
