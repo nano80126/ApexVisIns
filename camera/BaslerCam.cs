@@ -261,6 +261,10 @@ namespace ApexVisIns
     }
 
 
+    /// <summary>
+    /// Basler 組態
+    /// 測試用
+    /// </summary>
     public class BaslerConfig : INotifyPropertyChanged
     {
         private string _name = string.Empty;
@@ -388,5 +392,14 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    /// <summary>
+    /// Camera 組態
+    /// 正式流程使用
+    /// </summary>
+    public class DeviceConfig : BaslerConfig
+    {
+
     }
 }

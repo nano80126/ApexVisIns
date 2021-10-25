@@ -11,7 +11,10 @@ namespace ApexVisIns
     {
         private ImageSource _imgSrc;
 
-        private int _onTabIndex = 0;
+        /// <summary>
+        /// DEBUG TAB
+        /// </summary>
+        private int _onTabIndex = 3;
 
         /// <summary>
         /// Tab active index

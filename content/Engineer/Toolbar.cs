@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace ApexVisIns.content
 {
-    public partial class DebugTab : StackPanel
+    public partial class EngineerTab : StackPanel
     {
         #region Toolbar 事件
         private void CamSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,12 +73,12 @@ namespace ApexVisIns.content
         private void RatioTextblock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
-
-
-
+            if (e.ClickCount >= 2 && e.LeftButton == MouseButtonState.Pressed)
+            {
+                ZoomRatio = 100;
+            }
         }
         #endregion
-
 
         #region Toolbar 引發之 Basler Camera Event
 
@@ -256,7 +256,6 @@ namespace ApexVisIns.content
             Cam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
             Cam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
             Cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
-            //baslerCam.Camera.StreamGrabber.ImageGrabbed += content.DebugTab.StreamGrabber_ImageGrabbed;
 
             Cam.Camera.StreamGrabber.UserData = "abc";
             #endregion
@@ -264,11 +263,11 @@ namespace ApexVisIns.content
             // 觸發 PropertyChange
             Cam.PropertyChange();
 
+            // 同步 Config 和 Cam
+            ConfigPanel.SyncConfiguration(Cam.Config, Cam);
+
             // 變更 Zoom Ratio
-
-            // 
-
-
+            ZoomRatio = 100;
         }
 
         private void Camera_CameraClosing(object sender, EventArgs e)
@@ -293,6 +292,8 @@ namespace ApexVisIns.content
         {
             BaslerCam Cam = MainWindow.BaslerCam;
             Cam.PropertyChange();
+
+            MainWindow.ImageSource = null;
         }
         #endregion
 
@@ -302,7 +303,6 @@ namespace ApexVisIns.content
         {
             Debug.WriteLine("Grabber Start");
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
-
 
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
         }
@@ -326,15 +326,15 @@ namespace ApexVisIns.content
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
                 MainWindow.BaslerCam.Frames = (int)grabResult.ImageNumber;
 
-                //MainWindow.Dispatcher.Invoke(() =>
-                //{
-                //    MainWindow.ImageSource = mat.ToImageSource();
-                //});
-
-                Dispatcher.Invoke(() =>
+                MainWindow.Dispatcher.Invoke(() =>
                 {
-                    ImageSource = mat.ToImageSource();
+                    MainWindow.ImageSource = mat.ToImageSource();
                 });
+
+                //Dispatcher.Invoke(() =>
+                //{
+                //    ImageSource = mat.ToImageSource();
+                //});
             }
         }
         #endregion

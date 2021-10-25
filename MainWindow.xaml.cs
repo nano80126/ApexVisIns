@@ -34,11 +34,15 @@ namespace ApexVisIns
         //public UvcCam UvcCam;
         #endregion
 
+        #region Devices
+        public static DeviceConfig[] DeviceConfigs;
+        #endregion
+
         #region Resources
-        public Crosshair Crosshair;
-        public AssistRect AssistRect;
-        public AssistPoint[] AssistPoints;
-        public Indicator Indicator;
+        public Crosshair Crosshair;     // 待刪
+        public AssistRect AssistRect;   // 待刪
+        public AssistPoint[] AssistPoints;  
+        public Indicator Indicator;     // 待刪
         public static MsgInformer MsgInformer;
         #endregion
 
@@ -80,7 +84,7 @@ namespace ApexVisIns
             //ListViewTab.MainWindow = this;
 
             #region Tabs
-            DebugTab.MainWindow = this;
+            EngineerTab.MainWindow = this;
             #endregion
         }
 
@@ -95,9 +99,13 @@ namespace ApexVisIns
             //Thermometer?.OpenSerialPort();
             #endregion
 
-            #region Camera
+            #region Cameras
             BaslerCam = FindResource(nameof(BaslerCam)) as BaslerCam;
             BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
+            #endregion
+
+            #region Device
+            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as DeviceConfig[];
             #endregion
 
             #region Find Resource
@@ -109,6 +117,8 @@ namespace ApexVisIns
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
+
+            Debug.WriteLine($"{DeviceConfigs.Length}");
 
             //foreach (BaslerCam item in BaslerCams)
             //{
@@ -416,16 +426,6 @@ namespace ApexVisIns
             //        SpinWait.SpinUntil(() => false, 500);
             //    }
             //});
-        }
-
-        private void DebugTab_GotFocus(object sender, RoutedEventArgs e)
-        {
-            //Debug.WriteLine("DebugTab_GotFocus");
-        }
-
-        private void DebugTab_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            //Debug.WriteLine("DebugTab_GotKeyboardFocus");
         }
     }
 

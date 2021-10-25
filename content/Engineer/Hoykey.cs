@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace ApexVisIns.content
 {
-    public partial class DebugTab : StackPanel
+    public partial class EngineerTab : StackPanel
     {
 
         private void CanExcute(object sender, CanExecuteRoutedEventArgs e)

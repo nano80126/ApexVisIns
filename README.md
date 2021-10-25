@@ -58,13 +58,22 @@ Apex 外觀瑕疵檢測
 
 * Config 根據型號儲存
 
+* 移除 Thermoter ()
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
 
-* Config Panel => Config Panel open => load json file in directory 
+* Config Panel open => load json file in directory 
 
-* Config Panel => Save button click => save json file 
+* Config Panel Close => synchronize config with camera
+ 
+* Config Save => Save button click => save json file 
+
+* Config Write => Write config to camera
+
+* 
+
 
 
 ### Performance Test

@@ -132,6 +132,19 @@ namespace ApexVisIns
             OnTabIndex = 2;
         }
 
+        private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            OnTabIndex = byte.Parse(e.Parameter as string);
+        }
+
+        private void TestGlobal(object sender, ExecutedRoutedEventArgs e)
+        {
+            Debug.WriteLine($"{OnTabIndex}");
+
+            Debug.WriteLine($"{EngineerTab.CamSelector.Visibility}");
+            Debug.WriteLine($"{EngineerTab.SingleShot.Visibility}");
+        }
+
 #if false
         private void PopupboxCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {

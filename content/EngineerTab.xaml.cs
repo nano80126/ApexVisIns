@@ -23,7 +23,7 @@ namespace ApexVisIns.content
     /// <summary>
     /// Programming.xaml 的互動邏輯
     /// </summary>
-    public partial class DebugTab : StackPanel, INotifyPropertyChanged
+    public partial class EngineerTab : StackPanel, INotifyPropertyChanged
     {
 
         #region Resources
@@ -44,15 +44,7 @@ namespace ApexVisIns.content
         private ImageSource _imgSrc;
         #endregion
 
-        //public bool HasAccess
-        //{
-        //    get => (bool)GetValue(HasAccessProperty);
-        //    set => SetValue(HasAccessProperty, value);
-        //}
-
-        //public static readonly DependencyProperty HasAccessProperty = DependencyProperty.Register("HasAccess", typeof(bool), typeof(DebugTab), new PropertyMetadata(false));
-
-        public DebugTab()
+        public EngineerTab()
         {
             InitializeComponent();
 
@@ -62,7 +54,7 @@ namespace ApexVisIns.content
         private void InitializePanels()
         {
             // ConfigPanel.MainWindow = this.Parent;
-            ConfigPanel.DebugTab = this;
+            ConfigPanel.EngineerTab = this;
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -317,7 +309,6 @@ namespace ApexVisIns.content
             }
         }
 
-
         #region Properties
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
@@ -348,7 +339,6 @@ namespace ApexVisIns.content
                 OnPropertyChanged(nameof(ZoomRatio));
             }
         }
-
 
         public ImageSource ImageSource
         {

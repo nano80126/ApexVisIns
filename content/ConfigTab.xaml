@@ -1,0 +1,101 @@
+﻿<StackPanel x:Class="ApexVisIns.content.ConfigTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ApexVisIns.content"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--#region First Col -->
+        <StackPanel Grid.Column="0" Width="300">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Height" Value="740"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}, Mode=OneWay}" Value="Maximized">
+                            <Setter Property="Height" Value="920"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Background="Linen">
+                <DockPanel Background="Transparent">
+                    <DockPanel x:Name="Header" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="FileVideo" Width="30" Height="26"/>
+
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="相機選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+
+                        <TextBlock Text="{x:Null}"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <DockPanel DockPanel.Dock="Top">
+                        <ComboBox x:Name="CameraSelector"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                                  ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  MinWidth="135" Margin="0 0 12 0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button x:Name="DeviceAdd" 
+                                DockPanel.Dock="Right" Padding="0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Height, Mode=OneWay}" 
+                                materialDesign:ButtonAssist.CornerRadius="12"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="DeviceAdd_Click">
+                            <materialDesign:PackIcon Kind="PlusCircleOutline" Width="26" Height="26"></materialDesign:PackIcon>
+                        </Button>
+
+                        <!--<TextBlock Text="{Binding ElementName=CameraSelector, Path=ActualHeight}" VerticalAlignment="Center"></TextBlock>-->
+                    </DockPanel> 
+                </DockPanel>
+            </materialDesign:Card>
+            <!-- 組態列表 -->
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Margin="0 12 0 0" Background="LightGray">
+                <StackPanel Orientation="Vertical">
+
+                    <ItemsControl>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter"></Style>
+                        </ItemsControl.ItemContainerStyle>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                
+                                
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        
+                    </ItemsControl>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Second Col -->
+        <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
+            
+            
+        </Border>
+        <!--#endregion-->
+    </Grid>
+</StackPanel>

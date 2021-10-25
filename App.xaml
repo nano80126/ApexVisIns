@@ -72,8 +72,10 @@
             <!--#endregion-->
 
             <!--#region Public Resource -->
+            <!--相機列舉器-->
+            <local:CameraEnumer x:Key="CameraEnumer"/>
             <!-- 相機 DEBUG 測試使用 -->
-            <local:BaslerCam x:Key="BaslerCam" Width="2040" Height="2040">
+            <local:BaslerCam x:Key="BaslerCam" ConfigName="Default">
                 <local:BaslerCam.Config>
                     <local:BaslerConfig Name="Default"/>
                 </local:BaslerCam.Config>
@@ -82,33 +84,37 @@
             <!-- 相機陣列 -->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
                 <!-- // -->
-                <local:BaslerCam Width="2040" Height="2040">
+                <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
                 <!-- // -->
-                <local:BaslerCam Width="2040" Height="2040">
+                <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
                 <!-- // -->
-                <local:BaslerCam Width="2040" Height="2040">
+                <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
                 <!-- // -->
-                <local:BaslerCam Width="2040" Height="2040">
+                <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
             </x:Array>
 
-            <!--相機列舉器-->
-            <local:CameraEnumer x:Key="CameraEnumer"/>
+            <!-- 裝置組態 (正式使用) -->
+            <x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
+                <local:DeviceConfig></local:DeviceConfig>
+            </x:Array>
+
+
             <!--Crosshair-->
             <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
             <!--輔助 Rect-->
@@ -125,6 +131,11 @@
             <!--Footer Bar Message-->
             <local:MsgInformer x:Key="MsgInformer"/>
             <!--#endregion-->
+            
+            
+            
+            
+            
             
             <!-- Window Border -->
             <Style x:Key="MainWindowBorder" TargetType="{x:Type Border}">

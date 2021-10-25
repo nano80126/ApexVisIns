@@ -27,7 +27,7 @@ namespace ApexVisIns.module
         /// <summary>
         /// 上層視窗 (待確認)
         /// </summary>
-        public DebugTab DebugTab { get; set; }
+        public EngineerTab EngineerTab { get; set; }
         /// <summary>
         /// Basler Camera Obj
         /// </summary>
@@ -61,7 +61,7 @@ namespace ApexVisIns.module
 
         private void Card_Unloaded(object sender, RoutedEventArgs e)
         {
-
+            Debug.WriteLine("Config Panel Unloaded");
         }
 
         /// <summary>
@@ -108,10 +108,7 @@ namespace ApexVisIns.module
             //SyncConfiguration(Cam.Config, Cam);
             Initialize_JsonFile();
 
-            // Debug.WriteLine($"{Cam.Width} {Cam.Height}");
-            // Debug.WriteLine($"{Cam.WidthMax} {Cam.HeightMax}");
-            // Debug.WriteLine($"{Cam.OffsetX} {Cam.OffsetY}");
-            // Debug.WriteLine($"{}");
+            Debug.WriteLine("Combobox opened");
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
@@ -120,9 +117,14 @@ namespace ApexVisIns.module
             // if (MainWindow.BaslerCam?.Camera != null)
             if (Cam?.Camera != null)
             {
+                // 同步 Config 和 Cam
                 SyncConfiguration(Cam.Config, Cam);
             }
+            // 重置 Selected Index 
             ConfigSelector.SelectedIndex = -1;
+
+            //Debug.WriteLine($"{Cam?.Camera != null}");
+            Debug.WriteLine("Combobox closed");
         }
 
         /// <summary>
@@ -130,17 +132,24 @@ namespace ApexVisIns.module
         /// </summary>
         private void Initialize_JsonFile()
         {
-            if (Directory.Exists(ConfigsDirectory))
+            if (string.IsNullOrEmpty(Cam?.ModelName))
             {
-                string[] files = Directory.GetFiles(ConfigsDirectory, "*.json", SearchOption.TopDirectoryOnly);
+                return;
+            }
+
+            string path = $@"{ConfigsDirectory}/{Cam.ModelName}";
+
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path, "*.json", SearchOption.TopDirectoryOnly);
                 files = Array.ConvertAll(files, file => file = System.IO.Path.GetFileNameWithoutExtension(file));
 
                 foreach (string file in files)
                 {
-                    //if (!BaslerCam.ConfigList.Contains(file))
-                    //{
-                    //    BaslerCam.ConfigList.Add(file);
-                    //}
+                    // if (!BaslerCam.ConfigList.Contains(file))
+                    // {
+                    //     BaslerCam.ConfigList.Add(file);
+                    // }
                     // if (!MainWindow.BaslerCam.ConfigList.Contains(file))
                     if (!Cam.ConfigList.Contains(file))
                     {
@@ -150,7 +159,7 @@ namespace ApexVisIns.module
             }
             else
             {
-                _ = Directory.CreateDirectory(ConfigsDirectory);
+                _ = Directory.CreateDirectory(path);
             }
         }
 
@@ -173,9 +182,15 @@ namespace ApexVisIns.module
             //config.ExposureTime = camera.ExposureTime;
             //ConfigExposureTime.Text = $"{config.ExposureTime}";
 
-            //Config.Name = Cam.Config.Name;
-            
+            config.Name = camera.ConfigName;
+            config.Width = camera.Width;
+            config.Height = camera.Height;
+            config.FPS = camera.FPS;
+            config.ExposureTime = camera.ExposureTime;
 
+            Debug.WriteLine($"{config.Name} {camera.ConfigName}");
+            Debug.WriteLine($"{config.Width} {camera.Width}");
+            Debug.WriteLine($"{config.Height} {camera.Height}");
         }
 
         private void ConfigSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -184,7 +199,7 @@ namespace ApexVisIns.module
 
             if (!string.IsNullOrWhiteSpace(file))
             {
-                string path = $@"./configs/{file}.json";
+                string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{file}.json";
 
                 if (File.Exists(path))
                 {
@@ -196,22 +211,23 @@ namespace ApexVisIns.module
                     #region 更新當前 Basler Config
                     // BaslerCam baslerCam = MainWindow.BaslerCam;
                     Cam.Config.Name = config.Name;
-                    ConfigName.Text = config.Name;
+                    //ConfigName.Text = config.Name;
                     Cam.Config.Width = config.Width;
-                    ConfigWidth.Text = $"{config.Width}";
+                    //ConfigWidth.Text = $"{config.Width}";
                     Cam.Config.Height = config.Height;
-                    ConfigHeight.Text = $"{config.Height}";
+                    //ConfigHeight.Text = $"{config.Height}";
                     Cam.Config.FPS = config.FPS;
-                    ConfigFPS.Text = $"{config.FPS}";
+                    //ConfigFPS.Text = $"{config.FPS}";
                     Cam.Config.ExposureTime = config.ExposureTime;
-                    ConfigExposureTime.Text = $"{config.ExposureTime}";
+                    //ConfigExposureTime.Text = $"{config.ExposureTime}";
                     Cam.Config.Save();
                     #endregion
                 }
                 else
                 {
                     // 
-                    Debug.WriteLine("組態檔不存在");
+                    //Debug.WriteLine("組態檔不存在");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, "組態檔不存在", MsgInformer.Message.MessageType.Warning);
                 }
             }
         }
@@ -228,25 +244,19 @@ namespace ApexVisIns.module
             Cam.Config.ExposureTime = Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture);
             Cam.Config.Name = ConfigName.Text;
             Cam.Config.Save();
+#endif
 
-            string path = $@"./configs/{Cam.Config.Name}.json";
+            string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{Cam.Config.Name}.json";
             bool IsExist = File.Exists(path);
 
             string jsonStr = JsonSerializer.Serialize(Cam.Config, new JsonSerializerOptions() { WriteIndented = true });
             File.WriteAllText(path, jsonStr);
+            Cam.Config.Save();
 
             if (!IsExist) // 若原先不存在，則新增
             {
                 Cam.ConfigList.Add(Cam.Config.Name);
-            } 
-#endif
-
-            //
-            Debug.WriteLine($"Width: {Cam.Config.Width} , {Cam.Width} {Config.Width}");
-            Debug.WriteLine($"Height: {Cam.Config.Height} , {Cam.Height} {Config.Height}");
-            Debug.WriteLine($"FPS: {Cam.Config.FPS} , {Cam.FPS} , {Config.FPS}");
-            Debug.WriteLine($"Exposure Time: {Cam.Config.ExposureTime} , {Cam.ExposureTime} , {Config.ExposureTime} ");
-            Debug.WriteLine($"Name: {Cam.Config.Name} , {Cam.ConfigName} , {Config.Name}");
+            }
         }
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
@@ -258,21 +268,22 @@ namespace ApexVisIns.module
                 Camera camera = Cam.Camera;
 
                 // BaslerCam.ConfigName = BaslerCam.Config.Name;
-                Cam.ConfigName = ConfigName.Text;
+                Cam.ConfigName = Cam.Config.Name;
 
                 // 歸零 offset
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
                 // 嘗試寫入 Width
-                if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
+                //if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
+                if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Cam.Config.Width))
                 {
                     camera.Parameters[PLGigECamera.Width].SetToMaximum();
                 }
                 Cam.Config.Width = Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
                 // 嘗試寫入 Height
-                if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture)))
+                if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Cam.Config.Height))
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();
                 }
@@ -283,23 +294,29 @@ namespace ApexVisIns.module
                 Cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
 
                 // 寫入 FPS
-                camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture));
+                camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Cam.Config.FPS);
                 Cam.Config.FPS = Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
 
                 // 寫入曝光時間
-                camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture));   // 10000 is default exposure time of acA2040
+                camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(Cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
                 Cam.Config.ExposureTime = Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 
                 Cam.PropertyChange();
+
+                // 重置 ImageSource
+                MainWindow.ImageSource = null;
+
+                // Reset ZoomRatio
+                EngineerTab.ZoomRatio = 100;
 
                 // offset 置中 
                 // CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 // MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
 
                 // MainWindow.Indicator.Image = null;
-                //// 重置 Image
+                // 重置 Image
                 // MainWindow.ImageSource = null;
-                //// 重置縮放率
+                // 重置縮放率
                 // MainWindow.ZoomRatio = 100;
             }
         }
@@ -316,7 +333,7 @@ namespace ApexVisIns.module
 
             if (MessageBox.Show("是否確認刪除?", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                string path = $@"./configs/{file}.json";
+                string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{file}.json";
 
                 if (File.Exists(path))
                 {
@@ -328,7 +345,5 @@ namespace ApexVisIns.module
                 }
             }
         }
-
-     
     }
 }

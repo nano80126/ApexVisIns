@@ -1,4 +1,4 @@
-﻿<StackPanel x:Class="ApexVisIns.content.DebugTab"
+﻿<StackPanel x:Class="ApexVisIns.content.EngineerTab"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,15 +8,14 @@
             xmlns:local="clr-namespace:ApexVisIns"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
-            d:DesignHeight="450" d:DesignWidth="800"
-            x:Name="DebugTabPanel">
+            d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel.Resources>
         <!--#region Toolbar -->
-        <RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
+        <!--<RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
         <RoutedUICommand x:Key="SingleShot" Text="Single Shot"/>
         <RoutedUICommand x:Key="ContinuousShot" Text="Continuous Shot"/>
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
-        <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
+        <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>-->
         <!--#endregion-->
         
         <!-- Crosshair -->
@@ -25,26 +24,25 @@
         <local:AssistRect x:Key="AssistRect2" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
         <!-- 輔助標示器 -->
         <local:Indicator x:Key="Indicator2"/>
-
     </StackPanel.Resources>
 
     <StackPanel.InputBindings>
         <!--#region Toobar Input Bindings -->
-        <KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource OpenDevice}"/>
+        <!--<KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource OpenDevice}"/>
         <KeyBinding Key="F5" Command="{StaticResource SingleShot}"/>
         <KeyBinding Key="F6" Command="{StaticResource ContinuousShot}"/>
         <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
-        <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
+        <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>-->
         <!--#endregion-->
     </StackPanel.InputBindings>
 
     <StackPanel.CommandBindings>
         <!--#region Toolbar Commnad Bindings -->
-        <CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
+        <!--<CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
         <CommandBinding Command="{StaticResource SingleShot}" CanExecute="SingleShotCanExecute" Executed="SingleShotCommand"/>
         <CommandBinding Command="{StaticResource ContinuousShot}" CanExecute="ContinousShotCanExecute" Executed="ContinousShotCommand"/>
         <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="CanExcute" Executed="CrosshairOnCommnad"/>
-        <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>
+        <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>-->
         <!--#endregion-->
     </StackPanel.CommandBindings>
 
@@ -76,9 +74,9 @@
                     <!--  -->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock TextAlignment="Right" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                            </StackPanel>
+                            <!--<StackPanel Orientation="Horizontal">-->
+                            <TextBlock TextAlignment="Right" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                            <!--</StackPanel>-->
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
@@ -166,7 +164,7 @@
                 -->
                 <Border>
                     <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown"
-                               Text="{Binding Path=ZoomRatio, ElementName=DebugTabPanel, Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}"/>
+                               Text="{Binding Path=ZoomRatio, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}"/>
                 </Border>
                 <!--//-->
                 <Separator/>
@@ -229,7 +227,7 @@
     </DockPanel>
     <!--#endregion-->
 
-    <!--#region Contect -->
+    <!--#region Content -->
     <Border BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="1 0" UseLayoutRounding="True">
             <Grid>
@@ -273,8 +271,7 @@
                                         
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                Source="{Binding ImageSource, ElementName=DebugTabPanel, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                               />
+                                                Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                                <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
 
                                         <!--#region Assist Rectangle -->
@@ -289,22 +286,21 @@
                                         <!--#endregion-->
 
                                         <!--#region Crosshair Lines -->
-                                        <!-- Horizontal, 綁定 ImageCanvas (X1, X2, Y1, Y2)  & CrosshairOn (Visibility) -->
+                                        <!-- Horizontal, 綁定 ImageCanvas (X1, X2, Y1, Y2) & CrosshairOn (Visibility) -->
                                         <Line x:Name="CrosshairH" 
-                                            X1="0" X2="{Binding ElementName=ImageCanvas, Path=Width,Mode=OneWay}"
-                                            Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
-                                            Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
-                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                            Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
-                                        <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2)  & CrosshairOn (Visibility) -->
+                                                X1="0" X2="{Binding ElementName=ImageCanvas, Path=Width,Mode=OneWay}"
+                                                Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                                Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
+                                        <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2) & CrosshairOn (Visibility) -->
                                         <Line x:Name="CrosshairV" 
-                                            X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
-                                            X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
-                                            Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
-                                            Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                            Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                                X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
+                                                X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
+                                                Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
+                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
                                         <!--#endregion-->
-
                                     </Canvas>
                                 </Viewbox>
                             </ScrollViewer>
