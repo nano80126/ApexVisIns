@@ -40,7 +40,7 @@
                     <!--//-->
                     <DockPanel DockPanel.Dock="Top">
                         <ComboBox x:Name="CameraSelector"
-                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -66,25 +66,30 @@
                 </DockPanel>
             </materialDesign:Card>
             <!-- 組態列表 -->
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Margin="0 12 0 0" Background="LightGray">
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Margin="0 12 0 0" Background="AntiqueWhite">
                 <StackPanel Orientation="Vertical">
-
-                    <ItemsControl>
+                    <ItemsControl ItemsSource="{StaticResource DeviceConfigs}">
                         <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate></ItemsPanelTemplate>
+                            <ItemsPanelTemplate>
+                                <StackPanel Margin="0 4"/>
+                            </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter"></Style>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Margin" Value="0 4"/>
+                            </Style>
                         </ItemsControl.ItemContainerStyle>
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                
-                                
+                                <!--<StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding Name, FallbackValue=0}"/>
+                                </StackPanel>-->
+                                <RadioButton HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" GroupName="GroupChoiceChip" 
+                                             FontWeight="Bold" Content="{Binding Name}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-                        
                     </ItemsControl>
                 </StackPanel>
             </materialDesign:Card>
@@ -93,7 +98,6 @@
 
         <!--#region Second Col -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
-            
             
         </Border>
         <!--#endregion-->

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,8 +37,17 @@ namespace ApexVisIns.content
 
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
         {
+            BaslerCamInfo info = CameraSelector.SelectedItem as BaslerCamInfo;
+
+            Debug.WriteLine($"{info.FullName} {info.Model}");
+
+            foreach (DeviceConfig config in MainWindow.DeviceConfigs)
+            {
+                Debug.WriteLine($"{config.Name}");
+            }
 
 
+            //MainWindow.DeviceConfigs;
 
 
         }

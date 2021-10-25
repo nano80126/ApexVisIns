@@ -111,7 +111,9 @@
 
             <!-- 裝置組態 (正式使用) -->
             <x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
-                <local:DeviceConfig></local:DeviceConfig>
+                <local:DeviceConfig Name="Device1"></local:DeviceConfig>
+                <local:DeviceConfig Name="Device2"></local:DeviceConfig>
+                <local:DeviceConfig Name="Device3"></local:DeviceConfig>
             </x:Array>
 
 
