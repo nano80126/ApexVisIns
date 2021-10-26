@@ -4,7 +4,6 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:intgrvision="clr-namespace:ApexVisIns"
                      xmlns:local="clr-namespace:ApexVisIns"
                      xmlns:sys="clr-namespace:System;assembly=mscorlib"
                      d:DataContext="{d:DesignInstance Type=local:BaslerCam}"
@@ -34,10 +33,20 @@
         <StackPanel x:Name="Body" DockPanel.Dock="Left" Orientation="Horizontal">
             <!-- Binding 相機 Property -->
             <TextBlock Padding="0 0" FontSize="16" VerticalAlignment="Center" TextAlignment="Center">
-                <Run Text="{Binding Path=Width, Mode=OneWay, FallbackValue=0, StringFormat={}{0:D0}}"/>
-                <materialDesign:PackIcon Kind="Close" Height="12" Margin="5 0" VerticalAlignment="Center"/>
-                <Run Text="{Binding Path=Height, Mode=OneWay, FallbackValue=0, StringFormat={}{0:D0}}"/>
-                <!-- // -->
+                <!--<Run Text="{Binding Path=Width, Mode=OneWay, FallbackValue=0, StringFormat={}{0:D0}}"/>-->
+                <Run>
+                    <Run.Text>
+                        <Binding Path="Width" StringFormat="{}{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0"/>
+                    </Run.Text>
+                </Run>
+                <materialDesign:PackIcon Kind="Close" Height="12" Margin="4 0" VerticalAlignment="Center"/>
+                <!--<Run Text="{Binding Path=Height, Mode=OneWay, FallbackValue=0, StringFormat={}{0:D0}}"/>-->
+                <Run>
+                    <Run.Text>
+                        <Binding Path="Height" StringFormat="{}{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0"/>
+                    </Run.Text>
+                </Run>
+                <!-- FPS -->
                 <Run>
                     <Run.Text>
                         <Binding Path="FPS" StringFormat=", FPS: {0,5:F1}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="{x:Null}"/>

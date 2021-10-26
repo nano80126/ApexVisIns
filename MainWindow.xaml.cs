@@ -2,10 +2,12 @@
 using Microsoft.Win32;
 using OpenCvSharp;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +17,8 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
+
 
 namespace ApexVisIns
 {
@@ -35,7 +39,8 @@ namespace ApexVisIns
         #endregion
 
         #region Devices
-        public static DeviceConfig[] DeviceConfigs;
+        //public static DeviceConfig[] DeviceConfigs;
+        public static ObservableCollection<DeviceConfig> DeviceConfigs;
         #endregion
 
         #region Resources
@@ -90,6 +95,8 @@ namespace ApexVisIns
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+
             #region LongLifeWorker
             CameraEnumer = TryFindResource(nameof(CameraEnumer)) as CameraEnumer;
             CameraEnumer?.WorkerStart();
@@ -105,7 +112,8 @@ namespace ApexVisIns
             #endregion
 
             #region Device
-            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as DeviceConfig[];
+            //DeviceConfigs = (FindResource(nameof(DeviceConfigs)) as DeviceConfig[]).ToList();
+            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 
             #region Find Resource
@@ -118,7 +126,7 @@ namespace ApexVisIns
             BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
 
-            Debug.WriteLine($"{DeviceConfigs.Length}");
+            Debug.WriteLine($"{DeviceConfigs.Count}");
 
             //foreach (BaslerCam item in BaslerCams)
             //{
@@ -129,7 +137,10 @@ namespace ApexVisIns
             //{
             //    OnTabIndex = i;
             //}
+
             //OnTabIndex = 0;
+
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

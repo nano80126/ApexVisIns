@@ -15,6 +15,7 @@
                 <!--<ResourceDictionary Source="/Style/Scrollbar_old.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
 
+            
             <!--<ResourceDictionary Source="/Style/Scrollbar.xaml" x:Name="customScroll"/>-->
         
             <!--#region Custom Colors -->
@@ -110,12 +111,16 @@
             </x:Array>
 
             <!-- 裝置組態 (正式使用) -->
-            <x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
-                <local:DeviceConfig Name="Device1"></local:DeviceConfig>
-                <local:DeviceConfig Name="Device2"></local:DeviceConfig>
-                <local:DeviceConfig Name="Device3"></local:DeviceConfig>
-            </x:Array>
-
+            <!--<x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
+                <local:DeviceConfig Name="Device1"/>
+                <local:DeviceConfig Name="Device2"/>
+                <local:DeviceConfig Name="Device3"/>
+                <local:DeviceConfig Name="Device4"/>
+            </x:Array>-->
+            <!-- 裝置組態 (正式使用) -->
+            <local:DeviceConfigList x:Key="DeviceConfigs">
+                <local:DeviceConfig Name="Device1"/>
+            </local:DeviceConfigList>
 
             <!--Crosshair-->
             <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
@@ -133,10 +138,6 @@
             <!--Footer Bar Message-->
             <local:MsgInformer x:Key="MsgInformer"/>
             <!--#endregion-->
-            
-            
-            
-            
             
             
             <!-- Window Border -->

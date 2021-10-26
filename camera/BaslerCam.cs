@@ -91,6 +91,10 @@ namespace ApexVisIns
     /// </summary>
     public class BaslerCamInfo
     {
+        public BaslerCamInfo()
+        {
+        }
+
         /// <summary>
         /// 建構式
         /// </summary>
@@ -395,11 +399,272 @@ namespace ApexVisIns
     }
 
     /// <summary>
-    /// Camera 組態
-    /// 正式流程使用
+    /// Camera 組態, 較為 Detail, 正式流程使用
     /// </summary>
-    public class DeviceConfig : BaslerConfig
+    public class DeviceConfig : BaslerCamInfo, INotifyPropertyChanged
     {
+        private UserSetType _userSet;
+        private int _width;
+        private int _height;
+        private int _maxWidth;
+        private int _maxHeight;
+        private double _fps;
+        private double _exposureTime;
+        private bool _fixedFPS;
+        private ExposureModeEnum _exposoureMode;
 
+        /// <summary>
+        /// .xaml 使用 (一般不使用)
+        /// </summary>
+        public DeviceConfig() { }
+
+        /// <summary>
+        /// 正式建構子
+        /// </summary>
+        /// <param name="fullName">相機全名</param>
+        /// <param name="model">相機型號</param>
+        /// <param name="ip">相機IP</param>
+        /// <param name="mac">相機MAC</param>
+        /// <param name="serialNumber">相機S/N</param>
+        public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        {
+        }
+
+        //public DeviceConfig()
+        //{
+
+        //}
+
+        //public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        //{
+
+        //}
+
+
+        #region 基本相機 Config 
+        public enum UserSetType
+        {
+            Default = 0,
+            UserSet1 = 1,
+            UserSet2 = 2,
+            UserSet3 = 3
+        }
+
+        public UserSetType UserSet
+        {
+            get => _userSet;
+            set
+            {
+                if (value != _userSet)
+                {
+                    _userSet = value;
+                    OnPropertyChanged(nameof(UserSet));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 組態名稱
+        /// </summary>
+        public string Name { get; set; }
+
+        public int Width
+        {
+            get => _width;
+            set
+            {
+                if (value != _width)
+                {
+                    _width = value;
+                    OnPropertyChanged(nameof(Width));
+                }
+            }
+        }
+
+        public int Height
+        {
+            get => _height;
+            set
+            {
+                if (value != _height)
+                {
+                    _height = value;
+                    OnPropertyChanged(nameof(Height));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Max Width, get value from camera parameters
+        /// </summary>
+        public int MaxWidth
+        {
+            get => _maxWidth;
+            set
+            {
+                if (value != _maxWidth)
+                {
+                    _maxWidth = value;
+                    OnPropertyChanged(nameof(MaxWidth));
+                }
+            }
+        }
+
+        public int MaxHeight
+        {
+            get => _maxHeight;
+            set
+            {
+                if (value != _maxHeight)
+                {
+                    _maxHeight = value;
+                    OnPropertyChanged(nameof(MaxHeight));
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 鎖定 FPS
+        /// </summary>
+        public bool FixedFPS
+        {
+            get => _fixedFPS;
+            set
+            {
+                if (value != _fixedFPS)
+                {
+                    _fixedFPS = value;
+                    OnPropertyChanged(nameof(FixedFPS));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 目標 FPS, FPS 鎖定後才生效
+        /// </summary>
+        public double FPS
+        {
+            get => _fps;
+            set
+            {
+                if (value != _fps)
+                {
+                    _fps = value;
+                    OnPropertyChanged(nameof(FPS));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 曝光時間
+        /// </summary>
+        public double ExposureTime
+        {
+            get => _exposureTime;
+            set
+            {
+                if (value != _exposureTime)
+                {
+                    _exposureTime = value;
+                    OnPropertyChanged(nameof(ExposureTime));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 曝光模式(名稱待變更)
+        /// </summary>
+        public enum ExposureModeEnum
+        {
+            TriggerController = 0,
+            TriggerWidth = 1,
+            Timed = 2,
+            Off = 3
+        }
+
+
+        public ExposureModeEnum ExposureMode
+        {
+            get => _exposoureMode;
+            set
+            {
+                if (value != _exposoureMode)
+                {
+                    _exposoureMode = value;
+                    OnPropertyChanged(nameof(ExposureMode));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 自動曝光()
+        /// </summary>
+        public enum ExposureAutoEnum
+        {
+            Continouns = 0,
+            Once = 1,
+            Off = 2
+        }
+
+        //public bool ExposureAuto
+        //{
+        //}
+
+#if false
+        ///// <summary>
+        ///// 相機全名
+        ///// </summary>
+        //public string CameraName { get; set; }
+        ///// <summary>
+        ///// 相機型號 
+        ///// </summary>
+        //public string Model { get; set; }
+        ///// <summary>
+        ///// 相機IP
+        ///// </summary>
+        //public string IP { get; set; }
+        ///// <summary>
+        ///// 相機 MAC
+        ///// </summary>
+        //public string MAC { get; set; }
+        ///// <summary>
+        ///// 相機 S / N
+        ///// </summary>
+        //public string SerialNumber { get; set; }  
+#endif
+        #endregion
+
+        #region Application 應用
+        /// <summary>
+        /// 擔任角色
+        /// </summary>
+        public enum CharacterType
+        {
+            Ear = 1,
+            Window = 2,
+            Surface1 = 3,
+            Surface2 = 4
+        }
+
+        /// <summary>
+        /// 相機 Character
+        /// </summary>
+        public CharacterType Character { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
+
+    public class DeviceConfigList : ObservableCollection<DeviceConfig>
+    {
+        public DeviceConfigList()
+        {
+
+        }
     }
 }

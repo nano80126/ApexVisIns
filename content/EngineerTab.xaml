@@ -5,7 +5,8 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:uc="clr-namespace:ApexVisIns.module"
-            xmlns:local="clr-namespace:ApexVisIns"
+            xmlns:app="clr-namespace:ApexVisIns"
+            xmlns:local="clr-namespace:ApexVisIns.content"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             d:DesignHeight="450" d:DesignWidth="800">
@@ -19,11 +20,11 @@
         <!--#endregion-->
         
         <!-- Crosshair -->
-        <local:Crosshair x:Key="Crosshair2" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
+        <app:Crosshair x:Key="Crosshair2" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
         <!-- 輔助 Rect -->
-        <local:AssistRect x:Key="AssistRect2" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
+        <app:AssistRect x:Key="AssistRect2" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
         <!-- 輔助標示器 -->
-        <local:Indicator x:Key="Indicator2"/>
+        <app:Indicator x:Key="Indicator2"/>
     </StackPanel.Resources>
 
     <StackPanel.InputBindings>
@@ -263,7 +264,7 @@
                                 <Viewbox x:Name="ImageViewbox">
                                     <Canvas x:Name="ImageCanvas" Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                             DataContext="{Binding ElementName=Toolbar, Path=DataContext}"
-                                            d:DataContext="{d:DesignInstance Type=local:BaslerCam}"
+                                            d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                                             Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}" 
                                             Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
                                             PreviewMouseDown="ImageCanvas_MouseDown" PreviewMouseUp="ImageCanvas_MouseUp" PreviewMouseMove="ImageCanvas_MouseMove"

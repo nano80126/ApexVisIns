@@ -4,9 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:app="clr-namespace:ApexVisIns"
              xmlns:local="clr-namespace:ApexVisIns.content"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="StackPanel_Loaded" Unloaded="StackPanel_Unloaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -27,8 +29,8 @@
             </StackPanel.Style>
             
             <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Background="Linen">
-                <DockPanel Background="Transparent">
-                    <DockPanel x:Name="Header" DockPanel.Dock="Top">
+                <DockPanel Background="Transparent" >
+                    <DockPanel x:Name="DeviceSltHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="FileVideo" Width="30" Height="26"/>
 
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="相機選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
@@ -44,7 +46,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  MinWidth="135" Margin="0 0 12 0">
+                                  MinWidth="135">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -55,7 +57,8 @@
                         <Button x:Name="DeviceAdd" 
                                 DockPanel.Dock="Right" Padding="0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right"
                                 Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Height, Mode=OneWay}" 
-                                materialDesign:ButtonAssist.CornerRadius="12"
+                                materialDesign:ButtonAssist.CornerRadius="13"
+                                IsEnabled="{Binding ElementName=CameraSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Click="DeviceAdd_Click">
                             <materialDesign:PackIcon Kind="PlusCircleOutline" Width="26" Height="26"></materialDesign:PackIcon>
@@ -87,7 +90,18 @@
                                     <TextBlock Text="{Binding Name, FallbackValue=0}"/>
                                 </StackPanel>-->
                                 <RadioButton HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" GroupName="GroupChoiceChip" 
-                                             FontWeight="Bold" Content="{Binding Name}" />
+                                             FontWeight="Bold" Checked="RadioButton_Checked" CommandParameter="{Binding SerialNumber}" >
+                                    <RadioButton.Content>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0,10}, S/N: {1,8:D0}">
+                                                    <Binding Path="Model" />
+                                                    <Binding Path="SerialNumber" FallbackValue="(NULL)"/>
+                                                </MultiBinding>    
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </RadioButton.Content>
+                                </RadioButton>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -97,8 +111,94 @@
         <!--#endregion-->
 
         <!--#region Second Col -->
-        <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
-            
+        <Border x:Name="test" Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
+            <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}">
+                <DockPanel Background="Transparent">
+                    <DockPanel x:Name="DeviceCardHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="CardBulletedOutline" Width="30" Height="26"/>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="裝置" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        <!--<TextBlock Text="{x:Null}"/>-->
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top" Width="450" HorizontalAlignment="Left" MouseDown="Grid_MouseDown" >
+                        <!--#region Resource Define -->
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="Width" Value="80" />
+                                <Setter Property="TextAlignment" Value="Right"/>
+                            </Style>
+                            <!-- // -->
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <!--<Setter Property="Padding" Value="0 2"/>-->
+                                <!-- Padding 要寫在行內 -->
+                                <Setter Property="IsReadOnly" Value="True"/>
+                                <Setter Property="Margin" Value="0 8"/>
+                            </Style>
+                        </Grid.Resources>
+                        <!--#endregion-->
+                        <!--#region Layoyut Define -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--#endregion-->
+
+                        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Name" TextAlignment="Right" Width="80"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>-->
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Model" TextAlignment="Right"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding Model}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="IP" TextAlignment="Right"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" Text="{Binding IP}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="MAC" TextAlignment="Right"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" Text="{Binding MAC}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="S/N" TextAlignment="Right"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Padding="0 3" Text="{Binding SerialNumber}"/>
+
+                        <!--
+                        <TextBlock></TextBlock>
+                        <TextBlock></TextBlock>
+                        <TextBlock></TextBlock>
+                        -->
+                    
+                    </Grid>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Left" Width="300">
+                        <!--#region Resourde Define -->
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
+                            </Style>
+
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <Setter Property="MinWidth" Value="120"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <!--#endregion-->
+
+                        <TextBox Margin="0 0 12 0" Padding="0 3"/>
+
+                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="0 3" Width="135" />
+                    </StackPanel>
+                    
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                </DockPanel>
+            </materialDesign:Card>
         </Border>
         <!--#endregion-->
     </Grid>
