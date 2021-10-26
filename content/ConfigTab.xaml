@@ -27,9 +27,10 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Background="Linen">
-                <DockPanel Background="Transparent" >
+
+            <!--Linen-->
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
+                <DockPanel Background="Transparent" Margin="2 0">
                     <DockPanel x:Name="DeviceSltHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="FileVideo" Width="30" Height="26"/>
 
@@ -46,7 +47,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  MinWidth="135">
+                                  MinWidth="135" Margin="0 0 0 0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -69,8 +70,8 @@
                 </DockPanel>
             </materialDesign:Card>
             <!-- 組態列表 -->
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" VerticalAlignment="Top" Margin="0 12 0 0" Background="AntiqueWhite">
-                <StackPanel Orientation="Vertical">
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="AntiqueWhite">
+                <StackPanel Orientation="Vertical" Margin="2 0">
                     <ItemsControl ItemsSource="{StaticResource DeviceConfigs}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -112,8 +113,9 @@
 
         <!--#region Second Col -->
         <Border x:Name="test" Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
-            <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}">
-                <DockPanel Background="Transparent">
+            <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}">
+                <DockPanel Background="Transparent" Margin="2 0">
                     <DockPanel x:Name="DeviceCardHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="CardBulletedOutline" Width="30" Height="26"/>
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="裝置" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
@@ -122,7 +124,7 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top" Width="450" HorizontalAlignment="Left" MouseDown="Grid_MouseDown" >
+                    <Grid DockPanel.Dock="Top" Width="350" HorizontalAlignment="Left" MouseDown="Grid_MouseDown" >
                         <!--#region Resource Define -->
                         <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
@@ -137,6 +139,7 @@
                                 <!-- Padding 要寫在行內 -->
                                 <Setter Property="IsReadOnly" Value="True"/>
                                 <Setter Property="Margin" Value="0 8"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
                             </Style>
                         </Grid.Resources>
                         <!--#endregion-->
@@ -179,6 +182,14 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
+
+                    <ComboBox DockPanel.Dock="Top" 
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
+                              materialDesign:HintAssist.Hint="Character"
+                              materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                              VerticalAlignment="Center" HorizontalAlignment="Left" 
+                              MinWidth="135" />
+
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Left" Width="300">
                         <!--#region Resourde Define -->
                         <StackPanel.Resources>
@@ -191,10 +202,17 @@
                         </StackPanel.Resources>
                         <!--#endregion-->
 
-                        <TextBox Margin="0 0 12 0" Padding="0 3"/>
-
-                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="0 3" Width="135" />
+                        <TextBox Margin="0 0 12 0" Padding="0 3" IsReadOnly="True"/>
+                        <!--UserSet-->
+                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
+                                  materialDesign:HintAssist.Hint="UserSet"
+                                  materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                                  VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  MinWidth="135" />
                     </StackPanel>
+                    <!--//-->
+                    <Grid></Grid>
+                    
                     
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                 </DockPanel>

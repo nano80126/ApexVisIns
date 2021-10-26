@@ -403,7 +403,7 @@ namespace ApexVisIns
     /// </summary>
     public class DeviceConfig : BaslerCamInfo, INotifyPropertyChanged
     {
-        private UserSetType _userSet;
+        private string _userSet;
         private int _width;
         private int _height;
         private int _maxWidth;
@@ -442,15 +442,8 @@ namespace ApexVisIns
 
 
         #region 基本相機 Config 
-        public enum UserSetType
-        {
-            Default = 0,
-            UserSet1 = 1,
-            UserSet2 = 2,
-            UserSet3 = 3
-        }
 
-        public UserSetType UserSet
+        public string UserSet
         {
             get => _userSet;
             set
@@ -462,6 +455,8 @@ namespace ApexVisIns
                 }
             }
         }
+
+        public string[] UserSetEnum { get; set; }
 
         /// <summary>
         /// 組態名稱
