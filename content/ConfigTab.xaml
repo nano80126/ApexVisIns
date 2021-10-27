@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:app="clr-namespace:ApexVisIns"
-            xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:app="clr-namespace:ApexVisIns"
              xmlns:local="clr-namespace:ApexVisIns.content"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -141,8 +140,9 @@
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="Width" Value="80" />
+                                <Setter Property="MinWidth" Value="120" />
                                 <Setter Property="TextAlignment" Value="Right"/>
+                                <!--<Setter Property="Background" Value="{StaticResource ColorError}"/>-->
                             </Style>
                             <!-- // -->
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -176,7 +176,10 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="2*"/>
                             <!-- <ColumnDefinition Width="2*"/>-->
@@ -187,31 +190,46 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" TextAlignment="Right" Width="80"/>
                             <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>
                         -->
-
+                        <!--#region 開啟 / 關閉相機 -->
                         <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="2" Click="CameraOpen_Click" Content="開啟相機"
                                 IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}}"/>
-                        
                         <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Click="CameraClose_Click" Content="關閉相機"
                                 IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}"/>
-
-
                         <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
-
-
+                        <!--#endregion-->
+                        
+                        <!--#region Camera Info -->
                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Model" TextAlignment="Right"/>
                         <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" Text="{Binding Model}"/>
 
-                        
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="IP" TextAlignment="Right"/>
                         <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" Text="{Binding IP}"/>
 
-                        
                         <TextBlock Grid.Row="2" Grid.Column="2" Text="MAC" TextAlignment="Right"/>
                         <TextBox Grid.Row="2" Grid.Column="3" Padding="0 3" Text="{Binding MAC}"/>
 
-                        
                         <TextBlock Grid.Row="3" Grid.Column="2" Text="S/N" TextAlignment="Right"/>
                         <TextBox Grid.Row="3" Grid.Column="3" Padding="0 3" Text="{Binding SerialNumber}"/>
+
+                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <!--#endregion-->
+
+                        <!--#region Camera Info  -->
+                        <TextBlock Grid.Row="0" Grid.Column="5" Text="Vendor Name"/>
+                        <TextBox Grid.Row="0" Grid.Column="6" Padding="0 3" Text="{Binding Model}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="5" Text="Camera Type"/>
+                        <TextBox Grid.Row="1" Grid.Column="6" Padding="0 3" Text="{Binding IP}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="5" Text="Device Ver."/>
+                        <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="5" Text="Firmware Ver."/>
+                        <TextBox Grid.Row="3" Grid.Column="6" Padding="0 3" Text="{Binding SerialNumber}"/>
+
+                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <!--#endregion-->
+
 
                         <!--<TextBlock></TextBlock>-->
                     </Grid>
@@ -226,38 +244,55 @@
                             </Style>    
                         </StackPanel.Resources>
                         
-                        <Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
-                        <Button x:Name="CameraClose_" Padding="16 0" Click="CameraClose_Click">關閉相機</Button>
+                        <!--<Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
+                        <Button x:Name="CameraClose_" Padding="16 0" Click="CameraClose_Click">關閉相機</Button>-->
+
+                        <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Text="Text: "/>
 
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
                                   materialDesign:ComboBoxAssist.ClassicMode="False"
                                   materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  materialDesign:TextFieldAssist.PrefixText=""
                                   MinWidth="135">
+                            
+                            <!-- 耳朵 -->
                             <ComboBoxItem Content="Character1"/>
+                            <!-- 窗戶 -->
                             <ComboBoxItem Content="Character2"/>
+                            <!-- 表面1 -->
                             <ComboBoxItem Content="Character3"/>
+                            <!-- 表面2 -->
                             <ComboBoxItem Content="Character4"/>
                         </ComboBox>
 
-                        <TextBlock Text="{Binding ElementName=CameraClose, Path=Padding}" VerticalAlignment="Center"/>
+                        <!--<TextBlock Text="{Binding ElementName=CameraClose, Path=Padding}" VerticalAlignment="Center"/>-->
                     </StackPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Background="{StaticResource ColorErrorTransparent}">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Height="26" Background="{StaticResource ColorErrorTransparent}" >
                         <!--#region Resource Define -->
                         <StackPanel.Resources>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
-                                
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="Margin" Value="12 0 0 0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Background" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True"/>
+                                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
+                                <Setter Property="BorderThickness" Value="0"/>
                             </Style>
-
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                            <!--//-->
+                            <!--<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                                 <Setter Property="MinWidth" Value="120"/>
-                            </Style>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>-->
                         </StackPanel.Resources>
                         <!--#endregion-->
-                        <TextBox Margin="0 0 12 0" Padding="0 3" IsReadOnly="True"/>
+                        <TextBox Margin="0 0 12 0" Padding="0 4" TextAlignment="Center" IsReadOnly="True" MinWidth="120"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding UserSet, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <!--UserSet-->
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
                                   materialDesign:HintAssist.Hint="UserSet"
@@ -265,6 +300,9 @@
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   ItemsSource="{Binding UserSetEnum, UpdateSourceTrigger=PropertyChanged}"
                                   MinWidth="135"/>
+
+                        <Button Margin="12 0 0 0" Content="讀取"/>
+                        <Button Margin="12 0 0 0" Content="寫入"/>
                     </StackPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
