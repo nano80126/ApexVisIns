@@ -5,6 +5,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:ApexVisIns"
+            xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:ApexVisIns.content"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -90,14 +91,24 @@
                                 <!--<StackPanel Orientation="Vertical">
                                     <TextBlock Text="{Binding Name, FallbackValue=0}"/>
                                 </StackPanel>-->
-                                <RadioButton HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" GroupName="GroupChoiceChip" 
-                                             FontWeight="Bold" Checked="RadioButton_Checked" CommandParameter="{Binding SerialNumber}" >
+                                <RadioButton HorizontalAlignment="Stretch" GroupName="GroupChoiceChip" 
+                                             FontWeight="Bold" Checked="RadioButton_Checked" CommandParameter="{Binding SerialNumber}">
+                                    <RadioButton.Style>
+                                        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Model}" Value="">
+                                                    <Setter Property="Content" Value="(NULL)"/>
+                                                </DataTrigger>        
+                                            </Style.Triggers>
+                                        </Style>
+                                    </RadioButton.Style>
+                                    
                                     <RadioButton.Content>
                                         <TextBlock>
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0,10}, S/N: {1,8:D0}">
                                                     <Binding Path="Model" />
-                                                    <Binding Path="SerialNumber" FallbackValue="(NULL)"/>
+                                                    <Binding Path="SerialNumber"/>
                                                 </MultiBinding>    
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -115,7 +126,7 @@
         <Border x:Name="test" Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0">
             <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}">
-                <DockPanel Background="Transparent" Margin="2 0">
+                <DockPanel Background="Transparent" Margin="2 0" MouseDown="Grid_MouseDown">
                     <DockPanel x:Name="DeviceCardHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="CardBulletedOutline" Width="30" Height="26"/>
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="裝置" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
@@ -124,7 +135,7 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top" Width="350" HorizontalAlignment="Left" MouseDown="Grid_MouseDown" >
+                    <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Background="{x:Null}">
                         <!--#region Resource Define -->
                         <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
@@ -135,11 +146,20 @@
                             </Style>
                             <!-- // -->
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <!--<Setter Property="Padding" Value="0 2"/>-->
                                 <!-- Padding 要寫在行內 -->
+                                <!--<Setter Property="Padding" Value="0 2"/>-->
                                 <Setter Property="IsReadOnly" Value="True"/>
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>
+                            <!-- // -->
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="Padding" Value="16 0"/>
+                                <Setter Property="Margin" Value="0 0 12 0"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
+
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
                             </Style>
                         </Grid.Resources>
                         <!--#endregion-->
@@ -152,48 +172,84 @@
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <!-- <ColumnDefinition Width="2*"/>-->
                         </Grid.ColumnDefinitions>
                         <!--#endregion-->
 
-                        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Name" TextAlignment="Right" Width="80"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>-->
-
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Model" TextAlignment="Right"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding Model}"/>
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="IP" TextAlignment="Right"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" Text="{Binding IP}"/>
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="MAC" TextAlignment="Right"/>
-                        <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" Text="{Binding MAC}"/>
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="S/N" TextAlignment="Right"/>
-                        <TextBox Grid.Row="3" Grid.Column="1" Padding="0 3" Text="{Binding SerialNumber}"/>
-
                         <!--
-                        <TextBlock></TextBlock>
-                        <TextBlock></TextBlock>
-                        <TextBlock></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" TextAlignment="Right" Width="80"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>
                         -->
-                    
+
+                        <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="2" Click="CameraOpen_Click" Content="開啟相機"
+                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}}"/>
+                        
+                        <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Click="CameraClose_Click" Content="關閉相機"
+                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}"/>
+
+
+                        <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Model" TextAlignment="Right"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" Text="{Binding Model}"/>
+
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="IP" TextAlignment="Right"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" Text="{Binding IP}"/>
+
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="MAC" TextAlignment="Right"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" Padding="0 3" Text="{Binding MAC}"/>
+
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="S/N" TextAlignment="Right"/>
+                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 3" Text="{Binding SerialNumber}"/>
+
+                        <!--<TextBlock></TextBlock>-->
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!-- 相機角色選擇器 -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="Margin" Value="0 0 12 0" />
+                                <Setter Property="Padding" Value="16 0"/>
+                            </Style>    
+                        </StackPanel.Resources>
+                        
+                        <Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
+                        <Button x:Name="CameraClose_" Padding="16 0" Click="CameraClose_Click">關閉相機</Button>
+
+                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
+                                  materialDesign:ComboBoxAssist.ClassicMode="False"
+                                  materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                                  VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  MinWidth="135">
+                            <ComboBoxItem Content="Character1"/>
+                            <ComboBoxItem Content="Character2"/>
+                            <ComboBoxItem Content="Character3"/>
+                            <ComboBoxItem Content="Character4"/>
+                        </ComboBox>
+
+                        <TextBlock Text="{Binding ElementName=CameraClose, Path=Padding}" VerticalAlignment="Center"/>
+                    </StackPanel>
                     <!--//-->
-
-                    <ComboBox DockPanel.Dock="Top" 
-                              Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
-                              materialDesign:HintAssist.Hint="Character"
-                              materialDesign:ComboBoxAssist.ShowSelectedItem="False"
-                              VerticalAlignment="Center" HorizontalAlignment="Left" 
-                              MinWidth="135" />
-
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Left" Width="300">
-                        <!--#region Resourde Define -->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Background="{StaticResource ColorErrorTransparent}">
+                        <!--#region Resource Define -->
                         <StackPanel.Resources>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
+                                
                             </Style>
 
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -201,18 +257,132 @@
                             </Style>
                         </StackPanel.Resources>
                         <!--#endregion-->
-
                         <TextBox Margin="0 0 12 0" Padding="0 3" IsReadOnly="True"/>
                         <!--UserSet-->
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
                                   materialDesign:HintAssist.Hint="UserSet"
                                   materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
-                                  MinWidth="135" />
+                                  ItemsSource="{Binding UserSetEnum, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="135"/>
                     </StackPanel>
                     <!--//-->
-                    <Grid></Grid>
-                    
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top" Background="LightBlue" MinHeight="300" HorizontalAlignment="Stretch">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="MinWidth" Value="120" />
+                                <!--<Setter Property="TextAlignment" Value="Right"/>-->
+                            </Style>
+                            <!-- // -->
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <!--<Setter Property="Padding" Value="0 2"/>-->
+                                <!-- Padding 要寫在行內 -->
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="Margin" Value="0 8"/>
+                                <Setter Property="MinWidth" Value="120"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Resources>
+                        
+                        <!--#region LAayout definition -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions >
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <!--#endregion-->
+
+                        
+                        <!--#region AOI Controls -->
+                        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+
+                        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Max Width"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Height"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Width"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Height"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="X Offset"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Y Offset"/>
+
+
+                        <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                        
+                        <!--<StackPanel Grid.Column="0" Background="{StaticResource ColorWarningTransparent}">-->
+                            
+                        <!--<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CardBulletedOutline" Width="30" Height="26"/>
+                                <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="裝置" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                            </StackPanel>
+                            -->
+                        <!--//-->
+                        <!--
+                            <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                            -->
+                        <!--//-->
+                        <!--
+                            <StackPanel>
+                            
+                            </StackPanel>-->
+                        <!--
+                        </StackPanel>-->
+                        <!--#endregion-->
+
+                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+
+                        <!--<StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
+                            <TextBlock Text="2"/>
+                            
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="2" Background="{StaticResource ColorSuccessTransparent}">
+                            <TextBlock Text="3"/>
+                        </StackPanel>-->
+                        
+                    </Grid>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!-- For Action --> 
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0" Style="{StaticResource MaterialDesignOutlinedButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ContentSave" Width="30" Height="26" VerticalAlignment="Center"/>
+                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Bottom" Text="儲存"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0"  Style="{StaticResource MaterialDesignOutlinedButton}">
+                            456
+                        </Button>
+                    </StackPanel>
                     
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                 </DockPanel>

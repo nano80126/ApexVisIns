@@ -404,6 +404,7 @@ namespace ApexVisIns
     public class DeviceConfig : BaslerCamInfo, INotifyPropertyChanged
     {
         private string _userSet;
+        private string[] _userSetEnum;
         private int _width;
         private int _height;
         private int _maxWidth;
@@ -412,6 +413,8 @@ namespace ApexVisIns
         private double _exposureTime;
         private bool _fixedFPS;
         private ExposureModeEnum _exposoureMode;
+        private int _offsetX;
+        private int _offsetY;
 
         /// <summary>
         /// .xaml 使用 (一般不使用)
@@ -430,19 +433,7 @@ namespace ApexVisIns
         {
         }
 
-        //public DeviceConfig()
-        //{
-
-        //}
-
-        //public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
-        //{
-
-        //}
-
-
         #region 基本相機 Config 
-
         public string UserSet
         {
             get => _userSet;
@@ -456,13 +447,22 @@ namespace ApexVisIns
             }
         }
 
-        public string[] UserSetEnum { get; set; }
+        public string[] UserSetEnum
+        {
+            get => _userSetEnum;
+            set
+            {
+                _userSetEnum = value;
+                OnPropertyChanged(nameof(UserSetEnum));
+            }
+        }
 
         /// <summary>
         /// 組態名稱
         /// </summary>
         public string Name { get; set; }
 
+        #region AOI Controls (Classify by Basler Pylon)
         public int Width
         {
             get => _width;
@@ -517,6 +517,39 @@ namespace ApexVisIns
                 }
             }
         }
+
+        /// <summary>
+        /// X 1u0 
+        /// </summary>
+        public int OffsetX
+        {
+            get => _offsetX;
+            set
+            {
+                if (value != _offsetX)
+                {
+                    _offsetX = value;
+                    OnPropertyChanged(nameof(OffsetX));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int OffsetY
+        {
+            get => _offsetY;
+            set
+            {
+                if (value != _offsetY)
+                {
+                    _offsetY = value;
+                    OnPropertyChanged(nameof(OffsetY));
+                }
+            }
+        }
+        #endregion
 
 
         /// <summary>
@@ -652,6 +685,12 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void PropertyChange(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         #endregion
     }
 

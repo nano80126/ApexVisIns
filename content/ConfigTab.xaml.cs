@@ -161,15 +161,63 @@ namespace ApexVisIns.content
             RadioButton radioButton = sender as RadioButton;
             string serialNumber = radioButton.CommandParameter as string;
 
-            //Array.Find(MainWindow.DeviceConfigs, cfg => )
-
-            //Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
-
+            //DeviceConfig config = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
             DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
+            //MainWindow.DeviceConfigs.IndexOf();
+
+            Camera camera = new Camera(serialNumber);
+
+            //camera.CameraInfo[CameraInfoKey.DeviceID];
 
             Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).FullName}");
             Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).Model}");
-            Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).SerialNumber}");
+            Debug.WriteLine($"User Define Name {camera.CameraInfo[CameraInfoKey.UserDefinedName]}");
+            Debug.WriteLine($"Info {camera.CameraInfo[CameraInfoKey.ManufacturerInfo]}");
+            Debug.WriteLine($"Vendor Name {camera.CameraInfo[CameraInfoKey.VendorName]}");
+            Debug.WriteLine($"Model Name: {camera.CameraInfo[CameraInfoKey.ModelName]}");
+            Debug.WriteLine($"Device Ver. {camera.CameraInfo[CameraInfoKey.DeviceVersion]}");
+            Debug.WriteLine($"Type {camera.CameraInfo[CameraInfoKey.DeviceType]}");
+            //Debug.WriteLine($"Device ID {camera.CameraInfo[CameraInfoKey.DeviceID]}");
+
+            //Debug.WriteLine($"{camera.Parameters[PLGigECamera.DeviceVersion]}");
+            //Debug.WriteLine($"{camera.Parameters[PLGigECamera.WidthMax]}");
+        }
+
+        private void CameraOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (DeviceCard?.DataContext != null)
+            {
+                DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+                string serialNumber = config.SerialNumber;
+
+                MainWindow.BaslerCam.CreateCam(serialNumber);
+                MainWindow.BaslerCam.Open();
+
+                Camera camera = MainWindow.BaslerCam.Camera;
+
+                config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+
+
+                config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
+                config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+
+                config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+
+                config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+                config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+
+
+            }
+            else
+            {
+                Debug.WriteLine($"{DeviceCard.DataContext} : false");
+            }
+        }
+
+        private void CameraClose_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.BaslerCam.Close();
         }
     }
 }
