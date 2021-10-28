@@ -150,7 +150,6 @@ namespace ApexVisIns.content
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
-
         /// <summary>
         /// 變更選中之 Device
         /// </summary>
@@ -187,27 +186,51 @@ namespace ApexVisIns.content
         {
             if (DeviceCard?.DataContext != null)
             {
-                DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-                string serialNumber = config.SerialNumber;
-
-                MainWindow.BaslerCam.CreateCam(serialNumber);
-                MainWindow.BaslerCam.Open();
-
-                Camera camera = MainWindow.BaslerCam.Camera;
-
-                config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+                try
+                {
 
 
-                config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
-                config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+                    DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+                    string serialNumber = config.SerialNumber;
 
-                config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
-                config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+                    MainWindow.BaslerCam.CreateCam(serialNumber);
+                    MainWindow.BaslerCam.Open();
 
-                config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
-                config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+                    Camera camera = MainWindow.BaslerCam.Camera;
 
+                    // UserSet
+                    config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+                    config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
+                    config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
+                    config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+
+                    config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                    config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+
+                    config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+                    config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+                    // // // // // // // // // // // // // /
+
+                    config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
+                    config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
+                    config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
+                    config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
+                    config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
+                    config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
+
+                    config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
+                    config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
+
+                    config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
+                    config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
+
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+                    throw;
+                }
             }
             else
             {

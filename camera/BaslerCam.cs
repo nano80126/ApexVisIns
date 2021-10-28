@@ -405,16 +405,32 @@ namespace ApexVisIns
     {
         private string _userSet;
         private string[] _userSetEnum;
+        //
         private int _width;
         private int _height;
         private int _maxWidth;
         private int _maxHeight;
-        private double _fps;
-        private double _exposureTime;
-        private bool _fixedFPS;
-        private ExposureModeEnum _exposoureMode;
         private int _offsetX;
         private int _offsetY;
+        //
+        private bool _fixedFPS;
+        private double _fps;
+     
+        private string[] _acquisitionModeEnum;
+        private string _acquisitionMode;
+        private string[] _triggerSelectorEnum;
+        private string _triggerSelector;
+        private string[] _triggerModeEnum;
+        private string _triggerMode;
+        private string[] _triggerSourceEnum;
+        private string _triggerSource;
+
+        private string[] _exposureModeEnum;
+        private string _exposureMode;
+        private string[] _exposureAutoEnum;
+        private string _exposureAuto;
+        private double _exposureTime;
+
 
         /// <summary>
         /// .xaml 使用 (一般不使用)
@@ -551,6 +567,98 @@ namespace ApexVisIns
         }
         #endregion
 
+        #region Acquisition Control
+        public string[] AcquisitionModeEnum
+        {
+            get => _acquisitionModeEnum;
+            set
+            {
+                _acquisitionModeEnum = value;
+                OnPropertyChanged(nameof(AcquisitionModeEnum));
+            }
+        }
+
+        public string AcquisitionMode
+        {
+            get => _acquisitionMode;
+            set
+            {
+                if (value != _acquisitionMode)
+                {
+                    _acquisitionMode = value;
+                    OnPropertyChanged(nameof(AcquisitionMode));
+                }
+            }
+        }
+
+
+        public string[] TriggerSeelectorEnum
+        {
+            get => _triggerSelectorEnum;
+            set
+            {
+                _triggerSelectorEnum = value;
+                OnPropertyChanged(nameof(TriggerSeelectorEnum));
+            }
+        }
+
+        public string TriggerSelector
+        {
+            get => _triggerSelector;
+            set
+            {
+                if (value != _triggerSelector)
+                {
+                    _triggerSelector = value;
+                    OnPropertyChanged(nameof(TriggerSelector));
+                }
+            }
+        }
+
+        public string[] TriggerModeEnum
+        {
+            get => _triggerModeEnum;
+            set
+            {
+                _triggerModeEnum = value;
+                OnPropertyChanged(nameof(TriggerModeEnum));
+            }
+        }
+
+        public string TriggerMode
+        {
+            get => _triggerMode;
+            set
+            {
+                if (value != _triggerMode)
+                {
+                    _triggerMode = value;
+                    OnPropertyChanged(nameof(TriggerMode));
+                }
+            }
+        }
+
+        public string[] TriggerSourceEnum
+        {
+            get => _triggerSourceEnum;
+            set
+            {
+                _triggerSourceEnum = value;
+            }
+        }
+
+        public string TriggerSource
+        {
+            get => _triggerSource;
+            set
+            {
+                if (value != _triggerSource)
+                {
+                    _triggerSource = value;
+                    OnPropertyChanged(nameof(TriggerSource));
+                }
+            }
+        }
 
         /// <summary>
         /// 鎖定 FPS
@@ -603,23 +711,23 @@ namespace ApexVisIns
         /// <summary>
         /// 曝光模式(名稱待變更)
         /// </summary>
-        public enum ExposureModeEnum
+        public string[] ExposureModeEnum
         {
-            TriggerController = 0,
-            TriggerWidth = 1,
-            Timed = 2,
-            Off = 3
-        }
-
-
-        public ExposureModeEnum ExposureMode
-        {
-            get => _exposoureMode;
+            get => _exposureModeEnum;
             set
             {
-                if (value != _exposoureMode)
+                _exposureModeEnum = value;
+            }
+        }
+
+        public string ExposureMode
+        {
+            get => _exposureMode;
+            set
+            {
+                if (value != _exposureMode)
                 {
-                    _exposoureMode = value;
+                    _exposureMode = value;
                     OnPropertyChanged(nameof(ExposureMode));
                 }
             }
@@ -628,12 +736,28 @@ namespace ApexVisIns
         /// <summary>
         /// 自動曝光()
         /// </summary>
-        public enum ExposureAutoEnum
+        public string[] ExposureAutoEnum
         {
-            Continouns = 0,
-            Once = 1,
-            Off = 2
+            get => _exposureAutoEnum;
+            set
+            {
+                _exposureAutoEnum = value;
+            }
         }
+
+        public string ExposureAuto
+        {
+            get => _exposureAuto;
+            set
+            {
+                if (value != _exposureAuto)
+                {
+                    _exposureAuto = value;
+                    OnPropertyChanged(nameof(ExposureAuto));
+                }
+            }
+        }
+        #endregion
 
         //public bool ExposureAuto
         //{

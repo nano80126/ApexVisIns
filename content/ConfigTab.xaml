@@ -192,9 +192,12 @@
                         -->
                         <!--#region 開啟 / 關閉相機 -->
                         <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="2" Click="CameraOpen_Click" Content="開啟相機"
+                                materialDesign:ButtonAssist.CornerRadius="16"
                                 IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}}"/>
                         <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Click="CameraClose_Click" Content="關閉相機"
+                                materialDesign:ButtonAssist.CornerRadius="16"
                                 IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}"/>
+                        
                         <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
                         
@@ -230,7 +233,6 @@
                         <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
 
-
                         <!--<TextBlock></TextBlock>-->
                     </Grid>
                     <!--//-->
@@ -247,7 +249,7 @@
                         <!--<Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
                         <Button x:Name="CameraClose_" Padding="16 0" Click="CameraClose_Click">關閉相機</Button>-->
 
-                        <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Text="Text: "/>
+                        <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Text="角色: "/>
 
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
                                   materialDesign:ComboBoxAssist.ClassicMode="False"
@@ -271,7 +273,8 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Height="26" Background="{StaticResource ColorErrorTransparent}" >
+                    <!--Background="{StaticResource ColorErrorTransparent}"-->
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Height="26" >
                         <!--#region Resource Define -->
                         <StackPanel.Resources>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -281,6 +284,7 @@
                                 <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
                                 <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True"/>
                                 <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
+                                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="10"/>
                                 <Setter Property="BorderThickness" Value="0"/>
                             </Style>
                             <!--//-->
@@ -301,18 +305,20 @@
                                   ItemsSource="{Binding UserSetEnum, UpdateSourceTrigger=PropertyChanged}"
                                   MinWidth="135"/>
 
-                        <Button Margin="12 0 0 0" Content="讀取"/>
-                        <Button Margin="12 0 0 0" Content="寫入"/>
+                        <Button Margin="12 0 0 0" Content="讀取" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"/>
+                        <Button Margin="12 0 0 0" Content="寫入" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"/>
                     </StackPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top" Background="LightBlue" MinHeight="300" HorizontalAlignment="Stretch">
+                    <Grid DockPanel.Dock="Top" Background="{x:Null}" MinHeight="300" HorizontalAlignment="Stretch">
                         <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Left"/>
                                 <Setter Property="MinWidth" Value="120" />
+                                <Setter Property="Margin" Value="0 8"/>
+                                <Setter Property="Background" Value="Red"/>
                                 <!--<Setter Property="TextAlignment" Value="Right"/>-->
                             </Style>
                             <!-- // -->
@@ -339,21 +345,25 @@
                         </Grid.ColumnDefinitions >
 
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
                             <RowDefinition Height="auto"/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <!--#endregion-->
 
-                        
                         <!--#region AOI Controls -->
-                        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
 
                         <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
@@ -364,7 +374,6 @@
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="X Offset"/>
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="Y Offset"/>
 
-
                         <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -372,38 +381,48 @@
                         <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-
+                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <!--//--><!--//--><!--//--><!--//--><!--//-->
                         
-                        <!--<StackPanel Grid.Column="0" Background="{StaticResource ColorWarningTransparent}">-->
-                            
-                        <!--<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="CardBulletedOutline" Width="30" Height="26"/>
-                                <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="裝置" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                            </StackPanel>
-                            -->
-                        <!--//-->
-                        <!--
-                            <Separator DockPanel.Dock="Top" Margin="0 8"/>
-                            -->
-                        <!--//-->
-                        <!--
-                            <StackPanel>
-                            
-                            </StackPanel>-->
-                        <!--
-                        </StackPanel>-->
-                        <!--#endregion-->
+                        <TextBlock Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="Acqisition Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+
+                        <Separator Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+                        <TextBlock Grid.Row="2" Grid.Column="3" Text="Exposure Time"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="3" Text="Fix FPS"/>
+                        <TextBlock Grid.Row="4" Grid.Column="3" Text="FPS"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="3" Text="Exposure Time"/>
+                        <TextBlock Grid.Row="6" Grid.Column="3" Text="Exposure Mode"/>
+
+                        <TextBlock Grid.Row="7" Grid.Column="3" Text="Trigger Selector"/>
+                        <TextBlock Grid.Row="8" Grid.Column="3" Text="Trigger Mode"/>
+                        <TextBlock Grid.Row="9" Grid.Column="3" Text="Trigger Source"/>
+
+                        <TextBlock Grid.Row="10" Grid.Column="3" Text=""/>
+                        <TextBlock Grid.Row="11" Grid.Column="3" Text=""/>
+
+
+
+                        <TextBox Grid.Row="2" Grid.Column="4" Padding="0 3" Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <CheckBox Grid.Row="3" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
+                        <TextBox Grid.Row="4" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        
 
                         <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <!--//--><!--//--><!--//--><!--//--><!--//-->
 
-                        <!--<StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
-                            <TextBlock Text="2"/>
-                            
-                        </StackPanel>
                         
+                        <!--
+                        <StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
+                            <TextBlock Text="2"/>
+                        </StackPanel>
+                        //
                         <StackPanel Grid.Column="2" Background="{StaticResource ColorSuccessTransparent}">
                             <TextBlock Text="3"/>
-                        </StackPanel>-->
+                        </StackPanel>
+                        -->
                         
                     </Grid>
                     <!--//-->
