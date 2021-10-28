@@ -317,8 +317,9 @@
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Left"/>
                                 <Setter Property="MinWidth" Value="120" />
+                                <Setter Property="Padding" Value="0 4"/>
                                 <Setter Property="Margin" Value="0 8"/>
-                                <Setter Property="Background" Value="Red"/>
+                                <!--<Setter Property="Background" Value="Red"/>-->
                                 <!--<Setter Property="TextAlignment" Value="Right"/>-->
                             </Style>
                             <!-- // -->
@@ -329,6 +330,15 @@
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="MinWidth" Value="120"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>
+                            <!-- // -->
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                                <Setter Property="Padding" Value="5 4"/>
+                                <Setter Property="MinWidth" Value="120"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="materialDesign:ComboBoxAssist.ShowSelectedItem" Value="False"/>
                             </Style>
                         </Grid.Resources>
                         
@@ -364,7 +374,6 @@
 
                         <!--#region AOI Controls -->
                         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-
                         <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Max Width"/>
@@ -385,29 +394,40 @@
                         <!--//--><!--//--><!--//--><!--//--><!--//-->
                         
                         <TextBlock Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="Acqisition Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-
                         <Separator Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
-                        <TextBlock Grid.Row="2" Grid.Column="3" Text="Exposure Time"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="3" Text="Fix FPS"/>
-                        <TextBlock Grid.Row="4" Grid.Column="3" Text="FPS"/>
+                        <TextBlock Grid.Row="2" Grid.Column="3" Text="Trigger Selector"/>
+                        <TextBlock Grid.Row="3" Grid.Column="3" Text="Trigger Mode"/>
+                        <TextBlock Grid.Row="4" Grid.Column="3" Text="Trigger Source"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="3" Text="Exposure Time"/>
-                        <TextBlock Grid.Row="6" Grid.Column="3" Text="Exposure Mode"/>
+                        <TextBlock Grid.Row="5" Grid.Column="3" Text="Exposure Mode"/>
+                        <TextBlock Grid.Row="6" Grid.Column="3" Text="Exposure Auto"/>
+                        <TextBlock Grid.Row="7" Grid.Column="3" Text="Exposure Time"/>
 
-                        <TextBlock Grid.Row="7" Grid.Column="3" Text="Trigger Selector"/>
-                        <TextBlock Grid.Row="8" Grid.Column="3" Text="Trigger Mode"/>
-                        <TextBlock Grid.Row="9" Grid.Column="3" Text="Trigger Source"/>
+                        <TextBlock Grid.Row="8" Grid.Column="3" Text="Fix FPS"/>
+                        <TextBlock Grid.Row="9" Grid.Column="3" Text="FPS"/>
 
-                        <TextBlock Grid.Row="10" Grid.Column="3" Text=""/>
-                        <TextBlock Grid.Row="11" Grid.Column="3" Text=""/>
+                        <!--<TextBlock Grid.Row="10" Grid.Column="3" Text=""/>
+                        <TextBlock Grid.Row="11" Grid.Column="3" Text=""/>-->
 
+                        
+                        <!--<TextBox x:Name="TestName" Grid.Row="6" Grid.Column="4" Padding="0 3" Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock x:Name="TestName2" Grid.Row="7" Grid.Column="4" Text="{Binding ElementName=TestName, Path=ActualHeight}"></TextBlock>-->
 
+                        
+                        <ComboBox Grid.Row="2" Grid.Column="4" SelectedItem="{Binding TriggerSelector}" ItemsSource="{Binding TriggerSelectorEnum}"/>
+                        <ComboBox Grid.Row="3" Grid.Column="4" SelectedItem="{Binding TriggerMode}" ItemsSource="{Binding TriggerModeEnum}"/>
+                        <ComboBox Grid.Row="4" Grid.Column="4" SelectedItem="{Binding TriggerSource}" ItemsSource="{Binding TriggerSourceEnum}"/>
 
-                        <TextBox Grid.Row="2" Grid.Column="4" Padding="0 3" Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <CheckBox Grid.Row="3" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                        <ComboBox Grid.Row="5" Grid.Column="4" SelectedItem="{Binding ExposureMode}" ItemsSource="{Binding ExposureModeEnum}"/>
+                        <ComboBox Grid.Row="6" Grid.Column="4" SelectedItem="{Binding ExposureAuto}" ItemsSource="{Binding ExposureAutoEnum}"/>
+                        <TextBox Grid.Row="7" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!--<TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding ElementName=TestName2, Path=ActualHeight}"></TextBlock>-->
+                        
+                        <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
-                        <TextBox Grid.Row="4" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
 
                         <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>

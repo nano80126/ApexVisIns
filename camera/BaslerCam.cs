@@ -132,6 +132,22 @@ namespace ApexVisIns
         /// 相機 S/N
         /// </summary>
         public string SerialNumber { get; set; }
+        /// <summary>
+        /// 供應商名稱
+        /// </summary>
+        public string VendorName { get; set; }
+        /// <summary>
+        /// 裝置版本
+        /// </summary>
+        public string DeviceVersion { get; set; }
+        /// <summary>
+        /// 韌體版本
+        /// </summary>
+        public string FirmWareVersion { get; set; }
+        /// <summary>
+        /// 相機類型
+        /// </summary>
+        public string CameraType { get; set; }
     }
 
 
@@ -592,13 +608,13 @@ namespace ApexVisIns
         }
 
 
-        public string[] TriggerSeelectorEnum
+        public string[] TriggerSelectorEnum
         {
             get => _triggerSelectorEnum;
             set
             {
                 _triggerSelectorEnum = value;
-                OnPropertyChanged(nameof(TriggerSeelectorEnum));
+                OnPropertyChanged(nameof(TriggerSelectorEnum));
             }
         }
 
@@ -644,6 +660,7 @@ namespace ApexVisIns
             set
             {
                 _triggerSourceEnum = value;
+                OnPropertyChanged(nameof(TriggerSourceEnum));
             }
         }
 
@@ -742,6 +759,7 @@ namespace ApexVisIns
             set
             {
                 _exposureAutoEnum = value;
+                OnPropertyChanged(nameof(ExposureAutoEnum));
             }
         }
 
@@ -758,10 +776,6 @@ namespace ApexVisIns
             }
         }
         #endregion
-
-        //public bool ExposureAuto
-        //{
-        //}
 
 #if false
         ///// <summary>

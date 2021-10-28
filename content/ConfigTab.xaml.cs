@@ -188,8 +188,6 @@ namespace ApexVisIns.content
             {
                 try
                 {
-
-
                     DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
                     string serialNumber = config.SerialNumber;
 
@@ -198,10 +196,17 @@ namespace ApexVisIns.content
 
                     Camera camera = MainWindow.BaslerCam.Camera;
 
+                    config.CameraType = camera.CameraInfo[CameraInfoKey.VendorName];
+                    config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
+                    //config.VendorName = camera.Parameters[PLGigECamera.DeviceVendorName].GetValue();
+                    config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
+                    config.FirmWareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
+
                     // UserSet
                     config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
                     config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
+                    // // // // // // // // // // // // // /
                     config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
                     config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
 
@@ -211,8 +216,7 @@ namespace ApexVisIns.content
                     config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
                     config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
                     // // // // // // // // // // // // // /
-
-                    config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
+                    config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
                     config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
                     config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
                     config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
@@ -224,6 +228,13 @@ namespace ApexVisIns.content
 
                     config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
                     config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
+                    config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+
+
+                    config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
+                    config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                    // // // // // // // // // // // // // /
+
 
                 }
                 catch (Exception ex)
