@@ -49,27 +49,20 @@ namespace ApexVisIns.content
 
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
         {
-            BaslerCamInfo info = CameraSelector.SelectedItem as BaslerCamInfo;
-
-            if (info != null)
+            if (CameraSelector.SelectedItem is BaslerCamInfo info)
             {
-                MainWindow.DeviceConfigs.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
-
-                //MainWindow.DeviceConfigColl.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
-
-                foreach (DeviceConfig config in MainWindow.DeviceConfigs)
+                if (!MainWindow.DeviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
                 {
-                    Debug.WriteLine(config.FullName);
-                    Debug.WriteLine(config.Model);
-                    Debug.WriteLine("");
-                }
+                    DeviceConfig config = new(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber)
+                    {
+                        VendorName = info.VendorName,
+                        CameraType = info.CameraType,
+                        //DeviceVersion = info.DeviceVersion
+                    };
 
-                //foreach (DeviceConfig config in MainWindow.DeviceConfigColl)
-                //{
-                //    Debug.WriteLine(config.FullName);
-                //    Debug.WriteLine(config.Model);
-                //    Debug.WriteLine("");
-                //}
+                    //MainWindow.DeviceConfigs.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
+                    MainWindow.DeviceConfigs.Add(config);
+                }
             }
         }
 
@@ -138,7 +131,6 @@ namespace ApexVisIns.content
             }
         }
 
-
         /// <summary>
         /// 清除 Focus 用
         /// </summary>
@@ -164,24 +156,34 @@ namespace ApexVisIns.content
             DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
             //MainWindow.DeviceConfigs.IndexOf();
 
-            Camera camera = new Camera(serialNumber);
 
-            //camera.CameraInfo[CameraInfoKey.DeviceID];
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName);
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType);
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion);
 
-            Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).FullName}");
-            Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).Model}");
-            Debug.WriteLine($"User Define Name {camera.CameraInfo[CameraInfoKey.UserDefinedName]}");
-            Debug.WriteLine($"Info {camera.CameraInfo[CameraInfoKey.ManufacturerInfo]}");
-            Debug.WriteLine($"Vendor Name {camera.CameraInfo[CameraInfoKey.VendorName]}");
-            Debug.WriteLine($"Model Name: {camera.CameraInfo[CameraInfoKey.ModelName]}");
-            Debug.WriteLine($"Device Ver. {camera.CameraInfo[CameraInfoKey.DeviceVersion]}");
-            Debug.WriteLine($"Type {camera.CameraInfo[CameraInfoKey.DeviceType]}");
+            //Camera camera = new Camera(serialNumber);
+
+            ////camera.CameraInfo[CameraInfoKey.DeviceID];
+
+            //Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).FullName}");
+            //Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).Model}");
+            //Debug.WriteLine($"User Define Name {camera.CameraInfo[CameraInfoKey.UserDefinedName]}");
+            //Debug.WriteLine($"Info {camera.CameraInfo[CameraInfoKey.ManufacturerInfo]}");
+            //Debug.WriteLine($"Vendor Name {camera.CameraInfo[CameraInfoKey.VendorName]}");
+            //Debug.WriteLine($"Model Name: {camera.CameraInfo[CameraInfoKey.ModelName]}");
+            //Debug.WriteLine($"Device Ver. {camera.CameraInfo[CameraInfoKey.DeviceVersion]}");
+            //Debug.WriteLine($"Type {camera.CameraInfo[CameraInfoKey.DeviceType]}");
             //Debug.WriteLine($"Device ID {camera.CameraInfo[CameraInfoKey.DeviceID]}");
 
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.DeviceVersion]}");
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.WidthMax]}");
         }
 
+        /// <summary>
+        /// 相機 開啟
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CameraOpen_Click(object sender, RoutedEventArgs e)
         {
             if (DeviceCard?.DataContext != null)
@@ -193,20 +195,26 @@ namespace ApexVisIns.content
 
                     MainWindow.BaslerCam.CreateCam(serialNumber);
                     MainWindow.BaslerCam.Open();
+                    MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
 
                     Camera camera = MainWindow.BaslerCam.Camera;
 
-                    config.CameraType = camera.CameraInfo[CameraInfoKey.VendorName];
-                    config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
-                    //config.VendorName = camera.Parameters[PLGigECamera.DeviceVendorName].GetValue();
+                    ReadConfig(camera, config);
+
+#if false
+                    // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
+                    // config.CameraType = camera.CameraInfo[CameraInfoKey.DeviceType];
                     config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
-                    config.FirmWareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
+                    config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
 
                     // UserSet
                     config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
                     config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
                     // // // // // // // // // // // // // /
+                    config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
+                    config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+
                     config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
                     config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
 
@@ -225,22 +233,21 @@ namespace ApexVisIns.content
 
                     config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
                     config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
+                    // // // // // // // // // // // // // /
 
                     config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
                     config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
                     config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 
-
                     config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
                     config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
-                    // // // // // // // // // // // // // /
-
-
+                    // // // // // // // // // // // // // /  
+#endif
                 }
                 catch (Exception ex)
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
-                    throw;
+                    //throw;
                 }
             }
             else
@@ -249,9 +256,118 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 相機關閉
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CameraClose_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.BaslerCam.Close();
+            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
         }
+
+        /// <summary>
+        /// 讀取 config
+        /// </summary>
+        /// <param name="camera">來源相機</param>
+        /// <param name="config">目標組態</param>
+        private void ReadConfig(Camera camera, DeviceConfig config)
+        {
+            config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
+            config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
+
+            // UserSet
+            config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+            config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+
+            // // // // // // // // // // // // // /
+            // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
+            // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+
+            config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
+            config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+
+            config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
+            config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+
+            config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+            config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+
+            config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+            config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+            // // // // // // // // // // // // // /
+            config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
+            config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
+            config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
+            config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
+            config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
+            config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
+
+            config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
+            config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
+            // // // // // // // // // // // // // /
+
+            config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
+            config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
+            config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+
+            config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
+            config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+        }
+
+        /// <summary>
+        /// 寫入 config
+        /// </summary>
+        private void WriteConfig(Camera camera, DeviceConfig config)
+        {
+
+
+        }
+
+        /// <summary>
+        /// 讀取 UserSet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReadUserSet_Click(object sender, RoutedEventArgs e)
+        {
+            string userSet = (DeviceCard.DataContext as DeviceConfig).UserSet;
+
+            Debug.WriteLine($"{userSet}");
+
+        }
+
+        /// <summary>
+        /// 寫入 UserSet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WriteUserSet_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            textBox.SelectAll();
+        }
+            
+
+        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            textBox.SelectAll();
+        }
+
+
+        //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    ComboBox comboBox = sender as ComboBox;
+
+        //    Debug.WriteLine($"{comboBox.SelectedItem} {comboBox.SelectedValue}");
+        //}
     }
 }

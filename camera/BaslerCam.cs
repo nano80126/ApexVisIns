@@ -66,13 +66,24 @@ namespace ApexVisIns
                 {
                     if (!CamsSource.Any(item => item.SerialNumber == info[CameraInfoKey.SerialNumber]))
                     {
-                        CamsSourceAdd(new BaslerCamInfo(
-                                info[CameraInfoKey.FriendlyName],
-                                info[CameraInfoKey.ModelName],
-                                info[CameraInfoKey.DeviceIpAddress],
-                                info[CameraInfoKey.DeviceMacAddress],
-                                info[CameraInfoKey.SerialNumber]
-                            ));
+                        BaslerCamInfo camInfo = new(info[CameraInfoKey.FriendlyName], info[CameraInfoKey.ModelName], info[CameraInfoKey.DeviceIpAddress], info[CameraInfoKey.DeviceMacAddress], info[CameraInfoKey.SerialNumber])
+                        {
+                            VendorName = info[CameraInfoKey.VendorName],
+                            CameraType = info[CameraInfoKey.DeviceType],
+                            //DeviceVersion = info[CameraInfoKey.DeviceVersion],
+                        };
+
+                        CamsSourceAdd(camInfo);
+
+                        // CamsSourceAdd(new BaslerCamInfo(
+                        //         info[CameraInfoKey.FriendlyName],
+                        //         info[CameraInfoKey.ModelName],
+                        //         info[CameraInfoKey.DeviceIpAddress],
+                        //         info[CameraInfoKey.DeviceMacAddress],
+                        //         info[CameraInfoKey.SerialNumber]
+                        //     )
+                        // {
+                        // });
                     }
                 }
             }
@@ -113,6 +124,10 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 供應商名稱
+        /// </summary>
+        public string VendorName { get; set; }
+        /// <summary>
         /// 相機全名
         /// </summary>
         public string FullName { get; set; }
@@ -120,6 +135,10 @@ namespace ApexVisIns
         /// 相機 Model
         /// </summary>
         public string Model { get; set; }
+        /// <summary>
+        /// 相機類型
+        /// </summary>
+        public string CameraType { get; set; }
         /// <summary>
         /// 相機 IP
         /// </summary>
@@ -132,22 +151,15 @@ namespace ApexVisIns
         /// 相機 S/N
         /// </summary>
         public string SerialNumber { get; set; }
-        /// <summary>
-        /// 供應商名稱
-        /// </summary>
-        public string VendorName { get; set; }
-        /// <summary>
-        /// 裝置版本
-        /// </summary>
-        public string DeviceVersion { get; set; }
-        /// <summary>
-        /// 韌體版本
-        /// </summary>
-        public string FirmWareVersion { get; set; }
-        /// <summary>
-        /// 相機類型
-        /// </summary>
-        public string CameraType { get; set; }
+
+        ///// <summary>
+        ///// 裝置版本
+        ///// </summary>
+        //public string DeviceVersion { get; set; }
+        ///// <summary>
+        ///// 韌體版本
+        ///// </summary>
+        //public string FirmwareVersion { get; set; }
     }
 
 
@@ -157,7 +169,7 @@ namespace ApexVisIns
     /// </summary>
     public class BaslerCam : CustomCam
     {
-        //private int _frames = 0;
+        // private int _frames = 0;
 
         public BaslerCam()
         {
@@ -431,7 +443,7 @@ namespace ApexVisIns
         //
         private bool _fixedFPS;
         private double _fps;
-     
+
         private string[] _acquisitionModeEnum;
         private string _acquisitionMode;
         private string[] _triggerSelectorEnum;
@@ -446,6 +458,10 @@ namespace ApexVisIns
         private string[] _exposureAutoEnum;
         private string _exposureAuto;
         private double _exposureTime;
+        private string _deviceVersion;
+        private string _firmwareVersion;
+        private int _sensorWidth;
+        private int _sensorHeight;
 
 
         /// <summary>
@@ -464,6 +480,35 @@ namespace ApexVisIns
         public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
         }
+
+        #region 基本相機 Info
+        public string DeviceVersion
+        {
+            get => _deviceVersion;
+            set
+            {
+                if (value != _deviceVersion)
+                {
+                    _deviceVersion = value;
+                    OnPropertyChanged(nameof(DeviceVersion));
+                }
+            }
+        }
+
+        public string FirmwareVersion
+        {
+            get => _firmwareVersion;
+            set
+            {
+                if (value != _firmwareVersion)
+                {
+                    _firmwareVersion = value;
+                    OnPropertyChanged(nameof(FirmwareVersion));
+                }
+            }
+        }
+
+        #endregion
 
         #region 基本相機 Config 
         public string UserSet
@@ -495,6 +540,43 @@ namespace ApexVisIns
         public string Name { get; set; }
 
         #region AOI Controls (Classify by Basler Pylon)
+       
+        /// <summary>
+        /// Sensor 寬度
+        /// </summary>
+        public int SensorWidth
+        {
+            get => _sensorWidth;
+            set
+            {
+                if (value != _sensorWidth)
+                {
+                    _sensorWidth = value;
+                    OnPropertyChanged(nameof(SensorWidth));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sensor 高度
+        /// </summary>
+        public int SensorHeight
+        {
+            get => _sensorHeight;
+            set
+            {
+                if (value != _sensorHeight)
+                {
+                    _sensorHeight = value;
+                    OnPropertyChanged(nameof(SensorHeight));
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 寬度
+        /// </summary>
         public int Width
         {
             get => _width;
@@ -508,6 +590,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 高度
+        /// </summary>
         public int Height
         {
             get => _height;
@@ -537,6 +622,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// Max Height, get value from camera parameters
+        /// </summary>
         public int MaxHeight
         {
             get => _maxHeight;
@@ -551,7 +639,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// X 1u0 
+        /// X 偏移
         /// </summary>
         public int OffsetX
         {
@@ -567,7 +655,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 
+        /// Y 偏移
         /// </summary>
         public int OffsetY
         {
@@ -594,6 +682,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 擷取模式
+        /// </summary>
         public string AcquisitionMode
         {
             get => _acquisitionMode;
@@ -607,7 +698,9 @@ namespace ApexVisIns
             }
         }
 
-
+        /// <summary>
+        /// Trigger Selector 列舉
+        /// </summary>
         public string[] TriggerSelectorEnum
         {
             get => _triggerSelectorEnum;
@@ -631,6 +724,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// Trigger Mode 列舉
+        /// </summary>
         public string[] TriggerModeEnum
         {
             get => _triggerModeEnum;
@@ -654,6 +750,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// Trigger Source 列舉
+        /// </summary>
         public string[] TriggerSourceEnum
         {
             get => _triggerSourceEnum;
@@ -710,22 +809,6 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 曝光時間
-        /// </summary>
-        public double ExposureTime
-        {
-            get => _exposureTime;
-            set
-            {
-                if (value != _exposureTime)
-                {
-                    _exposureTime = value;
-                    OnPropertyChanged(nameof(ExposureTime));
-                }
-            }
-        }
-
-        /// <summary>
         /// 曝光模式(名稱待變更)
         /// </summary>
         public string[] ExposureModeEnum
@@ -734,6 +817,7 @@ namespace ApexVisIns
             set
             {
                 _exposureModeEnum = value;
+                OnPropertyChanged(nameof(ExposureModeEnum));
             }
         }
 
@@ -772,6 +856,22 @@ namespace ApexVisIns
                 {
                     _exposureAuto = value;
                     OnPropertyChanged(nameof(ExposureAuto));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 曝光時間
+        /// </summary>
+        public double ExposureTime
+        {
+            get => _exposureTime;
+            set
+            {
+                if (value != _exposureTime)
+                {
+                    _exposureTime = value;
+                    OnPropertyChanged(nameof(ExposureTime));
                 }
             }
         }
@@ -819,12 +919,12 @@ namespace ApexVisIns
         public CharacterType Character { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void PropertyChange(string propertyName)
+        public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -168,7 +168,7 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
+                            <!--<RowDefinition Height="auto"/>-->
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
@@ -191,44 +191,47 @@
                             <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>
                         -->
                         <!--#region 開啟 / 關閉相機 -->
-                        <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="2" Click="CameraOpen_Click" Content="開啟相機"
+                        <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="1" Click="CameraOpen_Click" Content="開啟相機"
                                 materialDesign:ButtonAssist.CornerRadius="16"
-                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}}"/>
-                        <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Click="CameraClose_Click" Content="關閉相機"
+                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="1" Click="CameraClose_Click" Content="關閉相機"
                                 materialDesign:ButtonAssist.CornerRadius="16"
-                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}"/>
+                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, UpdateSourceTrigger=PropertyChanged}"/>
                         
                         <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
                         
                         <!--#region Camera Info -->
-                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Model" TextAlignment="Right"/>
-                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" Text="{Binding Model}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Vendor Name" TextAlignment="Right"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" Text="{Binding VendorName, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="IP" TextAlignment="Right"/>
-                        <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" Text="{Binding IP}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Model" TextAlignment="Right"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="2" Text="MAC" TextAlignment="Right"/>
-                        <TextBox Grid.Row="2" Grid.Column="3" Padding="0 3" Text="{Binding MAC}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="Camera Type" TextAlignment="Right"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" Padding="0 3" Text="{Binding CameraType, UpdateSourceTrigger=PropertyChanged}"/>
 
+                        <!--
                         <TextBlock Grid.Row="3" Grid.Column="2" Text="S/N" TextAlignment="Right"/>
                         <TextBox Grid.Row="3" Grid.Column="3" Padding="0 3" Text="{Binding SerialNumber}"/>
+                        -->
 
                         <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
 
                         <!--#region Camera Info  -->
-                        <TextBlock Grid.Row="0" Grid.Column="5" Text="Vendor Name"/>
-                        <TextBox Grid.Row="0" Grid.Column="6" Padding="0 3" Text="{Binding Model}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="5" Text="S/N"/>
+                        <TextBox Grid.Row="0" Grid.Column="6" Padding="0 3" Text="{Binding SerialNumber, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource ColorSuccess}"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="5" Text="Camera Type"/>
-                        <TextBox Grid.Row="1" Grid.Column="6" Padding="0 3" Text="{Binding IP}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="5" Text="IP"/>
+                        <TextBox Grid.Row="1" Grid.Column="6" Padding="0 3" Text="{Binding IP, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="5" Text="Device Ver."/>
-                        <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="5" Text="MAC"/>
+                        <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="5" Text="Firmware Ver."/>
-                        <TextBox Grid.Row="3" Grid.Column="6" Padding="0 3" Text="{Binding SerialNumber}"/>
+                        <!--<TextBlock Grid.Row="3" Grid.Column="5" Text="Firmware Ver."/>
+                        <TextBox Grid.Row="3" Grid.Column="6" Padding="0 3" Text="{Binding FirmwareVersion}"/>-->
 
                         <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
@@ -302,11 +305,14 @@
                                   materialDesign:HintAssist.Hint="UserSet"
                                   materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  SelectedItem="{Binding UserSet, UpdateSourceTrigger=PropertyChanged}"
                                   ItemsSource="{Binding UserSetEnum, UpdateSourceTrigger=PropertyChanged}"
                                   MinWidth="135"/>
 
-                        <Button Margin="12 0 0 0" Content="讀取" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"/>
-                        <Button Margin="12 0 0 0" Content="寫入" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"/>
+                        <Button x:Name="ReadUserSet" Margin="12 0 0 0" Content="讀取" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
+                                Click="ReadUserSet_Click"/>
+                        <Button x:Name="WriteUserSet" Margin="12 0 0 0" Content="寫入" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
+                                Click="WriteUserSet_Click"/>
                     </StackPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
@@ -376,19 +382,25 @@
                         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                         <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Max Width"/>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Height"/>
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Width"/>
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Height"/>
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="X Offset"/>
-                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Y Offset"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Sensor Width"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Sensor Height"/>
+                        
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Max Width"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Max Height"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Width"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Height"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="X Offset"/>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Y Offset"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="8" Grid.Column="1" Padding="0 3" Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="9" Grid.Column="1" Padding="0 3" Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--//--><!--//--><!--//--><!--//--><!--//-->
@@ -414,22 +426,24 @@
                         <!--<TextBox x:Name="TestName" Grid.Row="6" Grid.Column="4" Padding="0 3" Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock x:Name="TestName2" Grid.Row="7" Grid.Column="4" Text="{Binding ElementName=TestName, Path=ActualHeight}"></TextBlock>-->
 
-                        
                         <ComboBox Grid.Row="2" Grid.Column="4" SelectedItem="{Binding TriggerSelector}" ItemsSource="{Binding TriggerSelectorEnum}"/>
                         <ComboBox Grid.Row="3" Grid.Column="4" SelectedItem="{Binding TriggerMode}" ItemsSource="{Binding TriggerModeEnum}"/>
                         <ComboBox Grid.Row="4" Grid.Column="4" SelectedItem="{Binding TriggerSource}" ItemsSource="{Binding TriggerSourceEnum}"/>
 
                         <ComboBox Grid.Row="5" Grid.Column="4" SelectedItem="{Binding ExposureMode}" ItemsSource="{Binding ExposureModeEnum}"/>
                         <ComboBox Grid.Row="6" Grid.Column="4" SelectedItem="{Binding ExposureAuto}" ItemsSource="{Binding ExposureAutoEnum}"/>
-                        <TextBox Grid.Row="7" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="7" Grid.Column="4" Padding="0 3"
+                                 GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                 Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F3}}"/>
 
                         <!--<TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding ElementName=TestName2, Path=ActualHeight}"></TextBlock>-->
                         
                         <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
-                        <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
+                                 GotFocus="TextBox_GotFocus"
+                                 Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
                         
-
                         <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--//--><!--//--><!--//--><!--//--><!--//-->
 
@@ -438,7 +452,6 @@
                         <StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
                             <TextBlock Text="2"/>
                         </StackPanel>
-                        //
                         <StackPanel Grid.Column="2" Background="{StaticResource ColorSuccessTransparent}">
                             <TextBlock Text="3"/>
                         </StackPanel>
