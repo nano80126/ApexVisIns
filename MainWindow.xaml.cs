@@ -95,7 +95,7 @@ namespace ApexVisIns
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+            //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
 
             #region LongLifeWorker
             CameraEnumer = TryFindResource(nameof(CameraEnumer)) as CameraEnumer;
@@ -126,7 +126,7 @@ namespace ApexVisIns
             BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
 
-            Debug.WriteLine($"{DeviceConfigs.Count}");
+            //Debug.WriteLine($"{DeviceConfigs.Count}");
 
             //foreach (BaslerCam item in BaslerCams)
             //{
@@ -140,7 +140,7 @@ namespace ApexVisIns
 
             //OnTabIndex = 0;
 
-            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+            //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

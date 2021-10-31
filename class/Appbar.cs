@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -45,12 +46,21 @@ namespace ApexVisIns
             //    Console.WriteLine("請先關閉相機連線。");
             //    return;
             //}
-            if ((bool)CamConnect.IsChecked)
+            //if ((bool)CamConnect.IsChecked)
+            //{
+            //    MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "Close camera connection before exit", MsgInformer.Message.MessageType.Info);
+            //    return;
+            //}
+
+            if (!BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected))
+            {
+                Close();
+            }
+            else
             {
                 MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "Close camera connection before exit", MsgInformer.Message.MessageType.Info);
                 return;
             }
-            Close();
         }
     }
 }

@@ -31,7 +31,6 @@ namespace ApexVisIns.content
         public MainWindow MainWindow { get; set; }
         #endregion
 
-
         public ConfigTab()
         {
             InitializeComponent();
@@ -332,10 +331,16 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void ReadUserSet_Click(object sender, RoutedEventArgs e)
         {
+            // Get UsetSet string and read from camera
             string userSet = (DeviceCard.DataContext as DeviceConfig).UserSet;
 
-            Debug.WriteLine($"{userSet}");
+            Camera camera = MainWindow.BaslerCam.Camera;
 
+            camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
+            camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+
+
+            Debug.WriteLine($"{userSet}");
         }
 
         /// <summary>
@@ -346,15 +351,14 @@ namespace ApexVisIns.content
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
 
-        }
 
+        }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             textBox.SelectAll();
         }
-            
 
         private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
         {

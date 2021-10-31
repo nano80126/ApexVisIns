@@ -43,21 +43,21 @@ namespace ApexVisIns
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // Grabber 不為啟動狀態 // CamSelector 有選擇相機
-            e.CanExecute = CamConnect.IsEnabled;
+            //e.CanExecute = CamConnect.IsEnabled;
         }
         private void OpenDeviceCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if ((bool)CamConnect.IsChecked)
-            {
-                CamConnect.IsChecked = false;   // This will raise uncheck event
-                //CamConnect.IsChecked = Basler_Disconnect();
-            }
-            else
-            {
-                CamConnect.IsChecked = true;    // This will raise check event
-                //BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
-                //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
-            }
+            //if ((bool)CamConnect.IsChecked)
+            //{
+            //    CamConnect.IsChecked = false;   // This will raise uncheck event
+            //    //CamConnect.IsChecked = Basler_Disconnect();
+            //}
+            //else
+            //{
+            //    CamConnect.IsChecked = true;    // This will raise check event
+            //    //BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
+            //    //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
+            //}
         }
 
         private void StartGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -74,22 +74,22 @@ namespace ApexVisIns
 
         private void SingleShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = SingleShot.IsEnabled;
+            //e.CanExecute = SingleShot.IsEnabled;
         }
 
         private void SingleShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = ContinouseShot.IsEnabled;
+            //e.CanExecute = ContinouseShot.IsEnabled;
         }
 
         private void ContinousShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
@@ -137,7 +137,7 @@ namespace ApexVisIns
             OnTabIndex = byte.Parse(e.Parameter as string);
         }
 
-        private void TestGlobal(object sender, ExecutedRoutedEventArgs e)
+        private void GlobalTest(object sender, ExecutedRoutedEventArgs e)
         {
             Debug.WriteLine($"{OnTabIndex}");
 

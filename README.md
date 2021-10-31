@@ -47,23 +47,20 @@ Apex 外觀瑕疵檢測
 
 ### TO DO LIST
 
-* Change color of scoll bar
-* 移除 UVC / COIL 內容 
-* 載入初始 Camera config from .json
+[ ] Change color of scoll bar
+[ ] 移除 UVC / COIL 內容 
+[ ] 載入初始 Camera config from .json
 	* 需要建立 class for json object
-
-* 建立樹狀圖 (draw.io)
+[ ] 建立樹狀圖 (draw.io) 
 	* DataContext
-
-* 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
-+	* 否 => 拆除移至Toolbar.cs
-
-* DebugTab 綁定回BaslerCam
+[x] 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
+	* 否 => 拆除移至Toolbar.cs
+[x] DebugTab 綁定回BaslerCam
 	* 一次只會有一台相機
-
-* Config 根據型號儲存
-
-* 移除 Thermoter ()
+[x] Config 根據型號儲存
+[ ] 移除 Thermoter ()
+[ ] 移除舊Tab
+[ ] Read/Write UserSet
 
 ### Config Logic
 

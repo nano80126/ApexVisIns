@@ -108,7 +108,6 @@
         
         <!--Global-->
         <KeyBinding Modifiers="Ctrl" Key="G" Command="{StaticResource GlobalTest}"/>
-
     </Window.InputBindings>
     <!--//-->
     <Window.CommandBindings>
@@ -130,8 +129,7 @@
         <!--Config-->
 
         <!--Global-->
-        <CommandBinding Command="{StaticResource GlobalTest}" CanExecute="CanExcute" Executed="TestGlobal" />
-
+        <CommandBinding Command="{StaticResource GlobalTest}" CanExecute="CanExcute" Executed="GlobalTest" />
     </Window.CommandBindings> 
    
     <Border x:Name="MainBorder" HorizontalAlignment="Stretch" Style="{StaticResource MainWindowBorder}">
@@ -209,7 +207,7 @@
                                     </ToolBar.Resources>
 
                                     <!--相機選擇-->
-                                    <ComboBox x:Name="CamSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                    <!--<ComboBox x:Name="CamSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}" 
                                               Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                               materialDesign:HintAssist.Hint="Camera" 
                                               materialDesign:ComboBoxAssist.ShowSelectedItem="False"
@@ -223,10 +221,10 @@
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    </ComboBox>-->
 
                                     <!--開啟相機-->
-                                    <ToggleButton x:Name="CamConnect" ToolTip="(Ctrl+O) Open Device" MinWidth="45"
+                                    <!--<ToggleButton x:Name="CamConnect" ToolTip="(Ctrl+O) Open Device" MinWidth="45"
                                       Cursor="Hand" Focusable="False" IsChecked="False" Background="LimeGreen" Checked="CamConnect_Checked" Unchecked="CamConnect_Unchecked">
                                         <ToggleButton.Style>
                                             <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
@@ -241,11 +239,11 @@
                                                 <Setter Property="IsEnabled" Value="True"/>
                                             </Style>
                                         </ToggleButton.Style>
-                                    </ToggleButton>
+                                    </ToggleButton>-->
                                     <!--//-->
-                                    <Separator/>
+                                    <!--<Separator/>-->
                                     <!--單張擷取-->
-                                    <Button Name="SingleShot" VerticalAlignment="Center" Click="SingleShot_Click" Focusable="False" Foreground="Black" 
+                                    <!--<Button Name="SingleShot" VerticalAlignment="Center" Click="SingleShot_Click" Focusable="False" Foreground="Black" 
                                             ToolTip="(F5) Single Shot" Style="{StaticResource MaterialDesignFlatButton}">
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
@@ -261,21 +259,21 @@
                                                 </Style>
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
-                                    </Button>
+                                    </Button>-->
                                     <!--連續擷取-->
-                                    <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black"
+                                    <!--<Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black"
                                             IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"
                                             ToolTip="(F6) Continuous Shot" Style="{StaticResource MaterialDesignFlatButton}">
-                                        <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"-->
+                                        --><!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"--><!--
                                         <materialDesign:PackIcon Width="30" Height="26">
                                             <materialDesign:PackIcon.Style>
                                                 <Style TargetType="materialDesign:PackIcon">
                                                     <Style.Triggers>
-                                                        <!--
+                                                        --><!--
                                                         <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
                                                             <Setter Property="Kind" Value="VideocamOffOutline"/>
                                                         </DataTrigger>
-                                                        -->
+                                                        --><!--
                                                         <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
                                                             <Setter Property="Kind" Value="VideocamOffOutline"/>
                                                         </DataTrigger>
@@ -284,35 +282,35 @@
                                                 </Style>
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
-                                    </Button>
+                                    </Button>-->
                                     <!--//-->
-                                    <Separator/>
-                                    <!--解析度 (Resolution)-->
+                                    <!--<Separator/>
+                                    --><!--解析度 (Resolution)--><!--
                                     <Border>
                                         <TextBlock Padding="5 0" FontSize="16" TextAlignment="Center">
                                             <Run Text="{Binding Width, ElementName=ImageCanvas, Mode=OneWay, FallbackValue=0}"/>
                                             <materialDesign:PackIcon Kind="Close" Height="12" Margin="5 0" VerticalAlignment="Center"/>
                                             <Run Text="{Binding Height, ElementName=ImageCanvas, Mode=OneWay, FallbackValue=0}"/>
                                         </TextBlock>
-                                    </Border>
+                                    </Border>-->
                                     <!--//-->
-                                    <Separator/>
-                                    <!--縮放率 (Zoom Ratio)-->
+                                    <!--<Separator/>
+                                    --><!--縮放率 (Zoom Ratio)--><!--
                                     <Border>
                                         <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown">
                                             <Run Text="{Binding ZoomRatio, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, 
                                                 Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}"/>
                                             <Run Text="%"/>
                                         </TextBlock>
-                                    </Border>
+                                    </Border>-->
                                     <!--//-->
-                                    <Separator/>
-                                    <!--影像張數 (Frames)-->
+                                    <!--<Separator/>
+                                    --><!--影像張數 (Frames)--><!--
                                     <Border>
                                         <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" Text="{Binding Frames, Source={StaticResource BaslerCam}, Mode=OneWay, FallbackValue=0}"/>
                                     </Border>
-                                    <!--//-->
-                                    <Separator/>
+                                    --><!--//--><!--
+                                    <Separator/>-->
                                     <!--Tab Index-->
                                     <!--<ListBox x:Name="TabSelector" SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                              SelectionMode="Single" SelectionChanged="TabSelector_SelectionChanged" materialDesign:ListBoxAssist.IsToggle="False"
@@ -329,7 +327,7 @@
                                     <!--
                                     <Separator/>-->
                                     <!--切換Crosshair-->
-                                    <Button VerticalAlignment="Center" Click="ToggleCrosshair_Click" ToolTip="(F1) Show Crosshair" materialDesign:RippleAssist.IsDisabled="True" Height="36">
+                                    <!--<Button VerticalAlignment="Center" Click="ToggleCrosshair_Click" ToolTip="(F1) Show Crosshair" materialDesign:RippleAssist.IsDisabled="True" Height="36">
                                         <Button.Style>
                                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                                 <Style.Triggers>
@@ -342,9 +340,9 @@
                                             </Style>
                                         </Button.Style>
                                         <materialDesign:PackIcon Kind="TargetVariant" Width="30" Height="26"/>
-                                    </Button>
+                                    </Button>-->
                                     <!--輔助方塊-->
-                                    <Button VerticalAlignment="Center" Click="ToggleAssistRect_Click" ToolTip="(F2) Show Assist Rectangle" materialDesign:RippleAssist.IsDisabled="True" Height="36">
+                                    <!--<Button VerticalAlignment="Center" Click="ToggleAssistRect_Click" ToolTip="(F2) Show Assist Rectangle" materialDesign:RippleAssist.IsDisabled="True" Height="36">
                                         <Button.Style>
                                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                                 <Style.Triggers>
@@ -357,9 +355,9 @@
                                             </Style>
                                         </Button.Style>
                                         <materialDesign:PackIcon Kind="SquareOutline" Width="30" Height="26"/>
-                                    </Button>
+                                    </Button>-->
                                     <!--//-->
-                                    <Separator/>
+                                    <!--<Separator/>-->
 
                                     <!--#region Test region Test region Test region Test region Test region Test region Test region Test region Test region -->
                                     <!--<TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ConfigName, Path=Text}"/>-->
@@ -369,9 +367,9 @@
                                     <!--<TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ImageScroller, Path=ActualHeight}"/>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=MainToolbar, Path=ActualHeight}"/>-->
 
-                                    <Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                                    <!--<Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                                         <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26"/>
-                                    </Button>
+                                    </Button>-->
                                     <!--<TextBlock VerticalAlignment="Center" Text="{Binding Path=Temperature, Source={StaticResource Thermometer}, UpdateSourceTrigger=PropertyChanged}"/>-->
 
                                     <!--#endregion-->
@@ -384,9 +382,9 @@
 
                                 <ToolBar x:Name="SubToolbar" Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}"
                                          Height="38" ToolBarTray.IsLocked="True" Focusable="False">
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand">
+                                    <!--<Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand">
                                         <materialDesign:PackIcon Kind="Cog" Width="30" Height="26"/>
-                                    </Button>
+                                    </Button>-->
 
                                     <!--<TextBlock Margin="5 0" VerticalAlignment="Center" Text="{Binding ElementName=Tab1Grid, Path=ActualHeight}" />
                                     <TextBlock Margin="5 0" VerticalAlignment="Center" Text="{Binding ElementName=Tab2Grid, Path=ActualHeight}" />
