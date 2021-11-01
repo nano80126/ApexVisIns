@@ -91,10 +91,10 @@ namespace ApexVisIns
         private void RatioTextblock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Reset Zoom Ratio
-            if (e.ClickCount >= 2 && e.LeftButton == MouseButtonState.Pressed)
-            {
-                ZoomRatio = 100;
-            }
+            //if (e.ClickCount >= 2 && e.LeftButton == MouseButtonState.Pressed)
+            //{
+            //    ZoomRatio = 100;
+            //}
         }
 
         /// <summary>

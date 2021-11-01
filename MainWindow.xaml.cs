@@ -78,13 +78,15 @@ namespace ApexVisIns
         /// </summary>
         private void InitializePanels()
         {
+#if false
             // Left Top
             ConfigPanel.MainWindow = this;
             OffsetPanel.MainWindow = this;
             // Left Bottom
             BFRTestingPanel.MainWindow = this;
             // Right Top
-            ThermometerPanel.MainWindow = this;
+            ThermometerPanel.MainWindow = this; 
+#endif
             // Tabs
             //ListViewTab.MainWindow = this;
 
@@ -160,11 +162,11 @@ namespace ApexVisIns
             {
                 if (e.Delta > 0)
                 {
-                    ZoomRatio += 5;
+                    //ZoomRatio += 5;
                 }
                 else
                 {
-                    ZoomRatio -= 5;
+                    //ZoomRatio -= 5;
                 }
             }
             else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -198,15 +200,15 @@ namespace ApexVisIns
 
             if (Keyboard.IsKeyDown(Key.Space))
             {
-                //canvas.Cursor = Cursors.Arrow;
-                //MoveImage = true;
-                System.Windows.Point pt2ImageGrid = e.GetPosition(ImageGrid);   // Point to ImageGrid
-                System.Windows.Point transformPoint = ImageGrid.TransformToVisual(ImageViewbox).Transform(pt2ImageGrid);    // Add ImageViewbox offset
+                ////canvas.Cursor = Cursors.Arrow;
+                ////MoveImage = true;
+                //System.Windows.Point pt2ImageGrid = e.GetPosition(ImageGrid);   // Point to ImageGrid
+                //System.Windows.Point transformPoint = ImageGrid.TransformToVisual(ImageViewbox).Transform(pt2ImageGrid);    // Add ImageViewbox offset
 
-                TempX = transformPoint.X;
-                TempY = transformPoint.Y;
+                //TempX = transformPoint.X;
+                //TempY = transformPoint.Y;
 
-                _ = canvas.CaptureMouse();
+                //_ = canvas.CaptureMouse();
             }
             else if (AssistRect.Enable)
             {

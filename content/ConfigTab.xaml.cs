@@ -321,7 +321,6 @@ namespace ApexVisIns.content
         private void WriteConfig(Camera camera, DeviceConfig config)
         {
 
-
         }
 
         /// <summary>

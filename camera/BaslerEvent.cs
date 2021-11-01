@@ -351,10 +351,10 @@ namespace ApexVisIns
             // 觸發 PropertyChanged
             BaslerCam.PropertyChange();
             //SyncConfiguration(BaslerCam.Config, BaslerCam);     // 同步組態 和 相機當前設定
-            ConfigPanel.SyncConfiguration(BaslerCam.Config, BaslerCam);     // 同步組態 和 相機當前設定
+            //ConfigPanel.SyncConfiguration(BaslerCam.Config, BaslerCam);     // 同步組態 和 相機當前設定
 
             // 變更縮放大小
-            ZoomRatio = 100;    // Set Zoom Ratio to 100, or it will occurred some bugs
+            //ZoomRatio = 100;    // Set Zoom Ratio to 100, or it will occurred some bugs
 
             // 更改 Title
             Title = $"Model: {modelName}, S/N: {serialNumber}";
@@ -362,9 +362,6 @@ namespace ApexVisIns
             // 暫停 Camera Finder
             //finder.Pause();
             CameraEnumer.WorkerPause();
-
-
-            Debug.WriteLine($"Camera opened fired");
         }
 
         /// <summary>

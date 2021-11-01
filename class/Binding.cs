@@ -32,29 +32,29 @@ namespace ApexVisIns
             }
         }
         
-        public double ZoomRatio
-        {
-            get => ImageViewbox.Width / ImageCanvas.Width * 100;
-            set
-            {
-                int v = (int)Math.Floor(value);
+        //public double ZoomRatio
+        //{
+        //    //get => ImageViewbox.Width / ImageCanvas.Width * 100;
+        //    //set
+        //    //{
+        //    //    int v = (int)Math.Floor(value);
 
-                if (20 > v)
-                {
-                    ImageViewbox.Width = 0.2 * ImageCanvas.Width;
-                }
-                else if (v > 200)
-                {
-                    ImageViewbox.Width = 2 * ImageCanvas.Width;
-                }
-                else
-                {
-                    double ratio = value / 100;
-                    ImageViewbox.Width = ratio * ImageCanvas.Width;
-                }
-                OnPropertyChanged(nameof(ZoomRatio));
-            }
-        }
+        //    //    if (20 > v)
+        //    //    {
+        //    //        ImageViewbox.Width = 0.2 * ImageCanvas.Width;
+        //    //    }
+        //    //    else if (v > 200)
+        //    //    {
+        //    //        ImageViewbox.Width = 2 * ImageCanvas.Width;
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        double ratio = value / 100;
+        //    //        ImageViewbox.Width = ratio * ImageCanvas.Width;
+        //    //    }
+        //    //    OnPropertyChanged(nameof(ZoomRatio));
+        //    //}
+        //}
 
         /// <summary>
         /// 主影像 Source
