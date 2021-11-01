@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace ApexVisIns
 {
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+    /// This file is for binding data of application (public bindings) 
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     {
         private ImageSource _imgSrc;
@@ -14,7 +17,7 @@ namespace ApexVisIns
         /// <summary>
         /// DEBUG TAB
         /// </summary>
-        private int _onTabIndex = 3;
+        private int _onTabIndex = 2;
 
         /// <summary>
         /// Tab active index
@@ -74,13 +77,6 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //private static void OnPropertyChanged(string propertyName = null)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
     }
 
 

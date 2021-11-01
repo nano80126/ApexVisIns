@@ -6,6 +6,9 @@ using System.Windows.Input;
 
 namespace ApexVisIns
 {
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+    /// This file will be delete (wait for comfirmation)
+    /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     public partial class MainWindow : System.Windows.Window
     {
         #region 變數宣告

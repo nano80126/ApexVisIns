@@ -222,6 +222,14 @@
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" 
                      Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <!--//-->
+
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualWidth}"/>
+                
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualHeight}"/>
+
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualWidth}"/>
+
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualHeight}"/>
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -265,11 +273,12 @@
                                     <Canvas x:Name="ImageCanvas" Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                             DataContext="{Binding ElementName=Toolbar, Path=DataContext}"
                                             d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
-                                            Width="{Binding Width, UpdateSourceTrigger=PropertyChanged}" 
-                                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="{Binding Width, UpdateSourceTrigger=PropertyChanged, FallbackValue=1000}" 
+                                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged, FallbackValue=1000}"
                                             PreviewMouseDown="ImageCanvas_MouseDown" PreviewMouseUp="ImageCanvas_MouseUp" PreviewMouseMove="ImageCanvas_MouseMove"
                                             MouseLeave="ImageCanvas_MouseLeave">
-                                        
+                                        <!--MinWidth="100" MinHeight="100"-->
+
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                                 Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>

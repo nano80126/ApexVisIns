@@ -129,30 +129,16 @@ namespace ApexVisIns
             #endregion
 
             //Debug.WriteLine($"{DeviceConfigs.Count}");
-
-            //foreach (BaslerCam item in BaslerCams)
-            //{
-            //    Debug.WriteLine($"{item.SerialNumber} {item.ConfigName} {item.Config.Name} {item.Width}");
-            //}
-
-            //for (int i = 0; i < AppTabControl.Items.Count; i++)
-            //{
-            //    OnTabIndex = i;
-            //}
-
             //OnTabIndex = 0;
-
             //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             CameraEnumer?.WorkerEnd();
-        
-            //Tab2Grid?.PauseRenderTimer();
         }
 
-        #region App Content
+        #region App Content 這邊可以全部刪掉 (待確認)
         private void ImageScroller_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ScrollViewer viewer = sender as ScrollViewer;
@@ -258,70 +244,70 @@ namespace ApexVisIns
 
         private void ImageCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            Canvas canvas = sender as Canvas;
-            System.Windows.Point pt = e.GetPosition(canvas);
+            //Canvas canvas = sender as Canvas;
+            //System.Windows.Point pt = e.GetPosition(canvas);
 
-            double _x = pt.X < 0 ? 0 : pt.X > canvas.Width ? canvas.Width : pt.X;
-            double _y = pt.Y < 0 ? 0 : pt.Y > canvas.Height ? canvas.Height : pt.Y;
+            //double _x = pt.X < 0 ? 0 : pt.X > canvas.Width ? canvas.Width : pt.X;
+            //double _y = pt.Y < 0 ? 0 : pt.Y > canvas.Height ? canvas.Height : pt.Y;
 
-            if (canvas.IsMouseCaptured)
-            {
-                if (Keyboard.IsKeyDown(Key.Space))
-                {
-                    /// Point from ImageGrid LeftTop Pos
-                    System.Windows.Point pt2 = e.GetPosition(ImageGrid);
-
-                    ImageScroller.ScrollToHorizontalOffset(TempX - pt2.X);
-                    ImageScroller.ScrollToVerticalOffset(TempY - pt2.Y);
-                }
-                else if (AssistRect.Enable && AssistRect.MouseDown)
-                {
-                    if (e.LeftButton == MouseButtonState.Pressed)
-                    {
-                        if (_x < AssistRect.TempX)
-                        {
-                            AssistRect.X = _x;
-                        }
-
-                        if (_y < AssistRect.TempY)
-                        {
-                            AssistRect.Y = _y;
-                        }
-
-                        // RECT.Width = Math.Abs(_x - RECT.TempX);
-                        // RECT.Height = Math.Abs(_y - RECT.TempY);
-                        AssistRect.Width = Math.Abs(_x - AssistRect.TempX);
-                        AssistRect.Height = Math.Abs(_y - AssistRect.TempY);
-                    }
-                    else if (e.MiddleButton == MouseButtonState.Pressed)
-                    {
-                        // RECT.X = RECT.TempX + _x - RECT.OftX;
-                        // RECT.Y = RECT.TempY + _y - RECT.OftY;
-                        double pX = AssistRect.TempX + _x - AssistRect.OftX;
-                        double pY = AssistRect.TempY + _y - AssistRect.OftY;
-
-                        AssistRect.X = pX < 0 ? 0 : pX + AssistRect.Width > canvas.Width ? canvas.Width - AssistRect.Width : pX;
-                        AssistRect.Y = pY < 0 ? 0 : pY + AssistRect.Height > canvas.Height ? canvas.Height - AssistRect.Height : pY;
-                    }
-                }
-            }
-
-            // 變更 座標
-            //AssistRect.PosX = (int)_x;
-            //AssistRect.PosY = (int)_y;
-
-            // 變更 座標
-            //Indicator.X = (int)_x;
-            //Indicator.Y = (int)_y;
-
-            Indicator.SetPoint((int)_x, (int)_y);
-
-            //// 變更 RGB
-            //if (Indicator.Image != null) 
+            //if (canvas.IsMouseCaptured)
             //{
-            //    Indicator.SetPoint((int)_x, (int)_y);
+            //    if (Keyboard.IsKeyDown(Key.Space))
+            //    {
+            //        /// Point from ImageGrid LeftTop Pos
+            //        System.Windows.Point pt2 = e.GetPosition(ImageGrid);
+
+            //        ImageScroller.ScrollToHorizontalOffset(TempX - pt2.X);
+            //        ImageScroller.ScrollToVerticalOffset(TempY - pt2.Y);
+            //    }
+            //    else if (AssistRect.Enable && AssistRect.MouseDown)
+            //    {
+            //        if (e.LeftButton == MouseButtonState.Pressed)
+            //        {
+            //            if (_x < AssistRect.TempX)
+            //            {
+            //                AssistRect.X = _x;
+            //            }
+
+            //            if (_y < AssistRect.TempY)
+            //            {
+            //                AssistRect.Y = _y;
+            //            }
+
+            //            // RECT.Width = Math.Abs(_x - RECT.TempX);
+            //            // RECT.Height = Math.Abs(_y - RECT.TempY);
+            //            AssistRect.Width = Math.Abs(_x - AssistRect.TempX);
+            //            AssistRect.Height = Math.Abs(_y - AssistRect.TempY);
+            //        }
+            //        else if (e.MiddleButton == MouseButtonState.Pressed)
+            //        {
+            //            // RECT.X = RECT.TempX + _x - RECT.OftX;
+            //            // RECT.Y = RECT.TempY + _y - RECT.OftY;
+            //            double pX = AssistRect.TempX + _x - AssistRect.OftX;
+            //            double pY = AssistRect.TempY + _y - AssistRect.OftY;
+
+            //            AssistRect.X = pX < 0 ? 0 : pX + AssistRect.Width > canvas.Width ? canvas.Width - AssistRect.Width : pX;
+            //            AssistRect.Y = pY < 0 ? 0 : pY + AssistRect.Height > canvas.Height ? canvas.Height - AssistRect.Height : pY;
+            //        }
+            //    }
             //}
-            e.Handled = true;
+
+            //// 變更 座標
+            ////AssistRect.PosX = (int)_x;
+            ////AssistRect.PosY = (int)_y;
+
+            //// 變更 座標
+            ////Indicator.X = (int)_x;
+            ////Indicator.Y = (int)_y;
+
+            //Indicator.SetPoint((int)_x, (int)_y);
+
+            ////// 變更 RGB
+            ////if (Indicator.Image != null) 
+            ////{
+            ////    Indicator.SetPoint((int)_x, (int)_y);
+            ////}
+            //e.Handled = true;
         }
 
         private void ImageCanvas_MouseUp(object sender, MouseButtonEventArgs e)
@@ -424,21 +410,6 @@ namespace ApexVisIns
             //nitinolBFR.ptQueue2.Clear();
 
             BFRTrail.AddRecord(new Random().Next(0, 100), new Random().Next(20, 80), X++);
-
-
-
-            //Task.Run(() =>
-            //{
-            //    int i = 0;
-            //    while (true)
-            //    {
-            //        Dispatcher.Invoke(() =>
-            //        {
-            //            BFRTrail.AddRecord(new Random().Next(0, 100), new Random().Next(20, 80), i++);
-            //        });
-            //        SpinWait.SpinUntil(() => false, 500);
-            //    }
-            //});
         }
     }
 
