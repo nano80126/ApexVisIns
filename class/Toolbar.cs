@@ -9,7 +9,7 @@ namespace ApexVisIns
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     /// This file will be delete (wait for comfirmation)
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
         #region 變數宣告
         //private double centerY = 0;
@@ -36,26 +36,27 @@ namespace ApexVisIns
         private readonly Stopwatch processSw = new Stopwatch();
         #endregion
 
-//        private void CamConnect_Checked(object sender, RoutedEventArgs e)
-//        {
-//            ToggleButton Toggle = sender as ToggleButton;
-//#if BASLER
-//            BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
-//            Toggle.IsChecked = Basler_Connect(info.SerialNumber);
-//#elif UVC
-//            Toggle.IsChecked = Uvc_Connect(0);
-//#endif
-//        }
 
-//        private void CamConnect_Unchecked(object sender, RoutedEventArgs e)
-//        {
-//            ToggleButton Toggle = sender as ToggleButton;
-//#if BASLER
-//            Toggle.IsChecked = Basler_Disconnect();
-//#elif UVC
-//            Toggle.IsChecked = Uvc_Disconnect();
-//#endif
-//        }
+        //        private void CamConnect_Checked(object sender, RoutedEventArgs e)
+        //        {
+        //            ToggleButton Toggle = sender as ToggleButton;
+        // #if BASLER
+        //            BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
+        //            Toggle.IsChecked = Basler_Connect(info.SerialNumber);
+        // #elif UVC
+        //            Toggle.IsChecked = Uvc_Connect(0);
+        // #endif
+        //        }
+
+        //        private void CamConnect_Unchecked(object sender, RoutedEventArgs e)
+        //        {
+        //            ToggleButton Toggle = sender as ToggleButton;
+        // #if BASLER
+        //            Toggle.IsChecked = Basler_Disconnect();
+        // #elif UVC
+        //            Toggle.IsChecked = Uvc_Disconnect();
+        // #endif
+        //        }
 
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace ApexVisIns
         {
             //
         }
-
+        
         /* ================================= 以下測試用 ================================= */
     }
 }

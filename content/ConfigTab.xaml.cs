@@ -271,7 +271,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
-        private void ReadConfig(Camera camera, DeviceConfig config)
+        private static void ReadConfig(Camera camera, DeviceConfig config)
         {
             config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
             config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
@@ -280,10 +280,9 @@ namespace ApexVisIns.content
             config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
             config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
-            // // // // // // // // // // // // // /
+            // // // // // // // // // // // // // // // // // // // // // // // //
             // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
             // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
-
             config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
             config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
 
@@ -321,6 +320,8 @@ namespace ApexVisIns.content
         private void WriteConfig(Camera camera, DeviceConfig config)
         {
 
+
+
         }
 
         /// <summary>
@@ -333,12 +334,13 @@ namespace ApexVisIns.content
             // Get UsetSet string and read from camera
             string userSet = (DeviceCard.DataContext as DeviceConfig).UserSet;
 
+            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
             Camera camera = MainWindow.BaslerCam.Camera;
 
             camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
-
+            ReadConfig(camera, config);
             Debug.WriteLine($"{userSet}");
         }
 

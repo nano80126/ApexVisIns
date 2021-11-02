@@ -33,27 +33,28 @@ namespace ApexVisIns
         #endregion
 
         #region Cameras
-        public static BaslerCam BaslerCam;
-        public static BaslerCam[] BaslerCams;
+        public static BaslerCam BaslerCam { get; set; }
+        public static BaslerCam[] BaslerCams { get; set; }
+
         //public UvcCam UvcCam;
         #endregion
 
         #region Devices
+        public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         //public static DeviceConfig[] DeviceConfigs;
-        public static ObservableCollection<DeviceConfig> DeviceConfigs;
         #endregion
 
         #region Resources
-        public Crosshair Crosshair;     // 待刪
-        public AssistRect AssistRect;   // 待刪
-        public AssistPoint[] AssistPoints;  
-        public Indicator Indicator;     // 待刪
-        public static MsgInformer MsgInformer;
+        public Crosshair Crosshair;         // 待刪
+        public AssistRect AssistRect;       // 待刪
+        public AssistPoint[] AssistPoints;  // 待刪
+        public Indicator Indicator;         // 待刪
+        public static MsgInformer MsgInformer { get; set; }
         #endregion
 
         #region BFR
-        //public BFR.BFR BFR;
         public BFR.Trail BFRTrail;
+        //public BFR.BFR BFR;
         #endregion
 
         #region Varibles
