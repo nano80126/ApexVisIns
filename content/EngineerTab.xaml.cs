@@ -54,7 +54,12 @@ namespace ApexVisIns.content
         private void InitializePanels()
         {
             // ConfigPanel.MainWindow = this.Parent;
+            //ConfigPanel.MainWindow = MainWindow;
             ConfigPanel.EngineerTab = this;
+
+
+            Debug.WriteLine(ConfigPanel.MainWindow);
+            Debug.WriteLine(ConfigPanel.EngineerTab);
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)

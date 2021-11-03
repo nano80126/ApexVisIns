@@ -303,15 +303,19 @@ namespace ApexVisIns.module
 
                 Cam.PropertyChange();
 
+
                 // 重置 ImageSource
                 MainWindow.ImageSource = null;
+
 
                 // Reset ZoomRatio
                 EngineerTab.ZoomRatio = 100;
 
+
                 // offset 置中 
                 // CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 // MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+
 
                 // MainWindow.Indicator.Image = null;
                 // 重置 Image

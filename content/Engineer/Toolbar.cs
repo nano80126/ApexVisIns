@@ -149,6 +149,13 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, E.Message, MsgInformer.Message.MessageType.Warning);
             }
+            finally
+            {
+                if (cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    cam.Camera.StreamGrabber.Stop();
+                }
+            }
         }
 
 

@@ -93,6 +93,7 @@ namespace ApexVisIns
 
             #region Tabs
             EngineerTab.MainWindow = this;
+            EngineerTab.ConfigPanel.MainWindow = this;
             #endregion
         }
 
