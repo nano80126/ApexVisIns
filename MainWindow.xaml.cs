@@ -39,10 +39,12 @@ namespace ApexVisIns
         //public UvcCam UvcCam;
         #endregion
 
+
         #region Devices
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         //public static DeviceConfig[] DeviceConfigs;
         #endregion
+
 
         #region Resources
         public Crosshair Crosshair;         // 待刪

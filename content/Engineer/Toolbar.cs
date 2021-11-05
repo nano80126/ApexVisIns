@@ -17,6 +17,7 @@ namespace ApexVisIns.content
 {
     public partial class EngineerTab : StackPanel
     {
+
         #region Toolbar 事件
         private void CamSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -80,8 +81,8 @@ namespace ApexVisIns.content
         }
         #endregion
 
-        #region Toolbar 引發之 Basler Camera Event
 
+        #region Toolbar 引發之 Basler Camera Event
         private bool Basler_Connect(BaslerCam cam, string serialNumber)
         {
             try
@@ -124,7 +125,6 @@ namespace ApexVisIns.content
             return false;
         }
 
-
         public void Basler_SingleGrab(BaslerCam cam)
         {
             try
@@ -158,7 +158,6 @@ namespace ApexVisIns.content
             }
         }
 
-
         public void Basler_ContinousGrab(BaslerCam cam)
         {
             try
@@ -186,7 +185,6 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, E.Message, MsgInformer.Message.MessageType.Warning);
             }
         }
-
 
         #region 相機開啟 / 關閉事件
         private void Camera_CameraOpened(object sender, EventArgs e)
@@ -304,7 +302,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region StreamGrabber 事件
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
         {
@@ -345,6 +342,8 @@ namespace ApexVisIns.content
             }
         }
         #endregion
+
+
 
         #endregion
     }
