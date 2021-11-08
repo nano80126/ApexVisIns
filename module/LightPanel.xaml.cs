@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,15 +28,32 @@ namespace ApexVisIns.module
             InitializeComponent();
         }
 
-
-
         private void ComPortSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
 
         }
 
         private void ComPortConnect_Click(object sender, RoutedEventArgs e)
         {
+
+
+        }
+
+        private void ChannelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listBox = sender as ListBox;
+
+
+            Debug.WriteLine($"{listBox.SelectedItem}");
+            Debug.WriteLine($"{listBox.SelectedIndex}");
+        }
+
+        private void LightSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+            Debug.WriteLine($"Value: {e.NewValue} {e.OldValue}");
+
 
         }
     }

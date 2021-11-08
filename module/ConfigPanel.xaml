@@ -140,7 +140,6 @@
                         Style="{StaticResource MaterialDesignToolButton}"
                         Click="ConfigDelBtn_Click">
                 <!--IsEnabled="{Binding ElementName=ConfigSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"-->
-
                 </Button>
                 <!-- Row 2, Width -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8 0 0 0" Text="Width" />
