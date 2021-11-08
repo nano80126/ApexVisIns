@@ -14,7 +14,7 @@
         <intgrvision:Thermometer x:Key="Thermometer" Interval="100"/>
     </materialDesign:Card.Resources>
 
-    <DockPanel Background="Transparent" DataContext="{StaticResource Thermometer}">
+    <DockPanel Background="Transparent" Margin="2 0" DataContext="{StaticResource Thermometer}">
         <DockPanel x:Name="Header" DockPanel.Dock="Top">
             <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"
                                     ToolTip="Temperature" ToolTipService.Placement="Left" Cursor="Help"/>

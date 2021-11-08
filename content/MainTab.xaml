@@ -40,7 +40,23 @@
                     </Style>-->
                 </ToolBar.Resources>
 
-                <!--#region Camera Connection Status Panel -->
+                <!--#region Light Contorller Connection Status Bar -->
+                <Border Margin="0 0 12 0">
+                    <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
+                        <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                        <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Setter Property="Kind" Value="Close"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
+                    </Canvas>
+                </Border>
+                <!--#endregion-->
+
+                <!--#region Camera Connection Status Bar -->
                 <Border>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Resources>
@@ -56,7 +72,25 @@
                                 <materialDesign:PackIcon.Style>
                                     <Style TargetType="materialDesign:PackIcon">
                                         <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                        <!--<Style.Triggers>
+                                            <DataTrigger>
+                                                <Setter Property="Kind" Value="Check"/>
+                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>-->
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Canvas>
+
+                        <Canvas VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Kind" Value="Close"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
 
                                         <!--<Style.Triggers>
                                             <DataTrigger>
@@ -75,7 +109,7 @@
                                 <materialDesign:PackIcon.Style>
                                     <Style TargetType="materialDesign:PackIcon">
                                         <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
 
                                         <!--<Style.Triggers>
                                             <DataTrigger>
@@ -94,26 +128,7 @@
                                 <materialDesign:PackIcon.Style>
                                     <Style TargetType="materialDesign:PackIcon">
                                         <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"></Setter>
-
-                                        <!--<Style.Triggers>
-                                            <DataTrigger>
-                                                <Setter Property="Kind" Value="Check"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>-->
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
-                        </Canvas>
-
-                        <Canvas VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
 
                                         <!--<Style.Triggers>
                                             <DataTrigger>
@@ -258,6 +273,7 @@
                 <Viewbox x:Name="Image1Viewbox">
                     <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor},UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                    <!--<TextBlock></TextBlock>-->
                 </Viewbox>
             </Border>
             
@@ -265,11 +281,19 @@
             <Border Grid.Row="0" Grid.Column="2" x:Name="Image2Border" Background="{StaticResource ColorInfoTransparent}">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <Run>Camera 2</Run>
+                    <!--<Run>Camera 2</Run>
                     <LineBreak/>
                     <Run Text="{Binding ElementName=Image1Border, Path=ActualWidth, Mode=OneWay}"/>
                     <Run>x</Run>
-                    <Run Text="{Binding ElementName=Image1Border, Path=ActualHeight, Mode=OneWay}"/>
+                    <Run Text="{Binding ElementName=Image1Border, Path=ActualHeight, Mode=OneWay}"/>-->
+
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Camera 2&#x0d;&#x0a;{0} x {1}">
+                            <Binding ElementName="Image2Border" Path="ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="Image2Border" Path="ActualHeight" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+
                 </TextBlock>
             </Border>
 
@@ -277,33 +301,68 @@
             <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" Background="{StaticResource ColorOrangeTransparent}">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <Run Text="Camera 3"/>
+                    <!--<Run Text="Camera 3"/>
                     <LineBreak/>
                     <Run Text="{Binding ElementName=Image3Border, Path=ActualWidth, Mode=OneWay}"/>
                     <Run>x</Run>
-                    <Run Text="{Binding ElementName=Image3Border, Path=ActualHeight, Mode=OneWay}"/>
+                    <Run Text="{Binding ElementName=Image3Border, Path=ActualHeight, Mode=OneWay}"/>-->
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Camera 3&#x0d;&#x0a;{0} x {1}">
+                            <Binding ElementName="Image3Border" Path="ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="Image3Border" Path="ActualHeight" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
                 </TextBlock>
             </Border>
 
             <!--Image 4-->
             <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" Background="{StaticResource ColorDeepOrange}">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">camera 4</TextBlock>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"  TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                    <!--<Run Text="Camera 4"/>
+                    <LineBreak/>
+                    <Run Text="{Binding ElementName=Image4Border, Path=ActualWidth, Mode=OneWay}"/>
+                    <Run Text="x"></Run>
+                    <Run></Run>-->
+                    <!--<Run>-->
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Camera 4&#x0d;&#x0a;{0} x {1}">
+                            <Binding ElementName="Image4Border" Path="ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="Image4Border" Path="ActualHeight" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                    <!--</Run>-->
+                </TextBlock>
             </Border>
 
             <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" Background="{StaticResource ColorSuccessTransparent}">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <Run Text="Procedure Block"/>
+                    <!--<Run Text="Procedure Block"/>
                     <LineBreak/>
                     <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualWidth, Mode=OneWay}"/>
                     <Run>x</Run>
-                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualHeight, Mode=OneWay}"/>
+                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualHeight, Mode=OneWay}"/>-->
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Procedure Block&#x0d;&#x0a;{0} x {1}">
+                            <Binding ElementName="ProcedureBorder"  Path="ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="ProcedureBorder" Path="ActualHeight" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
                 </TextBlock>
             </Border>
 
             <!--Record List-->
-            <Border Grid.RowSpan="4" Grid.Column="3" Background="{StaticResource ColorBlueGrayTranparent}">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>
+            <Border Grid.RowSpan="4" Grid.Column="3" x:Name="RecordListBorder" Background="{StaticResource ColorBlueGrayTranparent}">
+                <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>-->
+
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}"> 
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Record List&#x0d;&#x0a;{0} x {1}">
+                            <Binding ElementName="RecordListBorder"  Path="ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="RecordListBorder" Path="ActualHeight" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </Border>
         </Grid>
         <!--</StackPanel>-->

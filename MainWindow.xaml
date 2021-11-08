@@ -301,8 +301,7 @@
                         </ListView>
                         <!--//-->
                         <Button x:Name="MessageClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="MessageClearBtn_Click" Focusable="False"
-                                Foreground="Gray"
-                                Style="{StaticResource MaterialDesignFlatButton}">
+                                Foreground="Gray" Style="{StaticResource MaterialDesignFlatButton}">
                             <!--
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -398,8 +397,7 @@
                             </ListView.View>
                         </ListView>
                         <!--//-->
-                        <Button x:Name="InfoClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="InfoClearBtn_Click" Focusable="False"
-                                Foreground="Gray" Style="{StaticResource MaterialDesignFlatButton}">
+                        <Button x:Name="InfoClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="InfoClearBtn_Click" Focusable="False" Foreground="Gray" Style="{StaticResource MaterialDesignFlatButton}">
                             <materialDesign:PackIcon Kind="TrashCan" Width="30" Height="26"/>
                         </Button>
                     </StackPanel>

@@ -6,7 +6,7 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      mc:Ignorable="d" 
                      d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="Transparent" Height="120">
+    <Grid Background="Transparent" Height="120" Margin="2 0">
         <Grid.Resources>
             <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}"/>
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}"/>

@@ -1,0 +1,109 @@
+﻿<materialDesign:Card x:Class="ApexVisIns.module.LightPanel"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                     xmlns:local="clr-namespace:ApexVisIns.module"
+                     mc:Ignorable="d"
+                     d:DesignHeight="450" d:DesignWidth="800">
+    <materialDesign:Card.Resources>
+        <!-- // -->
+    </materialDesign:Card.Resources>
+    
+    <DockPanel Background="Transparent" Margin="2 0">
+        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+            <materialDesign:PackIcon Kind="LightbulbOutline" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"
+                                     ToolTip="Light Control" ToolTipService.Placement="Right" Cursor="Help"/>
+
+            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="光源控制" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+            <!--<TextBlock></TextBlock>-->
+        </DockPanel>
+        <!--//-->
+        <Separator DockPanel.Dock="Top" Margin="0 8"/>
+        <!--//-->
+        <Grid DockPanel.Dock="Top" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" MinWidth="135"
+                      Margin="0 0 12 0" Padding="5 3" MaxDropDownHeight="200"
+                      materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
+                      materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
+                      SelectionChanged="ComPortSelector_SelectionChanged"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0">
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="1" Margin="8 0" Click="ComPortConnect_Click">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
+                        <Setter Property="MinHeight" Value="0"/>
+                    </Style>
+                </Button.Style>
+
+                <TextBlock Text="連線"/>
+            </Button>
+
+            <!--
+            <Button Grid.Row="0" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0" Content="刪除" Foreground="{StaticResource ColorOrange}" 
+                    Style="{StaticResource MaterialDesignToolButton}" Click="ConfigDelBtn_Click"/>
+            -->
+
+            <!--<StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Center">
+                <RadioButton GroupName="GroupChoiceChip" Content="Ch1" Margin="12 0" IsChecked="True" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
+                <RadioButton GroupName="GroupChoiceChip" Content="Ch2" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
+                <RadioButton GroupName="GroupChoiceChip" Content="Ch3" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
+                <RadioButton GroupName="GroupChoiceChip" Content="Ch4" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
+            </StackPanel>-->
+
+            <ListBox x:Name="RadioButtonGroupChoiceChipPrimary" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" 
+                     Margin="0 8" Style="{StaticResource MaterialDesignChoiceChipPrimaryListBox}">
+                <ListBoxItem IsSelected="True" Content="Ch1" Margin="8 0"/>
+                <ListBoxItem Content="Ch2" Margin="8 0"/>
+                <ListBoxItem Content="Ch3" Margin="8 0"/>
+                <ListBoxItem Content="Ch4" Margin="8 0"/>
+            </ListBox>
+
+            <Slider Grid.Row="2" Grid.Column="0" Minimum="0" Maximum="1023" Value="0" Focusable="False" Margin="0 8"
+                    VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                    TickFrequency="32" TickPlacement="BottomRight"
+                    Style="{StaticResource MaterialDesignDiscreteSlider}"/>
+
+            
+            <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 8" Width="60" TextAlignment="Center" 
+                     IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+            
+            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ComPortSelector, Path=ActualHeight}"/>
+                    <materialDesign:PackIcon Kind="Send" Width="30" Height="26" Margin="12 0 0 0"/>
+                </StackPanel> 
+            </Button>
+
+            
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding ActualHeight, ElementName=ComPortSelector}"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ActualHeight, ElementName=ComPortConnect}"/>
+
+            
+        </Grid>
+    </DockPanel>
+</materialDesign:Card>
