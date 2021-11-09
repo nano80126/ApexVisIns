@@ -81,6 +81,9 @@
 
             <io:SerialPort x:Key="SerialPort"/>
 
+            <local:LightController x:Key="LightController" Channels="4"/>
+
+
             <!-- 相機 DEBUG 測試使用 -->
             <local:BaslerCam x:Key="BaslerCam" ConfigName="Default">
                 <local:BaslerCam.Config>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,17 +23,25 @@ namespace ApexVisIns.content
     {
         #region Resources
 
-
         #endregion
 
         #region Variables
         public MainWindow MainWindow { get; set; }
         #endregion
 
-
         public MainTab()
         {
             InitializeComponent();
+        }
+
+        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Main Tab Load");
+        }
+
+        private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Main Tab Unload");
         }
     }
 }

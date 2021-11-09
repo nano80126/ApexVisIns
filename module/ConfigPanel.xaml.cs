@@ -57,6 +57,8 @@ namespace ApexVisIns.module
             }
 
             SetBinding();
+            
+            Debug.WriteLine("Config Panel Unloaded");
         }
 
         private void Card_Unloaded(object sender, RoutedEventArgs e)

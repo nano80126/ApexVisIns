@@ -72,6 +72,7 @@
                       materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
                       materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Path=Background}"
                       ItemsSource="{Binding ComPortSource, Source={StaticResource LightEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                      IsEnabled="{Binding IsComOpen, Source={StaticResource LightController}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanInverter}}"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -84,30 +85,29 @@
 
             <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="1" Margin="8 0 0 0" 
                     IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
+                    materialDesign:RippleAssist.IsDisabled="True" Foreground="{StaticResource ColorSuccess}"
                     Click="ComPortConnect_Click">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
                         <Setter Property="Content" Value="連線"/>
 
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsOpen, Source={StaticResource SerialPort}, Mode=OneWay, UpdateSourceTrigger=LostFocus}" Value="True">
+                            <DataTrigger Binding="{Binding IsComOpen, Source={StaticResource LightController}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                 <Setter Property="Content" Value="斷線"/>
                             </DataTrigger>
                         </Style.Triggers>
-                        <!--<Setter Property="MinHeight" Value="0"/>-->
-                        <!--<Setter Property="Background" Value="Red"/>-->
                     </Style>
                 </Button.Style>
-                
-                <TextBlock Text="連線"/>
+                <!--<TextBlock Text="連線"/>-->
             </Button>
 
             <!--
             <Button Grid.Row="0" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0" Content="刪除" Foreground="{StaticResource ColorOrange}" 
-                    Style="{StaticResource MaterialDesignToolButton}" Click="ConfigDelBtn_Click"/>
+            Style="{StaticResource MaterialDesignToolButton}" Click="ConfigDelBtn_Click"/>
             -->
 
-            <!--<StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Center">
+            <!--
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Center">
                 <RadioButton GroupName="GroupChoiceChip" Content="Ch1" Margin="12 0" IsChecked="True" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
                 <RadioButton GroupName="GroupChoiceChip" Content="Ch2" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
                 <RadioButton GroupName="GroupChoiceChip" Content="Ch3" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
@@ -123,51 +123,32 @@
                 <ListBoxItem Content="Ch4" Margin="8 0"/>
             </ListBox>
 
+            
             <Slider x:Name="LightSlider" Grid.Row="2" Grid.Column="0" Minimum="0"
                     Maximum="1000" Value="50" Focusable="False" Margin="0 8"
                     VerticalAlignment="Center" HorizontalAlignment="Stretch"
                     materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="False"
                     IsSnapToTickEnabled="True"
-                    TickFrequency="32" TickPlacement="BottomRight"
+                    Foreground="{StaticResource ColorInfo}"
+                    TickFrequency="32" 
+                    TickPlacement="BottomRight"
                     Cursor="Hand" Style="{StaticResource MaterialDesignSlider}">
-                
-                
-                <!--
-                <Slider.Template>
-                    <ControlTemplate>
-                        <Border BorderBrush="Red" BorderThickness="1" Height="{TemplateBinding Height}">
-                            <Grid>
-                                <Track x:Name="Part_Track">
-                                    <Track.Thumb>
-                                        <Thumb Height="20" Width="20" Style="{StaticResource SliderThumbStyle}"/>
-                                    </Track.Thumb>
-                                </Track>
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Slider.Template>
-                -->
-                
             </Slider>
 
-            <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12 8 0 8" Width="60" TextAlignment="Center" 
+            
+            <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                     Margin="12 8 0 8" Width="60" TextAlignment="Center" 
                      IsReadOnly="True" Text="{Binding ElementName=LightSlider, Path=Value,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
-            <ProgressBar Grid.Row="3" Grid.Column="0" Value="50" Maximum="1023" Minimum="0" IsIndeterminate="True"></ProgressBar>
-            
             
             <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ComPortSelector, Path=ActualHeight}"/>
-                    <materialDesign:PackIcon Kind="Send" Width="30" Height="26" Margin="12 0 0 0"/>
+                    <!--<TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ComPortSelector, Path=ActualHeight}"/>-->
+                    <TextBlock VerticalAlignment="Center" Text="寫入"/>
+                    <materialDesign:PackIcon Kind="Send" Width="30" Height="26" Margin="8 0 0 0"/>
                 </StackPanel> 
             </Button>
-
-            <!--<Button ></Button>-->
-
-            <!--<TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding ActualHeight, ElementName=ComPortSelector}"/>
-            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ActualHeight, ElementName=ComPortConnect}"/>-->
             
         </Grid>
     </DockPanel>

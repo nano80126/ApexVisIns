@@ -36,20 +36,24 @@ namespace ApexVisIns.module
         private void ComPortConnect_Click(object sender, RoutedEventArgs e)
         {
             string comPort = ComPortSelector.SelectedValue as string;
+            //if (!MainWindow.SerialPort.IsOpen)
+            //{
+            //    MainWindow.SerialPort = new System.IO.Ports.SerialPort(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+            //    MainWindow.SerialPort.Open();
+            //}
+            //else
+            //{
+            //    MainWindow.SerialPort.Close();
+            //}
 
-            Debug.WriteLine($"{comPort} : {MainWindow.SerialPort.IsOpen}");
-            // MainWindow.SerialPort
-
-            if (!MainWindow.SerialPort.IsOpen)
+            if (!MainWindow.LightController.IsComOpen)
             {
-                MainWindow.SerialPort = new System.IO.Ports.SerialPort(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-                MainWindow.SerialPort.Open();
+                MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
             }
             else
             {
-                MainWindow.SerialPort.Close();
+                MainWindow.LightController.ComClose();
             }
-
             Debug.WriteLine($"{comPort} : {MainWindow.SerialPort.IsOpen}");
         }
 
@@ -60,8 +64,10 @@ namespace ApexVisIns.module
             //Debug.WriteLine($"{listBox.SelectedItem}");
             //Debug.WriteLine($"{listBox.SelectedIndex}");
 
-            Debug.WriteLine($"{this.MainWindow}");
-            Debug.WriteLine($"{MainWindow.SerialPort}");
+            //Debug.WriteLine($"{MainWindow.LightController.GetChannelValue(listBox.SelectedIndex)}");
+
+            //Debug.WriteLine($"{this.MainWindow}");
+            //Debug.WriteLine($"{MainWindow.SerialPort}");
             //Debug.WriteLine($"{MainWindow.SerialPort.IsOpen}");
         }
 

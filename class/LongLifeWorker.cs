@@ -275,6 +275,7 @@ namespace ApexVisIns
         }
     }
 
+#if false
     public class LightEnumer : LongLifeWorker
     {
         private readonly object _CollectionLock = new();
@@ -350,5 +351,6 @@ namespace ApexVisIns
         //{
         //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         //}
-    }
+    } 
+#endif
 }

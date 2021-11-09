@@ -9,7 +9,10 @@
             xmlns:local="clr-namespace:ApexVisIns.content"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
-            d:DesignHeight="450" d:DesignWidth="800">
+            Unloaded="StackPanel_Unloaded"
+            d:DesignHeight="450" d:DesignWidth="800"
+            UseLayoutRounding="True"
+            Orientation="Vertical">
     <StackPanel.Resources>
         <!--#region Toolbar -->
         <!--<RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
@@ -386,7 +389,7 @@
                 </Border>
                 <!--#endregion-->
 
-                <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="Red" Width="300">
+                <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--DataContext="{StaticResource BaslerCam}"-->
                     <!--DataContext 與 Toolbar 同步-->
                     <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />
@@ -394,7 +397,7 @@
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="Red" Width="300">
+                <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"></TextBlock>-->
                     <uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>
                 </StackPanel>
@@ -403,7 +406,6 @@
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"/>-->
-                    
                 </StackPanel>
                 <!--//-->
 

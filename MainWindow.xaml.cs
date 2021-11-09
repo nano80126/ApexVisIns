@@ -37,11 +37,16 @@ namespace ApexVisIns
         #region Cameras
         public static BaslerCam BaslerCam { get; set; }
         public static BaslerCam[] BaslerCams { get; set; }
-        
+
         //public UvcCam UvcCam;
         #endregion
 
+        #region Light Controller
+        public static LightController LightController { get; set; }
+        
         public static SerialPort SerialPort { get; set; }
+        #endregion
+
 
 
         #region Devices
@@ -126,6 +131,7 @@ namespace ApexVisIns
 
             #region Serial Port
             SerialPort = FindResource(nameof(SerialPort)) as SerialPort;
+            LightController = FindResource(nameof(LightController)) as LightController;
             #endregion
 
             #region Device

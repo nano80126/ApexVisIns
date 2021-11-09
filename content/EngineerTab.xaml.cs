@@ -57,20 +57,12 @@ namespace ApexVisIns.content
             //ConfigPanel.MainWindow = MainWindow;
             //ConfigPanel.EngineerTab = this;
 
-            Debug.WriteLine($"ConfigPanel MainWindow {ConfigPanel.MainWindow}");
-            Debug.WriteLine($"ConfigPanel EngineerTab {ConfigPanel.EngineerTab}");
+            //Debug.WriteLine($"ConfigPanel MainWindow {ConfigPanel.MainWindow}");
+            //Debug.WriteLine($"ConfigPanel EngineerTab {ConfigPanel.EngineerTab}");
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region
-            //MainWindow parent = Window.GetWindow(this) as MainWindow;
-            //if (parent  != null)
-            //{
-            //    Debug.WriteLine(parent);
-            //}
-            #endregion
-
             #region Find Resource
             if (Crosshair == null)
             {
@@ -91,6 +83,13 @@ namespace ApexVisIns.content
             #region Reset ZoomRetio
             ZoomRatio = 100;
             #endregion
+
+            Debug.WriteLine("Engineer Tab Load");
+        }
+
+        private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Engineer Tab Unload");
         }
 
 
