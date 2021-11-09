@@ -236,17 +236,17 @@ namespace ApexVisIns
             BaslerCam.PropertyChange("IsGrabbing");    // Update Property
 
             #region Reset BFR Struct for next trail
-            StructBFR.centerY = 0;
-            StructBFR.topMinY = 0;
-            StructBFR.botMaxY = 0;
+            //StructBFR.centerY = 0;
+            //StructBFR.topMinY = 0;
+            //StructBFR.botMaxY = 0;
 
-            StructBFR.pt1 = new OpenCvSharp.Point(0, 0);
-            StructBFR.pt2 = new OpenCvSharp.Point(0, 0);
+            //StructBFR.pt1 = new OpenCvSharp.Point(0, 0);
+            //StructBFR.pt2 = new OpenCvSharp.Point(0, 0);
 
-            StructBFR.ptQueue1.Clear();
-            StructBFR.ptQueue2.Clear();
+            //StructBFR.ptQueue1.Clear();
+            //StructBFR.ptQueue2.Clear();
 
-            StructBFR.FakeTemp = 0;
+            //StructBFR.FakeTemp = 0;
 
             AssistPoints[0].AssignPoint(0, 0);
             AssistPoints[1].AssignPoint(0, 0);

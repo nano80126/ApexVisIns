@@ -17,7 +17,7 @@ namespace ApexVisIns
         /// <summary>
         /// DEBUG TAB
         /// </summary>
-        private int _onTabIndex = 2;
+        private int _onTabIndex = 0;
 
         /// <summary>
         /// Tab active index

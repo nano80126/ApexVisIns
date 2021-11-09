@@ -3,6 +3,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ApexVisIns"
+             xmlns:io="clr-namespace:System.IO.Ports;assembly=System"
              xmlns:cvt="clr-namespace:ApexVisIns.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
@@ -75,6 +76,11 @@
             <!--#region Public Resource -->
             <!--相機列舉器-->
             <local:CameraEnumer x:Key="CameraEnumer"/>
+            <!--ComPort 列舉器-->
+            <local:LightEnumer x:Key="LightEnumer"/>
+
+            <io:SerialPort x:Key="SerialPort"/>
+
             <!-- 相機 DEBUG 測試使用 -->
             <local:BaslerCam x:Key="BaslerCam" ConfigName="Default">
                 <local:BaslerCam.Config>
@@ -113,7 +119,7 @@
             <!-- 裝置組態 (正式使用) -->
             <!--<x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
                 <local:DeviceConfig Name="Device1"/>
-                <local:DeviceConfig Name="Device2"/>
+                <local:DeviceConf ig Name="Device2"/>
                 <local:DeviceConfig Name="Device3"/>
                 <local:DeviceConfig Name="Device4"/>
             </x:Array>-->

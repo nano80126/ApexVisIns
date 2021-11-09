@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
-
+using ApexVisIns.content;
 
 namespace ApexVisIns.module
 {
@@ -23,38 +23,58 @@ namespace ApexVisIns.module
     /// </summary>
     public partial class LightPanel : Card
     {
+        public MainWindow MainWindow { get; set; }
+
+        public EngineerTab EngineerTab { get; set; }
+
         public LightPanel()
         {
             InitializeComponent();
         }
 
-        private void ComPortSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-
-        }
 
         private void ComPortConnect_Click(object sender, RoutedEventArgs e)
         {
+            string comPort = ComPortSelector.SelectedValue as string;
 
+            Debug.WriteLine($"{comPort} : {MainWindow.SerialPort.IsOpen}");
+            // MainWindow.SerialPort
 
+            if (!MainWindow.SerialPort.IsOpen)
+            {
+                MainWindow.SerialPort = new System.IO.Ports.SerialPort(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                MainWindow.SerialPort.Open();
+            }
+            else
+            {
+                MainWindow.SerialPort.Close();
+            }
+
+            Debug.WriteLine($"{comPort} : {MainWindow.SerialPort.IsOpen}");
         }
 
         private void ChannelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox listBox = sender as ListBox;
 
+            //Debug.WriteLine($"{listBox.SelectedItem}");
+            //Debug.WriteLine($"{listBox.SelectedIndex}");
 
-            Debug.WriteLine($"{listBox.SelectedItem}");
-            Debug.WriteLine($"{listBox.SelectedIndex}");
+            Debug.WriteLine($"{this.MainWindow}");
+            Debug.WriteLine($"{MainWindow.SerialPort}");
+            //Debug.WriteLine($"{MainWindow.SerialPort.IsOpen}");
         }
 
-        private void LightSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
+            string s = $"1,{LightSlider.Value}\r\n";
 
-            Debug.WriteLine($"Value: {e.NewValue} {e.OldValue}");
+            MainWindow.SerialPort.Write(s);
 
+            string str = MainWindow.SerialPort.ReadLine();
 
+            Debug.WriteLine($"{str}");
+            Debug.WriteLine($"{s} {str}");
         }
     }
 }

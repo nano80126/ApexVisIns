@@ -18,7 +18,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
-
+using System.IO.Ports;
 
 namespace ApexVisIns
 {
@@ -29,15 +29,19 @@ namespace ApexVisIns
     {
         #region Long life worker
         public CameraEnumer CameraEnumer;
-        public Thermometer Thermometer;
+        //public Thermometer Thermometer;
+        public LightEnumer LightEnumer;
         #endregion
+
 
         #region Cameras
         public static BaslerCam BaslerCam { get; set; }
         public static BaslerCam[] BaslerCams { get; set; }
-
+        
         //public UvcCam UvcCam;
         #endregion
+
+        public static SerialPort SerialPort { get; set; }
 
 
         #region Devices
@@ -110,11 +114,18 @@ namespace ApexVisIns
 
             //Thermometer = TryFindResource(nameof(Thermometer)) as Thermometer;
             //Thermometer?.OpenSerialPort();
+
+            LightEnumer = TryFindResource(nameof(LightEnumer)) as LightEnumer;
+            LightEnumer?.WorkerStart();
             #endregion
 
             #region Cameras
             BaslerCam = FindResource(nameof(BaslerCam)) as BaslerCam;
             BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
+            #endregion
+
+            #region Serial Port
+            SerialPort = FindResource(nameof(SerialPort)) as SerialPort;
             #endregion
 
             #region Device
@@ -140,6 +151,7 @@ namespace ApexVisIns
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             CameraEnumer?.WorkerEnd();
+            LightEnumer?.WorkerEnd();
         }
 
         #region App Content 這邊可以全部刪掉 (待確認)

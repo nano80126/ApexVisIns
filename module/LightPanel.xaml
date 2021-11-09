@@ -22,7 +22,7 @@
         <!--//-->
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
         <!--//-->
-        <Grid DockPanel.Dock="Top" Background="Transparent">
+        <Grid DockPanel.Dock="Top" >
 
             <Grid.Resources>
                 <Style x:Key="SliderThumbStyle" TargetType="{x:Type Thumb}">
@@ -32,28 +32,26 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Thumb}">
                                 <!--<Ellipse 
-                      Name="Ellipse" 
-                      Fill="Yellow"
-                      Stroke="Yellow" 
-                      Height="10"
-                      Width="{Binding Path=ThumbWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                      StrokeThickness="1" />-->
+                                      Name="Ellipse" 
+                                      Fill="Yellow"
+                                      Stroke="Yellow" 
+                                      Height="10"
+                                      Width="{Binding Path=ThumbWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                      StrokeThickness="1" />-->
                                 <Rectangle 
-                    Fill="Blue"
-                    Stroke="Blue"
-                    Height="7"
-                    Width="{Binding Path=ThumbWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                    StrokeThickness="1"
-                    Margin="0.1,.1,.1,.1"/>
+                                    Fill="Blue"
+                                    Stroke="Blue"
+                                    Height="7"
+                                    Width="{Binding Path=ThumbWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                    StrokeThickness="1"
+                                    Margin="0.1,.1,.1,.1"/>
 
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
 
-
             </Grid.Resources>
-            
             
             
             <Grid.ColumnDefinitions>
@@ -72,8 +70,8 @@
             <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" MinWidth="135"
                       Margin="0 8" Padding="5 3" MaxDropDownHeight="200"
                       materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
-                      materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
-                      SelectionChanged="ComPortSelector_SelectionChanged"
+                      materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Path=Background}"
+                      ItemsSource="{Binding ComPortSource, Source={StaticResource LightEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -84,10 +82,19 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="1" Margin="8 0 0 0" Click="ComPortConnect_Click">
+            <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="1" Margin="8 0 0 0" 
+                    IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
+                    Click="ComPortConnect_Click">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
-                        <Setter Property="MinHeight" Value="0"/>
+                        <Setter Property="Content" Value="連線"/>
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsOpen, Source={StaticResource SerialPort}, Mode=OneWay, UpdateSourceTrigger=LostFocus}" Value="True">
+                                <Setter Property="Content" Value="斷線"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <!--<Setter Property="MinHeight" Value="0"/>-->
                         <!--<Setter Property="Background" Value="Red"/>-->
                     </Style>
                 </Button.Style>
@@ -116,12 +123,15 @@
                 <ListBoxItem Content="Ch4" Margin="8 0"/>
             </ListBox>
 
-            <Slider x:Name="LightSlider" Grid.Row="2" Grid.Column="0" Minimum="0" Maximum="1023" Value="50" Focusable="False" Margin="0 8"
+            <Slider x:Name="LightSlider" Grid.Row="2" Grid.Column="0" Minimum="0"
+                    Maximum="1000" Value="50" Focusable="False" Margin="0 8"
                     VerticalAlignment="Center" HorizontalAlignment="Stretch"
                     materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="False"
+                    IsSnapToTickEnabled="True"
                     TickFrequency="32" TickPlacement="BottomRight"
-                    ValueChanged="LightSlider_ValueChanged"
                     Cursor="Hand" Style="{StaticResource MaterialDesignSlider}">
+                
+                
                 <!--
                 <Slider.Template>
                     <ControlTemplate>
@@ -135,21 +145,26 @@
                             </Grid>
                         </Border>
                     </ControlTemplate>
-                </Slider.Template>-->
+                </Slider.Template>
+                -->
+                
             </Slider>
 
             <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12 8 0 8" Width="60" TextAlignment="Center" 
-                     IsReadOnly="True" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                     IsReadOnly="True" Text="{Binding ElementName=LightSlider, Path=Value,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
             <ProgressBar Grid.Row="3" Grid.Column="0" Value="50" Maximum="1023" Minimum="0" IsIndeterminate="True"></ProgressBar>
             
-            <!--
-            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}">
+            
+            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ComPortSelector, Path=ActualHeight}"/>
                     <materialDesign:PackIcon Kind="Send" Width="30" Height="26" Margin="12 0 0 0"/>
                 </StackPanel> 
-            </Button>-->
+            </Button>
+
+            <!--<Button ></Button>-->
 
             <!--<TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding ActualHeight, ElementName=ComPortSelector}"/>
             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ActualHeight, ElementName=ComPortConnect}"/>-->

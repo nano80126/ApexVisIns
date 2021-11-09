@@ -87,10 +87,11 @@ namespace ApexVisIns
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Display in message list
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
+                throw;
             }
         }
     }

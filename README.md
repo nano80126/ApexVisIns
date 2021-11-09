@@ -74,8 +74,6 @@ Apex 外觀瑕疵檢測
 
 * Config Write => Write config to camera
 
-* 
-
 
 
 ### Performance Test

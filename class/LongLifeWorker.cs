@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -272,5 +273,82 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+    public class LightEnumer : LongLifeWorker
+    {
+        private readonly object _CollectionLock = new();
+
+        public ObservableCollection<string> ComPortSource { get; set; } = new ObservableCollection<string>();
+
+        private void ComPortSourceAdd(string comPort)
+        {
+            lock (_CollectionLock)
+            {
+                ComPortSource.Add(comPort);
+            }
+        }
+
+        private void ComPortSourceClear()
+        {
+            lock (_CollectionLock)
+            {
+                ComPortSource.Clear();
+            }
+        }
+
+        public override void WorkerStart()
+        {
+            BindingOperations.EnableCollectionSynchronization(ComPortSource, _CollectionLock);
+            base.WorkerStart();
+        }
+
+        public override void DoWork()
+        {
+            try
+            {
+                string[] portNames = SerialPort.GetPortNames();
+
+                if (portNames.Length == 0)
+                {
+                    ComPortSourceClear();
+                    _ = SpinWait.SpinUntil(() => false, 500);
+                }
+
+                foreach (string com in portNames)
+                {
+                    if (!ComPortSource.Contains(com))
+                    {
+                        ComPortSourceAdd(com);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        //public void CloseSerialPort()
+        //{
+        //    if (serialPort != null && serialPort.IsOpen)
+        //    {
+        //        serialPort.Close();
+        //    }
+        //    OnPropertyChanged(nameof(IsSerialPortOpen));
+        //}
+
+        //public override void WorkerEnd()
+        //{
+        //    //CloseSerialPort();
+        //    base.WorkerEnd();
+        //}
+
+
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //private void OnPropertyChanged(string propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
     }
 }
