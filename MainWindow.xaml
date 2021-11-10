@@ -25,6 +25,7 @@
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
+        Topmost="False"
         Title="MainWindow" Width="1600" Height="900">
     <Window.Resources>
         <!--#region Appbar -->

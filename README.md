@@ -1,4 +1,5 @@
-﻿# Apex Physical Appearance Inspection 
+﻿
+# Apex Physical Appearance Inspection 
 
 Apex 外觀瑕疵檢測 
 
@@ -61,6 +62,13 @@ Apex 外觀瑕疵檢測
 [ ] 移除 Thermoter ()
 [ ] 移除舊Tab
 [ ] Read/Write UserSet
+[ ] 組態列表儲存 JSON
+	* Model
+	* S/N
+	* Character
+[ ] Hotkey 功能恢復
+[ ] 寫入Config前，歸零Offset
+
 
 ### Config Logic
 
@@ -74,7 +82,9 @@ Apex 外觀瑕疵檢測
 
 * Config Write => Write config to camera
 
+### Know How
 
+* Popupbox 初始化時不會生成
 
 ### Performance Test
 

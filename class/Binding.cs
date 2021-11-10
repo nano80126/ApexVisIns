@@ -566,6 +566,10 @@ namespace ApexVisIns
                 /// </summary>
                 BFR,
                 /// <summary>
+                /// Info & Error for Plot
+                /// </summary>
+                CHART,
+                /// <summary>
                 /// Camera Error Code
                 /// </summary>
                 C,
@@ -586,6 +590,10 @@ namespace ApexVisIns
                 /// </summary>
                 G,
                 /// <summary>
+                /// Light Control Error Code 
+                /// </summary>
+                LIGHT,
+                /// <summary>
                 /// OpenCv Process Error Code
                 /// </summary>
                 OPENCV,
@@ -593,10 +601,6 @@ namespace ApexVisIns
                 /// OpenCvSharp Process Error Code
                 /// </summary>
                 OPENCVS,
-                /// <summary>
-                /// Info & Error for Plot
-                /// </summary>
-                CHART,
                 /// <summary>
                 /// IO Exception Code
                 /// </summary>

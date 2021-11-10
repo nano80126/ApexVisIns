@@ -56,7 +56,7 @@ namespace ApexVisIns.module
                 Config = FindResource("BaslerConfig") as BaslerConfig;
             }
 
-            SetBinding();
+            //SetBinding();
             
             Debug.WriteLine("Config Panel Unloaded");
         }
@@ -68,7 +68,8 @@ namespace ApexVisIns.module
 
         /// <summary>
         /// 綁定 Binding
-        /// 因為 TabItem 一開始不會建立, 需要從後端綁定
+        /// 因為 Popupbox 一開始不會建立, 需要從後端綁定
+        /// 
         /// </summary>
         private void SetBinding()
         {
@@ -108,7 +109,10 @@ namespace ApexVisIns.module
         {
             Cam = DataContext as BaslerCam;
             //SyncConfiguration(Cam.Config, Cam);
+            // 載入 Config files
             Initialize_JsonFile();
+            // ConfigDelBtn 綁定Config Selector 
+            SetBinding();
 
             Debug.WriteLine("Combobox opened");
         }

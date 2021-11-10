@@ -32,55 +32,61 @@ namespace ApexVisIns.module
             InitializeComponent();
         }
 
-
         private void ComPortConnect_Click(object sender, RoutedEventArgs e)
         {
             string comPort = ComPortSelector.SelectedValue as string;
-            //if (!MainWindow.SerialPort.IsOpen)
-            //{
-            //    MainWindow.SerialPort = new System.IO.Ports.SerialPort(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-            //    MainWindow.SerialPort.Open();
-            //}
-            //else
-            //{
-            //    MainWindow.SerialPort.Close();
-            //}
 
             if (!MainWindow.LightController.IsComOpen)
             {
-                MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                try
+                {
+                    // 開啟 COM
+                    MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                    // 歸零所有通道
+                    MainWindow.LightController.ResetValue();
+                }
+                catch (Exception ex)
+                {
+                    // 待新增光源 Error Code
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message, MsgInformer.Message.MessageType.Warning);
+                    // 例外產生，關閉通訊
+                    MainWindow.LightController.ComClose();
+                }
             }
             else
             {
+                // 關閉 COM
                 MainWindow.LightController.ComClose();
             }
-            Debug.WriteLine($"{comPort} : {MainWindow.SerialPort.IsOpen}");
         }
 
         private void ChannelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox listBox = sender as ListBox;
-
-            //Debug.WriteLine($"{listBox.SelectedItem}");
-            //Debug.WriteLine($"{listBox.SelectedIndex}");
-
-            //Debug.WriteLine($"{MainWindow.LightController.GetChannelValue(listBox.SelectedIndex)}");
-
-            //Debug.WriteLine($"{this.MainWindow}");
-            //Debug.WriteLine($"{MainWindow.SerialPort}");
-            //Debug.WriteLine($"{MainWindow.SerialPort.IsOpen}");
+            if (MainWindow.LightController != null)
+            {
+                //MainWindow.LightController.ChannelOn = listBox.SelectedIndex;
+                Debug.WriteLine($"{MainWindow.LightController.ChannelOn} {MainWindow.LightController.ValueOn}");
+            }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void CmdSendBtn_Click(object sender, RoutedEventArgs e)
         {
-            string s = $"1,{LightSlider.Value}\r\n";
+            if (MainWindow.LightController.IsComOpen)
+            {
+                string s = $"{ChannelSelector.SelectedIndex + 1},{LightSlider.Value}\r\n";
 
-            MainWindow.SerialPort.Write(s);
+                Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
 
-            string str = MainWindow.SerialPort.ReadLine();
+                string str = MainWindow.LightController.Write(s);
 
-            Debug.WriteLine($"{str}");
-            Debug.WriteLine($"{s} {str}");
+                Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+
+                Debug.WriteLine($"{s} {str}");
+            }
+            else
+            {
+                //MainWindow.LightController.ResetValue();
+            }
         }
     }
 }

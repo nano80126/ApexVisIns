@@ -155,13 +155,11 @@ namespace ApexVisIns.content
             DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
             //MainWindow.DeviceConfigs.IndexOf();
 
-
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName);
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType);
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion);
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName + " VendorName");
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType + " CameraType");
+            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion + " DeviceVersion");
 
             //Camera camera = new Camera(serialNumber);
-
             ////camera.CameraInfo[CameraInfoKey.DeviceID];
 
             //Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).FullName}");
@@ -176,6 +174,27 @@ namespace ApexVisIns.content
 
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.DeviceVersion]}");
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.WidthMax]}");
+        }
+
+        /// <summary>
+        /// Radio
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RadioDelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            string serialNumber = button.CommandParameter as string;
+
+            foreach (DeviceConfig config in MainWindow.DeviceConfigs)
+            {
+                if (config.SerialNumber == serialNumber)
+                {
+                    MainWindow.DeviceConfigs.Remove(config);
+                    break;
+                }
+            }
+            Debug.WriteLine($"{button.CommandParameter}");
         }
 
         /// <summary>
@@ -199,7 +218,7 @@ namespace ApexVisIns.content
                     Camera camera = MainWindow.BaslerCam.Camera;
 
                     ReadConfig(camera, config);
-
+                    config.UserSetRead = config.UserSet;
 #if false
                     // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
                     // config.CameraType = camera.CameraInfo[CameraInfoKey.DeviceType];
@@ -294,6 +313,9 @@ namespace ApexVisIns.content
 
             config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
             config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+
+            config.CenterX = camera.Parameters[PLGigECamera.CenterX].GetValue();
+            config.CenterY = camera.Parameters[PLGigECamera.CenterY].GetValue();
             // // // // // // // // // // // // // /
             config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
             config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
@@ -317,12 +339,47 @@ namespace ApexVisIns.content
         /// <summary>
         /// 寫入 config
         /// </summary>
-        private void WriteConfig(Camera camera, DeviceConfig config)
+        /// <param name="config">來源組態</param>
+        /// <param name="camera">目標相機</param>
+        private static void UpdateConfig(DeviceConfig config, Camera camera)
+        {
+            camera.Parameters[PLGigECamera.Width].SetValue(config.Width);
+            camera.Parameters[PLGigECamera.Height].SetValue(config.Height);
+
+            if (!camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX))
+            {
+                Debug.WriteLine(true);
+            }
+
+            if (!camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY))
+            {
+                Debug.WriteLine(true);
+            } 
+
+            Debug.WriteLine($"{config.Width} {config.OffsetX}");
+            Debug.WriteLine($"{config.Height} {config.OffsetY}");
+
+            camera.Parameters[PLGigECamera.CenterX].SetValue(config.CenterX);
+            camera.Parameters[PLGigECamera.CenterY].SetValue(config.CenterY);
+
+            camera.Parameters[PLGigECamera.TriggerSelector].SetValue(config.TriggerSelector);
+            camera.Parameters[PLGigECamera.TriggerMode].SetValue(config.TriggerMode);
+            camera.Parameters[PLGigECamera.TriggerSource].SetValue(config.TriggerSource);
+
+            camera.Parameters[PLGigECamera.ExposureMode].SetValue(config.ExposureMode);
+            camera.Parameters[PLGigECamera.ExposureAuto].SetValue(config.ExposureAuto);
+            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(config.ExposureTime);
+
+            camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(config.FixedFPS);
+            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(config.FPS);
+        }
+
+        private static void SaveConfig()
         {
 
 
-
         }
+
 
         /// <summary>
         /// 讀取 UserSet
@@ -341,18 +398,29 @@ namespace ApexVisIns.content
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
             ReadConfig(camera, config);
-            Debug.WriteLine($"{userSet}");
+            // 更新 UserSet Read
+            config.UserSetRead = userSet;
+            
+            //Debug.WriteLine($"{userSet}");
+        }
+
+        private void UpdateUserSet_Click(object sender, RoutedEventArgs e)
+        {
+            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+            Camera camera = MainWindow.BaslerCam.Camera;
+
+            UpdateConfig(config, camera);
         }
 
         /// <summary>
-        /// 寫入 UserSet
+        /// 寫入 UserSet (主要儲存至相機)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
-
-
+            Camera camera = MainWindow.BaslerCam.Camera;
+            camera.Parameters[PLGigECamera.UserSetSave].Execute();
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)

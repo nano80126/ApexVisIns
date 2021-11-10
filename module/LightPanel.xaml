@@ -67,6 +67,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
+            <!--Row 1--> 
             <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" MinWidth="135"
                       Margin="0 8" Padding="5 3" MaxDropDownHeight="200"
                       materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
@@ -82,40 +83,30 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-
+            
             <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="1" Margin="8 0 0 0" 
                     IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
-                    materialDesign:RippleAssist.IsDisabled="True" Foreground="{StaticResource ColorSuccess}"
+                    materialDesign:RippleAssist.IsDisabled="True"
                     Click="ComPortConnect_Click">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
                         <Setter Property="Content" Value="連線"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
 
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsComOpen, Source={StaticResource LightController}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                 <Setter Property="Content" Value="斷線"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorWarning}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                <!--<TextBlock Text="連線"/>-->
             </Button>
-
-            <!--
-            <Button Grid.Row="0" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0" Content="刪除" Foreground="{StaticResource ColorOrange}" 
-            Style="{StaticResource MaterialDesignToolButton}" Click="ConfigDelBtn_Click"/>
-            -->
-
-            <!--
-            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Center">
-                <RadioButton GroupName="GroupChoiceChip" Content="Ch1" Margin="12 0" IsChecked="True" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
-                <RadioButton GroupName="GroupChoiceChip" Content="Ch2" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
-                <RadioButton GroupName="GroupChoiceChip" Content="Ch3" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
-                <RadioButton GroupName="GroupChoiceChip" Content="Ch4" Margin="12 0" Style="{StaticResource MaterialDesignChoiceChipAccentRadioButton}"/>
-            </StackPanel>-->
-
-            <ListBox x:Name="ChannelSelector" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" 
-                     Margin="0 8" SelectionMode="Single" SelectionChanged="ChannelSelector_SelectionChanged"
+            
+            <!--Row 2-->
+            <ListBox x:Name="ChannelSelector" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8" 
+                     SelectionMode="Single" SelectionChanged="ChannelSelector_SelectionChanged"
+                     SelectedIndex="{Binding ChannelOn, Source={StaticResource LightController}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource MaterialDesignChoiceChipPrimaryListBox}">
                 <ListBoxItem IsSelected="True" Content="Ch1" Margin="8 0"/>
                 <ListBoxItem Content="Ch2" Margin="8 0"/>
@@ -123,29 +114,28 @@
                 <ListBoxItem Content="Ch4" Margin="8 0"/>
             </ListBox>
 
-            
-            <Slider x:Name="LightSlider" Grid.Row="2" Grid.Column="0" Minimum="0"
-                    Maximum="1000" Value="50" Focusable="False" Margin="0 8"
-                    VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                    materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="False"
-                    IsSnapToTickEnabled="True"
+            <!--Row 3-->
+            <Slider x:Name="LightSlider" Grid.Row="2" Grid.Column="0" Minimum="0" Maximum="1023" Margin="0 8"
+                    VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False" 
+                    materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True"
                     Foreground="{StaticResource ColorInfo}"
-                    TickFrequency="32" 
-                    TickPlacement="BottomRight"
-                    Cursor="Hand" Style="{StaticResource MaterialDesignSlider}">
-            </Slider>
+                    IsSnapToTickEnabled="True"
+                    TickPlacement="BottomRight" TickFrequency="32"
+                    Value="{Binding ValueOn, Source={StaticResource LightController}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Cursor="Hand" Style="{StaticResource MaterialDesignSlider}"/>
 
-            
             <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" HorizontalAlignment="Center" VerticalAlignment="Center" 
                      Margin="12 8 0 8" Width="60" TextAlignment="Center" 
+                     Foreground="{StaticResource ColorPrimary}" BorderBrush="{StaticResource ColorPrimary}"
                      IsReadOnly="True" Text="{Binding ElementName=LightSlider, Path=Value,Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
             
-            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}" Click="Button_Click">
+            <!--Row 4-->
+            <Button x:Name="CmdSendBtn" Grid.Row="3" Grid.Column="1" Foreground="{StaticResource ColorPrimary}" Style="{StaticResource MaterialDesignToolButton}" 
+                    Click="CmdSendBtn_Click">
                 <StackPanel Orientation="Horizontal">
                     <!--<TextBlock VerticalAlignment="Center" Text="{Binding ElementName=ComPortSelector, Path=ActualHeight}"/>-->
-                    <TextBlock VerticalAlignment="Center" Text="寫入"/>
+                    <!--<TextBlock VerticalAlignment="Center" Text="寫入"/>-->
                     <materialDesign:PackIcon Kind="Send" Width="30" Height="26" Margin="8 0 0 0"/>
                 </StackPanel> 
             </Button>

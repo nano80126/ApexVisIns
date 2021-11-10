@@ -14,7 +14,9 @@
     <materialDesign:Card.Resources>
         <!--//-->
         <local:BaslerConfig x:Key="BaslerConfig" Name="Default"/>
+        <!--//-->
     </materialDesign:Card.Resources>
+
 
     <DockPanel Background="Transparent" Margin="2 0">
         <DockPanel x:Name="Header" DockPanel.Dock="Top">
@@ -138,9 +140,9 @@
                 <Button Grid.Row="1" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0"
                         Content="刪除" Foreground="{StaticResource ColorOrange}" 
                         Style="{StaticResource MaterialDesignToolButton}"
-                        Click="ConfigDelBtn_Click">
-                <!--IsEnabled="{Binding ElementName=ConfigSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}"-->
-                </Button>
+                        Click="ConfigDelBtn_Click"/>
+
+
                 <!-- Row 2, Width -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8 0 0 0" Text="Width" />
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="ConfigWidth" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"

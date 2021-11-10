@@ -79,7 +79,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <!--<StackPanel Orientation="Horizontal">-->
-                            <TextBlock TextAlignment="Right" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                            <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                             <!--</StackPanel>-->
                         </DataTemplate>
                     </ComboBox.ItemTemplate>

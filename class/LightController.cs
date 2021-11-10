@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -88,10 +89,13 @@ namespace ApexVisIns
         //}
     }
 
-
+    /// <summary>
+    /// 光源控制器物件
+    /// </summary>
     public class LightController : INotifyPropertyChanged
     {
         private int _channels;
+        private int _channelOn; 
         
         private int[] channelValue;
 
@@ -129,6 +133,35 @@ namespace ApexVisIns
             }
         }
 
+        public int ChannelOn
+        {
+            get => _channelOn;
+            set
+            {
+                if (value != _channelOn)
+                {
+                    _channelOn = value;
+                    OnPropertyChanged(nameof(ChannelOn));
+                    OnPropertyChanged(nameof(ValueOn));
+                }
+            }
+        }
+
+
+        public int ValueOn
+        {
+            get => channelValue[_channelOn];
+            set
+            {
+                if (value != channelValue[_channelOn])
+                {
+                    channelValue[_channelOn] = value;
+                    OnPropertyChanged(nameof(ValueOn));
+                }
+            }
+        }
+
+
         /// <summary>
         /// 開啟 COM
         /// </summary>
@@ -148,7 +181,7 @@ namespace ApexVisIns
         /// <param name="parity"></param>
         /// <param name="dataBits"></param>
         /// <param name="stopBits"></param>
-        public void ComOpen (string com, int baudRate, Parity parity, int dataBits,StopBits stopBits)
+        public void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
         {
             SerialPort = new SerialPort(com, baudRate, parity, dataBits, stopBits);
             SerialPort.Open();
@@ -164,6 +197,37 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(IsComOpen));
         }
 
+        /// <summary>
+        /// 歸零所有通道
+        /// </summary>
+        public void ResetValue()
+        {
+            string cmd = string.Empty;
+            for (int i = 1; i <= Channels; i++)
+            {
+                cmd += $"{i},0,";
+            }
+            cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+            try
+            {
+                _ = Write(cmd);
+            }
+            catch (TimeoutException T)
+            {
+                throw new TimeoutException($"重置光源設置失敗: {T.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"重置光源設置失敗: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 取得通道設定值
+        /// </summary>
+        /// <param name="ch">Ch1: 0, CH2: 1, ...</param>
+        /// <returns></returns>
         public int GetChannelValue(int ch)
         {
             return channelValue[ch];
@@ -174,16 +238,23 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="str">命令</param>
         /// <returns>0.2秒內回傳結果</returns>
-        public string Write(string str)
+        public string Write(string str, int timeout = 200)
         {
-            SerialPort.Write(str);
+            try
+            {
+                SerialPort.ReadTimeout = timeout;
+                SerialPort.Write(str);
 
-            return SerialPort.ReadLine();
+                string ret = SerialPort.ReadLine();
+                return ret;
+            }
+            catch (TimeoutException)
+            {
+                throw;
+            }
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -71,6 +71,7 @@
             <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
             <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
+            <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
             <!--#endregion-->
 
             <!--#region Public Resource -->

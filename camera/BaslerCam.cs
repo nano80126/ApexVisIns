@@ -434,6 +434,7 @@ namespace ApexVisIns
     {
         private string _userSet;
         private string[] _userSetEnum;
+        private string _userSetRead;
         //
         private int _width;
         private int _height;
@@ -463,6 +464,8 @@ namespace ApexVisIns
         private string _firmwareVersion;
         private int _sensorWidth;
         private int _sensorHeight;
+        private bool _centerX;
+        private bool _centerY;
 
 
         /// <summary>
@@ -536,6 +539,22 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 已讀取
+        /// </summary>
+        public string UserSetRead
+        {
+            get => _userSetRead;
+            set
+            {
+                if (value != _userSetRead)
+                {
+                    _userSetRead = value;
+                    OnPropertyChanged(nameof(UserSetRead));
+                }
+            }
+        }
+
+        /// <summary>
         /// 組態名稱
         /// </summary>
         public string Name { get; set; }
@@ -574,7 +593,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 寬度
         /// </summary>
@@ -586,7 +604,13 @@ namespace ApexVisIns
                 if (value != _width)
                 {
                     _width = value;
+                    if (CenterX)
+                    {
+                        int half = (_maxWidth - _width) / 2;
+                        OffsetX = half % 2 == 0 ? half : half - 1;
+                    }
                     OnPropertyChanged(nameof(Width));
+                    OnPropertyChanged(nameof(OffsetX));
                 }
             }
         }
@@ -602,7 +626,13 @@ namespace ApexVisIns
                 if (value != _height)
                 {
                     _height = value;
+                    if (CenterY)
+                    {
+                        int half = (_maxHeight - _height) / 2;
+                        OffsetY = half % 2 == 0 ? half : half - 1;
+                    }
                     OnPropertyChanged(nameof(Height));
+                    OnPropertyChanged(nameof(OffsetY));
                 }
             }
         }
@@ -667,6 +697,54 @@ namespace ApexVisIns
                 {
                     _offsetY = value;
                     OnPropertyChanged(nameof(OffsetY));
+                }
+            }
+        }
+
+        /// <summary>
+        /// X 置中
+        /// </summary>
+        public bool CenterX
+        {
+            get => _centerX;
+            set
+            {
+                if (value != _centerX)
+                {
+                    // 計算 Offset X 置中
+                    if (value == true)
+                    {
+                        int half = (MaxWidth - Width) / 2;
+                        OffsetX = half % 2 == 0 ? half : half - 1;
+                    }
+                    _centerX = value;
+
+                    OnPropertyChanged(nameof(OffsetX));
+                    OnPropertyChanged(nameof(CenterX));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Y 置中
+        /// </summary>
+        public bool CenterY
+        {
+            get => _centerY;
+            set
+            {
+                if (value != _centerY)
+                {
+                    // 計算 Offset Y 置中
+                    if (value == true)
+                    {
+                        int half = (MaxHeight - Height) / 2;
+                        OffsetY = half % 2 == 0 ? half : half - 1;
+                    }
+                    _centerY = value;
+
+                    OnPropertyChanged(nameof(OffsetY));
+                    OnPropertyChanged(nameof(CenterY));
                 }
             }
         }
