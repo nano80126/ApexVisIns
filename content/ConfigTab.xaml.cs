@@ -212,12 +212,15 @@ namespace ApexVisIns.content
                     string serialNumber = config.SerialNumber;
 
                     MainWindow.BaslerCam.CreateCam(serialNumber);
+                    MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
                     MainWindow.BaslerCam.Open();
                     MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
 
                     Camera camera = MainWindow.BaslerCam.Camera;
 
+                    // 讀取 camera 的 config
                     ReadConfig(camera, config);
+                    // 更新 UserSet Read
                     config.UserSetRead = config.UserSet;
 #if false
                     // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
@@ -274,6 +277,14 @@ namespace ApexVisIns.content
             }
         }
 
+        private void Camera_CameraOpened(object sender, EventArgs e)
+        {
+            Camera camera = sender as Camera;
+            // Timeout 設定 30 秒
+            camera.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(1000 * 30);
+            //throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 相機關閉
         /// </summary>
@@ -286,7 +297,8 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 讀取 config
+        /// 讀取 Config,
+        /// 從相機讀取 Config
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
@@ -302,6 +314,7 @@ namespace ApexVisIns.content
             // // // // // // // // // // // // // // // // // // // // // // // //
             // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
             // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+            #region AOI Control
             config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
             config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
 
@@ -314,72 +327,107 @@ namespace ApexVisIns.content
             config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
             config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
 
-            config.CenterX = camera.Parameters[PLGigECamera.CenterX].GetValue();
-            config.CenterY = camera.Parameters[PLGigECamera.CenterY].GetValue();
-            // // // // // // // // // // // // // /
+            config.CenterX = camera.Parameters[PLGigECamera.CenterX].GetValue();    // UserSet 實際上不會記錄
+            config.CenterY = camera.Parameters[PLGigECamera.CenterY].GetValue();    // UserSet 實際上不會記錄 
+            #endregion
+
+            #region Trigger
             config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
             config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
             config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
             config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
             config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
             config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
+            #endregion
 
+            #region Exposure
             config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
             config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
-            // // // // // // // // // // // // // /
-
             config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
             config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
             config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+            #endregion
 
             config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
             config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
         }
 
         /// <summary>
-        /// 寫入 config
+        /// 更新 Config
+        /// Config 寫入 Camera
         /// </summary>
         /// <param name="config">來源組態</param>
         /// <param name="camera">目標相機</param>
         private static void UpdateConfig(DeviceConfig config, Camera camera)
         {
-            camera.Parameters[PLGigECamera.Width].SetValue(config.Width);
-            camera.Parameters[PLGigECamera.Height].SetValue(config.Height);
-
-            if (!camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX))
+            try
             {
-                Debug.WriteLine(true);
+                camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
+                camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
+
+                camera.Parameters[PLGigECamera.Width].SetValue(config.Width);
+                camera.Parameters[PLGigECamera.Height].SetValue(config.Height);
+
+                //bool b1 =  camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX);
+                camera.Parameters[PLGigECamera.OffsetX].SetValue(config.OffsetX);
+                //bool b2 =  camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY);
+                camera.Parameters[PLGigECamera.OffsetY].SetValue(config.OffsetY);
+
+                //Debug.WriteLine($"OffsetX: { camera.Parameters[PLGigECamera.OffsetX].IsWritable}");
+                //Debug.WriteLine($"OffsetY: { camera.Parameters[PLGigECamera.OffsetY].IsWritable}");
+                //Debug.WriteLine($"b1: {b1}, b2: {b2}");
+#if false
+                if (!camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX))
+                {
+                    //Debug.WriteLine($"Offset X changed");
+                }
+                else
+                {
+                    Debug.WriteLine($"Offset X changed");
+                }
+
+
+                if (!camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY))
+                {
+                    //Debug.WriteLine($"Offset Y changed");
+                }
+                else
+                {
+                    Debug.WriteLine($"Offset Y changed");
+                } 
+#endif
+                camera.Parameters[PLGigECamera.CenterX].SetValue(config.CenterX);   // UserSet 不會記錄
+                camera.Parameters[PLGigECamera.CenterY].SetValue(config.CenterY);   // UserSet 不會記錄
+
+                camera.Parameters[PLGigECamera.TriggerSelector].SetValue(config.TriggerSelector);
+                camera.Parameters[PLGigECamera.TriggerMode].SetValue(config.TriggerMode);
+                camera.Parameters[PLGigECamera.TriggerSource].SetValue(config.TriggerSource);
+
+                camera.Parameters[PLGigECamera.ExposureMode].SetValue(config.ExposureMode);
+                camera.Parameters[PLGigECamera.ExposureAuto].SetValue(config.ExposureAuto);
+                camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(config.ExposureTime);
+
+                camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(config.FixedFPS);
+                camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(config.FPS);
             }
-
-            if (!camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY))
+            catch (ArgumentOutOfRangeException A)
             {
-                Debug.WriteLine(true);
-            } 
-
-            Debug.WriteLine($"{config.Width} {config.OffsetX}");
-            Debug.WriteLine($"{config.Height} {config.OffsetY}");
-
-            camera.Parameters[PLGigECamera.CenterX].SetValue(config.CenterX);
-            camera.Parameters[PLGigECamera.CenterY].SetValue(config.CenterY);
-
-            camera.Parameters[PLGigECamera.TriggerSelector].SetValue(config.TriggerSelector);
-            camera.Parameters[PLGigECamera.TriggerMode].SetValue(config.TriggerMode);
-            camera.Parameters[PLGigECamera.TriggerSource].SetValue(config.TriggerSource);
-
-            camera.Parameters[PLGigECamera.ExposureMode].SetValue(config.ExposureMode);
-            camera.Parameters[PLGigECamera.ExposureAuto].SetValue(config.ExposureAuto);
-            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(config.ExposureTime);
-
-            camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(config.FixedFPS);
-            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(config.FPS);
+                throw new ArgumentOutOfRangeException($"相機組態寫入失敗: {A.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"相機組態寫入失敗: {ex.Message}");
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private static void SaveConfig()
         {
 
 
         }
-
 
         /// <summary>
         /// 讀取 UserSet
@@ -397,19 +445,33 @@ namespace ApexVisIns.content
             camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
+            // 讀取 camera 的 config
             ReadConfig(camera, config);
             // 更新 UserSet Read
             config.UserSetRead = userSet;
-            
-            //Debug.WriteLine($"{userSet}");
+            // Debug.WriteLine($"{userSet}");
         }
 
+        /// <summary>
+        /// 更新 Config
+        /// Config 寫入 Camera
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UpdateUserSet_Click(object sender, RoutedEventArgs e)
         {
             DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
             Camera camera = MainWindow.BaslerCam.Camera;
 
-            UpdateConfig(config, camera);
+            try
+            {
+                UpdateConfig(config, camera);
+            }
+            catch (Exception ex)
+            {
+                // 這邊要修改 (Error 格式怪怪的)
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+            }
         }
 
         /// <summary>
@@ -420,7 +482,12 @@ namespace ApexVisIns.content
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
             Camera camera = MainWindow.BaslerCam.Camera;
+
+            string userSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+            // Debug.WriteLine($"{userSet}");
             camera.Parameters[PLGigECamera.UserSetSave].Execute();
+
+            Debug.WriteLine("Save UserSet");
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -436,10 +503,18 @@ namespace ApexVisIns.content
         }
 
 
+        private void OffsetTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+
+            // Tag: MaxWidth or MaxHeight
+            textBox.Text = $"{Convert.ToInt32(textBox.Tag) - Convert.ToInt32(textBox.Text)}";
+            Debug.WriteLine(textBox.Tag);
+        }
+
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
         //    ComboBox comboBox = sender as ComboBox;
-
         //    Debug.WriteLine($"{comboBox.SelectedItem} {comboBox.SelectedValue}");
         //}
     }

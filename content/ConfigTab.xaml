@@ -346,8 +346,10 @@
                         <TextBox Margin="0 0 48 0" Padding="5 4" TextAlignment="Center" FontWeight="Bold"
                                  IsReadOnly="True" MinWidth="120"
                                  materialDesign:HintAssist.Hint="UserSet Now"
+                                 Focusable="False" Cursor="Arrow"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding UserSetRead, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        
                         <!--UserSet-->
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="SemiBold" 
                                   materialDesign:HintAssist.Hint="UserSet"
@@ -366,7 +368,6 @@
                         <Button x:Name="ReadUserSet" Margin="12 0 0 0" Content="讀取" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
                                 IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                 Click="ReadUserSet_Click"/>
-
 
                         <Button x:Name="UpdateUserSet" Margin="12 0 0 0" Content="更新" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
                                 IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
@@ -471,9 +472,10 @@
                         <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
-                        <TextBox Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
+                        <TextBox x:Name="OffsetXtxt" Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
                                  Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
+                        
+                        <TextBox x:Name="OffsetYtxt" Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
                                  Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -526,7 +528,6 @@
                         <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--//--><!--//--><!--//--><!--//--><!--//-->
 
-                        
                         <!--
                         <StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
                             <TextBlock Text="2"/>
@@ -548,12 +549,14 @@
                             </StackPanel>
                         </Button>
 
-                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0"  Style="{StaticResource MaterialDesignOutlinedButton}">
-                            456
-                        </Button>
+                        
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0"  Style="{StaticResource MaterialDesignOutlinedButton}">456</Button>
+                        
+                        
                     </StackPanel>
-                    
+
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+
                 </DockPanel>
             </materialDesign:Card>
         </Border>

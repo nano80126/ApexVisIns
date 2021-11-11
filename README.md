@@ -94,6 +94,7 @@ Apex 外觀瑕疵檢測
 
 * DebugTab
 	 * ConfigPanel 比較邏輯需更改 (Textbox & Config)
+* Read UserSet Center X, Center Y 紀錄會失效
 
 ###  RELEASE MODE 
 

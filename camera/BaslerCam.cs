@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Data;
@@ -258,14 +259,12 @@ namespace ApexVisIns
             Camera = new Camera(argument);
         }
 
-
         public override void Open()
         {
             _ = Camera == null
                 ? throw new ArgumentNullException("Camera is a null object, initialize it before calling this function")
                 : Camera.Open();
         }
-
 
         public override void Close()
         {
@@ -603,11 +602,20 @@ namespace ApexVisIns
             {
                 if (value != _width)
                 {
-                    _width = value;
+                    // < 0 => 0, > MaxWidth => MaxWidth
+                    _width = value < 0 ? 0 : value > MaxWidth ? MaxWidth : value;
                     if (CenterX)
                     {
                         int half = (_maxWidth - _width) / 2;
                         OffsetX = half % 2 == 0 ? half : half - 1;
+                    }
+                    else
+                    {
+                        // Offset > 允許最大值 => 設為最大值
+                        if (OffsetX > _maxWidth - _width)
+                        {
+                            OffsetX = _maxWidth - _width;
+                        }
                     }
                     OnPropertyChanged(nameof(Width));
                     OnPropertyChanged(nameof(OffsetX));
@@ -625,11 +633,20 @@ namespace ApexVisIns
             {
                 if (value != _height)
                 {
-                    _height = value;
+                    // < 0 => 0, > MaxHeight => MaxHeight
+                    _height = value < 0 ? 0 : value > MaxHeight ? MaxHeight : value;
                     if (CenterY)
                     {
                         int half = (_maxHeight - _height) / 2;
                         OffsetY = half % 2 == 0 ? half : half - 1;
+                    }
+                    else
+                    {
+                        // Offset > 允許最大值 => 設為最大值
+                        if (OffsetY > _maxHeight - _height)
+                        {
+                            OffsetY = _maxHeight - _height;
+                        }
                     }
                     OnPropertyChanged(nameof(Height));
                     OnPropertyChanged(nameof(OffsetY));
@@ -679,7 +696,7 @@ namespace ApexVisIns
             {
                 if (value != _offsetX)
                 {
-                    _offsetX = value;
+                    _offsetX = value < 0 ? 0 : value > _maxWidth - _width ? _maxWidth - _width : value;
                     OnPropertyChanged(nameof(OffsetX));
                 }
             }
@@ -695,7 +712,7 @@ namespace ApexVisIns
             {
                 if (value != _offsetY)
                 {
-                    _offsetY = value;
+                    _offsetY = value < 0 ? 0 : value > _maxHeight - _height ? _maxHeight - _height : value;
                     OnPropertyChanged(nameof(OffsetY));
                 }
             }
