@@ -285,7 +285,7 @@
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                                 Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                               <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
+                                        <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
 
                                         <!--#region Assist Rectangle -->
                                         <Rectangle x:Name="AssistRectangle" DataContext="{StaticResource AssistRect2}"
@@ -317,8 +317,8 @@
                                     </Canvas>
                                 </Viewbox>
                             </ScrollViewer>
-                        </Grid>    
-                        
+                        </Grid>
+
                         <!--#region ImageFooter -->
                         <DockPanel x:Name="AssistFooter" HorizontalAlignment="Stretch" Margin="0" Height="20" MinWidth="20" Background="{x:Null}">
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource Indicator2}">
@@ -397,8 +397,9 @@
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
                 </StackPanel>
 
+                
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
-                    <!--<TextBlock Text="123"></TextBlock>-->
+                    <!--光源控制 Panel-->
                     <uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>
                 </StackPanel>
                 <!--//-->
@@ -408,10 +409,11 @@
                     <!--<TextBlock Text="123"/>-->
                 </StackPanel>
                 <!--//-->
-
+                
             </Grid>
         </StackPanel>
     </Border>
     <!--#endregion-->
-
 </StackPanel>
+
+    

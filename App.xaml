@@ -77,13 +77,12 @@
             <!--#region Public Resource -->
             <!--相機列舉器-->
             <local:CameraEnumer x:Key="CameraEnumer"/>
+            
             <!--ComPort 列舉器-->
             <local:LightEnumer x:Key="LightEnumer"/>
-
-            <io:SerialPort x:Key="SerialPort"/>
-
-            <local:LightController x:Key="LightController" Channels="4"/>
-
+            
+            <!--光源控制器-->
+            <local:LightController x:Key="LightController" ChannelNumber="4"/>
 
             <!-- 相機 DEBUG 測試使用 -->
             <local:BaslerCam x:Key="BaslerCam" ConfigName="Default">
@@ -123,7 +122,7 @@
             <!-- 裝置組態 (正式使用) -->
             <!--<x:Array x:Key="DeviceConfigs" Type="local:DeviceConfig">
                 <local:DeviceConfig Name="Device1"/>
-                <local:DeviceConf ig Name="Device2"/>
+                <local:DeviceConfig Name="Device2"/>
                 <local:DeviceConfig Name="Device3"/>
                 <local:DeviceConfig Name="Device4"/>
             </x:Array>-->
@@ -132,6 +131,7 @@
                 <!--<local:DeviceConfig Name="Device1"/>-->
             </local:DeviceConfigList>
 
+            
             <!--Crosshair-->
             <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
             <!--輔助 Rect-->

@@ -43,7 +43,7 @@ namespace ApexVisIns.module
                     // 開啟 COM
                     MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
                     // 歸零所有通道
-                    MainWindow.LightController.ResetValue();
+                    MainWindow.LightController.ResetAllValue();
                 }
                 catch (Exception ex)
                 {
@@ -69,24 +69,49 @@ namespace ApexVisIns.module
             }
         }
 
+        private void BulbOffBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow.LightController.IsComOpen)
+            {
+                MainWindow.LightController.ResetAllValue();
+            } else
+            {
+
+            }
+        }
+
         private void CmdSendBtn_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow.LightController.IsComOpen)
             {
-                string s = $"{ChannelSelector.SelectedIndex + 1},{LightSlider.Value}\r\n";
+                string cmd = string.Empty;
+                for (int i = 0; i < MainWindow.LightController.ChannelNumber; i++)
+                {
+                    LightChannel ch = MainWindow.LightController.Channels[i];
+                    cmd += $"{i + 1},{ch.Value},";
+                }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
 
-                Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+                string ret = MainWindow.LightController.Write(cmd);
 
-                string str = MainWindow.LightController.Write(s);
-
-                Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
-
-                Debug.WriteLine($"{s} {str}");
+                Debug.WriteLine(cmd);
+                Debug.WriteLine(ret);
             }
             else
             {
                 //MainWindow.LightController.ResetValue();
             }
         }
+        
+
+        //private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        //{
+        //    Debug.WriteLine($"{e.OldValue} {e.NewValue}");
+
+        //     foreach (LightChannel channel in MainWindow.LightController.Channels)
+        //    {
+        //        Debug.WriteLine($"{channel.Channel} {channel.Value}");
+        //    }
+        //}
     }
 }

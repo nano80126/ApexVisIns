@@ -130,7 +130,7 @@ namespace ApexVisIns
             #endregion
 
             #region Serial Port
-            SerialPort = FindResource(nameof(SerialPort)) as SerialPort;
+            //SerialPort = FindResource(nameof(SerialPort)) as SerialPort;
             LightController = FindResource(nameof(LightController)) as LightController;
             #endregion
 

@@ -315,7 +315,7 @@ namespace ApexVisIns.module
 
 
                 // Reset ZoomRatio
-                EngineerTab.ZoomRatio = 100;
+                //EngineerTab.ZoomRatio = 100;
 
 
                 // offset 置中 

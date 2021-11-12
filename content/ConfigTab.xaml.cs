@@ -39,11 +39,17 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Load");
+
+            
+
+
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Unload");
+
+
         }
 
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
@@ -458,21 +464,21 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateUserSet_Click(object sender, RoutedEventArgs e)
-        {
-            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-            Camera camera = MainWindow.BaslerCam.Camera;
+        //private void UpdateUserSet_Click(object sender, RoutedEventArgs e)
+        //{
+        //    DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+        //    Camera camera = MainWindow.BaslerCam.Camera;
 
-            try
-            {
-                UpdateConfig(config, camera);
-            }
-            catch (Exception ex)
-            {
-                // 這邊要修改 (Error 格式怪怪的)
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
-            }
-        }
+        //    try
+        //    {
+        //        UpdateConfig(config, camera);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // 這邊要修改 (Error 格式怪怪的)
+        //        MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+        //    }
+        //}
 
         /// <summary>
         /// 寫入 UserSet (主要儲存至相機)
@@ -481,12 +487,23 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
+            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
             Camera camera = MainWindow.BaslerCam.Camera;
 
-            string userSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
-            // Debug.WriteLine($"{userSet}");
-            camera.Parameters[PLGigECamera.UserSetSave].Execute();
+            try
+            {
+                // 更新 Config
+                UpdateConfig(config, camera);
+                // UserSet 紀錄
+                camera.Parameters[PLGigECamera.UserSetSave].Execute();
+            }
+            catch (Exception ex)
+            {
+                // 這邊要修改 (Error 格式有問題)
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+            }
 
+            //camera.Parameters[PLGigECamera.UserSetSave].Execute();
             Debug.WriteLine("Save UserSet");
         }
 

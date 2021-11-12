@@ -22,10 +22,15 @@ Apex 外觀瑕疵檢測
 	* 壓傷
 	* 色差
 
+
+## 確認相機DELAY問題
+
+
 ### 待新增 API
 
-* 光源控制器 (RS232), 保留可呼叫物件
-* 
+[x] 光源控制器 (RS232), 保留可呼叫物件
+[ ] 
+
 
 ### 待移除
 
@@ -44,6 +49,7 @@ Apex 外觀瑕疵檢測
 	* 相機Config
 * Debug Tab
 	* For Programming
+
 
 
 ### TO DO LIST

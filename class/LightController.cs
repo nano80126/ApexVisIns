@@ -90,13 +90,52 @@ namespace ApexVisIns
     }
 
     /// <summary>
+    /// 光源通道 Channel
+    /// </summary>
+    public class LightChannel : INotifyPropertyChanged
+    {
+        private int _value;
+
+        public LightChannel()
+        {
+        }
+
+        public LightChannel(string channel, int value)
+        {
+            Channel = channel;
+            Value = value;
+        }
+
+        public string Channel { get; set; }
+
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                if (value != _value)
+                {
+                    _value = value;
+                    OnPropertyChanged(nameof(Value));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    /// <summary>
     /// 光源控制器物件
     /// </summary>
     public class LightController : INotifyPropertyChanged
     {
-        private int _channels;
-        private int _channelOn; 
-        
+        private int _channelNumber;
+        private int _channelOn;
+
         private int[] channelValue;
 
         public LightController()
@@ -109,8 +148,22 @@ namespace ApexVisIns
         /// <param name="chs">控制器光源通道數</param>
         public LightController(int chs)
         {
-            Channels = chs;
+            ChannelNumber = chs;
             channelValue = new int[chs];
+
+            Channels.Clear();
+            for (int i = 0; i < ChannelNumber; i++)
+            {
+                Channels.Add(new LightChannel($"Ch{i + 1}", 0));
+            }
+
+            //Channels = new ObservableCollection<LightChannel>()
+            //{
+            //    new LightChannel()
+            //    {
+            //        Channel = 
+            //    }
+            //}
         }
 
         public SerialPort SerialPort { get; set; }
@@ -123,16 +176,27 @@ namespace ApexVisIns
         /// <summary>
         /// 光源通道數
         /// </summary>
-        public int Channels
+        public int ChannelNumber
         {
-            get => _channels;
+            get => _channelNumber;
             set
             {
-                _channels = value;
+                _channelNumber = value;
+                Channels.Clear(); // 先清除 Collection
+
+                for (int i = 0; i < _channelNumber; i++)
+                {
+                    Channels.Add(new LightChannel($"Ch{i + 1}", 0));
+                }
+
                 channelValue = new int[value];
+
             }
         }
 
+        /// <summary>
+        /// 待刪除
+        /// </summary>
         public int ChannelOn
         {
             get => _channelOn;
@@ -147,7 +211,9 @@ namespace ApexVisIns
             }
         }
 
-
+        /// <summary>
+        /// 待刪除
+        /// </summary>
         public int ValueOn
         {
             get => channelValue[_channelOn];
@@ -161,6 +227,11 @@ namespace ApexVisIns
             }
         }
 
+
+        /// <summary>
+        /// 通道 Source
+        /// </summary>
+        public ObservableCollection<LightChannel> Channels { get; set; } = new ObservableCollection<LightChannel>();
 
         /// <summary>
         /// 開啟 COM
@@ -200,10 +271,10 @@ namespace ApexVisIns
         /// <summary>
         /// 歸零所有通道
         /// </summary>
-        public void ResetValue()
+        public void ResetAllValue()
         {
             string cmd = string.Empty;
-            for (int i = 1; i <= Channels; i++)
+            for (int i = 1; i <= ChannelNumber; i++)
             {
                 cmd += $"{i},0,";
             }
@@ -224,7 +295,16 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得通道設定值
+        /// 設定通道光源大小
+        /// </summary>
+        /// <param name="ch">通道</param>
+        /// <param name="value">目標設定值</param>
+        public void SetCannelValue(int ch, int value)
+        {
+        }
+
+        /// <summary>
+        /// 取得通道光源大小
         /// </summary>
         /// <param name="ch">Ch1: 0, CH2: 1, ...</param>
         /// <returns></returns>
@@ -232,6 +312,7 @@ namespace ApexVisIns
         {
             return channelValue[ch];
         }
+
 
         /// <summary>
         /// 控制命令寫入 (需要帶 \r\n)
@@ -260,5 +341,4 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
 }
