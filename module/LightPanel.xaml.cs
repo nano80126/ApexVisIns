@@ -23,8 +23,14 @@ namespace ApexVisIns.module
     /// </summary>
     public partial class LightPanel : Card
     {
+        /// <summary>
+        /// App Element
+        /// </summary>
         public MainWindow MainWindow { get; set; }
 
+        /// <summary>
+        /// Parent Element
+        /// </summary>
         public EngineerTab EngineerTab { get; set; }
 
         public LightPanel()
@@ -60,21 +66,13 @@ namespace ApexVisIns.module
             }
         }
 
-        private void ChannelSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (MainWindow.LightController != null)
-            {
-                //MainWindow.LightController.ChannelOn = listBox.SelectedIndex;
-                Debug.WriteLine($"{MainWindow.LightController.ChannelOn} {MainWindow.LightController.ValueOn}");
-            }
-        }
-
         private void BulbOffBtn_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow.LightController.IsComOpen)
             {
                 MainWindow.LightController.ResetAllValue();
-            } else
+            }
+            else
             {
 
             }

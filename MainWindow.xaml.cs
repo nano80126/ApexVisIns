@@ -152,6 +152,12 @@ namespace ApexVisIns
             //Debug.WriteLine($"{DeviceConfigs.Count}");
             //OnTabIndex = 0;
             //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+
+            //int[] ccc = new int[] { 4, 4, 4, 4, 4 };
+
+            //ccc = ccc.Select(e => 0).ToArray();
+
+            //Debug.WriteLine(string.Join(',', ccc));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -17,7 +17,6 @@
         <!--//-->
     </materialDesign:Card.Resources>
 
-
     <DockPanel Background="Transparent" Margin="2 0">
         <DockPanel x:Name="Header" DockPanel.Dock="Top">
             <materialDesign:PackIcon Kind="Cogs" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"

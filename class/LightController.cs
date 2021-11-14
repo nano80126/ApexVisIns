@@ -136,7 +136,6 @@ namespace ApexVisIns
         private int _channelNumber;
         private int _channelOn;
 
-        private int[] channelValue;
 
         public LightController()
         {
@@ -149,7 +148,6 @@ namespace ApexVisIns
         public LightController(int chs)
         {
             ChannelNumber = chs;
-            channelValue = new int[chs];
 
             Channels.Clear();
             for (int i = 0; i < ChannelNumber; i++)
@@ -183,50 +181,12 @@ namespace ApexVisIns
             {
                 _channelNumber = value;
                 Channels.Clear(); // 先清除 Collection
-
                 for (int i = 0; i < _channelNumber; i++)
                 {
                     Channels.Add(new LightChannel($"Ch{i + 1}", 0));
                 }
-
-                channelValue = new int[value];
-
             }
         }
-
-        /// <summary>
-        /// 待刪除
-        /// </summary>
-        public int ChannelOn
-        {
-            get => _channelOn;
-            set
-            {
-                if (value != _channelOn)
-                {
-                    _channelOn = value;
-                    OnPropertyChanged(nameof(ChannelOn));
-                    OnPropertyChanged(nameof(ValueOn));
-                }
-            }
-        }
-
-        /// <summary>
-        /// 待刪除
-        /// </summary>
-        public int ValueOn
-        {
-            get => channelValue[_channelOn];
-            set
-            {
-                if (value != channelValue[_channelOn])
-                {
-                    channelValue[_channelOn] = value;
-                    OnPropertyChanged(nameof(ValueOn));
-                }
-            }
-        }
-
 
         /// <summary>
         /// 通道 Source
@@ -283,6 +243,10 @@ namespace ApexVisIns
             try
             {
                 _ = Write(cmd);
+                foreach (LightChannel ch in Channels) // 歸零 channel
+                {
+                    ch.Value = 0;
+                }
             }
             catch (TimeoutException T)
             {
@@ -295,12 +259,23 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 設定通道光源大小
+        /// 設定通道光源大小,
+        /// 後端使用
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="value">目標設定值</param>
         public void SetCannelValue(int ch, int value)
         {
+            if (ch < 0 && ch <= ChannelNumber)
+            {
+                string cmd = $"{ch},{value}\r\n";
+                _ = Write(cmd);     // 寫入控制器
+                Channels[ch - 1].Value = value;  // 變更通道值
+            }
+            else
+            {
+                throw new ArgumentException("指令的通道不存在");
+            }
         }
 
         /// <summary>
@@ -310,9 +285,15 @@ namespace ApexVisIns
         /// <returns></returns>
         public int GetChannelValue(int ch)
         {
-            return channelValue[ch];
+            if (0 < ch && ch <= ChannelNumber)
+            {
+                return Channels[ch - 1].Value;    // 回傳通道值
+            }
+            else
+            {
+                throw new ArgumentException("指令的通道不存在");
+            }
         }
-
 
         /// <summary>
         /// 控制命令寫入 (需要帶 \r\n)
