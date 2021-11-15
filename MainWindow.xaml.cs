@@ -33,7 +33,6 @@ namespace ApexVisIns
         public LightEnumer LightEnumer;
         #endregion
 
-
         #region Cameras
         public static BaslerCam BaslerCam { get; set; }
         public static BaslerCam[] BaslerCams { get; set; }
@@ -47,13 +46,10 @@ namespace ApexVisIns
         public static SerialPort SerialPort { get; set; }
         #endregion
 
-
-
         #region Devices
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         //public static DeviceConfig[] DeviceConfigs;
         #endregion
-
 
         #region Resources
         public Crosshair Crosshair;         // 待刪
@@ -105,6 +101,7 @@ namespace ApexVisIns
             #region Tabs
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
+            EngineerTab.LightPanel.MainWindow = this;
             #endregion
         }
 

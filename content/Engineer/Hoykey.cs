@@ -12,6 +12,7 @@ namespace ApexVisIns.content
 {
     public partial class EngineerTab : StackPanel
     {
+#if false
 
         private void CanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -63,6 +64,7 @@ namespace ApexVisIns.content
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
             AssistRect.Enable = !AssistRect.Enable;
-        }
+        } 
+#endif
     }
 }

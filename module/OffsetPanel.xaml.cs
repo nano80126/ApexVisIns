@@ -10,8 +10,10 @@ namespace ApexVisIns.module
     /// </summary>
     public partial class OffsetPanel : Card
     {
+        /// <summary>
+        /// MainWindow 物件
+        /// </summary>
         public MainWindow MainWindow { get; set; }
-
 
         public OffsetPanel()
         {
@@ -20,8 +22,10 @@ namespace ApexVisIns.module
 
         private void CamLeftMove_Click(object sender, RoutedEventArgs e)
         {
-            //if (MainWindow.BaslerCam?.Camera != null)
-            if ((DataContext as BaslerCam)?.Camera != null)
+            //Debug.WriteLine($"{MainWindow.BaslerCam}");
+            //Debug.WriteLine($"Camera: {MainWindow.BaslerCam.Camera == null}");
+            // 確認相機已開啟
+            if (MainWindow.BaslerCam?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -35,8 +39,8 @@ namespace ApexVisIns.module
 
         private void CamTopMove_Click(object sender, RoutedEventArgs e)
         {
-            //if (MainWindow.BaslerCam?.Camera != null)
-            if ((DataContext as BaslerCam)?.Camera != null)
+            // 確認相機已開啟
+            if (MainWindow.BaslerCam?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -50,8 +54,8 @@ namespace ApexVisIns.module
 
         private void CamRightMove_Click(object sender, RoutedEventArgs e)
         {
-            //if (MainWindow.BaslerCam?.Camera != null)
-            if ((DataContext as BaslerCam)?.Camera != null)
+            // 確認相機已開啟
+            if (MainWindow.BaslerCam?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -66,7 +70,8 @@ namespace ApexVisIns.module
         private void CamBottomMove_Click(object sender, RoutedEventArgs e)
         {
             //if (MainWindow.BaslerCam?.Camera != null)
-            if ((DataContext as BaslerCam)?.Camera != null)
+            // 確認相機已開啟
+            if (MainWindow.BaslerCam?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -87,7 +92,8 @@ namespace ApexVisIns.module
             //}
 
             //if (MainWindow.BaslerCam?.Camera != null)
-            if ((DataContext as BaslerCam)?.Camera != null)
+            // 確認相機已開啟
+            if (MainWindow.BaslerCam?.Camera != null)
             {
                 BaslerCam cam = MainWindow.BaslerCam;
 
@@ -103,6 +109,9 @@ namespace ApexVisIns.module
                 {
                     cam.OffsetY = (int)cam.Camera.Parameters[PLGigECamera.OffsetY].GetValue();
                 }
+                //Debug.WriteLine($"{cam.OffsetX} {cam.OffsetY}");
+                //Debug.WriteLine($"{cam.Camera.Parameters[PLGigECamera.OffsetX].GetValue()}");
+                //Debug.WriteLine($"{cam.Camera.Parameters[PLGigECamera.OffsetY].GetValue()}");
             }
         }
     }

@@ -17,6 +17,25 @@ namespace ApexVisIns
         {
             e.CanExecute = true;
         }
+
+        private void MainTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // MainTab is focused
+            e.CanExecute = OnTabIndex == 0;
+        }
+
+        private void ConfigTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // ConfigTab is focused
+            e.CanExecute = OnTabIndex == 1;
+        }
+
+        private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // EngineerTab is focused
+            e.CanExecute = OnTabIndex == 2;
+        }
+
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
@@ -43,27 +62,50 @@ namespace ApexVisIns
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // Grabber 不為啟動狀態 // CamSelector 有選擇相機
+            switch (OnTabIndex)
+            {
+                case 2:
+                    e.CanExecute = EngineerTab.CamConnect.IsEnabled;
+                    break;
+                default:
+                    break;
+            }
             //e.CanExecute = CamConnect.IsEnabled;
         }
         private void OpenDeviceCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            //if ((bool)CamConnect.IsChecked)
-            //{
-            //    CamConnect.IsChecked = false;   // This will raise uncheck event
-            //    //CamConnect.IsChecked = Basler_Disconnect();
-            //}
-            //else
-            //{
-            //    CamConnect.IsChecked = true;    // This will raise check event
-            //    //BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
-            //    //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
-            //}
+            switch (OnTabIndex)
+            {
+                case 2: // Engineer Tab
+                    if ((bool)EngineerTab.CamConnect.IsChecked)
+                    {
+                        EngineerTab.CamConnect.IsChecked = false;
+                    }
+                    else
+                    {
+                        EngineerTab.CamConnect.IsChecked = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            // if ((bool)CamConnect.IsChecked)
+            // {
+            //     CamConnect.IsChecked = false;   // This will raise uncheck event
+            //     //CamConnect.IsChecked = Basler_Disconnect();
+            // }
+            // else
+            // {
+            //     CamConnect.IsChecked = true;    // This will raise check event
+            //     //BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
+            //     //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
+            // }
         }
 
         private void StartGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // 相機已開啟
-            //e.CanExecute = camera != null && camera.IsOpen;
+            // e.CanExecute = camera != null && camera.IsOpen;
             e.CanExecute = false;   // 此功能已過時
         }
 
@@ -74,32 +116,81 @@ namespace ApexVisIns
 
         private void SingleShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            //e.CanExecute = SingleShot.IsEnabled;
+            switch (OnTabIndex)
+            {
+                case 2:
+                    e.CanExecute = EngineerTab.SingleShot.IsEnabled;
+                    break;
+                default:
+                    e.CanExecute = false;
+                    break;
+            }
         }
 
         private void SingleShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            switch (OnTabIndex)
+            {
+                case 2:
+                    EngineerTab.SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    break;
+                default:
+                    break;
+            }
             //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            switch (OnTabIndex)
+            {
+                case 2:
+                    e.CanExecute = EngineerTab.ContinouseShot.IsEnabled;
+                    break;
+                default:
+                    e.CanExecute = false;
+                    break;
+            }
             //e.CanExecute = ContinouseShot.IsEnabled;
         }
 
         private void ContinousShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            switch (OnTabIndex)
+            {
+                case 2:
+                    EngineerTab.ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    break;
+                default:
+                    break;
+            }
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
-            Crosshair.Enable = !Crosshair.Enable;
+            switch (OnTabIndex)
+            {
+                case 2:
+                    //Crosshair.Enable = !Crosshair.Enable;
+                    EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            AssistRect.Enable = !AssistRect.Enable;
+            switch (OnTabIndex)
+            {
+                case 2:
+                    //AssistRect.Enable = !AssistRect.Enable;
+                    EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -132,6 +223,11 @@ namespace ApexVisIns
             OnTabIndex = 2;
         }
 
+        /// <summary>
+        /// Switch Tab with parameter
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
             OnTabIndex = byte.Parse(e.Parameter as string);

@@ -46,10 +46,17 @@ namespace ApexVisIns.module
             {
                 try
                 {
+                    // #region TEST
+                    // Debug.WriteLine($"{MainWindow}: {MainWindow == null} : MainWindow");
+                    // Debug.WriteLine($"{MainWindow.LightEnumer} {MainWindow?.LightEnumer == null} : LightPanel");
+                    // #endregion
+
                     // 開啟 COM
                     MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
                     // 歸零所有通道
                     MainWindow.LightController.ResetAllValue();
+                    // 暫停 LightEnummer
+                    MainWindow.LightEnumer.WorkerPause();
                 }
                 catch (Exception ex)
                 {
@@ -63,6 +70,8 @@ namespace ApexVisIns.module
             {
                 // 關閉 COM
                 MainWindow.LightController.ComClose();
+                // 啟動 LightEnumer
+                MainWindow.LightEnumer.WorkerResume();
             }
         }
 

@@ -171,7 +171,6 @@ namespace ApexVisIns
     /// </summary>
     public class BaslerCam : CustomCam
     {
-        // private int _frames = 0;
 
         public BaslerCam()
         {
@@ -426,6 +425,13 @@ namespace ApexVisIns
         }
     }
 
+
+    public class DeviceJson : BaslerCamInfo
+    {
+
+    }
+
+
     /// <summary>
     /// Camera 組態, 較為 Detail, 正式流程使用
     /// </summary>
@@ -444,7 +450,7 @@ namespace ApexVisIns
         //
         private bool _fixedFPS;
         private double _fps;
-
+        //
         private string[] _acquisitionModeEnum;
         private string _acquisitionMode;
         private string[] _triggerSelectorEnum;
@@ -453,7 +459,7 @@ namespace ApexVisIns
         private string _triggerMode;
         private string[] _triggerSourceEnum;
         private string _triggerSource;
-
+        //
         private string[] _exposureModeEnum;
         private string _exposureMode;
         private string[] _exposureAutoEnum;
@@ -465,7 +471,6 @@ namespace ApexVisIns
         private int _sensorHeight;
         private bool _centerX;
         private bool _centerY;
-
 
         /// <summary>
         /// .xaml 使用 (一般不使用)
@@ -1028,6 +1033,9 @@ namespace ApexVisIns
         #endregion
     }
 
+    /// <summary>
+    /// Config Tab Devices
+    /// </summary>
     public class DeviceConfigList : ObservableCollection<DeviceConfig>
     {
         public DeviceConfigList()

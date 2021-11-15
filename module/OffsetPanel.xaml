@@ -13,16 +13,16 @@
         </Grid.Resources>
 
         <RepeatButton x:Name="CamLeftMove" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=14}"
-                                                      Click="CamLeftMove_Click"/>
+                      Click="CamLeftMove_Click"/>
 
         <RepeatButton x:Name="CamTopMove" HorizontalAlignment="Center" VerticalAlignment="Top" Content="{materialDesign:PackIcon Kind=ArrowTopBoldOutline, Size=14}"
-                                                      Click="CamTopMove_Click" Cursor="Hand"/>
+                      Click="CamTopMove_Click" Cursor="Hand"/>
 
         <RepeatButton x:Name="CamRightMove" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=14}"
-                                                      Click="CamRightMove_Click"/>
+                      Click="CamRightMove_Click"/>
 
         <RepeatButton x:Name="CamBottomMove" HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{materialDesign:PackIcon Kind=ArrowBottomBoldOutline, Size=14}"
-                                                      Click="CamBottomMove_Click"/>
+                      Click="CamBottomMove_Click"/>
 
         <Button x:Name="CamCenterMove" HorizontalAlignment="Center" VerticalAlignment="Center"  Content="{materialDesign:PackIcon Kind=Circle, Size=14}" Click="CamCenterMove_Click"/>
     </Grid>

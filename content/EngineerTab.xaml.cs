@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Basler.Pylon;
 using Basler;
-
+using System.Threading;
 
 namespace ApexVisIns.content
 {
@@ -27,9 +27,9 @@ namespace ApexVisIns.content
     {
 
         #region Resources
-        public static Crosshair Crosshair { set; get; }
-        public static AssistRect AssistRect { set; get; }
-        public static Indicator Indicator { set; get; }
+        public Crosshair Crosshair { set; get; }
+        public AssistRect AssistRect { set; get; }
+        public Indicator Indicator { set; get; }
         #endregion
 
         #region Varibles
@@ -48,17 +48,29 @@ namespace ApexVisIns.content
         {
             InitializeComponent();
 
-            InitializePanels();
+            InitializePanelObjects();
+
+            CheckPanelsObject();
         }
 
-        private void InitializePanels()
+        /// <summary>
+        /// 綁定 Panel 物件
+        /// </summary>
+        private void InitializePanelObjects()
         {
-            // ConfigPanel.MainWindow = this.Parent;
-            //ConfigPanel.MainWindow = MainWindow;
-            //ConfigPanel.EngineerTab = this;
+            ConfigPanel.EngineerTab = this;
+            LightPanel.EngineerTab = this;
+        }
 
-            //Debug.WriteLine($"ConfigPanel MainWindow {ConfigPanel.MainWindow}");
-            //Debug.WriteLine($"ConfigPanel EngineerTab {ConfigPanel.EngineerTab}");
+        private void CheckPanelsObject()
+        {
+            // 確認物件細節正確
+            //Task.Run(() =>
+            //{
+            //    SpinWait.SpinUntil(() => false, 2000);
+            //    Debug.WriteLine($"MainWindow : {MainWindow}");
+            //    Debug.WriteLine($"EngineerTab : {this}");
+            //});
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -92,9 +104,15 @@ namespace ApexVisIns.content
             Debug.WriteLine("Engineer Tab Unload");
         }
 
-
+        /// <summary>
+        /// 測試用按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            // This is for test function
+
 
 
         }
@@ -353,5 +371,6 @@ namespace ApexVisIns.content
             }
         }
         #endregion
+
     }
 }

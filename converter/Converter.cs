@@ -61,6 +61,18 @@ namespace ApexVisIns.Converter
         }
     }
 
+    public class EqualConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     /// <summary>
     /// int not equal 轉換器

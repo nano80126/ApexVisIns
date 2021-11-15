@@ -68,6 +68,7 @@
             <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
+            <cvt:EqualConverter x:Key="EqualConverter"/>
             <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
             <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>

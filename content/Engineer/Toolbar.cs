@@ -29,6 +29,12 @@ namespace ApexVisIns.content
             // ConfigPanel.DataContext = MainWindow.BaslerCams[idx];
         }
 
+        private void CamSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // 重置 Selected Index
+            (sender as ComboBox).SelectedIndex = -1;
+        }
+
         private void CamConnect_Checked(object sender, RoutedEventArgs e)
         {
             ToggleButton Toggle = sender as ToggleButton;
@@ -102,7 +108,7 @@ namespace ApexVisIns.content
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
-                throw;
+                //throw;
             }
             return cam.IsOpen;
         }
@@ -125,7 +131,7 @@ namespace ApexVisIns.content
             return false;
         }
 
-        public void Basler_SingleGrab(BaslerCam cam)
+        public static void Basler_SingleGrab(BaslerCam cam)
         {
             try
             {
@@ -158,7 +164,7 @@ namespace ApexVisIns.content
             }
         }
 
-        public void Basler_ContinousGrab(BaslerCam cam)
+        public static void Basler_ContinousGrab(BaslerCam cam)
         {
             try
             {
@@ -201,7 +207,7 @@ namespace ApexVisIns.content
             #endregion
 
             /// Find camera of specific serial number
-            //BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
+            // BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
             BaslerCam Cam = MainWindow.BaslerCam;
 
             Cam.ModelName = modelName;
@@ -210,6 +216,9 @@ namespace ApexVisIns.content
             Cam.HeightMax = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
 
             #region Adjustable parameters
+            camera.Parameters[PLGigECamera.CenterX].SetValue(false);    // 確保 OffsetX 沒有被鎖定
+            camera.Parameters[PLGigECamera.CenterY].SetValue(false);    // 確保 OffsetY 沒有被鎖定
+            //
             camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
             Cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
             camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
@@ -262,6 +271,7 @@ namespace ApexVisIns.content
             Cam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
             Cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
 
+            // 待變更 // 用來標示相機用途等 ...
             Cam.Camera.StreamGrabber.UserData = "abc";
             #endregion
 
@@ -342,7 +352,6 @@ namespace ApexVisIns.content
             }
         }
         #endregion
-
 
 
         #endregion

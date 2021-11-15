@@ -73,7 +73,6 @@
                 </Button.Style>
             </Button>
 
-
             <!--Row 2-->
             <!--待刪除-->
             <!--<ListBox x:Name="ChannelSelector" HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8" 

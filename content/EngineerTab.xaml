@@ -74,6 +74,7 @@
                           IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                           ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                           SelectionChanged="CamSelector_SelectionChanged"
+                          MouseRightButtonUp="CamSelector_MouseRightButtonUp"
                           MinWidth="135" Margin="0 0 12 0">
                     <!--  -->
                     <ComboBox.ItemTemplate>
@@ -90,14 +91,36 @@
                     <ToggleButton.Style>
                         <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=CamSelector, Path=SelectedIndex, UpdateSourceTrigger=PropertyChanged}" Value="-1">
+                                <!--="{Binding ElementName=CamSelector, Path=SelectedIndex, UpdateSourceTrigger=PropertyChanged}" Value="-1"-->
+                                <!-- CamSelector SelectedIndex 有機會自己跳掉 -->
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <MultiBinding Converter="{StaticResource BooleanOrGate}">
+                                            <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource EqualConverter}" ConverterParameter="-1"/>
+                                            <Binding Path="IsGrabbing" FallbackValue="False" UpdateSourceTrigger="PropertyChanged"/>
+                                        </MultiBinding>
+                                    </DataTrigger.Binding>
                                     <Setter Property="IsEnabled" Value="False"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <!--<DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
+                                </DataTrigger>-->
+                                <!--<MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition>
+                                            <Condition.Binding>
+                                                <MultiBinding>
+                                                    <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1"/>
+                                                    <Binding></Binding>
+                                                </MultiBinding>
+                                            </Condition.Binding>
+                                        </Condition>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </MultiDataTrigger>-->
                             </Style.Triggers>
                             <Setter Property="IsEnabled" Value="True"/>
+                            <!-- Camera 選擇不為 -1, Camera 不為 Grabbing -->
                         </Style>
                     </ToggleButton.Style>
                 </ToggleButton>
@@ -226,6 +249,20 @@
                      Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <!--//-->
 
+
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=CamSelector, Path=SelectedIndex , Converter={StaticResource EqualConverter}, ConverterParameter=-1, FallbackValue=False}"/>
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding IsGrabbing, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBlock Margin="12 0" VerticalAlignment="Center">
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{StaticResource BooleanOrGate}" FallbackValue="123" StringFormat="{}{0}">
+                            <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource EqualConverter}" ConverterParameter="-1" FallbackValue="True"/>
+                            <Binding Path="IsGrabbing" Source="{StaticResource BaslerCam}" FallbackValue="False" UpdateSourceTrigger="PropertyChanged"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!--// // // // // // // // // //-->
                 <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualWidth}"/>
                 
                 <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualHeight}"/>
@@ -389,6 +426,7 @@
                 </Border>
                 <!--#endregion-->
 
+                <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--DataContext="{StaticResource BaslerCam}"-->
                     <!--DataContext 與 Toolbar 同步-->
@@ -396,20 +434,16 @@
                     <!--//-->
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
                 </StackPanel>
-
-                
+                <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--光源控制 Panel-->
                     <uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>
                 </StackPanel>
                 <!--//-->
-
-                <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"/>-->
                 </StackPanel>
                 <!--//-->
-                
             </Grid>
         </StackPanel>
     </Border>

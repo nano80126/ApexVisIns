@@ -57,7 +57,7 @@ namespace ApexVisIns.module
             }
 
             //SetBinding();
-            
+
             Debug.WriteLine("Config Panel Unloaded");
         }
 
@@ -169,34 +169,18 @@ namespace ApexVisIns.module
             }
         }
 
-
         /// <summary>
-        /// 
+        /// 同步 config 和 camera
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="camera"></param>
+        /// <param name="config">目標組態</param>
+        /// <param name="camera">來源相機</param>
         public void SyncConfiguration(BaslerConfig config, BaslerCam camera)
         {
-            //config.Name = camera.ConfigName;
-            //ConfigName.Text = camera.ConfigName;
-            //config.Width = camera.Width;
-            //ConfigWidth.Text = $"{camera.Width}";
-            //config.Height = camera.Height;
-            //ConfigHeight.Text = $"{camera.Height}";
-            //config.FPS = camera.FPS;
-            //ConfigFPS.Text = $"{camera.FPS:F1}";
-            //config.ExposureTime = camera.ExposureTime;
-            //ConfigExposureTime.Text = $"{config.ExposureTime}";
-
             config.Name = camera.ConfigName;
             config.Width = camera.Width;
             config.Height = camera.Height;
             config.FPS = camera.FPS;
             config.ExposureTime = camera.ExposureTime;
-
-            Debug.WriteLine($"{config.Name} {camera.ConfigName}");
-            Debug.WriteLine($"{config.Width} {camera.Width}");
-            Debug.WriteLine($"{config.Height} {camera.Height}");
         }
 
         private void ConfigSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -299,6 +283,14 @@ namespace ApexVisIns.module
                 Cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
                 Cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
 
+                // ROI 置中
+                camera.Parameters[PLGigECamera.CenterX].SetValue(true);     // 會鎖定 Offset
+                camera.Parameters[PLGigECamera.CenterY].SetValue(true);     // 會鎖定 Offset
+                Cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();  // 取得當前 OffsetX
+                Cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();  // 取得當前 OffsetY
+                camera.Parameters[PLGigECamera.CenterX].SetValue(false);    // 解鎖 Center
+                camera.Parameters[PLGigECamera.CenterY].SetValue(false);    // 解鎖 Center 
+
                 // 寫入 FPS
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Cam.Config.FPS);
                 Cam.Config.FPS = Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
@@ -306,22 +298,18 @@ namespace ApexVisIns.module
                 // 寫入曝光時間
                 camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(Cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
                 Cam.Config.ExposureTime = Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
-
                 Cam.PropertyChange();
 
 
                 // 重置 ImageSource
                 MainWindow.ImageSource = null;
 
-
-                // Reset ZoomRatio
-                //EngineerTab.ZoomRatio = 100;
-
+                // Reset ZoomRatio // 這邊需要修正
+                EngineerTab.ZoomRatio = 100;
 
                 // offset 置中 
                 // CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 // MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-
 
                 // MainWindow.Indicator.Image = null;
                 // 重置 Image

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +29,11 @@ namespace ApexVisIns.content
 
         #endregion
 
+        /// <summary>
+        /// Device 路徑
+        /// </summary>
+        private string DevicesDirectory { get; } = @"./devices";
+
         #region Varibles
         public MainWindow MainWindow { get; set; }
         #endregion
@@ -39,17 +46,59 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Load");
+            #region 保留， 確認無用途則刪除
+            // 載入
+            LoadDeviceConfigs();
 
-            
 
-
+            #endregion
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Unload");
+            #region 保留，確認無用途則刪除
+
+            #endregion
+        }
 
 
+        /// <summary>
+        /// 載入 device.json
+        /// </summary>
+        private void LoadDeviceConfigs()
+        {
+            string path = $@"{DevicesDirectory}/device.json";
+
+            Debug.WriteLine($"Directory {Directory.Exists(DevicesDirectory)}");
+            Debug.WriteLine($"File {File.Exists(path)}");
+
+            if (!Directory.Exists(DevicesDirectory))
+            {
+                // 新增路徑
+                _ = Directory.CreateDirectory(DevicesDirectory);
+                // 新增檔案
+                _ = File.CreateText(path);
+            }
+            else if (!File.Exists(path))
+            {
+                // 新增檔案
+                _ = File.CreateText(path);
+            }
+            else
+            {
+                //MainWindow.DeviceConfigs
+                using StreamReader reader = File.OpenText(path);
+                string jsonStr = reader.ReadToEnd();
+                 
+                BaslerCamInfo[] infos = JsonSerializer.Deserialize<BaslerCamInfo[]>(jsonStr);
+
+                foreach (var item in infos)
+                {
+                    Debug.WriteLine($"{item.VendorName} {item.MAC}");
+                    Debug.WriteLine($"{item.FullName} {item.Model} {item.SerialNumber}");
+                }
+            }
         }
 
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
@@ -181,6 +230,31 @@ namespace ApexVisIns.content
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.DeviceVersion]}");
             //Debug.WriteLine($"{camera.Parameters[PLGigECamera.WidthMax]}");
         }
+
+        /// <summary>
+        /// Camera 組態儲存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
+        {
+            string path = $@"{DevicesDirectory}/device.json";
+            //string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
+
+            BaslerCamInfo[] infos = MainWindow.DeviceConfigs.Select(item => new BaslerCamInfo()
+            {
+                VendorName = item.VendorName,
+                FullName = item.FullName,
+                Model = item.Model,
+                SerialNumber = item.SerialNumber,
+                CameraType = item.CameraType,
+                MAC = item.MAC
+            }).ToArray();
+            string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
+
+            File.WriteAllText(path, jsonStr);
+        }
+
 
         /// <summary>
         /// Radio
@@ -432,7 +506,6 @@ namespace ApexVisIns.content
         private static void SaveConfig()
         {
 
-
         }
 
         /// <summary>
@@ -519,7 +592,7 @@ namespace ApexVisIns.content
             textBox.SelectAll();
         }
 
-
+        // 待移除
         private void OffsetTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -528,6 +601,7 @@ namespace ApexVisIns.content
             textBox.Text = $"{Convert.ToInt32(textBox.Tag) - Convert.ToInt32(textBox.Text)}";
             Debug.WriteLine(textBox.Tag);
         }
+
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
