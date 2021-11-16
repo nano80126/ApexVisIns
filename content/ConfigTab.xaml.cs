@@ -30,6 +30,11 @@ namespace ApexVisIns.content
         #endregion
 
         /// <summary>
+        /// json file 載入之 List
+        /// </summary>
+        private List<BaslerCamInfo> jsonCfgInfo;
+
+        /// <summary>
         /// Device 路徑
         /// </summary>
         private string DevicesDirectory { get; } = @"./devices";
@@ -43,23 +48,70 @@ namespace ApexVisIns.content
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Config Tab Load 事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Load");
             #region 保留， 確認無用途則刪除
+
+            // 綁定事件
+            // Debug.WriteLine(MainWindow);
+            // Debug.WriteLine(MainWindow.CameraEnumer);
+            // Debug.WriteLine(MainWindow.CameraEnumer.CamsSource);
+
+            // 目前若 CameraEnumer.CamsSource 為空
+
+            // 會有重複綁定物的問題
+
+            // 綁定 Collection 變更事件
+            MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
+
             // 載入
             LoadDeviceConfigs();
-
-
             #endregion
         }
 
+        /// <summary>
+        /// Config Tab Unload 事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Config Tab Unload");
-            #region 保留，確認無用途則刪除
 
+            #region 保留，確認無用途則刪除
+            // 取消 Collection 變更事件
+            MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
             #endregion
+        }
+
+
+        private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // 若有新相機連線
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems.Count > 0)
+                {
+                    Debug.WriteLine($"NewItems.Count: {e.NewItems.Count}");
+
+                    // List<BaslerCamInfo> infos = e.NewItems[];
+                    // foreach (BaslerCamInfo item in infos)
+                    // {
+
+                    //     Debug.WriteLine($"{item.SerialNumber} {item.Model}");
+                    // }
+                }
+            }
+
+            Debug.WriteLine($"CollectionChanged");
+            Debug.WriteLine($"{sender.GetType()}");
+            Debug.WriteLine($"{e.Action}");
         }
 
 
@@ -69,9 +121,6 @@ namespace ApexVisIns.content
         private void LoadDeviceConfigs()
         {
             string path = $@"{DevicesDirectory}/device.json";
-
-            Debug.WriteLine($"Directory {Directory.Exists(DevicesDirectory)}");
-            Debug.WriteLine($"File {File.Exists(path)}");
 
             if (!Directory.Exists(DevicesDirectory))
             {
@@ -87,17 +136,31 @@ namespace ApexVisIns.content
             }
             else
             {
-                //MainWindow.DeviceConfigs
                 using StreamReader reader = File.OpenText(path);
                 string jsonStr = reader.ReadToEnd();
-                 
-                BaslerCamInfo[] infos = JsonSerializer.Deserialize<BaslerCamInfo[]>(jsonStr);
 
-                foreach (var item in infos)
+                // 反序列化
+                //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+                jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+
+                #region 需要 與 CameraEnumer 比較
+                // 當前有連線之相機
+                List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                // 循環確認是否為已加入使用之相機
+                foreach (BaslerCamInfo item in camsOnLink)
                 {
-                    Debug.WriteLine($"{item.VendorName} {item.MAC}");
-                    Debug.WriteLine($"{item.FullName} {item.Model} {item.SerialNumber}");
+                    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                    {
+                        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                        {
+                            VendorName = item.VendorName,
+                            CameraType = item.CameraType
+                        };
+                        MainWindow.DeviceConfigs.Add(config);
+                    }
                 }
+                #endregion
             }
         }
 
@@ -254,7 +317,6 @@ namespace ApexVisIns.content
 
             File.WriteAllText(path, jsonStr);
         }
-
 
         /// <summary>
         /// Radio

@@ -72,8 +72,8 @@ Apex 外觀瑕疵檢測
 	* Model
 	* S/N
 	* Character
-[ ] Hotkey 功能恢復
-[ ] 寫入Config前，歸零Offset
+[x] Hotkey 功能恢復
+[ ] Camera Enumer Debug
 
 
 ### Config Logic

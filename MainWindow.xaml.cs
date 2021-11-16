@@ -99,6 +99,11 @@ namespace ApexVisIns
             //ListViewTab.MainWindow = this;
 
             #region Tabs
+            // MainTab
+            MainTab.MainWindow = this;
+            // Config Tab
+            ConfigTab.MainWindow = this;
+            // Engineer Tab
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
             EngineerTab.LightPanel.MainWindow = this;
@@ -155,6 +160,9 @@ namespace ApexVisIns
             //ccc = ccc.Select(e => 0).ToArray();
 
             //Debug.WriteLine(string.Join(',', ccc));
+
+            // 載入後, focus 視窗
+            _ = Focus();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

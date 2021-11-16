@@ -36,7 +36,10 @@ namespace ApexVisIns
         {
             lock (_CollectionLock)
             {
-                CamsSource.Clear();
+                if (CamsSource.Count > 0)
+                {
+                    CamsSource.Clear();
+                }
             }
         }
 
