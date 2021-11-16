@@ -55,10 +55,7 @@ namespace ApexVisIns.module
             {
                 Config = FindResource("BaslerConfig") as BaslerConfig;
             }
-
-            //SetBinding();
-
-            Debug.WriteLine("Config Panel Unloaded");
+            Debug.WriteLine("Config Panel loaded");
         }
 
         private void Card_Unloaded(object sender, RoutedEventArgs e)

@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using Basler.Pylon;
 
 
@@ -37,9 +38,10 @@ namespace ApexVisIns.content
         /// <summary>
         /// Device 路徑
         /// </summary>
-        private string DevicesDirectory { get; } = @"./devices";
 
         #region Varibles
+        private bool EventHasBound = false;
+        private string DevicesDirectory { get; } = @"./devices";
         public MainWindow MainWindow { get; set; }
         #endregion
 
@@ -68,7 +70,11 @@ namespace ApexVisIns.content
             // 會有重複綁定物的問題
 
             // 綁定 Collection 變更事件
-            MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
+            if (!EventHasBound) // 避免重複綁定
+            {
+                MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
+                EventHasBound = true;
+            }
 
             // 載入
             LoadDeviceConfigs();
@@ -86,34 +92,39 @@ namespace ApexVisIns.content
 
             #region 保留，確認無用途則刪除
             // 取消 Collection 變更事件
-            MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
+            if (EventHasBound)  // 確認已綁定
+            {
+                MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
+                EventHasBound = false;
+            }
             #endregion
         }
 
 
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // 若有新相機連線
+            // 若有新相機連線，跟jsonConfigList比較，若有紀錄則新增
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
-                if (e.NewItems.Count > 0)
+                List<BaslerCamInfo> list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+
+                foreach (BaslerCamInfo item in list)
                 {
-                    Debug.WriteLine($"NewItems.Count: {e.NewItems.Count}");
-
-                    // List<BaslerCamInfo> infos = e.NewItems[];
-                    // foreach (BaslerCamInfo item in infos)
-                    // {
-
-                    //     Debug.WriteLine($"{item.SerialNumber} {item.Model}");
-                    // }
+                    if (!jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                    {
+                        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                        {
+                            VendorName = item.VendorName,
+                            CameraType = item.CameraType
+                        };
+                        MainWindow.DeviceConfigs.Add(config);
+                    }
                 }
             }
 
-            Debug.WriteLine($"CollectionChanged");
-            Debug.WriteLine($"{sender.GetType()}");
-            Debug.WriteLine($"{e.Action}");
+            // 之後可能改為有紀錄的全部列出
+            // 再用 ICON 標示是否有連線
         }
-
 
         /// <summary>
         /// 載入 device.json
@@ -139,28 +150,31 @@ namespace ApexVisIns.content
                 using StreamReader reader = File.OpenText(path);
                 string jsonStr = reader.ReadToEnd();
 
-                // 反序列化
-                //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-                jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-
-                #region 需要 與 CameraEnumer 比較
-                // 當前有連線之相機
-                List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                // 循環確認是否為已加入使用之相機
-                foreach (BaslerCamInfo item in camsOnLink)
+                if (jsonStr != string.Empty)
                 {
-                    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                    // 反序列化
+                    //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+                    jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+
+                    #region 需要 與 CameraEnumer 比較
+                    // 當前有連線之相機
+                    List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                    // 循環確認是否為已加入使用之相機
+                    foreach (BaslerCamInfo item in camsOnLink)
                     {
-                        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                        if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
                         {
-                            VendorName = item.VendorName,
-                            CameraType = item.CameraType
-                        };
-                        MainWindow.DeviceConfigs.Add(config);
+                            DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                            {
+                                VendorName = item.VendorName,
+                                CameraType = item.CameraType
+                            };
+                            MainWindow.DeviceConfigs.Add(config);
+                        }
                     }
+                    #endregion
                 }
-                #endregion
             }
         }
 
@@ -183,6 +197,9 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 備份用 (待刪除)
+        /// </summary>
         private void FunctionBack()
         {
             BaslerCamInfo info = CameraSelector.SelectedItem as BaslerCamInfo;
