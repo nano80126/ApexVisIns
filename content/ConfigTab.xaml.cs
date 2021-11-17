@@ -60,15 +60,6 @@ namespace ApexVisIns.content
             Debug.WriteLine("Config Tab Load");
             #region 保留， 確認無用途則刪除
 
-            // 綁定事件
-            // Debug.WriteLine(MainWindow);
-            // Debug.WriteLine(MainWindow.CameraEnumer);
-            // Debug.WriteLine(MainWindow.CameraEnumer.CamsSource);
-
-            // 目前若 CameraEnumer.CamsSource 為空
-
-            // 會有重複綁定物的問題
-
             // 綁定 Collection 變更事件
             if (!EventHasBound) // 避免重複綁定
             {
@@ -100,24 +91,45 @@ namespace ApexVisIns.content
             #endregion
         }
 
-
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            // Action.Remove 也要新增
+            // DeviceConfig 要新增是否在線 Property
+            // 
+
+
             // 若有新相機連線，跟jsonConfigList比較，若有紀錄則新增
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
                 List<BaslerCamInfo> list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
 
+                Debug.WriteLine($"{list.Count}");
+
+                if (list.Count > 0)
+                {
+                    foreach (BaslerCamInfo item in list)
+                    {
+                        Debug.WriteLine($"{item.Model} {item.SerialNumber}");
+                    }
+                }
+
+                Debug.WriteLine("-----------------------------------");
+                foreach (BaslerCamInfo item in jsonCfgInfo)
+                {
+                    Debug.WriteLine($"{item.Model} {item.SerialNumber}");
+                }
+
                 foreach (BaslerCamInfo item in list)
                 {
-                    if (!jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
                     {
                         DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
                         {
                             VendorName = item.VendorName,
-                            CameraType = item.CameraType
+                            CameraType = item.CameraType,
+                            Online = true
                         };
-                        MainWindow.DeviceConfigs.Add(config);
+                        Dispatcher.Invoke(() => MainWindow.DeviceConfigs.Add(config));
                     }
                 }
             }
@@ -154,28 +166,57 @@ namespace ApexVisIns.content
                 {
                     // 反序列化
                     //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-                    jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+                    List<BaslerCamInfo> tempList = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
 
-                    #region 需要 與 CameraEnumer 比較
-                    // 當前有連線之相機
-                    List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
+                    //Debug.WriteLine($"{jsonCfgInfo == null} {jsonCfgInfo?.Count} {tempList.Count}");
+                    //Debug.WriteLine($"jsonCfgInfo {jsonCfgInfo == null}");
+                    //if (jsonCfgInfo != null)
+                    //{
+                    //    Debug.WriteLine($"{jsonCfgInfo.Count != tempList.Count}");
+                    //}
 
-                    // 循環確認是否為已加入使用之相機
-                    foreach (BaslerCamInfo item in camsOnLink)
+                    // 需要由 Collection Change 來新增
+
+                    // 初始化後就不為 null
+                    if (jsonCfgInfo == null || jsonCfgInfo.Count != tempList.Count)
                     {
-                        if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                        //Debug.WriteLine($"{jsonCfgInfo} {tempList}");
+
+                        // Debug.WriteLine($"{jsonCfgInfo.Count} {tempList.Count}");
+
+                        jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+
+                        #region 需要 與 CameraEnumer 比較
+                        // 當前有連線之相機
+                        List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                        // 循環確認是否為已加入使用之相機 (有儲存在 json file 裡)
+                        foreach (BaslerCamInfo item in camsOnLink)
                         {
-                            DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                            if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
                             {
-                                VendorName = item.VendorName,
-                                CameraType = item.CameraType
-                            };
-                            MainWindow.DeviceConfigs.Add(config);
+                                DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                                {
+                                    VendorName = item.VendorName,
+                                    CameraType = item.CameraType
+                                };
+                                MainWindow.DeviceConfigs.Add(config);
+                            }
                         }
                     }
                     #endregion
                 }
             }
+        }
+
+        /// <summary>
+        /// 相機選擇 Combobox Right Click Event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CameraSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            (sender as ComboBox).SelectedIndex = -1;
         }
 
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
@@ -290,25 +331,10 @@ namespace ApexVisIns.content
             DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
             //MainWindow.DeviceConfigs.IndexOf();
 
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName + " VendorName");
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType + " CameraType");
-            Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion + " DeviceVersion");
-
-            //Camera camera = new Camera(serialNumber);
-            ////camera.CameraInfo[CameraInfoKey.DeviceID];
-
-            //Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).FullName}");
-            //Debug.WriteLine($"{(DeviceCard.DataContext as DeviceConfig).Model}");
-            //Debug.WriteLine($"User Define Name {camera.CameraInfo[CameraInfoKey.UserDefinedName]}");
-            //Debug.WriteLine($"Info {camera.CameraInfo[CameraInfoKey.ManufacturerInfo]}");
-            //Debug.WriteLine($"Vendor Name {camera.CameraInfo[CameraInfoKey.VendorName]}");
-            //Debug.WriteLine($"Model Name: {camera.CameraInfo[CameraInfoKey.ModelName]}");
-            //Debug.WriteLine($"Device Ver. {camera.CameraInfo[CameraInfoKey.DeviceVersion]}");
-            //Debug.WriteLine($"Type {camera.CameraInfo[CameraInfoKey.DeviceType]}");
-            //Debug.WriteLine($"Device ID {camera.CameraInfo[CameraInfoKey.DeviceID]}");
-
-            //Debug.WriteLine($"{camera.Parameters[PLGigECamera.DeviceVersion]}");
-            //Debug.WriteLine($"{camera.Parameters[PLGigECamera.WidthMax]}");
+            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName + " VendorName");
+            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType + " CameraType");
+            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion + " DeviceVersion");
+             
         }
 
         /// <summary>
@@ -353,7 +379,7 @@ namespace ApexVisIns.content
                     break;
                 }
             }
-            Debug.WriteLine($"{button.CommandParameter}");
+            //Debug.WriteLine($"{button.CommandParameter}");
         }
 
         /// <summary>
@@ -680,6 +706,8 @@ namespace ApexVisIns.content
             textBox.Text = $"{Convert.ToInt32(textBox.Tag) - Convert.ToInt32(textBox.Text)}";
             Debug.WriteLine(textBox.Tag);
         }
+
+   
 
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

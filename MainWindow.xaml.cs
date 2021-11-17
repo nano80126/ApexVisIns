@@ -110,6 +110,7 @@ namespace ApexVisIns
             #endregion
         }
 
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");

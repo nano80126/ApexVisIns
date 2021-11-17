@@ -10,7 +10,6 @@ using System.Windows.Data;
 
 namespace ApexVisIns
 {
-
     /// <summary>
     /// Basler Camera Enumerator
     /// Basler 相機枚舉器
@@ -474,6 +473,7 @@ namespace ApexVisIns
         private int _sensorHeight;
         private bool _centerX;
         private bool _centerY;
+        private bool _online;
 
         /// <summary>
         /// .xaml 使用 (一般不使用)
@@ -491,6 +491,24 @@ namespace ApexVisIns
         public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
         }
+
+        #region 是否在線
+        /// <summary>
+        /// 相機是否在線
+        /// </summary>
+        public bool Online
+        {
+            get => _online;
+            set
+            {
+                if (value != _online)
+                {
+                    _online = value;
+                    OnPropertyChanged(nameof(Online));
+                }
+            }
+        }
+        #endregion
 
         #region 基本相機 Info
         public string DeviceVersion
@@ -518,7 +536,6 @@ namespace ApexVisIns
                 }
             }
         }
-
         #endregion
 
         #region 基本相機 Config 

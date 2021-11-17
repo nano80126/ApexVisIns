@@ -6,6 +6,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded" 
             Unloaded="StackPanel_Unloaded"
@@ -52,6 +53,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  MouseRightButtonUp="CameraSelector_MouseRightButtonUp"
                                   MinWidth="135" Margin="0 0 0 0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -106,7 +108,7 @@
                                 <!--<DockPanel Background="{StaticResource ColorInfo}">-->
                                 <!--<TextBlock Text="{Binding Name, FallbackValue=0}"/>-->
 
-                                <RadioButton HorizontalAlignment="Stretch" GroupName="GroupChoiceChip"  Padding="0" 
+                                <RadioButton HorizontalAlignment="Stretch" GroupName="GroupChoiceChip" Padding="0" Margin="0"
                                              FontWeight="Bold" Checked="RadioButton_Checked" CommandParameter="{Binding SerialNumber}">
 
                                     <RadioButton.Style>
@@ -121,7 +123,22 @@
 
                                     <RadioButton.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left">
+                                            <materialDesign:PackIcon Width="26" Height="auto" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                <materialDesign:PackIcon.Style>
+                                                    <Style TargetType="materialDesign:PackIcon">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Online, Mode=OneWay}" Value="True">
+                                                                <Setter Property="Kind" Value="Link"/>
+                                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Kind" Value="LinkOff"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                                    </Style>
+                                                </materialDesign:PackIcon.Style>
+                                            </materialDesign:PackIcon>
+
+                                            <TextBlock VerticalAlignment="Center" Margin="4 0 0 0">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0,10}, S/N: {1,8:D0}">
                                                         <Binding Path="Model" />
@@ -130,7 +147,7 @@
                                                 </TextBlock.Text>
                                             </TextBlock>
 
-                                            <Button DockPanel.Dock="Right" Margin="24 0 0 0" Padding="0" Width="26" Height="26" 
+                                            <Button Margin="8 0 0 0" Padding="0" Width="26" Height="auto"
                                                     materialDesign:ButtonAssist.CornerRadius="13" materialDesign:RippleAssist.IsDisabled="True" Content="{materialDesign:PackIcon Kind=Close}" 
                                                     Click="RadioDelButton_Click" CommandParameter="{Binding SerialNumber}">
                                                 <Button.Style>
@@ -310,7 +327,14 @@
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                 <Setter Property="Margin" Value="0 0 12 0" />
                                 <Setter Property="Padding" Value="16 0"/>
-                            </Style>    
+                            </Style>
+
+
+                            <!--<ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                                <ObjectDataProvider.MethodParameters>
+                                    --><!--<x:Type TypeName="sys:Visibility"/>--><!--
+                                </ObjectDataProvider.MethodParameters>
+                            </ObjectDataProvider>-->
                         </StackPanel.Resources>
                         
                         <!--<Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
@@ -322,17 +346,17 @@
                                   materialDesign:ComboBoxAssist.ClassicMode="False"
                                   materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
-                                  materialDesign:TextFieldAssist.PrefixText=""
                                   MinWidth="135">
-
-                            <!-- 耳朵 -->
+                                  <!--materialDesign:TextFieldAssist.PrefixText=""-->
+                            
+                            <!-- 耳朵 --><!--
                             <ComboBoxItem Content="Character1"/>
-                            <!-- 窗戶 -->
+                            --><!-- 窗戶 --><!--
                             <ComboBoxItem Content="Character2"/>
-                            <!-- 表面1 -->
+                            --><!-- 表面1 --><!--
                             <ComboBoxItem Content="Character3"/>
-                            <!-- 表面2 -->
-                            <ComboBoxItem Content="Character4"/>
+                            --><!-- 表面2 --><!--
+                            <ComboBoxItem Content="Character4"/>-->
                         </ComboBox>
 
                         <!--<TextBlock Text="{Binding ElementName=CameraClose, Path=Padding}" VerticalAlignment="Center"/>-->
