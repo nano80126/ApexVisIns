@@ -329,25 +329,31 @@
                                 <Setter Property="Padding" Value="16 0"/>
                             </Style>
 
-
-                            <!--<ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                            <ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                 <ObjectDataProvider.MethodParameters>
-                                    --><!--<x:Type TypeName="sys:Visibility"/>--><!--
+                                    <x:Type TypeName="app:DeviceConfig+TargetFeatureType"/>
                                 </ObjectDataProvider.MethodParameters>
-                            </ObjectDataProvider>-->
+                            </ObjectDataProvider>
                         </StackPanel.Resources>
                         
                         <!--<Button x:Name="CameraOpen_" Padding="16 0" Click="CameraOpen_Click">開啟相機</Button>
                         <Button x:Name="CameraClose_" Padding="16 0" Click="CameraClose_Click">關閉相機</Button>-->
 
-                        <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Text="角色: "/>
+                        <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Text="目標特徵: "/>
 
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" 
                                   materialDesign:ComboBoxAssist.ClassicMode="False"
-                                  materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                                  materialDesign:ComboBoxAssist.ShowSelectedItem="True"
                                   VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  ItemsSource="{Binding Source={StaticResource DataFromEunm}, Mode=OneWay}"
+                                  SelectionChanged="ComboBox_SelectionChanged"
                                   MinWidth="135">
                                   <!--materialDesign:TextFieldAssist.PrefixText=""-->
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                             
                             <!-- 耳朵 --><!--
                             <ComboBoxItem Content="Character1"/>

@@ -51,7 +51,6 @@ Apex 外觀瑕疵檢測
 	* For Programming
 
 
-
 ### TO DO LIST
 
 [x] Change color of scoll bar

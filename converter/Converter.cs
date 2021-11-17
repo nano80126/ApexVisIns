@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 
@@ -239,6 +241,44 @@ namespace ApexVisIns.Converter
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+
+
+    public class EnumDescriptionConverter : IValueConverter
+    {
+        private static string GetEnumDescription(Enum @enum)
+        {
+            FieldInfo fieldInfo = @enum.GetType().GetField(@enum.ToString());
+
+            DescriptionAttribute[] attrArray = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attrArray.Length == 0)
+            {
+                return @enum.ToString();
+            }
+            else
+            {
+                //DescriptionAttribute descriptionAttribute = attrArray[0] as DescriptionAttribute;
+                return attrArray[0].Description;
+            }
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Enum @enum = (Enum)value;
+            if (@enum == null)
+            {
+                return null;
+            }
+
+            string description = GetEnumDescription(@enum);
+            return !string.IsNullOrEmpty(description) ? description : @enum.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return string.Empty;
         }
     }
 }

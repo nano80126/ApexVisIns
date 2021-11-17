@@ -93,11 +93,6 @@ namespace ApexVisIns.content
 
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // Action.Remove 也要新增
-            // DeviceConfig 要新增是否在線 Property
-            // 
-
-
             // 若有新相機連線，跟jsonConfigList比較，若有紀錄則新增
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
@@ -127,15 +122,17 @@ namespace ApexVisIns.content
                         {
                             VendorName = item.VendorName,
                             CameraType = item.CameraType,
-                            Online = true
+                            Online = true   // 標記為 "在線"
                         };
                         Dispatcher.Invoke(() => MainWindow.DeviceConfigs.Add(config));
                     }
                 }
             }
-
-            // 之後可能改為有紀錄的全部列出
-            // 再用 ICON 標示是否有連線
+            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            {
+                // 有相機斷線的處理 
+                // Camera Enumer 需要先更改
+            }
         }
 
         /// <summary>
@@ -168,22 +165,9 @@ namespace ApexVisIns.content
                     //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
                     List<BaslerCamInfo> tempList = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
 
-                    //Debug.WriteLine($"{jsonCfgInfo == null} {jsonCfgInfo?.Count} {tempList.Count}");
-                    //Debug.WriteLine($"jsonCfgInfo {jsonCfgInfo == null}");
-                    //if (jsonCfgInfo != null)
-                    //{
-                    //    Debug.WriteLine($"{jsonCfgInfo.Count != tempList.Count}");
-                    //}
-
-                    // 需要由 Collection Change 來新增
-
-                    // 初始化後就不為 null
+                    // 初始化後就不為 null, 之後由DeviceConfigs Collection Change 來尋找交集
                     if (jsonCfgInfo == null || jsonCfgInfo.Count != tempList.Count)
                     {
-                        //Debug.WriteLine($"{jsonCfgInfo} {tempList}");
-
-                        // Debug.WriteLine($"{jsonCfgInfo.Count} {tempList.Count}");
-
                         jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
 
                         #region 需要 與 CameraEnumer 比較
@@ -707,7 +691,12 @@ namespace ApexVisIns.content
             Debug.WriteLine(textBox.Tag);
         }
 
-   
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Debug.WriteLine($"{(sender as ComboBox).SelectedItem}");
+        }
+
+
 
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

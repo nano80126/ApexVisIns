@@ -75,8 +75,12 @@ namespace ApexVisIns
                             CameraType = info[CameraInfoKey.DeviceType],
                             //DeviceVersion = info[CameraInfoKey.DeviceVersion],
                         };
-
                         CamsSourceAdd(camInfo);
+
+                        // 需要變更
+                        // 當有相機被移除
+                        // CamsSourceRemove(camInfo);
+
 
                         // CamsSourceAdd(new BaslerCamInfo(
                         //         info[CameraInfoKey.FriendlyName],
@@ -426,13 +430,6 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
-
-    public class DeviceJson : BaslerCamInfo
-    {
-
-    }
-
 
     /// <summary>
     /// Camera 組態, 較為 Detail, 正式流程使用
@@ -1026,18 +1023,22 @@ namespace ApexVisIns
         /// <summary>
         /// 擔任角色
         /// </summary>
-        public enum CharacterType
+        public enum TargetFeatureType
         {
+            [Description("耳朵")]
             Ear = 1,
+            [Description("窗戶")]
             Window = 2,
+            [Description("表面 1")]
             Surface1 = 3,
+            [Description("表面 2")]
             Surface2 = 4
         }
 
         /// <summary>
         /// 相機 Character
         /// </summary>
-        public CharacterType Character { get; set; }
+        public TargetFeatureType TargetFeature { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
@@ -1052,6 +1053,19 @@ namespace ApexVisIns
 
         #endregion
     }
+
+    //public enum CharacterType
+    //{
+    //    [Description("耳朵")]
+    //    Ear = 1,
+    //    [Description("窗戶")]
+    //    Window = 2,
+    //    [Description("表面 1")]
+    //    Surface1 = 3,
+    //    [Description("表面 2")]
+    //    Surface2 = 4
+    //}
+
 
     /// <summary>
     /// Config Tab Devices

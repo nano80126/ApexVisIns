@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ApexVisIns"
              xmlns:io="clr-namespace:System.IO.Ports;assembly=System"
+             xmlns:coll="clr-namespace:System.Collections.ObjectModel;assembly=System"
              xmlns:cvt="clr-namespace:ApexVisIns.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
@@ -73,6 +74,7 @@
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
             <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <!--#endregion-->
 
             <!--#region Public Resource -->
@@ -132,7 +134,9 @@
                 <!--<local:DeviceConfig Name="Device1"/>-->
             </local:DeviceConfigList>
 
-            
+            <!--待刪除-->
+            <!--<coll:ObservableCollection x:TypeArguments="local:DeviceConfig" x:Key="DeviceConfigs2"/>-->
+
             <!--Crosshair-->
             <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
             <!--輔助 Rect-->
