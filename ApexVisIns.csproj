@@ -27,10 +27,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="dll\Basler.Pylon.dll" />
+    <None Remove="dll\Basler.Pylon.xml" />
     <None Remove="intai.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="dll\Basler.Pylon.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dll\Basler.Pylon.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="intai.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
