@@ -185,27 +185,30 @@ namespace ApexVisIns.content
                     //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
                     BaslerCamInfo[] devices = JsonSerializer.Deserialize<BaslerCamInfo[]>(jsonStr);
 
+                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+
                     // 還是需要 和 MainWindow.CameraEnumer.CamsSource 比較
                     if (devices.Length > MainWindow.DeviceConfigs.Count)
                     {
                         foreach (BaslerCamInfo d in devices)
                         {
+                            // 判斷 Json Config 尚未新增進 
                             if (!MainWindow.DeviceConfigs.Any(e => e.SerialNumber == d.SerialNumber))
                             {
                                 DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
                                 {
                                     VendorName = d.VendorName,
                                     CameraType = d.CameraType,
-                                    Online = false
+                                    //Online = false
+                                    // CameraEnumer CamsSource 有物件且有被新增過
+                                    Online = cams.Count > 0 && cams.Exists(e => e.SerialNumber == d.SerialNumber)
                                 };
                                 MainWindow.DeviceConfigs.Add(config);
                             }
                         }
                     }
-                    Debug.WriteLine($"DEvice Length: {devices.Length}");
 
-
-                    // 初始化後就不為 null, 之後由DeviceConfigs Collection Change 來尋找交集
+                    // 初始化後就不為 null, 之後由 DeviceConfigs Collection Change 來尋找交集
                     // 待移除
 #if false
                     if (jsonCfgInfo == null || jsonCfgInfo.Count != tempList.Count)
