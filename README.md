@@ -73,6 +73,7 @@ Apex 外觀瑕疵檢測
 	* Character
 [x] Hotkey 功能恢復
 [ ] Camera Enumer Debug
+[ ] DeviceConfig 清除空儲存按鈕不能隱藏
 
 
 ### Config Logic

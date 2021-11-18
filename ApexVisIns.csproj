@@ -33,12 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="dll\Basler.Pylon.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="dll\Basler.Pylon.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="dll\Basler.Pylon.dll" />
+    <Content Include="dll\Basler.Pylon.xml" />
     <Content Include="intai.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

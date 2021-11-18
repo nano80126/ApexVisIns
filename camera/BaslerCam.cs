@@ -31,6 +31,18 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 移除指定 S/N 之 camera
+        /// </summary>
+        /// <param name="serialNumber">S/N</param>
+        private void CamsSourceRemove(BaslerCamInfo info)
+        {
+            lock (_CollectionLock)
+            {
+                CamsSource.Remove(info);
+            }
+        }
+
         private void CamsSourceClear()
         {
             lock (_CollectionLock)
@@ -59,12 +71,12 @@ namespace ApexVisIns
 
                 if (cams.Count == 0)
                 {
-                    CamsSourceClear(); // <= use this
-                                       // Dispatcher.Invoke(() => CamsSource.Clear());
-                                       // CamsSource.Clear();
-                    _ = SpinWait.SpinUntil(() => false, 500);
+                    CamsSourceClear();                          // 清空 Cams Source
+                    _ = SpinWait.SpinUntil(() => false, 500);   // 等待五秒
+                    return;
                 }
 
+                // 循環 cams, 若不在 CamsSource 內, 則新增
                 foreach (ICameraInfo info in cams)
                 {
                     if (!CamsSource.Any(item => item.SerialNumber == info[CameraInfoKey.SerialNumber]))
@@ -79,18 +91,19 @@ namespace ApexVisIns
 
                         // 需要變更
                         // 當有相機被移除
-                        // CamsSourceRemove(camInfo);
+                        // CamsSourceRemove(camInfo);6
+                    }
+                }
 
-
-                        // CamsSourceAdd(new BaslerCamInfo(
-                        //         info[CameraInfoKey.FriendlyName],
-                        //         info[CameraInfoKey.ModelName],
-                        //         info[CameraInfoKey.DeviceIpAddress],
-                        //         info[CameraInfoKey.DeviceMacAddress],
-                        //         info[CameraInfoKey.SerialNumber]
-                        //     )
-                        // {
-                        // });
+                // Cams Source Count > cams Count => 移除未連線之 BaslerInfo 
+                if (CamsSource.Count > cams.Count)
+                {
+                    foreach (BaslerCamInfo camInfo in CamsSource)
+                    {
+                        if (!cams.Any(e => e[CameraInfoKey.SerialNumber] == camInfo.SerialNumber))
+                        {
+                            CamsSourceRemove(camInfo);
+                        }
                     }
                 }
             }
@@ -102,7 +115,6 @@ namespace ApexVisIns
             }
         }
     }
-
 
     /// <summary>
     /// Basler Camera Information, for camera enumerator

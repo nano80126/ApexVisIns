@@ -93,45 +93,65 @@ namespace ApexVisIns.content
 
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // 若有新相機連線，跟jsonConfigList比較，若有紀錄則新增
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            // 三個動作
+            // 1. 新增 => MainWindow.DeviceConfigs Config.Online 設為 True
+            // 2. 移除 => MainWindow.DeviceConfigs Config.Online 設為 Off
+            // 3. 清空 => MainWindow.DeviceConfigs Online 全部設為 Off
+
+            List<BaslerCamInfo> list;
+            switch (e.Action)
             {
-                List<BaslerCamInfo> list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
-
-                Debug.WriteLine($"{list.Count}");
-
-                if (list.Count > 0)
-                {
-                    foreach (BaslerCamInfo item in list)
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:  // Add();
+                    // 取得已連線相機 List
+                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+                    //foreach (BaslerCamInfo item in list)
+                    //{
+                    //    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
+                    //    {
+                    //        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                    //        {
+                    //            VendorName = item.VendorName,
+                    //            CameraType = item.CameraType,
+                    //            Online = true   // 標記為 "在線"
+                    //        };
+                    //        // 不應該有新增事件
+                    //        Dispatcher.Invoke(() => MainWindow.DeviceConfigs.Add(config));
+                    //    }
+                    //}
+                    // 循環比較，標記已連線之相機
+                    foreach (DeviceConfig device in MainWindow.DeviceConfigs)
                     {
-                        Debug.WriteLine($"{item.Model} {item.SerialNumber}");
-                    }
-                }
-
-                Debug.WriteLine("-----------------------------------");
-                foreach (BaslerCamInfo item in jsonCfgInfo)
-                {
-                    Debug.WriteLine($"{item.Model} {item.SerialNumber}");
-                }
-
-                foreach (BaslerCamInfo item in list)
-                {
-                    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
-                    {
-                        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
+                        if (list.Any(item => item.SerialNumber == device.SerialNumber))
                         {
-                            VendorName = item.VendorName,
-                            CameraType = item.CameraType,
-                            Online = true   // 標記為 "在線"
-                        };
-                        Dispatcher.Invoke(() => MainWindow.DeviceConfigs.Add(config));
+                            Dispatcher.Invoke(() => device.Online = true);
+                            break; // 測試是否有新增複數的可能
+                        }
                     }
-                }
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                // 有相機斷線的處理 
-                // Camera Enumer 需要先更改
+
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:   // Remove();
+                    // 取得已連線相機 LIst
+                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+                    // 循環比較，標記已斷線之相機
+                    foreach (DeviceConfig cfg in MainWindow.DeviceConfigs)
+                    {
+                        if (!list.Any(info => info.SerialNumber == cfg.SerialNumber))
+                        {
+                            Dispatcher.Invoke(() => cfg.Online = false);
+                            break;
+                        }
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:    // Clear();
+                    // 全部設為 Offline
+                    Dispatcher.Invoke(() =>
+                    {
+                        foreach (DeviceConfig config in MainWindow.DeviceConfigs)
+                        {
+                            config.Online = false;
+                        }
+                    });
+                    break;
             }
         }
 
@@ -163,13 +183,35 @@ namespace ApexVisIns.content
                 {
                     // 反序列化
                     //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-                    List<BaslerCamInfo> tempList = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+                    BaslerCamInfo[] devices = JsonSerializer.Deserialize<BaslerCamInfo[]>(jsonStr);
+
+                    // 還是需要 和 MainWindow.CameraEnumer.CamsSource 比較
+                    if (devices.Length > MainWindow.DeviceConfigs.Count)
+                    {
+                        foreach (BaslerCamInfo d in devices)
+                        {
+                            if (!MainWindow.DeviceConfigs.Any(e => e.SerialNumber == d.SerialNumber))
+                            {
+                                DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                {
+                                    VendorName = d.VendorName,
+                                    CameraType = d.CameraType,
+                                    Online = false
+                                };
+                                MainWindow.DeviceConfigs.Add(config);
+                            }
+                        }
+                    }
+                    Debug.WriteLine($"DEvice Length: {devices.Length}");
+
 
                     // 初始化後就不為 null, 之後由DeviceConfigs Collection Change 來尋找交集
+                    // 待移除
+#if false
                     if (jsonCfgInfo == null || jsonCfgInfo.Count != tempList.Count)
                     {
                         jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-
+#if false
                         #region 需要 與 CameraEnumer 比較
                         // 當前有連線之相機
                         List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
@@ -187,8 +229,10 @@ namespace ApexVisIns.content
                                 MainWindow.DeviceConfigs.Add(config);
                             }
                         }
-                    }
-                    #endregion
+                        #endregion  
+#endif
+                    } 
+#endif
                 }
             }
         }

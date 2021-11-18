@@ -48,7 +48,6 @@
         <RoutedUICommand x:Key="GlobalTest" Text="Test global command"/>
         <!--#endregion-->
         
-        
         <!--#region Camera -->
         <!-- Camera 1
         <local:BaslerCam x:Key="BaslerCam" Width="2040" Height="2040">
@@ -57,8 +56,6 @@
             </local:BaslerCam.Config>
         </local:BaslerCam>
         <local:CameraEnumer x:Key="CameraEnumer"/>-->
-        
-        
         <!--#endregion-->
 
         <!--#region Objects -->

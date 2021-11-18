@@ -47,6 +47,9 @@ namespace ApexVisIns
         #endregion
 
         #region Devices
+        /// <summary>
+        /// 相機裝置列表
+        /// </summary>
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         //public static DeviceConfig[] DeviceConfigs;
         #endregion

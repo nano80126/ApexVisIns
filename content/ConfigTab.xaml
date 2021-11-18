@@ -108,7 +108,7 @@
                                 <!--<DockPanel Background="{StaticResource ColorInfo}">-->
                                 <!--<TextBlock Text="{Binding Name, FallbackValue=0}"/>-->
 
-                                <RadioButton HorizontalAlignment="Stretch" GroupName="GroupChoiceChip" Padding="0" Margin="0"
+                                <RadioButton HorizontalAlignment="Stretch" GroupName="GroupChoiceChip" Padding="0" Margin="0 8"
                                              FontWeight="Bold" Checked="RadioButton_Checked" CommandParameter="{Binding SerialNumber}">
 
                                     <RadioButton.Style>
