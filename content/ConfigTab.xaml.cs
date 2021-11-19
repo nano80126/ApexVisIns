@@ -522,6 +522,11 @@ namespace ApexVisIns.content
         {
             config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
             config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
+            //config.IP = camera.Parameters[CameraInfoKey]
+            // 更新 IP
+            config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+            config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
+            //Debug.WriteLine($"{config.DeviceVersion} {config.FirmwareVersion}");
 
             // UserSet
             config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
@@ -728,22 +733,10 @@ namespace ApexVisIns.content
             textBox.SelectAll();
         }
 
-        // 待移除
-        private void OffsetTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = sender as TextBox;
-
-            // Tag: MaxWidth or MaxHeight
-            textBox.Text = $"{Convert.ToInt32(textBox.Tag) - Convert.ToInt32(textBox.Text)}";
-            Debug.WriteLine(textBox.Tag);
-        }
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Debug.WriteLine($"{(sender as ComboBox).SelectedItem}");
         }
-
-
 
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

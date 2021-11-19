@@ -189,7 +189,9 @@ namespace ApexVisIns
     /// </summary>
     public class BaslerCam : CustomCam
     {
-
+        /// <summary>
+        /// 相機建構子
+        /// </summary>
         public BaslerCam()
         {
             //
@@ -1048,7 +1050,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 相機 Character
+        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
         /// </summary>
         public TargetFeatureType TargetFeature { get; set; }
 
@@ -1058,6 +1060,10 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// 外部觸發 Property Changed
+        /// </summary>
+        /// <param name="propertyName"></param>
         public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

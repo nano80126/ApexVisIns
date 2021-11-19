@@ -251,8 +251,11 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
                             <!-- <ColumnDefinition Width="2*"/>-->
                         </Grid.ColumnDefinitions>
                         <!--#endregion-->
@@ -261,8 +264,37 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" TextAlignment="Right" Width="80"/>
                             <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Text="{Binding FullName}"/>
                         -->
-                        <!--#region 開啟 / 關閉相機 -->
-                        <Button x:Name="CameraOpen" Padding="16 0" Grid.Column="0" Grid.RowSpan="1" Click="CameraOpen_Click" Content="開啟相機"
+                        <!--#region 開啟 / 關閉相機, First Col -->
+                            <!-- Row 0 -->
+                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16 4" CornerRadius="12" >
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ColorSuccess}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Background" Value="{StaticResource ColorError}"/>
+                                </Style>
+                            </Border.Style>
+
+                            <TextBlock Foreground="White" FontSize="14" FontWeight="SemiBold">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Source={StaticResource BaslerCam}, Path=IsOpen}" Value="True">
+                                                <Setter Property="Text" Value="已連線"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Text" Value="未連線"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                            <!-- Row 1 -->
+                        <Button x:Name="CameraOpen" Padding="16 0" Margin="0"
+                                HorizontalAlignment="Center"
+                                Grid.Column="0" Grid.Row="1" Click="CameraOpen_Click" Content="開啟相機"
                                 materialDesign:ButtonAssist.CornerRadius="16">
                                 <!--IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"-->
                             <!--// 條件: S/N已選擇, 相機未開啟 -->
@@ -273,8 +305,10 @@
                                 </MultiBinding>    
                             </Button.IsEnabled>
                         </Button>
-
-                        <Button x:Name="CameraClose" Padding="16 0" Grid.Column="0" Grid.Row="2" Grid.RowSpan="1" Click="CameraClose_Click" Content="關閉相機"
+                            <!-- Row 2 -->
+                        <Button x:Name="CameraClose" Padding="16 0" Margin="0"
+                                HorizontalAlignment="Center"
+                                Grid.Column="0" Grid.Row="2" Click="CameraClose_Click" Content="關閉相機"
                                 materialDesign:ButtonAssist.CornerRadius="16"
                                 IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, UpdateSourceTrigger=PropertyChanged}"/>
                         
@@ -311,6 +345,9 @@
                         <TextBlock Grid.Row="2" Grid.Column="5" Text="MAC"/>
                         <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC, UpdateSourceTrigger=PropertyChanged}"/>
 
+                        <Separator Grid.Column="7" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+
+                        
                         <!--<TextBlock Grid.Row="3" Grid.Column="5" Text="Firmware Ver."/>
                         <TextBox Grid.Row="3" Grid.Column="6" Padding="0 3" Text="{Binding FirmwareVersion}"/>-->
 
@@ -396,8 +433,8 @@
                         
                         <!--
                         <TextBlock VerticalAlignment="Center" TextAlignment="Center" 
-                            FontWeight="Bold" Text="已讀取 : " 
-                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                    FontWeight="Bold" Text="已讀取 : " 
+                                    Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                         -->
 
                         <TextBox Margin="0 0 48 0" Padding="5 4" TextAlignment="Center" FontWeight="Bold"
@@ -427,9 +464,10 @@
                                 Click="ReadUserSet_Click"/>
 
                         <!--待移除-->
-                        <!--<Button x:Name="UpdateUserSet" Margin="12 0 0 0" Content="更新" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
-                                IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                Click="UpdateUserSet_Click"/>-->
+                        <!--<Button x:Name="UpdateUserSet" Margin="12 0 0 0" Content="更新" 
+                        Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
+                        IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        Click="UpdateUserSet_Click"/>-->
                         
                         <Button x:Name="WriteUserSet" Margin="12 0 0 0" Content="寫入" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
                                 IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
@@ -528,6 +566,7 @@
                         
                         <TextBlock Grid.Row="4" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Grid.Row="5" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        
                         <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
@@ -559,8 +598,10 @@
                         <TextBlock Grid.Row="8" Grid.Column="3" Text="Fix FPS"/>
                         <TextBlock Grid.Row="9" Grid.Column="3" Text="FPS"/>
 
-                        <!--<TextBlock Grid.Row="10" Grid.Column="3" Text=""/>
-                        <TextBlock Grid.Row="11" Grid.Column="3" Text=""/>-->
+                        <!--
+                        <TextBlock Grid.Row="10" Grid.Column="3" Text=""/>
+                        <TextBlock Grid.Row="11" Grid.Column="3" Text=""/>
+                        -->
 
                         <!--<TextBox x:Name="TestName" Grid.Row="6" Grid.Column="4" Padding="0 3" Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock x:Name="TestName2" Grid.Row="7" Grid.Column="4" Text="{Binding ElementName=TestName, Path=ActualHeight}"></TextBlock>-->
@@ -578,7 +619,8 @@
                         <!--<TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding ElementName=TestName2, Path=ActualHeight}"></TextBlock>-->
                         
                         <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
+                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
+                        
                         <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
                                  GotFocus="TextBox_GotFocus"
                                  Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
@@ -587,14 +629,14 @@
                         <!--//--><!--//--><!--//--><!--//--><!--//-->
 
                         <!--
-                        <StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
-                            <TextBlock Text="2"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2" Background="{StaticResource ColorSuccessTransparent}">
-                            <TextBlock Text="3"/>
-                        </StackPanel>
-                        -->
+                            <StackPanel Grid.Column="1" Background="{StaticResource ColorPrimaryTransparent}">
+                                <TextBlock Text="2"/>
+                            </StackPanel>
                         
+                            <StackPanel Grid.Column="2" Background="{StaticResource ColorSuccessTransparent}">
+                                <TextBlock Text="3"/>
+                            </StackPanel>
+                        -->
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
@@ -607,10 +649,12 @@
                             </StackPanel>
                         </Button>
                         
-                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0"  Style="{StaticResource MaterialDesignOutlinedButton}">456</Button>
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0" 
+                                Style="{StaticResource MaterialDesignOutlinedButton}">456</Button>
                     </StackPanel>
 
-                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
+                               HorizontalAlignment="Center" Visibility="Collapsed"/>
 
                 </DockPanel>
             </materialDesign:Card>

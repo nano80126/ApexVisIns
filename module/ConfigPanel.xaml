@@ -59,7 +59,7 @@
         <materialDesign:PopupBox x:Name="ConfigPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True" 
                                  Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth2" 
                                  Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed" 
-                                 PlacementMode="BottomAndAlignLeftEdges" >
+                                 PlacementMode="BottomAndAlignLeftEdges">
             <!--IsEnabled="True"-->
             <materialDesign:PopupBox.IsEnabled>
                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
@@ -84,9 +84,9 @@
                         <!--<Setter Property="Background" Value="Blue"/>-->
                     </Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                        <Setter Property="Margin" Value="8 8 8 8" />
                         <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2"/>
                         <Setter Property="TextAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="8 8 8 8" />
                         <Setter Property="Width" Value="80"/>
                         <!--<Setter Property="MinWidth" Value="80"/>-->
                         <!--<Setter Property="MaxWidth" Value="100"/>-->
@@ -140,14 +140,14 @@
                         Content="刪除" Foreground="{StaticResource ColorOrange}" 
                         Style="{StaticResource MaterialDesignToolButton}"
                         Click="ConfigDelBtn_Click"/>
-
+                <!-- // -->
 
                 <!-- Row 2, Width -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8 0 0 0" Text="Width" />
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="ConfigWidth" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
                          Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          GotFocus="Textbox_GotFocus" GotMouseCapture="Textbox_GotMouseCapture"/>
-                <!--    Text="{Binding Path=Config.Width, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+                <!-- Text="{Binding Path=Config.Width, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 3, Height -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="8 0 0 0" Text="Height" />
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="ConfigHeight"  Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"

@@ -25,16 +25,17 @@ Apex 外觀瑕疵檢測
 
 ## 確認相機DELAY問題
 
+* 初步判定為舊筆電效能問題
 
 ### 待新增 API
 
 [x] 光源控制器 (RS232), 保留可呼叫物件
+[ ] 馬達控制 (EtherCAT)
 [ ] 
-
 
 ### 待移除
 
-* Thermometer (USE <=> RS485)
+[ ] Thermometer (USE <=> RS485)
 *
 
 ### Tab
@@ -49,7 +50,6 @@ Apex 外觀瑕疵檢測
 	* 相機Config
 * Debug Tab
 	* For Programming
-
 
 ### TO DO LIST
 
@@ -73,8 +73,10 @@ Apex 外觀瑕疵檢測
 	* Character
 [x] Hotkey 功能恢復
 [ ] Camera Enumer Debug
-[ ] DeviceConfig 清除空儲存按鈕不能隱藏
-
+[x] DeviceConfig 清除空儲存按鈕不能隱藏
+[ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
+[ ] 確認 Device Tab 和 Enginner Tab 不會衝突
+	* 
 
 ### Config Logic
 
@@ -106,3 +108,5 @@ Apex 外觀瑕疵檢測
 
 * [ ] 程式碼優化過(release mode)，FPS才不會掉張
 	* 機率性
+
+### 
