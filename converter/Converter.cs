@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -152,7 +151,6 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
-   
 
     public class NumberLessConverter : IValueConverter
     {
@@ -187,7 +185,6 @@ namespace ApexVisIns.Converter
         }
     }
 
-
     public class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -200,8 +197,6 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
-
-
     public class StringCompareConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -243,7 +238,6 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
-
 
     public class EnumDescriptionConverter : IValueConverter
     {

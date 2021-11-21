@@ -70,6 +70,16 @@ namespace ApexVisIns.content
             // 載入
             LoadDeviceConfigs();
             #endregion
+
+
+            #region For Test
+            foreach (BaslerCam item in MainWindow.BaslerCams)
+            {
+                Debug.WriteLine($"{item.Camera} {item.ModelName}");
+                Debug.WriteLine($"{item.IsOpen} {item.IsConnected}");
+            }
+            #endregion
+
         }
 
         /// <summary>
@@ -358,14 +368,10 @@ namespace ApexVisIns.content
             RadioButton radioButton = sender as RadioButton;
             string serialNumber = radioButton.CommandParameter as string;
 
-            //DeviceConfig config = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
-            DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
-            //MainWindow.DeviceConfigs.IndexOf();
+            int idx = Array.FindIndex(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
 
-            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).VendorName + " VendorName");
-            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).CameraType + " CameraType");
-            //Debug.WriteLine((DeviceCard.DataContext as DeviceConfig).DeviceVersion + " DeviceVersion");
-             
+            //DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
+            DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
         }
 
         /// <summary>

@@ -266,7 +266,7 @@
                         -->
                         <!--#region 開啟 / 關閉相機, First Col -->
                             <!-- Row 0 -->
-                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16 4" CornerRadius="12" >
+                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16 4" CornerRadius="12">
                             <Border.Style>
                                 <Style TargetType="{x:Type Border}">
                                     <Style.Triggers>

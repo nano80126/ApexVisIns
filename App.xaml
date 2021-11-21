@@ -3,8 +3,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ApexVisIns"
-             xmlns:io="clr-namespace:System.IO.Ports;assembly=System"
-             xmlns:coll="clr-namespace:System.Collections.ObjectModel;assembly=System"
              xmlns:cvt="clr-namespace:ApexVisIns.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
@@ -14,14 +12,13 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Green" SecondaryColor="LightBlue"/>
                 <!--//-->
                 <ResourceDictionary Source="/Style/Scrollbar.xaml"/>
+                <ResourceDictionary Source="/Style/ColorBrush.xaml"/>
+                <ResourceDictionary Source="/Style/Appbar.xaml"/>
                 <!--<ResourceDictionary Source="/Style/Scrollbar_old.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
 
-            
-            <!--<ResourceDictionary Source="/Style/Scrollbar.xaml" x:Name="customScroll"/>-->
-        
             <!--#region Custom Colors -->
-            <SolidColorBrush x:Key="ColorPrimary" Color="#1976D2"/>
+            <!--<SolidColorBrush x:Key="ColorPrimary" Color="#1976D2"/>
             <SolidColorBrush x:Key="ColorPrimaryTransparent" Color="#881976D2"/>
             <SolidColorBrush x:Key="ColorSecondary" Color="#424242"/>
             <SolidColorBrush x:Key="ColorSecondaryTransparent" Color="#88424242"/>
@@ -56,7 +53,7 @@
             <SolidColorBrush x:Key="ColorOrange" Color="#FF9800"/>
             <SolidColorBrush x:Key="ColorOrangeTransparent" Color="#88FF9800"/>
             <SolidColorBrush x:Key="ColorDeepOrange" Color="#FF5722"/>
-            <SolidColorBrush x:Key="ColorDeepOrangeTransparent" Color="#88FF5722"/>
+            <SolidColorBrush x:Key="ColorDeepOrangeTransparent" Color="#88FF5722"/>-->
             <!--#endregion-->
 
             <!--#region Control Colors -->
@@ -155,70 +152,7 @@
             <!--#endregion-->
             
             
-            <!-- Window Border -->
-            <Style x:Key="MainWindowBorder" TargetType="{x:Type Border}">
-                <Setter Property="Background" Value="{StaticResource MaterialDesignLightBackground}"/>
-                <Setter Property="BorderBrush" Value="#888"/>
-                <Setter Property="BorderThickness" Value="1"/>
-            </Style>
-            <!-- Window Title -->
-            <Style x:Key="MainWindowTitle" TargetType="{x:Type TextBlock}">
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="FontSize" Value="24"/>
-                <Setter Property="Margin" Value="20 0"/>
-                <Setter Property="FontStyle" Value="Italic"/>
-                <Setter Property="Foreground">
-                    <Setter.Value>
-                        <LinearGradientBrush EndPoint="0.5 1" StartPoint="0.5 0">
-                            <GradientStop Color="Gray"/>
-                            <GradientStop Color="WhiteSmoke" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <!-- Window Button -->
-            <Style x:Key="WindowButton" TargetType="{x:Type Button}">
-                <Setter Property="Width" Value="30"></Setter>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="FontSize" Value="20"/>
-                <Setter Property="Foreground" Value="{StaticResource ColorPrimary}"/>
-                <Setter Property="Background" Value="#EEE"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="15" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0.5" Opacity="0.8">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#ABABAB" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <!-- Head Line Text -->
-            <Style x:Key="Headline" TargetType="{x:Type TextBlock}">
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-            <!-- // -->
-            <Style x:Key="ComplexPackIcon" TargetType="{x:Type Canvas}">
-                <Setter Property="Width" Value="30"/>
-                <Setter Property="Height" Value="26"/>
-            </Style>
-            <!-- // -->
-            <Style x:Key="GeneralPackIcon" TargetType="materialDesign:PackIcon">
-                <Setter Property="Width" Value="30"/>
-                <Setter Property="Height" Value="26"/>
-            </Style>
-            <!-- // -->
+            <!-- Material Design Card -->
             <Style x:Key="GeneralCard" TargetType="materialDesign:Card">
                 <Setter Property="Margin" Value="0 0 8 8"/>
                 <Setter Property="Padding" Value="8 8 8 8"/>

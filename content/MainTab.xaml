@@ -208,8 +208,10 @@
                             <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
                                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
                                     <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Headline}">
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
                                             <Setter Property="Text" Value="檢測狀態"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
