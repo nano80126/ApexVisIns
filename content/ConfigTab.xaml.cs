@@ -101,6 +101,11 @@ namespace ApexVisIns.content
             #endregion
         }
 
+        /// <summary>
+        /// MainWindow.CamsSource Collection 變更事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             // 三個動作
@@ -260,6 +265,11 @@ namespace ApexVisIns.content
             (sender as ComboBox).SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// 相機新增至列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeviceAdd_Click(object sender, RoutedEventArgs e)
         {
             if (CameraSelector.SelectedItem is BaslerCamInfo info)
@@ -399,7 +409,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// Radio
+        /// 刪除列表元素
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -420,11 +430,11 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 相機 開啟
+        /// 相機開啟
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CameraOpen_Click(object sender, RoutedEventArgs e)
+        private async void CameraOpen_Click(object sender, RoutedEventArgs e)
         {
             if (DeviceCard?.DataContext != null)
             {
@@ -433,17 +443,21 @@ namespace ApexVisIns.content
                     DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
                     string serialNumber = config.SerialNumber;
 
-                    MainWindow.BaslerCam.CreateCam(serialNumber);
-                    MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
-                    MainWindow.BaslerCam.Open();
-                    MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
+                    // 優化 UX，不會卡住 UI 執行緒 (測試中)
+                    await Task.Run(() =>
+                    {
+                        MainWindow.BaslerCam.CreateCam(serialNumber);
+                        MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
+                        MainWindow.BaslerCam.Open();
+                        MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
 
-                    Camera camera = MainWindow.BaslerCam.Camera;
+                        Camera camera = MainWindow.BaslerCam.Camera;
 
-                    // 讀取 camera 的 config
-                    ReadConfig(camera, config);
-                    // 更新 UserSet Read
-                    config.UserSetRead = config.UserSet;
+                        // 讀取 camera 的 config
+                        ReadConfig(camera, config);
+                        // 更新 UserSet Read
+                        config.UserSetRead = config.UserSet;
+                    });
 #if false
                     // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
                     // config.CameraType = camera.CameraInfo[CameraInfoKey.DeviceType];
@@ -499,6 +513,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 相機開啟事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Camera_CameraOpened(object sender, EventArgs e)
         {
             Camera camera = sender as Camera;
@@ -648,7 +667,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 
+        /// 待刪除
         /// </summary>
         private static void SaveConfig()
         {
@@ -739,11 +758,16 @@ namespace ApexVisIns.content
             textBox.SelectAll();
         }
 
+
+        /// <summary>
+        /// 待刪除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Debug.WriteLine($"{(sender as ComboBox).SelectedItem}");
         }
-
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{

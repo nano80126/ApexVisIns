@@ -147,7 +147,6 @@ namespace ApexVisIns
         /// B 像素
         /// </summary>
         public byte B => Image != null ? Image.At<Vec3b>(Y, X)[0] : (byte)0;
-        
         public int X
         {
             get => _posX;
