@@ -27,12 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="dll\Automation.BDaq4.dll" />
     <None Remove="dll\Basler.Pylon.dll" />
     <None Remove="dll\Basler.Pylon.xml" />
     <None Remove="intai.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="dll\Automation.BDaq4.dll" />
     <Content Include="dll\Basler.Pylon.dll" />
     <Content Include="dll\Basler.Pylon.xml" />
     <Content Include="intai.png">
@@ -50,6 +52,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Automation.BDaq4">
+      <HintPath>..\..\Apex 外觀檢測 AOI\Code Examples\PCI-1730U Examples\Automation.BDaq\4.0.0.0\Automation.BDaq4.dll</HintPath>
+    </Reference>
     <Reference Include="Basler.Pylon">
       <HintPath>dll\Basler.Pylon.dll</HintPath>
     </Reference>

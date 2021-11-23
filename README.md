@@ -30,13 +30,13 @@ Apex 外觀瑕疵檢測
 ### 待新增 API
 
 [x] 光源控制器 (RS232), 保留可呼叫物件
+[ ] I/O 控制
 [ ] 馬達控制 (EtherCAT)
-[ ] 
 
 ### 待移除
 
 [ ] Thermometer (USE <=> RS485)
-*
+[ ] class 資料夾內部本專案無用 cs 檔
 
 ### Tab
 

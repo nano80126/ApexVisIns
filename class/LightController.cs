@@ -134,8 +134,7 @@ namespace ApexVisIns
     public class LightController : INotifyPropertyChanged
     {
         private int _channelNumber;
-        private int _channelOn;
-
+        //private int _channelOn;
 
         public LightController()
         {
