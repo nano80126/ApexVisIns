@@ -1,5 +1,6 @@
 ﻿using OpenCvSharp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ namespace ApexVisIns
         /// DEBUG TAB
         /// </summary>
         private int _onTabIndex = 0;
+        private BitArray _bitArray = new BitArray(new bool[] { false, true, false, true, false, true, false, true, false });
 
         /// <summary>
         /// Tab active index
@@ -58,6 +60,16 @@ namespace ApexVisIns
         //    //    OnPropertyChanged(nameof(ZoomRatio));
         //    //}
         //}
+
+        public BitArray BitArray
+        {
+            get => _bitArray;
+            set
+            {
+                _bitArray = value;
+                OnPropertyChanged(nameof(BitArray));
+            }
+        }
 
         /// <summary>
         /// 主影像 Source

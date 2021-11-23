@@ -23,45 +23,119 @@
         <!-- sInput -->
 
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+            <StackPanel.Resources>
+                <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
+                    <Setter Property="Width" Value="20"/>
+                    <Setter Property="Height" Value="20"/>
+                    <Setter Property="Margin" Value="7 4"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Stroke" Value="{StaticResource ColorYellow}"/>
+                    <Setter Property="StrokeThickness" Value="1"/>
+
+                    <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                            <Setter Property="Fill" Value="{StaticResource ColorError}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
             <TextBlock Text="INPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
 
-            <WrapPanel Background="{StaticResource ColorBlueGrayTranparent}" HorizontalAlignment="Center">
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4" StrokeThickness="1" Stroke="Yellow"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
+            <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft">
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
                 <!--//-->
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Separator Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}}" Height="0" Margin="0"/>
                 <!--//-->
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <!--//-->
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
+                <Separator Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}}" Height="0" Margin="0"/>
+                <!--<Separator Width="999" HorizontalAlignment="Stretch" Height="0" Margin="0"/>-->
+                <!--<Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
                 <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>
                 <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>
-                <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>
+                <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>-->
                 <!--//-->
+
+                
+                <Ellipse FlowDirection="RightToLeft" 
+                         Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[0]}" Style="{StaticResource DiSignal}"/>
+                <Ellipse FlowDirection="RightToLeft" 
+                         Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[1]}" Style="{StaticResource DiSignal}"/>
+                <Ellipse FlowDirection="RightToLeft" 
+                         Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[2]}" Style="{StaticResource DiSignal}"/>
+
+
+                <!--<ItemsControl ItemsSource="{StaticResource }">
+                    
+                </ItemsControl>-->
+                
+                
             </WrapPanel>
         </StackPanel>
-        
 
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
         <!-- Output -->
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+            <StackPanel.Resources>
+                <Style x:Key="DoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
+                    <Setter Property="Width" Value="20"/>
+                    <Setter Property="Height" Value="20"/>
+                    <Setter Property="Margin" Value="7 4"/>
+                    <Setter Property="BorderBrush" Value="WhiteSmoke"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Style>
+            </StackPanel.Resources>
+
             <TextBlock Text="OUTPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
 
-            <WrapPanel Background="{StaticResource ColorBlueGrayTranparent}" HorizontalAlignment="Center">
-                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
+            <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center">
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
                 <!--//-->
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <!--//-->
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <!--//-->
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
+                <!--//-->
+                <!--<Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
                 <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
                 <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
                 <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
+                --><!--//--><!--
                 <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
+                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
+                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
+                <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>-->
                 <!--//-->
             </WrapPanel>
         </StackPanel>

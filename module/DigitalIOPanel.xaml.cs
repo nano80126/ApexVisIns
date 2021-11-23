@@ -27,10 +27,9 @@ namespace ApexVisIns.module
     public partial class DigitalIOPanel : Card
     {
         #region 
-        InstantDiCtrl instantDiCtrl;
+        //InstantDiCtrl instantDiCtrl;
 
-
-        IOController controller = new IOController("DemoDevice,BID#0", true);
+        //IOController controller = new IOController("DemoDevice,BID#0", true);
         #endregion
 
 
@@ -44,15 +43,14 @@ namespace ApexVisIns.module
         /// </summary>
         public EngineerTab EngineerTab { get; set; }
 
-
         public DigitalIOPanel()
         {
             InitializeComponent();
         }
 
-
         private void Test()
         {
+            #if false
             // Description => Set in Navigator
             instantDiCtrl = new()
             {
@@ -92,7 +90,8 @@ namespace ApexVisIns.module
                 {
                     Debug.WriteLine($"{ch.Channel} {ch.Enabled} {ch.Gated}");
                 }
-            }
+            } 
+            #endif
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -101,6 +100,7 @@ namespace ApexVisIns.module
 
 
             return;
+            #if false
             instantDiCtrl = new()
             {
                 SelectedDevice = new DeviceInformation("DemoDevice,BID#0")
@@ -115,11 +115,13 @@ namespace ApexVisIns.module
 
                     SpinWait.SpinUntil(() => false, 100);
                 }
-            });
+            }); 
+            #endif
         }
 
         private void ReadDigitalInput()
         {
+#if false
             ErrorCode err;
 
             // for (int i = 0; i < instantDiCtrl.Features.PortCount; i++)
@@ -145,7 +147,8 @@ namespace ApexVisIns.module
             //Debug.WriteLine($"Port{0} Bit0 : {data}");
             //instantDiCtrl.ReadBit(i, 1, out data);
             //Debug.WriteLine($"Port{i} Bit1 : {data}");
-            //}
+            //}  
+#endif
         }
 
         private void Button_Click1(object sender, RoutedEventArgs e)
@@ -162,6 +165,7 @@ namespace ApexVisIns.module
             //Debug.WriteLine($"{arr3.Length} {arr3} {arr3[0]} {arr3[1]} {arr3[7]}");
             //Debug.WriteLine($"{arr4.Length} {arr4} {arr4[0]} {arr4[1]} {arr4[7]}");
 
+#if false
             Debug.WriteLine($"{controller.DiArray0[0]} {controller.DiArray0[1]}");
             Debug.WriteLine($"{controller.DiArray1[0]} {controller.DiArray1[1]}");
 
@@ -169,7 +173,7 @@ namespace ApexVisIns.module
 
             Debug.WriteLine($"{controller.DiArray0[0]} {controller.DiArray0[1]}");
             Debug.WriteLine($"{controller.DiArray1[0]} {controller.DiArray1[1]}");
-
+#endif
 
             //Debug.WriteLine($"{controller.Read()}");
 
@@ -179,7 +183,6 @@ namespace ApexVisIns.module
             //Debug.WriteLine(arr.Get(3));
             //Debug.WriteLine(arr.Get(4));
         }
-
 
         //InstantDiCtrl InstantDiCtrl = new InstantDiCtrl()
         //{
