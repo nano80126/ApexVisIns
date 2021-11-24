@@ -176,17 +176,16 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-
+                    <!--//-->
                     <Separator/>
-
+                    <!--//-->
                     <Button x:Name="DeviceConfigSave" Margin="0 8 0 0" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolButton}" Click="DeviceConfigSave_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="FileDocumentEdit" Width="30" Height="26"/>
                             <TextBlock Margin="8 0 0 0" VerticalAlignment="Bottom" Text="儲存"/>
                         </StackPanel>
                     </Button>
-
-
+                    
                 </StackPanel>
             </materialDesign:Card>
         </StackPanel>

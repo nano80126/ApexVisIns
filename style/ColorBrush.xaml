@@ -1,8 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+
+    <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ColorWhiteTransparent" Color="#88FFFFFF"/>
     <SolidColorBrush x:Key="ColorPrimary" Color="#1976D2"/>
     <SolidColorBrush x:Key="ColorPrimaryTransparent" Color="#881976D2"/>
+    <SolidColorBrush x:Key="ColorIndigo" Color="#3f51B5"/>
+    <SolidColorBrush x:Key="ColorIndigoTransparent" Color="#883f51B5"/>
     <SolidColorBrush x:Key="ColorSecondary" Color="#424242"/>
     <SolidColorBrush x:Key="ColorSecondaryTransparent" Color="#88424242"/>
     <SolidColorBrush x:Key="ColorGray" Color="#9E9E9E"/>
@@ -37,5 +42,5 @@
     <SolidColorBrush x:Key="ColorOrangeTransparent" Color="#88FF9800"/>
     <SolidColorBrush x:Key="ColorDeepOrange" Color="#FF5722"/>
     <SolidColorBrush x:Key="ColorDeepOrangeTransparent" Color="#88FF5722"/>
-
+    
 </ResourceDictionary>

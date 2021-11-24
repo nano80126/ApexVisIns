@@ -30,7 +30,6 @@ namespace ApexVisIns
         #region Long life worker
         public CameraEnumer CameraEnumer;
         //public Thermometer Thermometer;
-        public LightEnumer LightEnumer;
         #endregion
 
         #region Cameras
@@ -41,9 +40,22 @@ namespace ApexVisIns
         #endregion
 
         #region Light Controller
+        /// <summary>
+        /// Com Port 列舉器
+        /// </summary>
+        public LightEnumer LightEnumer;
+        /// <summary>
+        /// 光源控制器
+        /// </summary>
         public static LightController LightController { get; set; }
-        
+        /// <summary>
+        /// (待刪除)
+        /// </summary>
         public static SerialPort SerialPort { get; set; }
+        #endregion
+
+        #region I/O Controller
+        public static IOController IOController { get; set; }
         #endregion
 
         #region Devices
@@ -59,6 +71,9 @@ namespace ApexVisIns
         public AssistRect AssistRect;       // 待刪
         public AssistPoint[] AssistPoints;  // 待刪
         public Indicator Indicator;         // 待刪
+        /// <summary>
+        /// 訊息通知器
+        /// </summary>
         public static MsgInformer MsgInformer { get; set; }
         #endregion
 
@@ -110,6 +125,7 @@ namespace ApexVisIns
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
             EngineerTab.LightPanel.MainWindow = this;
+            EngineerTab.DigitalIOPanel.MainWindow = this;
             #endregion
         }
 
@@ -135,9 +151,13 @@ namespace ApexVisIns
             BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
             #endregion
 
-            #region Serial Port
+            #region Light Controller
             //SerialPort = FindResource(nameof(SerialPort)) as SerialPort;
             LightController = FindResource(nameof(LightController)) as LightController;
+            #endregion
+
+            #region IO Controller
+            IOController = FindResource(nameof(IOController)) as IOController;
             #endregion
 
             #region Device

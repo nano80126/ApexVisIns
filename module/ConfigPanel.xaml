@@ -4,16 +4,17 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                     xmlns:local="clr-namespace:ApexVisIns"
+                     xmlns:app="clr-namespace:ApexVisIns"
+                     xmlns:local="clr-namespace:ApexVisIns.module"
                      xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                     d:DataContext="{d:DesignInstance Type=local:BaslerCam}"
+                     d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                      mc:Ignorable="d" 
                      d:DesignHeight="450" d:DesignWidth="800"
                      Loaded="Card_Loaded"
                      Unloaded="Card_Unloaded">
     <materialDesign:Card.Resources>
         <!--//-->
-        <local:BaslerConfig x:Key="BaslerConfig" Name="Default"/>
+        <app:BaslerConfig x:Key="BaslerConfig" Name="Default"/>
         <!--//-->
     </materialDesign:Card.Resources>
 
@@ -180,7 +181,7 @@
                     <Separator Background="Black" Margin="8 0" />
                     <!-- // -->
                     <DockPanel Margin="8 0 8 8">
-                        <materialDesign:Badged DataContext="{Binding}" d:DataContext="{d:DesignInstance Type=local:BaslerCam}">
+                        <materialDesign:Badged DataContext="{Binding}" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
                             <materialDesign:Badged.Style>
                                 <Style TargetType="materialDesign:Badged">
                                     <Style.Triggers>
