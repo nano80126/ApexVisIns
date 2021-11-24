@@ -40,7 +40,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 初始化 Instance
+        /// 初始化 DI Control
         /// </summary>
         public void InitializeDiCtrl()
         {
@@ -51,7 +51,7 @@ namespace ApexVisIns
                     SelectedDevice = new DeviceInformation(_description)
                 };
 
-                // 新增 BitArray, 全部歸零
+                // 新增 Collection, 全部拉低(等待讀取)
                 DiArrayColl.Clear();
                 for (int i = 0; i < InstantDiCtrl.PortCount; i++)
                 {
@@ -63,6 +63,27 @@ namespace ApexVisIns
                 throw new ArgumentNullException("Set description before initialization.");
             }
         }
+
+        /// <summary>
+        /// 初始化 DO Control
+        /// </summary>
+        public void InitializeDoCtrl()
+        {
+            if (_description != string.Empty)
+            {
+                InstantDoCtrl = new InstantDoCtrl()
+                {
+                    SelectedDevice = new DeviceInformation(_description)
+                };
+
+                // 新增 BitArray, 
+            }
+            else
+            {
+                throw new ArgumentNullException("Set description before initialization.");
+            }
+        }
+
 
         /// <summary>
         /// IO Card Description
@@ -96,13 +117,32 @@ namespace ApexVisIns
             get => InstantDiCtrl.Features.ChannelCountMax;
         }
 
-        public ObservableCollection<ObservableCollection<bool>> DiArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
+        public int DoPortCount
+        {
+            get => InstantDoCtrl.Features.PortCount;
+        }
+
+        public int DoChannelCount
+        {
+            get => InstantDoCtrl.Features.ChannelCountMax;
+        }
+
+        /// <summary>
+        /// DI Collection
+        /// </summary>
+        public ObservableCollection<ObservableCollection<bool>> DiArrayColl { get; } = new ObservableCollection<ObservableCollection<bool>>();
+
+        /// <summary>
+        /// DO Collection
+        /// </summary>
+        public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
 
         /// <summary>
         /// Digital Input Port#0, Bit0 ~ Bit7
         /// </summary>
         //public BitArray DiArray0 { get; } = new BitArray(8);
 
+        #region 待刪除
         public ObservableCollection<bool> DiArray0 { get; } = new ObservableCollection<bool>() { false, false, false, false, false, false, false, false };
 
         /// <summary>
@@ -118,14 +158,15 @@ namespace ApexVisIns
         /// <summary>
         /// Digital Input Port#3, Bit24 ~ Bit31
         /// </summary>
-        public BitArray DiArray3 { get; } = new BitArray(8);
+        public BitArray DiArray3 { get; } = new BitArray(8); 
+        #endregion
 
         /// <summary>
         /// DI 讀取
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        public ErrorCode Read(int port)
+        public ErrorCode ReadDI(int port)
         {
             ErrorCode err = InstantDiCtrl.Read(port, out byte data);
             if (err == ErrorCode.Success)
@@ -146,7 +187,7 @@ namespace ApexVisIns
         /// <param name="port"></param>
         /// <param name="bit"></param>
         /// <returns></returns>
-        public ErrorCode ReadBit(int port, int bit)
+        public ErrorCode ReadDIBit(int port, int bit)
         {
             ErrorCode err = InstantDiCtrl.ReadBit(port, bit, out byte data);
 
@@ -154,6 +195,27 @@ namespace ApexVisIns
             {
                 Debug.WriteLine($"ReadBit: {data}");
                 DiArrayColl[port][bit] = data == 0b01;
+            }
+            return err;
+        }
+
+
+        public ErrorCode ReadDO(int port)
+        {
+            ErrorCode err = InstantDoCtrl.Read(port, out byte data);
+            if (err == ErrorCode.Success)
+            {
+
+            }
+            return err;
+        }
+
+        public ErrorCode ReadDOBit(int port, int bit)
+        {
+            ErrorCode err = InstantDoCtrl.ReadBit(port, bit, out byte data);
+            if (err == ErrorCode.Success)
+            {
+
             }
             return err;
         }

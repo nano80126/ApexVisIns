@@ -112,9 +112,9 @@ namespace ApexVisIns.module
             // DemoDevice,
             // Test();
 
-            ErrorCode err = Controller.Read(0);
+            ErrorCode err = Controller.ReadDI(0);
             Debug.WriteLine($"ErrorCode: {err}");
-            err = Controller.Read(1);
+            err = Controller.ReadDI(1);
             Debug.WriteLine($"ErrorCode: {err}");
 
             // Controller.DiArrayColl[0]
