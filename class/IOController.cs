@@ -33,7 +33,7 @@ namespace ApexVisIns
         public IOController()
         {
         }
-        
+
         public IOController(string description, bool initialize = false)
         {
             _description = description;
@@ -148,9 +148,77 @@ namespace ApexVisIns
             get => _doCtrlCreated;
         }
 
-        public void EnableInterrut()
-        {
 
+        public DiintChannel[] GetInterruptChannel()
+        {
+            DiintChannel[] channels = InstantDiCtrl.DiintChannels;
+            return channels;
+        }
+
+        /// <summary>
+        /// 設定 Channel 啟用中斷
+        /// </summary>
+        /// <param name="ch">通道</param>
+        /// <param name="signel">觸發邊緣</param>
+        /// <param name="enable">啟用 / 停用</param>
+        /// <returns></returns>
+        public ErrorCode SetInterrutChannel(int ch, ActiveSignal signel, bool enable = true)
+        {
+            if (DiCtrlCreated)
+            {
+                bool success = false;
+                DiintChannel[] channels = InstantDiCtrl.DiintChannels;
+
+                foreach (DiintChannel channel in channels)
+                {
+                    if (channel.Channel == ch)
+                    {
+                        channel.Enabled = enable;
+                        channel.TrigEdge = signel;
+                        success = true;
+                        break;
+                    }
+                }
+                return success ? ErrorCode.Success : ErrorCode.ErrorIntrNotAvailable;
+            }
+            else
+            {
+                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+            }
+        }
+
+        /// <summary>
+        /// 啟用中斷器
+        /// </summary>
+        /// <returns></returns>
+        public ErrorCode EnableInterrut()
+        {
+            if (DiCtrlCreated)
+            {
+                ErrorCode err = InstantDiCtrl.SnapStart();
+                return err;
+            }
+            else
+            {
+                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+            }
+        }
+
+        /// <summary>
+        /// 停止中斷器
+        /// </summary>
+        /// <returns></returns>
+        public ErrorCode DisableInterrupt()
+        {
+            if (DiCtrlCreated)
+            {
+                ErrorCode err = InstantDiCtrl.SnapStop();
+                return err;
+            }
+            else
+            {
+                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+            }
         }
 
         /// <summary>

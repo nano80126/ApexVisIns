@@ -53,20 +53,20 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            Controller = DataContext as IOController;
-            // Controller.InstantDiCtrl
+            //Controller = DataContext as IOController;
+            //// Controller.InstantDiCtrl
 
-            if (!Controller.DiCtrlCreated)
-            {
-                Controller.InitializeDiCtrl();
+            //if (!Controller.DiCtrlCreated)
+            //{
+            //    Controller.InitializeDiCtrl();
 
-                Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            }
+            //    Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            //}
 
-            if (!Controller.DoCtrlCreated)
-            {
-                Controller.InitializeDoCtrl();
-            }
+            //if (!Controller.DoCtrlCreated)
+            //{
+            //    Controller.InitializeDoCtrl();
+            //}
         }
 
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
