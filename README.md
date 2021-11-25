@@ -77,7 +77,9 @@ Apex 外觀瑕疵檢測
 [ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
 [ ] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
-
+[ ] 啟動速度優化
+[ ] Add custom event for DI interrupt
+ 
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

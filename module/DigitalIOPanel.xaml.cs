@@ -53,14 +53,40 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Controller == null)
+            Controller = DataContext as IOController;
+            // Controller.InstantDiCtrl
+
+            if (!Controller.DiCtrlCreated)
             {
-                Controller = MainWindow.IOController;
                 Controller.InitializeDiCtrl();
+
+                Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
             }
 
-            Debug.WriteLine($"DiCtrl: {Controller.InstantDiCtrl}");
-            Debug.WriteLine($"DoCtrl: {Controller.InstantDoCtrl}");
+            if (!Controller.DoCtrlCreated)
+            {
+                Controller.InitializeDoCtrl();
+            }
+        }
+
+        private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
+        {
+            Debug.WriteLine($"{sender} {e.Port} {e.Data} {e.Bit}");
+        }
+     
+        /// <summary>
+        /// Di 變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DoSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            byte[] objs = button.CommandParameter as byte[];
+            // 當前值: (bool)button.Tag
+            // 目標 Port: objs[0] 
+            // 目標 Bit: objs[1]
+            Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
         }
 
         private void Test()
@@ -107,27 +133,31 @@ namespace ApexVisIns.module
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            // DemoDevice,
-            // Test();
 
+        private void DiRead_Click(object sender, RoutedEventArgs e)
+        {
             ErrorCode err = Controller.ReadDI(0);
             Debug.WriteLine($"ErrorCode: {err}");
             err = Controller.ReadDI(1);
             Debug.WriteLine($"ErrorCode: {err}");
+        }
 
-            // Controller.DiArrayColl[0]
 
-            // _ = Task.Run(() =>
-            // {
-            //     for (int i = 0; i < 8; i++)
-            //     {
-            //         ReadDigitalInput();
+        private void DoRead_Click(object sender, RoutedEventArgs e)
+        {
+            ErrorCode err = Controller.ReadDO(0);
+            Debug.WriteLine($"ErrorCode: {err}");
+            err = Controller.ReadDO(1);
+            Debug.WriteLine($"ErrorCode: {err}");
+        }
 
-            //         SpinWait.SpinUntil(() => false, 100);
-            //     }
-            // });
+        private void DoWrite_Click(object sender, RoutedEventArgs e)
+        {
+            #region MyRegion
+            //Controller.WriteDO(0, 0b10100110);
+            //Controller.WriteDO(1, 0b00111001); 
+            #endregion
+            Controller.TriggerEvent();
         }
 
         private void ReadDigitalInput()
@@ -159,46 +189,5 @@ namespace ApexVisIns.module
             //Debug.WriteLine($"Port{i} Bit1 : {data}");
             //}  
         }
-
-        private void Button_Click1(object sender, RoutedEventArgs e)
-        {
-            //BitArray arr = new BitArray(8, false);
-            //BitArray arr2 = new BitArray(new bool[] { false, true });
-            //BitArray arr3 = new BitArray(new byte[] { 129 });
-            //BitArray arr4 = new BitArray(new int[] { 129 });
-
-            //Debug.WriteLine($"{arr.Length} {arr} {arr[0]} {arr[1]}");
-            //Debug.WriteLine($"{arr2.Length} {arr2} {arr2[0]} {arr2[1]}");
-            //Debug.WriteLine($"{arr3.Length} {arr3} {arr3[0]} {arr3[1]} {arr3[7]}");
-            //Debug.WriteLine($"{arr4.Length} {arr4} {arr4[0]} {arr4[1]} {arr4[7]}");
-
-            //Debug.WriteLine($"{controller.DiArray0[0]} {controller.DiArray0[1]}");
-            //Debug.WriteLine($"{controller.DiArray1[0]} {controller.DiArray1[1]}");
-
-            Debug.WriteLine($"{Controller.DiArray0[0]}");
-            Debug.WriteLine($"{Controller.DiArray0[1]}");
-            Debug.WriteLine($"{Controller.DiArray0[2]}");
-            Debug.WriteLine($"{Controller.DiArray0[3]}\r\n---------------");
-            Debug.WriteLine($"{Controller.DiArray1[0]}");
-            Debug.WriteLine($"{Controller.DiArray2[0]}");
-            Debug.WriteLine($"{Controller.DiArray3[0]}");
-
-            //Controller.ChangeDI(0, 0, true);
-            //Controller.ChangeDI(0, 1, true);
-            //Controller.ChangeDI(0, 2, true);
-            //Controller.ChangeDI(0, 3, true);
-
-            Controller.InvertDI(0, 0);
-            Controller.InvertDI(0, 2);
-            Controller.InvertDI(0, 4);
-            Controller.InvertDI(0, 6);
-        }
-
-
-        //InstantDiCtrl InstantDiCtrl = new InstantDiCtrl()
-        //{
-        //    //SelectedDevice = new DeviceInformation();
-        //}
-
     }
 }

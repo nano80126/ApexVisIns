@@ -71,13 +71,12 @@ namespace ApexVisIns.content
             LoadDeviceConfigs();
             #endregion
 
-
             #region For Test
-            foreach (BaslerCam item in MainWindow.BaslerCams)
-            {
-                Debug.WriteLine($"{item.Camera} {item.ModelName}");
-                Debug.WriteLine($"{item.IsOpen} {item.IsConnected}");
-            }
+            //foreach (BaslerCam item in MainWindow.BaslerCams)
+            //{
+            //    Debug.WriteLine($"{item.Camera} {item.ModelName}");
+            //    Debug.WriteLine($"{item.IsOpen} {item.IsConnected}");
+            //}
             #endregion
 
         }

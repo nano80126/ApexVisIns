@@ -72,6 +72,8 @@
             <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+            <!--<cvt:GetIndexConvertor x:Key="GetIndexConvertor"/>-->
+            <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <!--#endregion-->
 
             <!--#region Public Resources -->
