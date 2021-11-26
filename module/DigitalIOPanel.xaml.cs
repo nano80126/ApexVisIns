@@ -34,7 +34,6 @@ namespace ApexVisIns.module
         IOController Controller { get; set; }
         #endregion
 
-
         /// <summary>
         /// App Element
         /// </summary>
@@ -50,30 +49,68 @@ namespace ApexVisIns.module
             InitializeComponent();
         }
 
-
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            //Controller = DataContext as IOController;
+            Controller = DataContext as IOController;
             //// Controller.InstantDiCtrl
 
-            //if (!Controller.DiCtrlCreated)
-            //{
-            //    Controller.InitializeDiCtrl();
+            if (!Controller.DiCtrlCreated)
+            {
+                Controller.InitializeDiCtrl();
+                //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            }
 
-            //    Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            //}
-
-            //if (!Controller.DoCtrlCreated)
-            //{
-            //    Controller.InitializeDoCtrl();
-            //}
+            if (!Controller.DoCtrlCreated)
+            {
+                Controller.InitializeDoCtrl();
+            }
         }
 
+        /// <summary>
+        /// 啟用中斷器
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InterruptToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!Controller.InterruptEnabled)
+            {
+                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge);
+                Debug.WriteLine($"{err}");
+                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge);
+                Debug.WriteLine($"{err}");
+                Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+                err = Controller.EnableInterrut();
+                Debug.WriteLine($"{err}");
+            }
+        }
+
+        /// <summary>
+        /// 關閉中斷器
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InterruptToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Controller.InterruptEnabled)
+            {
+                Controller.DisableInterrupt();
+
+                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge, false);
+                Debug.WriteLine($"{err}");
+                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge, false);
+                Debug.WriteLine($"{err}");
+                Controller.DigitalInputChanged -= Controller_DigitalInputChanged;
+                err = Controller.DisableInterrupt();
+                Debug.WriteLine($"{err}");
+            }
+        }
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
-            Debug.WriteLine($"{sender} {e.Port} {e.Data} {e.Bit}");
+            Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
+            //throw new NotImplementedException();
         }
-     
+
         /// <summary>
         /// Di 變更
         /// </summary>
@@ -133,7 +170,6 @@ namespace ApexVisIns.module
             }
         }
 
-
         private void DiRead_Click(object sender, RoutedEventArgs e)
         {
             ErrorCode err = Controller.ReadDI(0);
@@ -141,7 +177,6 @@ namespace ApexVisIns.module
             err = Controller.ReadDI(1);
             Debug.WriteLine($"ErrorCode: {err}");
         }
-
 
         private void DoRead_Click(object sender, RoutedEventArgs e)
         {
@@ -160,34 +195,32 @@ namespace ApexVisIns.module
             Controller.TriggerEvent();
         }
 
-        private void ReadDigitalInput()
+        private void SwitchInterrupt_Click(object sender, RoutedEventArgs e)
         {
-            ErrorCode err;
-
-            // for (int i = 0; i < instantDiCtrl.Features.PortCount; i++)
-            // {
-            err = instantDiCtrl.Read(0, out byte portData);
-            if (err != ErrorCode.Success)
+            if (!Controller.InterruptEnabled)
             {
-                Debug.WriteLine(err);
-                return;
-            }
+                //Controller.DisableInterrupt();
 
-            Debug.WriteLine($"Port{0} : {portData.ToString("X2")} {portData}");
-            err = instantDiCtrl.Read(1, out portData);
-            if (err != ErrorCode.Success)
+                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge);
+                Debug.WriteLine($"{err}");
+                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge);
+                Debug.WriteLine($"{err}");
+
+                err = Controller.EnableInterrut();
+                Debug.WriteLine($"{err}");
+            }
+            else
             {
-                Debug.WriteLine(err);
-                return;
+                Controller.DisableInterrupt();
+
+                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge, false);
+                Debug.WriteLine($"{err}");
+                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge, false);
+                Debug.WriteLine($"{err}");
+
+                err = Controller.DisableInterrupt();
+                Debug.WriteLine($"{err}");
             }
-
-            Debug.WriteLine($"Port{1} : {portData.ToString("X2")} {portData}");
-
-            //instantDiCtrl.ReadBit(0, 0, out byte data);
-            //Debug.WriteLine($"Port{0} Bit0 : {data}");
-            //instantDiCtrl.ReadBit(i, 1, out data);
-            //Debug.WriteLine($"Port{i} Bit1 : {data}");
-            //}  
         }
     }
 }

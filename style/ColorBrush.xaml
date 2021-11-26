@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-
+    <!--#region Material Design Colors -->
     <SolidColorBrush x:Key="ColorWhite" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="ColorWhiteTransparent" Color="#88FFFFFF"/>
     <SolidColorBrush x:Key="ColorPrimary" Color="#1976D2"/>
@@ -42,5 +42,9 @@
     <SolidColorBrush x:Key="ColorOrangeTransparent" Color="#88FF9800"/>
     <SolidColorBrush x:Key="ColorDeepOrange" Color="#FF5722"/>
     <SolidColorBrush x:Key="ColorDeepOrangeTransparent" Color="#88FF5722"/>
-    
+    <!--#endregion-->
+
+    <!--#region NewRegion -->
+    <SolidColorBrush x:Key="ColorToolBar" Color="#22969696"/>
+    <!--#endregion-->
 </ResourceDictionary>

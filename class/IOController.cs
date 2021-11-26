@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using Automation.BDaq;
 
 
@@ -19,16 +20,16 @@ namespace ApexVisIns
     public class IOController : INotifyPropertyChanged
     {
         #region Private elements
+        private readonly object _CollectionLock = new();
+
         private string _description;
+        private bool _interruptEnabled = false;
+        private int _interruptCount = 0;
         #endregion
 
         public InstantDiCtrl InstantDiCtrl { get; set; }
 
-        private bool _diCtrlCreated;
-
         public InstantDoCtrl InstantDoCtrl { get; set; }
-
-        private bool _doCtrlCreated;
 
         public IOController()
         {
@@ -56,33 +57,20 @@ namespace ApexVisIns
                     SelectedDevice = new DeviceInformation(_description),
                 };
 
-                #region interrupt 之 channel
-                InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;
-                DiintChannel[] channels = InstantDiCtrl.DiintChannels;
-                Debug.WriteLine($"{channels.Length}");
-
-                channels[0].Enabled = true;
-                channels[1].Enabled = true;
-
-                channels[0].TrigEdge = ActiveSignal.BothEdge;
-                channels[1].TrigEdge = ActiveSignal.BothEdge;
-
-                // foreach (DiintChannel item in channels)
-                // {
-                //     Debug.WriteLine($"{item.Channel} {item.Enabled} {item.} {item.TrigEdge}");
-                // }
-
-                //ErrorCode err = InstantDiCtrl.SnapStart();
-                #endregion
-
-                _diCtrlCreated = true;
+                DiCtrlCreated = true;
 
                 // 新增 Collection, 全部拉低(等待讀取)
                 DiArrayColl.Clear();
                 for (int i = 0; i < InstantDiCtrl.PortCount; i++)
                 {
+                    //ObservableCollection<bool> subCollection = new ObservableCollection<bool>() { false, false, false, false, false, false, false, false };
                     DiArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
                 }
+
+                // foreach (ObservableCollection<bool> subArray in DiArrayColl)
+                // {
+                //     BindingOperations.EnableCollectionSynchronization(subArray, _CollectionLock);
+                // }
 
                 // 測試
                 // DioPort[] ports = InstantDiCtrl.Ports;
@@ -98,13 +86,6 @@ namespace ApexVisIns
             }
         }
 
-        private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
-        {
-            Debug.WriteLine("Interrupt");
-            Debug.WriteLine($"{e.Id} {e.Length} {e.SrcNum}");
-            Debug.WriteLine($"PortData: {string.Join(" | ", e.PortData)}");
-        }
-
         /// <summary>
         /// 初始化 DO Control
         /// </summary>
@@ -116,7 +97,7 @@ namespace ApexVisIns
                 {
                     SelectedDevice = new DeviceInformation(_description)
                 };
-                _doCtrlCreated = true;
+                DoCtrlCreated = true;
 
                 // 新增 Collection, 全部拉低
                 for (int i = 0; i < InstantDoCtrl.PortCount; i++)
@@ -138,16 +119,15 @@ namespace ApexVisIns
             }
         }
 
-        public bool DiCtrlCreated
-        {
-            get => _diCtrlCreated;
-        }
+        /// <summary>
+        /// DI Controll 是否建立
+        /// </summary>
+        public bool DiCtrlCreated { get; private set; }
 
-        public bool DoCtrlCreated
-        {
-            get => _doCtrlCreated;
-        }
-
+        /// <summary>
+        /// DO Controll 是否建立
+        /// </summary>
+        public bool DoCtrlCreated { get; private set; }
 
         public DiintChannel[] GetInterruptChannel()
         {
@@ -168,6 +148,7 @@ namespace ApexVisIns
             {
                 bool success = false;
                 DiintChannel[] channels = InstantDiCtrl.DiintChannels;
+                InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
 
                 foreach (DiintChannel channel in channels)
                 {
@@ -176,6 +157,11 @@ namespace ApexVisIns
                         channel.Enabled = enable;
                         channel.TrigEdge = signel;
                         success = true;
+
+                        // 綁定 Event
+                        InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;     
+                        // 啟用 Collection Sync
+                        BindingOperations.EnableCollectionSynchronization(DiArrayColl[ch / 8], _CollectionLock);   
                         break;
                     }
                 }
@@ -184,6 +170,26 @@ namespace ApexVisIns
             else
             {
                 throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+            }
+        }
+
+        private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
+        {
+            /// 確認中斷器觸發條件
+            /// 確認中斷器觸發條件
+            /// 確認中斷器觸發條件
+
+            InterruptCount++;
+            int port = e.SrcNum / 8;
+            byte bit = (byte)(e.SrcNum % 8);
+            // Trigger Digital Changed
+            OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
+            lock (_CollectionLock)
+            {
+                for (int i = 0; i < e.Length; i++)
+                {
+                    SetDI(i, e.PortData[i]);
+                }
             }
         }
 
@@ -196,6 +202,11 @@ namespace ApexVisIns
             if (DiCtrlCreated)
             {
                 ErrorCode err = InstantDiCtrl.SnapStart();
+                if (err == ErrorCode.Success)
+                {
+                    _interruptEnabled = true;
+                    InterruptCount = 0;
+                }
                 return err;
             }
             else
@@ -213,11 +224,41 @@ namespace ApexVisIns
             if (DiCtrlCreated)
             {
                 ErrorCode err = InstantDiCtrl.SnapStop();
+                if (err == ErrorCode.Success)
+                {
+                    _interruptEnabled = false;
+                }
                 return err;
             }
             else
             {
                 throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+            }
+        }
+
+        public bool InterruptEnabled
+        {
+            get => _interruptEnabled;
+            set
+            {
+                if (value != _interruptEnabled)
+                {
+                    _interruptEnabled = value;
+                    OnPropertyChanged(nameof(InterruptEnabled));
+                }
+            }
+        }
+
+        public int InterruptCount
+        {
+            get => _interruptCount;
+            set
+            {
+                if (value != _interruptCount)
+                {
+                    _interruptCount = value;
+                    OnPropertyChanged(nameof(InterruptCount));
+                }
             }
         }
 
@@ -253,11 +294,17 @@ namespace ApexVisIns
             get => InstantDiCtrl.Features.ChannelCountMax;
         }
 
+        /// <summary>
+        /// Do Port 數
+        /// </summary>
         public int DoPortCount
         {
             get => InstantDoCtrl.Features.PortCount;
         }
 
+        /// <summary>
+        /// Do 通道數
+        /// </summary>
         public int DoChannelCount
         {
             get => InstantDoCtrl.Features.ChannelCountMax;
@@ -273,10 +320,13 @@ namespace ApexVisIns
         /// </summary>
         public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
 
-        /// <summary>
-        /// Digital Input Port#0, Bit0 ~ Bit7
-        /// </summary>
-        //public BitArray DiArray0 { get; } = new BitArray(8);
+        public void SetDI(int port, int data)
+        {
+            for (int i = 0; i < DiArrayColl[port].Count; i++)
+            {
+                DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
+            }
+        }
 
         /// <summary>
         /// DI 讀取
@@ -431,7 +481,7 @@ namespace ApexVisIns
         /// </summary>
         public void TriggerEvent()
         {
-            OnDigitalInputChanged();
+            //OnDigitalInputChanged();
         }
 
         //public event DIChangedEventHandler DIChangedEventHandler;
@@ -439,9 +489,9 @@ namespace ApexVisIns
         public delegate void DigitalInputChangedEventHandler(object sender, DigitalInputChangedEventArgs e);
         public event DigitalInputChangedEventHandler DigitalInputChanged;
 
-        private void OnDigitalInputChanged()
+        private void OnDigitalInputChanged(int port, byte bit, bool value)
         {
-            DigitalInputChanged?.Invoke(this, new DigitalInputChangedEventArgs(0, 0, true));
+            DigitalInputChanged?.Invoke(this, new DigitalInputChangedEventArgs(port, bit, value));
         }
         
         public event PropertyChangedEventHandler PropertyChanged;
@@ -461,7 +511,6 @@ namespace ApexVisIns
             public int Port { get; }
             public byte Bit { get; }
             public bool Data { get; }
-
             public DigitalInputChangedEventArgs(int port, byte bit, bool data)
             {
                 Port = port;

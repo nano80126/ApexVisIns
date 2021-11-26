@@ -23,8 +23,7 @@
         </DockPanel>
         <!--//-->
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
-        <!-- sInput -->
-
+        <!-- Digital Input Panel -->
         <StackPanel x:Name="DiPanel" Orientation="Vertical" DockPanel.Dock="Top" >
             <StackPanel.Resources>
                 <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
@@ -47,75 +46,8 @@
             <TextBlock x:Name="InputTitle" Text="INPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
             <!--//-->
-            <!--#region 隱藏 待刪除 -->
-            <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Visibility="Collapsed">
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <!-- // -->
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Separator Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}}" Height="0" Margin="0"/>
-                <!-- // -->
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <!-- // -->
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Ellipse Fill="Red" Style="{StaticResource DiSignal}"/>
-                <Separator Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}}" Height="0" Margin="0"/>
-                <!--
-                <Rectangle Fill="Red" Width="20" Height="20" Margin="7 4"/>
-                <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>
-                <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>
-                <Ellipse Margin="7 4" Width="20" Height="20" Fill="{StaticResource ColorError}" StrokeThickness="1" Stroke="WhiteSmoke"/>-->
-                <!--//-->
-                <Ellipse Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[0]}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[1]}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=BitArray[2]}" Style="{StaticResource DiSignal}"/>
-                <Separator Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=WrapPanel}}" Height="0" Margin="0"/>
-                <!--//-->
-                <Ellipse Tag="{Binding DiArray0[0], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[1], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[2], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[3], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <!--//-->
-                <Ellipse Tag="{Binding DiArray0[4], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[5], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[6], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                <Ellipse Tag="{Binding DiArray0[7], Source={StaticResource IOController}, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-            </WrapPanel>
-            <!--#endregion-->
-            <!--//-->
-            <!--#region 待刪除 -->
-            <!--//-->
-            <ItemsControl ItemsSource="{Binding DiArray0, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Visibility="Collapsed">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemContainerStyle>
-                    <Style></Style>
-                </ItemsControl.ItemContainerStyle>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Ellipse Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" Style="{StaticResource DiSignal}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--#endregion-->
-            <!--//-->
             <!-- #region NewRegion -->
-            <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
@@ -124,7 +56,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>
@@ -141,10 +73,19 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <!--#endregion-->
+            <DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 0">
+                <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                          Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked"/>
+
+                <TextBox DockPanel.Dock="Right" Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="80" TextAlignment="Center"
+                         Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                <TextBlock DockPanel.Dock="Right" Text="Int Count: " HorizontalAlignment="Right" Margin="0 0 8 0" VerticalAlignment="Center"/>
+            </DockPanel>
         </StackPanel>
 
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
-        <!-- Output -->
+        <!-- Digital Output Panel -->
         <StackPanel x:Name="DoPanel" Orientation="Vertical" DockPanel.Dock="Top">
             <StackPanel.Resources>
                 <Style x:Key="DoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
@@ -166,54 +107,6 @@
 
             <TextBlock x:Name="OutPutTitle" Text="OUTPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
-            <!--//-->
-            <!--#region 隱藏 (待刪除) -->
-            <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Visibility="Collapsed">
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <!--//-->
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <!--//-->
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <!--//-->
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <Button Background="{StaticResource ColorInfo}" Style="{StaticResource DoButton}"/>
-                <!--//-->
-                <Button Tag="True" Style="{StaticResource DoButton}"/>
-                <Button Tag="False" Style="{StaticResource DoButton}"/>
-                <Button Tag="True" Style="{StaticResource DoButton}"/>
-                <Button Tag="False" Style="{StaticResource DoButton}"/>
-                <!--//-->
-                <Button Tag="True" Style="{StaticResource DoButton}"/>
-                <Button Tag="True" Style="{StaticResource DoButton}"/>
-                <Button Tag="False" Style="{StaticResource DoButton}"/>
-                <Button Tag="False" Style="{StaticResource DoButton}"/>
-                <!--
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                -->
-                <!--//-->
-                <!--
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                    <Button Width="20" Height="20" Margin="7 2" BorderThickness="1" BorderBrush="WhiteSmoke" Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                -->
-                <!--//-->
-            </WrapPanel>
-            <!--#endregion-->
             <!--//-->
             <!--#region Items Source -->
             <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
@@ -285,10 +178,16 @@
             <Button Click="DoRead_Click" HorizontalAlignment="Left" Content="DO 回讀" Style="{StaticResource MaterialDesignFlatButton}"/>
             <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>
         </StackPanel>
+
+        <StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button HorizontalAlignment="Left" Content="啟動中斷器" Style="{StaticResource MaterialDesignFlatButton}" Click="SwitchInterrupt_Click"/>
+        </StackPanel>
         <!--#endregion-->
         <!--//-->
         <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>
-        --><!--//--><!--
+        -->
+        <!--//-->
+        <!--
         <StackPanel DockPanel.Dock="Bottom" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Click="DiWrite_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
             <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>

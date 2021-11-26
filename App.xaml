@@ -57,7 +57,7 @@
             <!--#endregion-->
 
             <!--#region Control Colors -->
-            <SolidColorBrush x:Key="ColorToolBar" Color="#22969696"/>
+            <!--<SolidColorBrush x:Key="ColorToolBar" Color="#22969696"/>-->
             <!--#endregion-->
 
             <!--#region Convertor -->
