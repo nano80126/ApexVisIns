@@ -13,13 +13,17 @@ namespace ApexVisIns
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     {
-        private ImageSource _imgSrc;
+#if DEBUG
+        private readonly bool _debugMode = true;
+#else
+        private readonly bool _debugMode = false;
+#endif
 
+        private ImageSource _imgSrc;
         /// <summary>
         /// DEBUG TAB
         /// </summary>
         private int _onTabIndex = 0;
-        private BitArray _bitArray = new BitArray(new bool[] { false, true, false, true, false, true, false, true, false });
 
         /// <summary>
         /// Tab active index
@@ -36,7 +40,7 @@ namespace ApexVisIns
                 }
             }
         }
-        
+
         //public double ZoomRatio
         //{
         //    //get => ImageViewbox.Width / ImageCanvas.Width * 100;
@@ -61,15 +65,10 @@ namespace ApexVisIns
         //    //}
         //}
 
-        public BitArray BitArray
-        {
-            get => _bitArray;
-            set
-            {
-                _bitArray = value;
-                OnPropertyChanged(nameof(BitArray));
-            }
-        }
+        /// <summary>
+        /// Debug 模式
+        /// </summary>
+        public bool DebugMode => _debugMode;
 
         /// <summary>
         /// 主影像 Source
@@ -583,11 +582,7 @@ namespace ApexVisIns
                 /// <summary>
                 /// Camera Error Code
                 /// </summary>
-                C,
-                /// <summary>
-                /// 
-                /// </summary>
-                D,
+                CAMERA,
                 /// <summary>
                 /// General Exception
                 /// </summary>

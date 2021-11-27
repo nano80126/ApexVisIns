@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace ApexVisIns
 {
@@ -17,25 +18,21 @@ namespace ApexVisIns
         {
             e.CanExecute = true;
         }
-
         private void MainTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // MainTab is focused
             e.CanExecute = OnTabIndex == 0;
         }
-
         private void ConfigTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // ConfigTab is focused
             e.CanExecute = OnTabIndex == 1;
         }
-
         private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // EngineerTab is focused
             e.CanExecute = OnTabIndex == 2;
         }
-
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
@@ -101,7 +98,6 @@ namespace ApexVisIns
             //     //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
             // }
         }
-
         private void StartGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // 相機已開啟
@@ -113,7 +109,6 @@ namespace ApexVisIns
         //{
         //    GrabberStartBtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         //}
-
         private void SingleShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -126,7 +121,6 @@ namespace ApexVisIns
                     break;
             }
         }
-
         private void SingleShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -139,7 +133,6 @@ namespace ApexVisIns
             }
             //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -153,7 +146,6 @@ namespace ApexVisIns
             }
             //e.CanExecute = ContinouseShot.IsEnabled;
         }
-
         private void ContinousShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -166,7 +158,6 @@ namespace ApexVisIns
             }
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -179,7 +170,6 @@ namespace ApexVisIns
                     break;
             }
         }
-
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
@@ -192,7 +182,6 @@ namespace ApexVisIns
                     break;
             }
         }
-
         /// <summary>
         /// Switch to Tab 1
         /// </summary>
@@ -230,7 +219,9 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            OnTabIndex = byte.Parse(e.Parameter as string);
+            byte idx = byte.Parse(e.Parameter as string);
+            // 確保 idx 不會超過 TabItems 數目
+            OnTabIndex = idx < AppTabControl.Items.Count && (AppTabControl.Items[idx] as TabItem).IsEnabled ? idx : OnTabIndex;
         }
 
         private void GlobalTest(object sender, ExecutedRoutedEventArgs e)

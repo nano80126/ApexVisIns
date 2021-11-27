@@ -95,8 +95,7 @@ namespace ApexVisIns.content
             #region Reset ZoomRetio
             ZoomRatio = 100;
             #endregion
-
-            Debug.WriteLine("Engineer Tab Load");
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

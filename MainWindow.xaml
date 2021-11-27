@@ -40,9 +40,11 @@
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
         <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
         <!--Tab-->
-        <!--<RoutedUICommand x:Key="SwitchTab1" Text="Switch to Tab1"/>
+        <!-- 待刪除
+        <RoutedUICommand x:Key="SwitchTab1" Text="Switch to Tab1"/>
         <RoutedUICommand x:Key="SwitchTab2" Text="Switch to Tab2"/>
-        <RoutedUICommand x:Key="SwitchTab3" Text="Switch to Tab3"/>-->
+        <RoutedUICommand x:Key="SwitchTab3" Text="Switch to Tab3"/>
+        -->
         <RoutedUICommand x:Key="SwitchTab" Text="Switch Tab"/>
         <!--Global-->
         <RoutedUICommand x:Key="GlobalTest" Text="Test global command"/>
@@ -101,7 +103,7 @@
         <KeyBinding Modifiers="Ctrl" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/><!--D1 means 1 -->
         <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/><!--D2 means 2 -->
         <KeyBinding Modifiers="Ctrl" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/><!--D3 means 3-->
-        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/><!--D3 means 3-->
+        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/><!--D4 means 4-->
         <!--Config-->
         
         <!--Global-->
@@ -120,11 +122,6 @@
         <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="EngineerTabCanExcute" Executed="CrosshairOnCommnad"/>
         <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="EngineerTabCanExcute" Executed="AssisRectOnCommand"/>
         <!--Switch Tab-->
-        <!--
-        <CommandBinding Command="{StaticResource SwitchTab1}" CanExecute="CanExcute" Executed="SwitchTab1Command"/>
-        <CommandBinding Command="{StaticResource SwitchTab2}" CanExecute="CanExcute" Executed="SwitchTab2Command"/>
-        <CommandBinding Command="{StaticResource SwitchTab3}" CanExecute="CanExcute" Executed="SwitchTab3Command"/>
-        -->
         <CommandBinding Command="{StaticResource SwitchTab}" CanExecute="CanExcute" Executed="SwitchTabCommand"/>
         <!--Config-->
 
@@ -205,7 +202,9 @@
                 <!--#endregion-->
                 <!--//-->
                 <!--#region Engineer Tab -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
+                         IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"
+                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>

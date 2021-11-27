@@ -10,8 +10,7 @@
                      d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                      mc:Ignorable="d" 
                      d:DesignHeight="450" d:DesignWidth="800"
-                     Loaded="Card_Loaded"
-                     Unloaded="Card_Unloaded">
+                     Loaded="Card_Loaded">
     <materialDesign:Card.Resources>
         <!--//-->
         <app:BaslerConfig x:Key="BaslerConfig" Name="Default"/>

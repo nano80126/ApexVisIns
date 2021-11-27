@@ -107,7 +107,7 @@ namespace ApexVisIns.content
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
                 //throw;
             }
             return cam.IsOpen;
@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
                 //throw;
             }
             return false;
@@ -145,15 +145,15 @@ namespace ApexVisIns.content
             }
             catch (TimeoutException T)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, T.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (InvalidOperationException I)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, I.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (Exception E)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, E.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message, MsgInformer.Message.MessageType.Warning);
             }
             finally
             {
@@ -180,15 +180,15 @@ namespace ApexVisIns.content
             }
             catch (TimeoutException T)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, T.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (InvalidOperationException I)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, I.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (Exception E)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, E.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message, MsgInformer.Message.MessageType.Warning);
             }
         }
 
@@ -316,7 +316,7 @@ namespace ApexVisIns.content
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
         {
             Debug.WriteLine("Grabber Start");
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber started");
 
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
         }
@@ -324,7 +324,7 @@ namespace ApexVisIns.content
         private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
         {
             Debug.WriteLine("Grabber Stop");
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber stoped");
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber stoped");
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
         }
 

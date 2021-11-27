@@ -34,7 +34,7 @@ namespace ApexVisIns
             }
             catch (Exception ex)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
                 return false;
             }
             //}
@@ -60,7 +60,7 @@ namespace ApexVisIns
             }
             catch (Exception ex)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
             }
             return false;
         }
@@ -88,19 +88,19 @@ namespace ApexVisIns
             catch (TimeoutException T)
             {
                 // Display in message list
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, T.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
 
             }
             catch (InvalidOperationException Invalid)
             {
                 // Display in message list
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, Invalid.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, Invalid.Message, MsgInformer.Message.MessageType.Warning);
 
             }
             catch (Exception ex)
             {
                 // Display in message list
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
             }
             finally
             {
@@ -130,15 +130,15 @@ namespace ApexVisIns
             }
             catch (TimeoutException T)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, T.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (InvalidOperationException Invalid)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, Invalid.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, Invalid.Message, MsgInformer.Message.MessageType.Warning);
             }
             catch (Exception ex)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
             }
             //finally
             //{
@@ -232,7 +232,7 @@ namespace ApexVisIns
         {
             Debug.WriteLine("Grabber Start");
             //MsgInformer.AddError(MsgInformer.Message.MsgCode.C, "Grabber started", MsgInformer.Message.MessageType.Info);
-            MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
+            MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber started");
             BaslerCam.PropertyChange("IsGrabbing");    // Update Property
 
             #region Reset BFR Struct for next trail
@@ -266,7 +266,7 @@ namespace ApexVisIns
             BaslerCam.PropertyChange("IsGrabbing");    // Update Property
             Debug.WriteLine("Grabber Stop");
             //MsgInformer.AddError(MsgInformer.Message.MsgCode.C, "Grabber stoped", MsgInformer.Message.MessageType.Info);
-            MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber stoped");
+            MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber stoped");
         }
 
         /// <summary>

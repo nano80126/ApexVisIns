@@ -36,7 +36,8 @@ namespace ApexVisIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Main Tab Load");
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+            //Debug.WriteLine("Main Tab Load");
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

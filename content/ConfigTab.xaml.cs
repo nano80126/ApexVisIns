@@ -57,28 +57,17 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Config Tab Load");
-            #region 保留， 確認無用途則刪除
-
+            #region 綁定事件、載入 Configs
             // 綁定 Collection 變更事件
             if (!EventHasBound) // 避免重複綁定
             {
                 MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
                 EventHasBound = true;
             }
-
             // 載入
             LoadDeviceConfigs();
             #endregion
-
-            #region For Test
-            //foreach (BaslerCam item in MainWindow.BaslerCams)
-            //{
-            //    Debug.WriteLine($"{item.Camera} {item.ModelName}");
-            //    Debug.WriteLine($"{item.IsOpen} {item.IsConnected}");
-            //}
-            #endregion
-
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "組態頁面已載入");
         }
 
         /// <summary>
@@ -502,7 +491,7 @@ namespace ApexVisIns.content
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Error);
                     //throw;
                 }
             }
@@ -738,7 +727,7 @@ namespace ApexVisIns.content
             catch (Exception ex)
             {
                 // 這邊要修改 (Error 格式有問題)
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Error);
             }
 
             //camera.Parameters[PLGigECamera.UserSetSave].Execute();

@@ -55,12 +55,6 @@ namespace ApexVisIns.module
             {
                 Config = FindResource("BaslerConfig") as BaslerConfig;
             }
-            Debug.WriteLine("Config Panel loaded");
-        }
-
-        private void Card_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Config Panel Unloaded");
         }
 
         /// <summary>
@@ -214,7 +208,7 @@ namespace ApexVisIns.module
                 {
                     // 
                     //Debug.WriteLine("組態檔不存在");
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, "組態檔不存在", MsgInformer.Message.MessageType.Warning);
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "組態檔不存在", MsgInformer.Message.MessageType.Warning);
                 }
             }
         }

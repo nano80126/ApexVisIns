@@ -27,11 +27,9 @@ namespace ApexVisIns.module
     public partial class DigitalIOPanel : Card
     {
         #region 
-        InstantDiCtrl instantDiCtrl;
-
         //IOController controller = new IOController("DemoDevice,BID#0", true);
 
-        IOController Controller { get; set; }
+        private IOController Controller { get; set; }
         #endregion
 
         /// <summary>
@@ -51,19 +49,18 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            Controller = DataContext as IOController;
-            //// Controller.InstantDiCtrl
+            //Controller = DataContext as IOController;
 
-            if (!Controller.DiCtrlCreated)
-            {
-                Controller.InitializeDiCtrl();
-                //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            }
+            //if (!Controller.DiCtrlCreated)
+            //{
+            //    Controller.InitializeDiCtrl();
+            //    //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            //}
 
-            if (!Controller.DoCtrlCreated)
-            {
-                Controller.InitializeDoCtrl();
-            }
+            //if (!Controller.DoCtrlCreated)
+            //{
+            //    Controller.InitializeDoCtrl();
+            //}
         }
 
         /// <summary>
@@ -84,7 +81,6 @@ namespace ApexVisIns.module
                 Debug.WriteLine($"{err}");
             }
         }
-
         /// <summary>
         /// 關閉中斷器
         /// </summary>
@@ -105,6 +101,11 @@ namespace ApexVisIns.module
                 Debug.WriteLine($"{err}");
             }
         }
+        /// <summary>
+        /// 中斷事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
             Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
@@ -123,53 +124,11 @@ namespace ApexVisIns.module
             // 當前值: (bool)button.Tag
             // 目標 Port: objs[0] 
             // 目標 Bit: objs[1]
-            Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
+            _ = Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
         }
 
-        private void Test()
-        {
-            // Description => Set in Navigator
-            instantDiCtrl = new()
-            {
-                SelectedDevice = new DeviceInformation("DemoDevice,BID#0")
-            };
 
-            Debug.WriteLine($"Port Count: {instantDiCtrl.PortCount}\r\n-----");
-
-            // foreach (DioPort item in instantDiCtrl.Ports)
-            // {
-            //      Debug.WriteLine($"{item.DiInversePort}, {item.DirectionMask}, {item.Port}");
-            // }
-
-            Debug.WriteLine("=====================================================================");
-
-            // PortCount x 8 = ChannelCountMax
-            Debug.WriteLine($"channel Count Max: {instantDiCtrl.Features.ChannelCountMax}, {instantDiCtrl.Features.PortCount}\r\n------");
-
-            Debug.WriteLine($"Port Programmable: {instantDiCtrl.Features.PortProgrammable}, {string.Join('|', instantDiCtrl.Features.PortsType)}");
-
-            Debug.WriteLine($"DiSupport: {instantDiCtrl.Features.DiSupported}, {string.Join('|', instantDiCtrl.Features.DiDataMask)}");
-
-            Debug.WriteLine($"DiNoiseFilterSupported: {instantDiCtrl.Features.DiNoiseFilterSupported}, {instantDiCtrl.Features.DiintSupported}");
-
-            Debug.WriteLine($"DiintOfChannels: {string.Join('|', instantDiCtrl.Features.DiintOfChannels)}, {string.Join('|', instantDiCtrl.Features.DiintTriggerEdges)}");
-
-            foreach (DeviceTreeNode item in instantDiCtrl.SupportedDevices)
-            {
-                Debug.WriteLine($"{item.Description}, {item.DeviceNumber}, {string.Join('|', item.ModulesIndex)}");
-            }
-
-            DiintChannel[] channels = instantDiCtrl.DiintChannels;
-
-            if (channels != null)
-            {
-                foreach (DiintChannel ch in channels)
-                {
-                    Debug.WriteLine($"{ch.Channel} {ch.Enabled} {ch.Gated}");
-                }
-            }
-        }
-
+        #region 測試用 控制項
         private void DiRead_Click(object sender, RoutedEventArgs e)
         {
             ErrorCode err = Controller.ReadDI(0);
@@ -221,6 +180,7 @@ namespace ApexVisIns.module
                 err = Controller.DisableInterrupt();
                 Debug.WriteLine($"{err}");
             }
-        }
+        } 
+        #endregion
     }
 }

@@ -166,13 +166,13 @@ namespace ApexVisIns
             #endregion
 
             #region Find Resource
-            Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
-            AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
-            Indicator = FindResource(nameof(Indicator)) as Indicator;
-            AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
+            //Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
+            //AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
+            //Indicator = FindResource(nameof(Indicator)) as Indicator;
+            //AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
 
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
-            BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
+            //BFRTrail = FindResource(nameof(BFRTrail)) as BFR.Trail;
             #endregion
 
             //Debug.WriteLine($"{DeviceConfigs.Count}");
