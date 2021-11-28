@@ -74,13 +74,17 @@
             </ItemsControl>
             <!--#endregion-->
             <DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 0">
-                <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                          Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked"/>
+                <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" 
+                          IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                          Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
+                    <TextBlock Text="啟用中斷" FontSize="16" FontWeight="SemiBold"/>
+                </CheckBox>
 
                 <TextBox DockPanel.Dock="Right" Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="80" TextAlignment="Center"
-                         Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                         Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-                <TextBlock DockPanel.Dock="Right" Text="Int Count: " HorizontalAlignment="Right" Margin="0 0 8 0" VerticalAlignment="Center"/>
+                
+                <TextBlock DockPanel.Dock="Right" Text="Count: " Margin="0 0 8 0" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
             </DockPanel>
         </StackPanel>
 

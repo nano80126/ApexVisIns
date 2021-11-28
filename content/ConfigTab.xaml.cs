@@ -30,17 +30,14 @@ namespace ApexVisIns.content
 
         #endregion
 
-        /// <summary>
-        /// json file 載入之 List
-        /// </summary>
-        private List<BaslerCamInfo> jsonCfgInfo;
-
-        /// <summary>
-        /// Device 路徑
-        /// </summary>
-
         #region Varibles
-        private bool EventHasBound = false;
+        /// <summary>
+        /// CamsSource.CollectionChanged Evnet has bound flag
+        /// </summary>
+        private bool EventHasBound;
+        /// <summary>
+        /// Device Configs Directory
+        /// </summary>
         private string DevicesDirectory { get; } = @"./devices";
         public MainWindow MainWindow { get; set; }
         #endregion
@@ -77,8 +74,6 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Config Tab Unload");
-
             #region 保留，確認無用途則刪除
             // 取消 Collection 變更事件
             if (EventHasBound)  // 確認已綁定

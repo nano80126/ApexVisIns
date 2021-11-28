@@ -78,17 +78,17 @@ namespace ApexVisIns.content
             #region Find Resource
             if (Crosshair == null)
             {
-                Crosshair = TryFindResource("Crosshair2") as Crosshair;
+                Crosshair = TryFindResource("Crosshair") as Crosshair;
             }
 
             if (AssistRect == null)
             {
-                AssistRect = TryFindResource("AssistRect2") as AssistRect;
+                AssistRect = TryFindResource("AssistRect") as AssistRect;
             }
 
             if (Indicator == null)
             {
-                Indicator = TryFindResource("Indicator2") as Indicator;
+                Indicator = TryFindResource("Indicator") as Indicator;
             }
             #endregion
 

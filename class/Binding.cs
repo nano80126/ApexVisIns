@@ -571,11 +571,6 @@ namespace ApexVisIns
                 /// </summary>
                 APP,
                 /// <summary>
-                /// BFR Testing Error Code
-                /// Start Failed or Records Error
-                /// </summary>
-                BFR,
-                /// <summary>
                 /// Info & Error for Plot
                 /// </summary>
                 CHART,

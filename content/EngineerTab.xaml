@@ -23,11 +23,11 @@
         <!--#endregion-->
         
         <!-- Crosshair -->
-        <app:Crosshair x:Key="Crosshair2" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
+        <app:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
         <!-- 輔助 Rect -->
-        <app:AssistRect x:Key="AssistRect2" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
+        <app:AssistRect x:Key="AssistRect" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3"/>
         <!-- 輔助標示器 -->
-        <app:Indicator x:Key="Indicator2"/>
+        <app:Indicator x:Key="Indicator"/>
     </StackPanel.Resources>
 
     <StackPanel.InputBindings>
@@ -206,7 +206,7 @@
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enable, Source={StaticResource Crosshair2}}" Value="True">
+                                <DataTrigger Binding="{Binding Enable, Source={StaticResource Crosshair}}" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                                     <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
                                 </DataTrigger>
@@ -221,7 +221,7 @@
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enable, Source={StaticResource AssistRect2}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding Enable, Source={StaticResource AssistRect}, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                                     <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
                                 </DataTrigger>
@@ -321,11 +321,11 @@
 
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                               Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
 
                                         <!--#region Assist Rectangle -->
-                                        <Rectangle x:Name="AssistRectangle" DataContext="{StaticResource AssistRect2}"
+                                        <Rectangle x:Name="AssistRectangle" DataContext="{StaticResource AssistRect}"
                                                    Stroke="{Binding Stroke , FallbackValue={StaticResource ColorDeepOrange}}"
                                                    StrokeThickness="{Binding StrokeThickness}" 
                                                    Canvas.Left="{Binding X, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}" 
@@ -341,15 +341,15 @@
                                                 X1="0" X2="{Binding ElementName=ImageCanvas, Path=Width,Mode=OneWay}"
                                                 Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                                 Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
-                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                                Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
+                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
                                         <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2) & CrosshairOn (Visibility) -->
                                         <Line x:Name="CrosshairV" 
                                                 X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
                                                 X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                                 Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
-                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair2}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                                Visibility="{Binding Enable, Source={StaticResource Crosshair2}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                                Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
                                         <!--#endregion-->
                                     </Canvas>
                                 </Viewbox>
@@ -358,7 +358,7 @@
 
                         <!--#region ImageFooter -->
                         <DockPanel x:Name="AssistFooter" HorizontalAlignment="Stretch" Margin="0" Height="20" MinWidth="20" Background="{x:Null}">
-                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource Indicator2}">
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource Indicator}">
                                 <TextBlock VerticalAlignment="Center" TextAlignment="Center" MinWidth="120" FontSize="16" FontFamily="consolas">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0,4:D} , {1,4:D}">
@@ -371,7 +371,7 @@
                             <!--//-->
                             <Separator DockPanel.Dock="Left" Width="1" Height="12" Margin="12 0" Background="Gray" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                             <!--//-->
-                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" DataContext="{StaticResource Indicator2}">
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" DataContext="{StaticResource Indicator}">
                                 <StackPanel.Resources>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="VerticalAlignment" Value="Center"/>

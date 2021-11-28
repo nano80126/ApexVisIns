@@ -234,23 +234,6 @@ namespace ApexVisIns
             //MsgInformer.AddError(MsgInformer.Message.MsgCode.C, "Grabber started", MsgInformer.Message.MessageType.Info);
             MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber started");
             BaslerCam.PropertyChange("IsGrabbing");    // Update Property
-
-            #region Reset BFR Struct for next trail
-            //StructBFR.centerY = 0;
-            //StructBFR.topMinY = 0;
-            //StructBFR.botMaxY = 0;
-
-            //StructBFR.pt1 = new OpenCvSharp.Point(0, 0);
-            //StructBFR.pt2 = new OpenCvSharp.Point(0, 0);
-
-            //StructBFR.ptQueue1.Clear();
-            //StructBFR.ptQueue2.Clear();
-
-            //StructBFR.FakeTemp = 0;
-
-            AssistPoints[0].AssignPoint(0, 0);
-            AssistPoints[1].AssignPoint(0, 0);
-            #endregion
         }
 
         /// <summary>
@@ -405,11 +388,8 @@ namespace ApexVisIns
             Bitmap bitmap = new Bitmap(result.Width, result.Height, PixelFormat.Format24bppRgb);
             BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
-            // pxConverter.OutputPixelFormat = PixelType.Mono8;
             pxConverter.OutputPixelFormat = PixelType.RGB8packed;
-            // Console.WriteLine($"stride: {bmpData.Stride}, width: {bmpData.Width}, height: {bmpData.Height}");
             IntPtr intPtr = bmpData.Scan0;
-            // pxConverter.Convert(intPtr, bmpData.Stride * bmpData.Height, result);
             pxConverter.Convert(intPtr, bmpData.Width * bmpData.Height * 3, result);
             bitmap.UnlockBits(bmpData);
 
@@ -424,7 +404,7 @@ namespace ApexVisIns
         private Mat GrabResultToMatMono(IGrabResult result)
         {
             Mat mat = new(result.Height, result.Width, MatType.CV_8UC1);
-            pxConverter.OutputPixelFormat = PixelType.Mono8;
+            //pxConverter.OutputPixelFormat = PixelType.Mono8;  //預設為 mono
             pxConverter.Convert(mat.Ptr(0), result.Width * result.Height, result);
             return mat;
         }

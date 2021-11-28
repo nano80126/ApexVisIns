@@ -12,6 +12,11 @@ namespace ApexVisIns
 {
     public partial class MainWindow : System.Windows.Window
     {
+        /// <summary>
+        /// Apex 處理,
+        /// 保留做為參考
+        /// </summary>
+        /// <param name="mat">來源影像</param>
         public void ProcessApex(Mat mat)
         {
             int matWidth = mat.Width;
@@ -21,21 +26,19 @@ namespace ApexVisIns
 
             try
             {
-                Rect roi = AssistRect.GetRect();
-                if (roi.Width * roi.Height > 0)
-                {
-                    //Mat roiImg = new(mat, roi);
+                //Rect roi = AssistRect.GetRect();
+                //if (roi.Width * roi.Height > 0)
+                //{
+                //    //Mat roiImg = new(mat, roi);
 
-                    Dispatcher.Invoke(() =>
-                    {
-                        //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+                //    Dispatcher.Invoke(() =>
+                //    {
+                //        //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
 
-                        img.GetBackgroundMogROI(roi, 11);
-                        img.GetCannyROI(roi, 120, 60);
-                    });
-                }
-
-
+                //        img.GetBackgroundMogROI(roi, 11);
+                //        img.GetCannyROI(roi, 120, 60);
+                //    });
+                //}
 
                 Dispatcher.Invoke(() =>
                 {
@@ -77,10 +80,8 @@ namespace ApexVisIns
     }
 }
 
-
 namespace ApexVisIns.algorithm
 {
-
     public class Apex : Algorithm
     {
         public Apex() { }
@@ -90,7 +91,6 @@ namespace ApexVisIns.algorithm
         public Apex(Mat mat) : base(mat) { }
 
         public Apex(string path) : base(path) { }
-
 
         /// <summary>
         /// 取得 ROI 銳化影像
@@ -148,7 +148,6 @@ namespace ApexVisIns.algorithm
             }
         }
 
-
         public Mat GetBackgroundMogROI(Rect roi, int blurSize)
         {
             try
@@ -175,7 +174,6 @@ namespace ApexVisIns.algorithm
                 throw;
             }
         }
-
 
         public Mat Threshbold_mog(Mat mat, OpenCvSharp.Size window)
         {

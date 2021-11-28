@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:ApexVisIns"
-        xmlns:bfr="clr-namespace:ApexVisIns.BFR"
         xmlns:uc="clr-namespace:ApexVisIns.module"
         xmlns:content="clr-namespace:ApexVisIns.content"
+        d:DataContext="{d:DesignInstance Type=local:MainWindow}"
         mc:Ignorable="d"
         
         TextElement.Foreground="{StaticResource MaterialDesignLightForeground}"
@@ -80,11 +80,6 @@
 
         <!--#region Module -->
         <!--<local:Thermometer x:Key="Thermometer" Interval="100"/>-->
-        <!--#endregion-->
-
-        <!--#region BFR -->
-        <bfr:Trail x:Key="BFRTrail"/>
-        <!--<bfr:BFR x:Key="BFR"/>-->
         <!--#endregion-->
     </Window.Resources> 
     <!--//-->
