@@ -49,18 +49,18 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            Controller = DataContext as IOController;
+            //Controller = DataContext as IOController;
 
-            if (!Controller.DiCtrlCreated)
-            {
-                Controller.InitializeDiCtrl();
-                //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            }
+            //if (!Controller.DiCtrlCreated)
+            //{
+            //    Controller.InitializeDiCtrl();
+            //    //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            //}
 
-            if (!Controller.DoCtrlCreated)
-            {
-                Controller.InitializeDoCtrl();
-            }
+            //if (!Controller.DoCtrlCreated)
+            //{
+            //    Controller.InitializeDoCtrl();
+            //}
         }
 
         /// <summary>
@@ -70,8 +70,16 @@ namespace ApexVisIns.module
         /// <param name="e"></param>
         private void InterruptToggle_Checked(object sender, RoutedEventArgs e)
         {
+            CheckBox checkBox = sender as CheckBox;
+            int channel = Convert.ToInt32(checkBox.CommandParameter);
+            Debug.WriteLine($"{channel}");
+
+            return;
             if (!Controller.InterruptEnabled)
             {
+                Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge, true);
+
+
                 /// 這邊新增至 MsgInformer
                 ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge);
                 Debug.WriteLine($"{err}");
@@ -90,6 +98,11 @@ namespace ApexVisIns.module
         /// <param name="e"></param>
         private void InterruptToggle_Unchecked(object sender, RoutedEventArgs e)
         {
+            CheckBox checkBox = sender as CheckBox;
+            int para = Convert.ToInt32(checkBox.CommandParameter);
+            Debug.WriteLine($"{para}");
+
+            return;
             if (Controller.InterruptEnabled)
             {
                 Controller.DisableInterrupt();

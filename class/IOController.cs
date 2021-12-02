@@ -63,13 +63,10 @@ namespace ApexVisIns
         {
             if (_description != string.Empty)
             {
-                //Debug.WriteLine($"{_description}");
-
                 InstantDiCtrl = new InstantDiCtrl()
                 {
                     SelectedDevice = new DeviceInformation(_description),
                 };
-
                 DiCtrlCreated = true;
 
                 // 新增 Collection, 全部拉低(等待讀取)
@@ -80,10 +77,11 @@ namespace ApexVisIns
                     DiArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
                 }
 
-                // foreach (ObservableCollection<bool> subArray in DiArrayColl)
-                // {
-                //     BindingOperations.EnableCollectionSynchronization(subArray, _CollectionLock);
-                // }
+                Interrupts.Clear();
+                foreach (DiintChannel item in InstantDiCtrl.DiintChannels)
+                {
+                    Interrupts.Add(new InterruptChannel(item.Channel));
+                }
 
                 // 測試
                 // DioPort[] ports = InstantDiCtrl.Ports;
@@ -143,14 +141,14 @@ namespace ApexVisIns
         /// </summary>
         public bool DoCtrlCreated { get; private set; }
 
-        public DiintChannel[] GetInterruptChannel()
-        {
-            DiintChannel[] channels = InstantDiCtrl.DiintChannels;
-            return channels;
-        }
+        //public DiintChannel[] GetInterruptChannel()
+        //{
+        //    DiintChannel[] channels = InstantDiCtrl.DiintChannels;
+        //    return channels;
+        //}
 
         /// <summary>
-        /// 設定 Channel 啟用中斷
+        /// 設定 Channel 啟用中斷 (OLD)
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="signel">觸發邊緣</param>
@@ -187,6 +185,39 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 設定中斷器 (須測試)
+        /// </summary>
+        /// <param name="ch">通道號碼</param>
+        /// <param name="signal">觸發條件(上升/下降)</param>
+        /// <param name="enable">啟用/停用</param>
+        /// <returns></returns>
+        public ErrorCode SetInterruptChannel(int ch, ActiveSignal signal, bool enable = true)
+        {
+            if (DiCtrlCreated)
+            {
+                DiintChannel diintChannel = Array.Find(InstantDiCtrl.DiintChannels, e => e.Channel == ch);
+                
+                if (diintChannel != null)
+                {
+                    diintChannel.Enabled = enable;
+                    diintChannel.TrigEdge = signal;
+
+                    return ErrorCode.Success;
+                } else
+                {
+                    return ErrorCode.ErrorIntrNotAvailable;
+                }
+            }
+            return ErrorCode.Success;
+        }
+
+
+        /// <summary>
+        /// Interrupt Event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
             /// 確認中斷器觸發條件
@@ -204,6 +235,19 @@ namespace ApexVisIns
                 {
                     SetDI(i, e.PortData[i]);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 設定 Digital Input
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="data"></param>
+        private void SetDI(int port, int data)
+        {
+            for (int i = 0; i < DiArrayColl[port].Count; i++)
+            {
+                DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
             }
         }
 
@@ -305,34 +349,22 @@ namespace ApexVisIns
         /// <summary>
         /// DI Port 數
         /// </summary>
-        public int DiPortCount
-        {
-            get => InstantDiCtrl.Features.PortCount;
-        }
+        public int DiPortCount => InstantDiCtrl.Features.PortCount;
 
         /// <summary>
         /// DI 通道數
         /// </summary>
-        public int DiChannelCount
-        {
-            get => InstantDiCtrl.Features.ChannelCountMax;
-        }
+        public int DiChannelCount => InstantDiCtrl.Features.ChannelCountMax;
 
         /// <summary>
         /// Do Port 數
         /// </summary>
-        public int DoPortCount
-        {
-            get => InstantDoCtrl.Features.PortCount;
-        }
+        public int DoPortCount => InstantDoCtrl.Features.PortCount;
 
         /// <summary>
         /// Do 通道數
         /// </summary>
-        public int DoChannelCount
-        {
-            get => InstantDoCtrl.Features.ChannelCountMax;
-        }
+        public int DoChannelCount => InstantDoCtrl.Features.ChannelCountMax;
 
         /// <summary>
         /// DI Collection
@@ -344,14 +376,27 @@ namespace ApexVisIns
         /// </summary>
         public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
 
-        public void SetDI(int port, int data)
+        /// <summary>
+        /// Interrupt Channel Object
+        /// </summary>
+        public class InterruptChannel
         {
-            for (int i = 0; i < DiArrayColl[port].Count; i++)
+            public InterruptChannel(int channel)
             {
-                DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
+                Channel = channel;
             }
+
+            public int Channel { get; }
+
+            public bool Enabled { get; set; }
         }
 
+        /// <summary>
+        /// 可啟用 Interrupt 之通道
+        /// </summary>
+        public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
+ 
+      
         /// <summary>
         /// DI 讀取
         /// </summary>

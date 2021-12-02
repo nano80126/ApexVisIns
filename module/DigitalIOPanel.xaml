@@ -73,10 +73,10 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <!--#endregion-->
-            <DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 0">
+            <DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 8">
                 <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" 
                           IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                          Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
+                          Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked" CommandParameter="0">
                     <TextBlock Text="啟用中斷" FontSize="16" FontWeight="SemiBold"/>
                 </CheckBox>
 
@@ -86,6 +86,35 @@
                 
                 <TextBlock DockPanel.Dock="Right" Text="Count: " Margin="0 0 8 0" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
             </DockPanel>
+            <!--//-->
+            <!--<TextBlock HorizontalAlignment="Right"></TextBlock>-->
+            <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
+                     HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
+                     Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+
+            <ItemsControl ItemsSource="{Binding Interrupts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Margin="4 0 0 0" Cursor="Hand" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding Channel, Mode=OneWay}"
+                                  Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Channel, StringFormat={}CH{0} 啟用中斷}"/>
+                        </CheckBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+
+
         </StackPanel>
 
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
