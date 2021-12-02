@@ -129,7 +129,8 @@
             <!--#endregion-->
 
             <!--#region IO Control Resources -->
-            <local:IOController x:Key="IOController" Description="DemoDevice,BID#0"/>
+            <local:IOController x:Key="IOController" Description="DemoDevice,BID#0"
+                                EnabledDiPorts="2" EnabledDoPorts="2"/>
             <!--#endregion-->
 
             <!-- 裝置組態 (正式使用) (可刪除) -->

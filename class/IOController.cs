@@ -31,6 +31,16 @@ namespace ApexVisIns
 
         public InstantDoCtrl InstantDoCtrl { get; set; }
 
+        /// <summary>
+        /// 啟用之 Digital Input Ports
+        /// </summary>
+        public int EnabledDiPorts { get; set; } = 999;
+
+        /// <summary>
+        /// 啟用之 Digital Outp Ports
+        /// </summary>
+        public int EnabledDoPorts { get; set; } = 999;
+
         public IOController()
         {
         }
@@ -48,10 +58,13 @@ namespace ApexVisIns
         /// <summary>
         /// 初始化 DI Control
         /// </summary>
+        /// <param name="ports">啟用之 Port 數</param>
         public void InitializeDiCtrl()
         {
             if (_description != string.Empty)
             {
+                //Debug.WriteLine($"{_description}");
+
                 InstantDiCtrl = new InstantDiCtrl()
                 {
                     SelectedDevice = new DeviceInformation(_description),
@@ -61,7 +74,7 @@ namespace ApexVisIns
 
                 // 新增 Collection, 全部拉低(等待讀取)
                 DiArrayColl.Clear();
-                for (int i = 0; i < InstantDiCtrl.PortCount; i++)
+                for (int i = 0; i < InstantDiCtrl.PortCount && i < EnabledDiPorts; i++)
                 {
                     //ObservableCollection<bool> subCollection = new ObservableCollection<bool>() { false, false, false, false, false, false, false, false };
                     DiArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
@@ -89,6 +102,7 @@ namespace ApexVisIns
         /// <summary>
         /// 初始化 DO Control
         /// </summary>
+        /// <param name="ports">啟用之 Port 數</param>
         public void InitializeDoCtrl()
         {
             if (_description != string.Empty)
@@ -100,7 +114,7 @@ namespace ApexVisIns
                 DoCtrlCreated = true;
 
                 // 新增 Collection, 全部拉低
-                for (int i = 0; i < InstantDoCtrl.PortCount; i++)
+                for (int i = 0; i < InstantDoCtrl.PortCount && i < EnabledDoPorts; i++)
                 {
                     DoArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
                 }
@@ -159,9 +173,9 @@ namespace ApexVisIns
                         success = true;
 
                         // 綁定 Event
-                        InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;     
+                        InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;
                         // 啟用 Collection Sync
-                        BindingOperations.EnableCollectionSynchronization(DiArrayColl[ch / 8], _CollectionLock);   
+                        //BindingOperations.EnableCollectionSynchronization(DiArrayColl[ch / 8], _CollectionLock);
                         break;
                     }
                 }
@@ -186,7 +200,7 @@ namespace ApexVisIns
             OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
             lock (_CollectionLock)
             {
-                for (int i = 0; i < e.Length; i++)
+                for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
                 {
                     SetDI(i, e.PortData[i]);
                 }
@@ -206,6 +220,11 @@ namespace ApexVisIns
                 {
                     _interruptEnabled = true;
                     InterruptCount = 0;
+
+                    foreach (ObservableCollection<bool> collection in DiArrayColl)
+                    {
+                        BindingOperations.EnableCollectionSynchronization(collection, _CollectionLock);
+                    }
                 }
                 return err;
             }
@@ -227,6 +246,11 @@ namespace ApexVisIns
                 if (err == ErrorCode.Success)
                 {
                     _interruptEnabled = false;
+
+                    foreach (ObservableCollection<bool> collection in DiArrayColl)
+                    {
+                        BindingOperations.DisableCollectionSynchronization(collection);
+                    }
                 }
                 return err;
             }

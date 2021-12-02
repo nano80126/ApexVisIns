@@ -49,18 +49,18 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            //Controller = DataContext as IOController;
+            Controller = DataContext as IOController;
 
-            //if (!Controller.DiCtrlCreated)
-            //{
-            //    Controller.InitializeDiCtrl();
-            //    //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            //}
+            if (!Controller.DiCtrlCreated)
+            {
+                Controller.InitializeDiCtrl();
+                //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            }
 
-            //if (!Controller.DoCtrlCreated)
-            //{
-            //    Controller.InitializeDoCtrl();
-            //}
+            if (!Controller.DoCtrlCreated)
+            {
+                Controller.InitializeDoCtrl();
+            }
         }
 
         /// <summary>
@@ -72,15 +72,17 @@ namespace ApexVisIns.module
         {
             if (!Controller.InterruptEnabled)
             {
+                /// 這邊新增至 MsgInformer
                 ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge);
                 Debug.WriteLine($"{err}");
-                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge);
+                err = Controller.SetInterrutChannel(1, ActiveSignal.RisingEdge);
                 Debug.WriteLine($"{err}");
                 Controller.DigitalInputChanged += Controller_DigitalInputChanged;
                 err = Controller.EnableInterrut();
                 Debug.WriteLine($"{err}");
             }
         }
+
         /// <summary>
         /// 關閉中斷器
         /// </summary>
@@ -94,7 +96,7 @@ namespace ApexVisIns.module
 
                 ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge, false);
                 Debug.WriteLine($"{err}");
-                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge, false);
+                err = Controller.SetInterrutChannel(1, ActiveSignal.RisingEdge, false);
                 Debug.WriteLine($"{err}");
                 Controller.DigitalInputChanged -= Controller_DigitalInputChanged;
                 err = Controller.DisableInterrupt();
@@ -109,7 +111,6 @@ namespace ApexVisIns.module
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
             Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -127,7 +128,6 @@ namespace ApexVisIns.module
             _ = Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
         }
 
-
         #region 測試用 控制項
         private void DiRead_Click(object sender, RoutedEventArgs e)
         {
@@ -135,6 +135,16 @@ namespace ApexVisIns.module
             Debug.WriteLine($"ErrorCode: {err}");
             err = Controller.ReadDI(1);
             Debug.WriteLine($"ErrorCode: {err}");
+        }
+
+        /// <summary>
+        /// Digital Read Function
+        /// </summary>
+        private void DiRead()
+        {
+            ErrorCode err = Controller.ReadDI(0);
+            ErrorCode err2 = Controller.ReadDI(1);
+            Debug.WriteLine($"{err} {err2}");
         }
 
         private void DoRead_Click(object sender, RoutedEventArgs e)
