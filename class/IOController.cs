@@ -26,9 +26,15 @@ namespace ApexVisIns
         private bool _interruptEnabled = false;
         private int _interruptCount = 0;
         #endregion
-
+        
+        /// <summary>
+        /// Digital Input Instant
+        /// </summary>
         public InstantDiCtrl InstantDiCtrl { get; set; }
 
+        /// <summary>
+        /// Digital Output Instant
+        /// </summary>
         public InstantDoCtrl InstantDoCtrl { get; set; }
 
         /// <summary>
@@ -80,7 +86,11 @@ namespace ApexVisIns
                 Interrupts.Clear();
                 foreach (DiintChannel item in InstantDiCtrl.DiintChannels)
                 {
-                    Interrupts.Add(new InterruptChannel(item.Channel));
+                    // 判斷 Ch 號, 小於 
+                    if (item.Channel < EnabledDiPorts * 8)
+                    {
+                        Interrupts.Add(new InterruptChannel(item.Channel));
+                    }
                 }
 
                 // 測試
@@ -148,7 +158,7 @@ namespace ApexVisIns
         //}
 
         /// <summary>
-        /// 設定 Channel 啟用中斷 (OLD)
+        /// 設定 Channel 啟用中斷 (deprecated)
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="signel">觸發邊緣</param>
@@ -186,7 +196,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 設定中斷器 (須測試)
+        /// 設定中斷器
         /// </summary>
         /// <param name="ch">通道號碼</param>
         /// <param name="signal">觸發條件(上升/下降)</param>
@@ -197,14 +207,15 @@ namespace ApexVisIns
             if (DiCtrlCreated)
             {
                 DiintChannel diintChannel = Array.Find(InstantDiCtrl.DiintChannels, e => e.Channel == ch);
-                
+
                 if (diintChannel != null)
                 {
                     diintChannel.Enabled = enable;
                     diintChannel.TrigEdge = signal;
 
                     return ErrorCode.Success;
-                } else
+                }
+                else
                 {
                     return ErrorCode.ErrorIntrNotAvailable;
                 }
@@ -212,6 +223,11 @@ namespace ApexVisIns
             return ErrorCode.Success;
         }
 
+
+        public DiintChannel[] InterruptEnabledChannel
+        {
+            get => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
+        }
 
         /// <summary>
         /// Interrupt Event
@@ -259,6 +275,8 @@ namespace ApexVisIns
         {
             if (DiCtrlCreated)
             {
+                InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;
+
                 ErrorCode err = InstantDiCtrl.SnapStart();
                 if (err == ErrorCode.Success)
                 {
@@ -286,10 +304,12 @@ namespace ApexVisIns
         {
             if (DiCtrlCreated)
             {
+                InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
                 ErrorCode err = InstantDiCtrl.SnapStop();
                 if (err == ErrorCode.Success)
                 {
                     _interruptEnabled = false;
+                    //InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
 
                     foreach (ObservableCollection<bool> collection in DiArrayColl)
                     {

@@ -79,6 +79,10 @@ Apex 外觀瑕疵檢測
 	* 
 [ ] 啟動速度優化
 [ ] Add custom event for DI interrupt
+[ ] 中斷器有可能啟用失敗
+	* 情境 CH0 啟用後再啟用CH1
+	* 反之亦然
+[ ] Digital IO Debounce
  
 ### Config Logic
 

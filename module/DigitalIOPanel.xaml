@@ -43,14 +43,14 @@
                 </Style>
             </StackPanel.Resources>
 
-            <TextBlock x:Name="InputTitle" Text="INPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+            <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
             <!--//-->
             <!-- #region NewRegion -->
             <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Background="{StaticResource ColorGrayTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
+                        <WrapPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -73,7 +73,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <!--#endregion-->
-            <DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 8">
+            <!--<DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 8">
                 <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" 
                           IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                           Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked" CommandParameter="0">
@@ -85,36 +85,33 @@
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                 
                 <TextBlock DockPanel.Dock="Right" Text="Count: " Margin="0 0 8 0" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
-            </DockPanel>
+            </DockPanel>-->
             <!--//-->
             <!--<TextBlock HorizontalAlignment="Right"></TextBlock>-->
-            <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
+            <StackPanel Margin="0 8 0 0">
+                <ItemsControl ItemsSource="{Binding Interrupts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel HorizontalAlignment="Stretch" Margin="0 0 0 8"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Margin="4 8 0 0" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="135" 
+                                      IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding Channel, Mode=OneWay}"
+                                      Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
+                                <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Channel, StringFormat={}CH{0} 啟用中斷}"/>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
                      HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
                      Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
-
-            <ItemsControl ItemsSource="{Binding Interrupts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <CheckBox Margin="4 0 0 0" Cursor="Hand" HorizontalAlignment="Left"
-                                  IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding Channel, Mode=OneWay}"
-                                  Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
-                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Channel, StringFormat={}CH{0} 啟用中斷}"/>
-                        </CheckBox>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-
-
+            </StackPanel>
         </StackPanel>
 
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
@@ -138,14 +135,14 @@
                 </Style>
             </StackPanel.Resources>
 
-            <TextBlock x:Name="OutPutTitle" Text="OUTPUT" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+            <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
             <!--//-->
             <!--#region Items Source -->
             <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Background="{StaticResource ColorGray}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
+                        <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -154,7 +151,7 @@
                         <!--<StackPanel Orientation="Vertical">-->
                         <!--<TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
                         <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8" 
-                                          Tag="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                      Tag="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>
@@ -212,9 +209,9 @@
             <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>
         </StackPanel>
 
-        <StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+        <!--<StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button HorizontalAlignment="Left" Content="啟動中斷器" Style="{StaticResource MaterialDesignFlatButton}" Click="SwitchInterrupt_Click"/>
-        </StackPanel>
+        </StackPanel>-->
         <!--#endregion-->
         <!--//-->
         <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>
