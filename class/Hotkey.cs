@@ -23,9 +23,9 @@ namespace ApexVisIns
             // MainTab is focused
             e.CanExecute = OnTabIndex == 0;
         }
-        private void ConfigTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        private void DeviceTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
-            // ConfigTab is focused
+            // DeviceTab is focused
             e.CanExecute = OnTabIndex == 1;
         }
         private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)

@@ -449,18 +449,19 @@ namespace ApexVisIns
 
         public int ErrorCount => ErrSource.Count;
 
-
         /// <summary>
-        /// 新增 Error
+        /// 新增 Warnging
         /// </summary>
-        /// <param name="msg">Message, 若 type 為 info, 自動改為 warning </param>
-        public void AddError(Message msg)
+        /// <param name="code"></param>
+        /// <param name="description"></param>
+        public void AddWarning(Message.MsgCode code, string description)
         {
-            if (msg.MsgType == Message.MessageType.Info)
+            ErrSource.Push(new Message
             {
-                msg.MsgType = Message.MessageType.Warning;
-            }
-            ErrSource.Push(msg);
+                Code = code,
+                Description = description,
+                MsgType = Message.MessageType.Warning
+            });
             NewError++;
             OnPropertyChanged(nameof(NewError));
             OnPropertyChanged(nameof(ErrorCount));
@@ -472,13 +473,13 @@ namespace ApexVisIns
         /// <param name="code">Message Code</param>
         /// <param name="description">Description</param>
         /// <param name="type">Message Type, 若為 info, 自動改為 warngin</param>
-        public void AddError(Message.MsgCode code, string description, Message.MessageType type)
+        public void AddError(Message.MsgCode code, string description)
         {
             ErrSource.Push(new Message
             {
                 Code = code,
                 Description = description,
-                MsgType = type == Message.MessageType.Info ? Message.MessageType.Warning : type,
+                MsgType = Message.MessageType.Error
             });
             NewError++;
             OnPropertyChanged(nameof(NewError));
@@ -517,7 +518,25 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 新增 Information (type 為 info)
+        /// 新增 Success 訊息
+        /// </summary>
+        /// <param name="code">Message Code</param>
+        /// <param name="description">Description</param>
+        public void AddSuccess(Message.MsgCode code, string description)
+        {
+            InfoSource.Push(new Message
+            {
+                Code = code,
+                Description = description,
+                MsgType = Message.MessageType.Success
+            });
+            NewInfo++;
+            OnPropertyChanged(nameof(NewInfo));
+            OnPropertyChanged(nameof(InfoCount));
+        }
+
+        /// <summary>
+        /// 新增 Info 訊息
         /// </summary>
         /// <param name="code">Message Code</param>
         /// <param name="description">Description</param>
@@ -613,9 +632,10 @@ namespace ApexVisIns
             /// </summary>
             public enum MessageType
             {
-                Info = 0,
-                Warning = 1,
-                Error = 2,
+                Success = 0,
+                Info = 1,
+                Warning = 2,
+                Error = 3,
             }
 
             public MsgCode Code { get; set; }
@@ -628,6 +648,8 @@ namespace ApexVisIns
                 {
                     switch (MsgType)
                     {
+                        case MessageType.Success:
+                            return new SolidColorBrush(Color.FromArgb(255, 46, 175, 80));
                         case MessageType.Info:
                             return new SolidColorBrush(Color.FromArgb(255, 33, 150, 243));
                         case MessageType.Warning:

@@ -208,7 +208,7 @@ namespace ApexVisIns.module
                 {
                     // 
                     //Debug.WriteLine("組態檔不存在");
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "組態檔不存在", MsgInformer.Message.MessageType.Warning);
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "組態檔不存在");
                 }
             }
         }

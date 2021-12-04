@@ -22,9 +22,9 @@ using Basler.Pylon;
 namespace ApexVisIns.content
 {
     /// <summary>
-    /// ConfigTab.xaml 的互動邏輯
+    /// DeviceTab.xaml 的互動邏輯
     /// </summary>
-    public partial class ConfigTab : StackPanel
+    public partial class DeviceTab : StackPanel
     {
         #region Resources
 
@@ -42,7 +42,7 @@ namespace ApexVisIns.content
         public MainWindow MainWindow { get; set; }
         #endregion
 
-        public ConfigTab()
+        public DeviceTab()
         {
             InitializeComponent();
         }
@@ -64,7 +64,7 @@ namespace ApexVisIns.content
             // 載入
             LoadDeviceConfigs();
             #endregion
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "組態頁面已載入");
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace ApexVisIns.content
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Error);
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                     //throw;
                 }
             }
@@ -722,7 +722,7 @@ namespace ApexVisIns.content
             catch (Exception ex)
             {
                 // 這邊要修改 (Error 格式有問題)
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Error);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
             }
 
             //camera.Parameters[PLGigECamera.UserSetSave].Execute();

@@ -58,7 +58,7 @@ namespace ApexVisIns
             }
             else
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "Close camera connection before exit", MsgInformer.Message.MessageType.Info);
+                MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "Close camera connection before exit");
                 return;
             }
         }

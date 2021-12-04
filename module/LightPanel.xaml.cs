@@ -61,7 +61,7 @@ namespace ApexVisIns.module
                 catch (Exception ex)
                 {
                     // 待新增光源 Error Code
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message, MsgInformer.Message.MessageType.Warning);
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
                     // 例外產生，關閉通訊
                     MainWindow.LightController.ComClose();
                 }

@@ -1,19 +1,14 @@
-﻿using System;
+﻿using Automation.BDaq;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
-using Automation.BDaq;
-
 
 namespace ApexVisIns
 {
-
     /// <summary>
     /// Advantech PCI 1730U I/O Card 控制器
     /// </summary>
@@ -23,10 +18,10 @@ namespace ApexVisIns
         private readonly object _CollectionLock = new();
 
         private string _description;
-        private bool _interruptEnabled = false;
+        private bool _interruptEnabled;
         private int _interruptCount = 0;
         #endregion
-        
+
         /// <summary>
         /// Digital Input Instant
         /// </summary>
@@ -223,7 +218,6 @@ namespace ApexVisIns
             return ErrorCode.Success;
         }
 
-
         public DiintChannel[] InterruptEnabledChannel
         {
             get => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
@@ -415,8 +409,8 @@ namespace ApexVisIns
         /// 可啟用 Interrupt 之通道
         /// </summary>
         public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
- 
-      
+
+
         /// <summary>
         /// DI 讀取
         /// </summary>
@@ -582,7 +576,7 @@ namespace ApexVisIns
         {
             DigitalInputChanged?.Invoke(this, new DigitalInputChangedEventArgs(port, bit, value));
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName = null)

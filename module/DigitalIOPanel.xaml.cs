@@ -49,18 +49,18 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            Controller = DataContext as IOController;
+            //Controller = DataContext as IOController;
 
-            if (!Controller.DiCtrlCreated)
-            {
-                Controller.InitializeDiCtrl();
-                //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            }
+            //if (!Controller.DiCtrlCreated)
+            //{
+            //    Controller.InitializeDiCtrl();
+            //    //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
+            //}
 
-            if (!Controller.DoCtrlCreated)
-            {
-                Controller.InitializeDoCtrl();
-            }
+            //if (!Controller.DoCtrlCreated)
+            //{
+            //    Controller.InitializeDoCtrl();
+            //}
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace ApexVisIns.module
             }
             else
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷啟用失敗", MsgInformer.Message.MessageType.Error);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷啟用失敗");
             }
         }
 
@@ -119,7 +119,7 @@ namespace ApexVisIns.module
             }
             else
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷停用失敗", MsgInformer.Message.MessageType.Error);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷停用失敗");
             }
         }
 

@@ -107,7 +107,7 @@ namespace ApexVisIns.content
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                 //throw;
             }
             return cam.IsOpen;
@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                 //throw;
             }
             return false;
@@ -145,15 +145,15 @@ namespace ApexVisIns.content
             }
             catch (TimeoutException T)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
             }
             catch (InvalidOperationException I)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
             }
             catch (Exception E)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
             finally
             {
@@ -180,15 +180,15 @@ namespace ApexVisIns.content
             }
             catch (TimeoutException T)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
             }
             catch (InvalidOperationException I)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
             }
             catch (Exception E)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message, MsgInformer.Message.MessageType.Warning);
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
         }
 

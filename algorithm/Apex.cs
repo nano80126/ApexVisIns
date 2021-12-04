@@ -52,7 +52,7 @@ namespace ApexVisIns
             {
                 Dispatcher.Invoke(() =>
                 {
-                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message, MsgInformer.Message.MessageType.Error);
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message);
                     ImageSource = img.GetMat().ToImageSource();
                 });
             }
@@ -60,7 +60,7 @@ namespace ApexVisIns
             {
                 Dispatcher.Invoke(() =>
                 {
-                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVS, ex.Message, MsgInformer.Message.MessageType.Error);
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVS, ex.Message);
                     ImageSource = img.GetMat().ToImageSource();
                 });
             }
@@ -68,7 +68,7 @@ namespace ApexVisIns
             {
                 Dispatcher.Invoke(() =>
                 {
-                    MsgInformer.AddError(MsgInformer.Message.MsgCode.EX, ex.Message, MsgInformer.Message.MessageType.Error);
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.EX, ex.Message);
                     ImageSource = img.GetMat().ToImageSource();
                 });
             }

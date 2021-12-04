@@ -91,6 +91,8 @@ namespace ApexVisIns
             InitializeComponent();
 
             InitializePanels();
+
+            //GetSystemPath();
         }
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace ApexVisIns
             // MainTab
             MainTab.MainWindow = this;
             // Config Tab
-            ConfigTab.MainWindow = this;
+            DeviceTab.MainWindow = this;
             // Engineer Tab
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
