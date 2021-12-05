@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace ApexVisIns
@@ -20,6 +21,8 @@ namespace ApexVisIns
         private string _description;
         private bool _interruptEnabled;
         private int _interruptCount = 0;
+
+        private Task debounceTask;
         #endregion
 
         /// <summary>
@@ -152,6 +155,7 @@ namespace ApexVisIns
         //    return channels;
         //}
 
+
         /// <summary>
         /// 設定 Channel 啟用中斷 (deprecated)
         /// </summary>
@@ -159,6 +163,7 @@ namespace ApexVisIns
         /// <param name="signel">觸發邊緣</param>
         /// <param name="enable">啟用 / 停用</param>
         /// <returns></returns>
+        [Obsolete("SetInterrutChannel is deprecated, use SetInterruptChannel instead")]
         public ErrorCode SetInterrutChannel(int ch, ActiveSignal signel, bool enable = true)
         {
             if (DiCtrlCreated)
@@ -234,18 +239,21 @@ namespace ApexVisIns
             /// 確認中斷器觸發條件
             /// 確認中斷器觸發條件
 
-            InterruptCount++;
-            int port = e.SrcNum / 8;
-            byte bit = (byte)(e.SrcNum % 8);
-            // Trigger Digital Changed
-            OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
-            lock (_CollectionLock)
+            debounceTask = Task.Run(() =>
             {
-                for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                InterruptCount++;
+                int port = e.SrcNum / 8;
+                byte bit = (byte)(e.SrcNum % 8);
+                // Trigger Digital Changed
+                OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
+                lock (_CollectionLock)
                 {
-                    SetDI(i, e.PortData[i]);
+                    for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                    {
+                        SetDI(i, e.PortData[i]);
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>

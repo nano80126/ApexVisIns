@@ -140,7 +140,6 @@ namespace ApexVisIns
             #endregion
 
             #region Device
-            //DeviceConfigs = (FindResource(nameof(DeviceConfigs)) as DeviceConfig[]).ToList();
             DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 
@@ -149,7 +148,6 @@ namespace ApexVisIns
             //AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
             //Indicator = FindResource(nameof(Indicator)) as Indicator;
             //AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
-
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             #endregion
 
