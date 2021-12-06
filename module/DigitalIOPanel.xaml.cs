@@ -27,8 +27,6 @@ namespace ApexVisIns.module
     public partial class DigitalIOPanel : Card
     {
         #region 
-        //IOController controller = new IOController("DemoDevice,BID#0", true);
-
         private IOController Controller { get; set; }
         #endregion
 
@@ -49,18 +47,18 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            //Controller = DataContext as IOController;
+            Controller = DataContext as IOController;
 
-            //if (!Controller.DiCtrlCreated)
-            //{
-            //    Controller.InitializeDiCtrl();
-            //    //Controller.DigitalInputChanged += Controller_DigitalInputChanged; ;
-            //}
+            if (!Controller.DiCtrlCreated)
+            {
+                // Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+                Controller.InitializeDiCtrl();
+            }
 
-            //if (!Controller.DoCtrlCreated)
-            //{
-            //    Controller.InitializeDoCtrl();
-            //}
+            if (!Controller.DoCtrlCreated)
+            {
+                Controller.InitializeDoCtrl();
+            }
         }
 
         /// <summary>
@@ -74,16 +72,8 @@ namespace ApexVisIns.module
             CheckBox checkBox = sender as CheckBox;
             int channel = Convert.ToInt32(checkBox.CommandParameter);
 
-            if (Controller.InterruptEnabledChannel.Length == 0)
-            {
-                // 通道啟用 Interrupt
-                _ = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge);
-                err = Controller.EnableInterrut();
-            }
-            else
-            {
-                err = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge);
-            }
+            _ = Controller.DisableInterrupt();
+            err = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge);
 
             if (err == ErrorCode.Success)
             {
@@ -92,6 +82,11 @@ namespace ApexVisIns.module
             else
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷啟用失敗");
+            }
+
+            if (Controller.InterruptEnabledChannel.Length > 0)
+            {
+                _ = Controller.EnableInterrut();
             }
         }
 
@@ -106,12 +101,8 @@ namespace ApexVisIns.module
             CheckBox checkBox = sender as CheckBox;
             int channel = Convert.ToInt32(checkBox.CommandParameter);
 
+            _ = Controller.DisableInterrupt();
             err = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge, false);
-
-            if (Controller.InterruptEnabledChannel.Length == 0)
-            {
-                err = Controller.DisableInterrupt();
-            }
 
             if (err == ErrorCode.Success)
             {
@@ -120,6 +111,11 @@ namespace ApexVisIns.module
             else
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"CH {channel} 中斷停用失敗");
+            }
+
+            if (Controller.InterruptEnabledChannel.Length > 0)
+            {
+                _ = Controller.EnableInterrut();
             }
         }
 
@@ -167,6 +163,7 @@ namespace ApexVisIns.module
             Debug.WriteLine($"{err} {err2}");
         }
 
+
         private void DoRead_Click(object sender, RoutedEventArgs e)
         {
             ErrorCode err = Controller.ReadDO(0);
@@ -174,6 +171,7 @@ namespace ApexVisIns.module
             err = Controller.ReadDO(1);
             Debug.WriteLine($"ErrorCode: {err}");
         }
+
 
         private void DoWrite_Click(object sender, RoutedEventArgs e)
         {
@@ -183,6 +181,7 @@ namespace ApexVisIns.module
             #endregion
             Controller.TriggerEvent();
         }
+
 
         private void SwitchInterrupt_Click(object sender, RoutedEventArgs e)
         {

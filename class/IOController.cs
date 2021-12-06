@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
@@ -196,7 +197,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 設定中斷器
+        /// 設定中斷器，設定過後必須重設 SnapStart()
         /// </summary>
         /// <param name="ch">通道號碼</param>
         /// <param name="signal">觸發條件(上升/下降)</param>
@@ -210,9 +211,12 @@ namespace ApexVisIns
 
                 if (diintChannel != null)
                 {
+                    InstantDiCtrl.SnapStop();
+
                     diintChannel.Enabled = enable;
                     diintChannel.TrigEdge = signal;
 
+                    InstantDiCtrl.SnapStart();
                     return ErrorCode.Success;
                 }
                 else
@@ -235,25 +239,28 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
-            /// 確認中斷器觸發條件
-            /// 確認中斷器觸發條件
-            /// 確認中斷器觸發條件
-
-            debounceTask = Task.Run(() =>
+            // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
+            /// 防止彈跳 (但邏輯上較接近節流)
+            if (debounceTask == null || debounceTask.IsCompleted)
             {
-                InterruptCount++;
-                int port = e.SrcNum / 8;
-                byte bit = (byte)(e.SrcNum % 8);
-                // Trigger Digital Changed
-                OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
-                lock (_CollectionLock)
+                debounceTask = Task.Run(() =>
                 {
-                    for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                    SpinWait.SpinUntil(() => false, 125);
+
+                    InterruptCount++;
+                    int port = e.SrcNum / 8;
+                    byte bit = (byte)(e.SrcNum % 8);
+                    // Trigger Digital Changed
+                    OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
+                    lock (_CollectionLock)
                     {
-                        SetDI(i, e.PortData[i]);
+                        for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                        {
+                            SetDI(i, e.PortData[i]);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         /// <summary>
@@ -307,6 +314,7 @@ namespace ApexVisIns
             if (DiCtrlCreated)
             {
                 InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
+
                 ErrorCode err = InstantDiCtrl.SnapStop();
                 if (err == ErrorCode.Success)
                 {

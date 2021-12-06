@@ -63,7 +63,11 @@ namespace ApexVisIns
         /// 相機裝置列表
         /// </summary>
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
-        //public static DeviceConfig[] DeviceConfigs;
+        // public static DeviceConfig[] DeviceConfigs;
+        #endregion
+
+        #region EtherCAT Motion
+        public static ServoMotion ServoMotion { get; set; }
         #endregion
 
         #region Resources

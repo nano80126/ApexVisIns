@@ -42,11 +42,6 @@ namespace ApexVisIns.content
         private static double TempX;
         private static double TempY;
         private ImageSource _imgSrc;
-
-        private Task debounceTask;
-        private List<Action> tasks;
-        private static CancellationTokenSource cancelToken;
-        private DispatcherTimer dispatcherTimer = new DispatcherTimer();
         #endregion
 
         public EngineerTab()
@@ -115,47 +110,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-
-
-            if (cancelToken != null)
-            {
-                cancelToken.Cancel();
-                cancelToken.Dispose();
-                cancelToken = null;
-            }
-            else
-            {
-                cancelToken = new();
-            }
-
-            // This is for test function
-            Debug.WriteLine($"1: {DateTime.Now:HH:mm:ss.fff}");
-            //debounceTask?.Dispose();
-
-            try
-            {
-                await Task.Run(() =>
-                {
-                    SpinWait.SpinUntil(() => false, 200);
-
-                    if (cancelToken.IsCancellationRequested)
-                    {
-                        cancelToken.Token.ThrowIfCancellationRequested();
-                        return;
-                    }
-
-                    Debug.WriteLine($"2: {DateTime.Now:HH:mm:ss.fff}");
-                }, cancelToken.Token);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Debug.WriteLine($"ex {ex.Message}");
-            } finally
-            {
-                cancelToken.Cancel();
-                cancelToken.Dispose();
-                cancelToken = null;
-            }
+            // This function is for test
         }
 
         /// <summary>

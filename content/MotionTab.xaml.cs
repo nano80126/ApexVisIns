@@ -24,5 +24,16 @@ namespace ApexVisIns.content
         {
             InitializeComponent();
         }
+
+        //public void Get
+
+
+        private void CardOpen_Click(object sender, RoutedEventArgs e)
+        {
+
+
+        }
+
+
     }
 }
