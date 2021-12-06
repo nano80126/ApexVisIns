@@ -43,17 +43,17 @@ namespace ApexVisIns
             }
         }
 
-        public AxisSignal ServoReady { get; set; } = new AxisSignal("SRDY");
+        public AxisSignal ServoReady { get; set; } = new AxisSignal("SRDY",false);
 
-        public AxisSignal ServoAlm { get; set; } = new AxisSignal("ALM");
+        public AxisSignal ServoAlm { get; set; } = new AxisSignal("ALM", false);
 
-        public AxisSignal LMTP { get; set; } = new AxisSignal("LMT+");
+        public AxisSignal LMTP { get; set; } = new AxisSignal("LMT+", false);
 
-        public AxisSignal LMTN { get; set; } = new AxisSignal("LMT-");
+        public AxisSignal LMTN { get; set; } = new AxisSignal("LMT-", false);
 
-        public AxisSignal SVON { get; set; } = new AxisSignal("SVON");
+        public AxisSignal SVON { get; set; } = new AxisSignal("SVON", false);
 
-        public AxisSignal EMG { get; set; } = new AxisSignal("EMG");
+        public AxisSignal EMG { get; set; } = new AxisSignal("EMG", false);
 
         public string CurrentStatus
         {
@@ -89,11 +89,12 @@ namespace ApexVisIns
         /// <summary>
         /// 軸 IO 狀態
         /// </summary>
-        public class AxisSignal
+        public struct AxisSignal
         {
-            public AxisSignal(string name)
+            public AxisSignal(string name, bool bitOn)
             {
-                Name = name;
+                this.Name = name;
+                this.BitOn = bitOn;
             }
 
             /// <summary>
@@ -104,7 +105,7 @@ namespace ApexVisIns
             /// <summary>
             /// 信號 On / Off
             /// </summary>
-            public bool BitOn { get; set; } = false;
+            public bool BitOn { get; set; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -7,6 +7,8 @@
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content"
             mc:Ignorable="d" 
+            Loaded="StackPanel_Loaded"
+            Unloaded="StackPanel_Unloaded"
             d:DesignHeight="450" d:DesignWidth="800"
             UseLayoutRounding="True"
             Orientation="Vertical">
@@ -105,13 +107,15 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </WrapPanel.Resources>    
-                        
-                        
-                        
-                        
-                        
-                        
+                        </WrapPanel.Resources>
+
+
+                        <TextBlock Text="{Binding ServoReady.Name, Source={StaticResource ServoMotion}}"/>
+                        <TextBlock Text="{Binding ServoReady.BitOn, Source={StaticResource ServoMotion}}"/>
+                        <TextBlock Text="{Binding ServoAlm.Name, Source={StaticResource ServoMotion}}"/>
+                        <TextBlock Text="{Binding ServoAlm.BitOn, Source={StaticResource ServoMotion}}"/>
+
+
                     </WrapPanel>
                     
                     <DockPanel DockPanel.Dock="Top">

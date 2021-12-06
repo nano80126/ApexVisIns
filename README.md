@@ -22,21 +22,24 @@ Apex 外觀瑕疵檢測
 	* 壓傷
 	* 色差
 
-
 ## 確認相機DELAY問題
 
 * 初步判定為舊筆電效能問題
 
+
+## 為了性能，將可改為 struct 之 class 改為 struct
+
+
 ### 待新增 API
 
-[x] 光源控制器 (RS232), 保留可呼叫物件
-[ ] I/O 控制
-[ ] 馬達控制 (EtherCAT)
+* [x] 光源控制器 (RS232), 保留可呼叫物件
+* [x] I/O 控制
+* [ ] 馬達控制 (EtherCAT)
 
 ### 待移除
 
-[ ] Thermometer (USE <=> RS485)
-[ ] class 資料夾內部本專案無用 cs 檔
+* [ ] Thermometer (USE <=> RS485)
+* [ ] class 資料夾內部本專案無用 cs 檔
 
 ### Tab
 
@@ -53,36 +56,36 @@ Apex 外觀瑕疵檢測
 
 ### TO DO LIST
 
-[x] Change color of scoll bar
-[x] 移除 UVC / COIL 內容 
-[ ] 載入初始 Camera config from .json
+* [x] Change color of scoll bar
+* [x] 移除 UVC / COIL 內容 
+* [ ] 載入初始 Camera config from .json
 	* 需要建立 class for json object
-[ ] 建立樹狀圖 (draw.io) 
+* [ ] 建立樹狀圖 (draw.io) 
 	* DataContext
-[x] 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
+* [x] 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
 	* 否 => 拆除移至Toolbar.cs
-[x] DebugTab 綁定回BaslerCam
+* [x] DebugTab 綁定回BaslerCam
 	* 一次只會有一台相機
-[x] Config 根據型號儲存
-[x] 移除 Thermoter ()
-[x] 移除舊Tab
-[x] Read/Write UserSet
-[ ] 組態列表儲存 JSON
+* [x] Config 根據型號儲存
+* [x] 移除 Thermoter ()
+* [x] 移除舊Tab
+* [x] Read/Write UserSet
+* [ ] 組態列表儲存 JSON
 	* Model
 	* S/N
 	* Character
-[x] Hotkey 功能恢復
-[ ] Camera Enumer Debug
-[x] DeviceConfig 清除空儲存按鈕不能隱藏
-[ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
-[ ] 確認 Device Tab 和 Enginner Tab 不會衝突
+* [x] Hotkey 功能恢復
+* [ ] Camera Enumer Debug
+* [x] DeviceConfig 清除空儲存按鈕不能隱藏
+* [ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
+* [ ] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
-[ ] 啟動速度優化
-[ ] Add custom event for DI interrupt
-[ ] 中斷器有可能啟用失敗
+* [ ] 啟動速度優化
+* [ ] Add custom event for DI interrupt
+* [ ] 中斷器有可能啟用失敗
 	* 情境 CH0 啟用後再啟用CH1
 	* 反之亦然
-[ ] Digital IO Debounce
+* [ ] Digital IO Debounce
  
 ### Config Logic
 

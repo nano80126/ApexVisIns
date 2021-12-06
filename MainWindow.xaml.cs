@@ -147,6 +147,10 @@ namespace ApexVisIns
             DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 
+            #region EtherCAT Motion
+            ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+            #endregion
+
             #region Find Resource
             //Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
             //AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
