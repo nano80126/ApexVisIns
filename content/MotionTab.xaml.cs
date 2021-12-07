@@ -25,8 +25,7 @@ namespace ApexVisIns.content
     {
         #region Variables
         private uint boardCount;
-        private DEV_LIST[] BoardList = new DEV_LIST[Motion.MAX_DEVICES];
-        
+        private DEV_LIST[] BoardList = new DEV_LIST[10];
         #endregion
 
 
@@ -48,6 +47,9 @@ namespace ApexVisIns.content
             ////struch.c = "456";
 
             //Debug.WriteLine($"{c} {d}");
+
+            //GetAvailableBoards();
+
             #region 保留
 
             #endregion
@@ -59,30 +61,57 @@ namespace ApexVisIns.content
 
         }
 
-        private void CardOpen_Click(object sender, RoutedEventArgs e)
+        private void BoardOpen_Click(object sender, RoutedEventArgs e)
         {
+            if (!MainWindow.ServoMotion.DeviceOpened)
+            {
+                MainWindow.ServoMotion.OpenDevice((BoardSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
 
+                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");            
+            }
+            else
+            {
+                MainWindow.ServoMotion.CloseDevice();
 
+                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+            }
         }
 
         public void GetAvailableBoards()
         {
-            int result = Motion.mAcm_GetAvailableDevs(BoardList, Motion.MAX_DEVICES, ref boardCount);
+            int result = Motion.mAcm_GetAvailableDevs(BoardList, 10, ref boardCount);
 
-
-            MainWindow.ServoMotion.CardList.Clear();
-
-            for (int i = 0; i < BoardList.Length; i++)
+            if (result != (int)ErrorCode.SUCCESS)
             {
-                MainWindow.ServoMotion.CardList.Add(BoardList[i].DeviceName);
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"列舉 EtherCAT Card 失敗 : {result}");
+            }
+
+            MainWindow.ServoMotion.BoardList.Clear();
+            for (int i = 0; i < boardCount; i++)
+            {
+                MainWindow.ServoMotion.BoardList.Add(new ServoMotion.DeviceList(BoardList[i]));
             }
 
             if (boardCount > 0)
             {
-                Debug.WriteLine($"{BoardList[0].DeviceNum} {BoardList[0].NumofSubDevice}");
+                BoardSelector.SelectedIndex = 0;
+                // Debug.WriteLine($"{BoardList[0].DeviceName} {BoardList[0].DeviceNum} {BoardList[0].NumofSubDevice}");
             }
-
         }
 
+        private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+
+            if (comboBox.SelectedItem is ServoMotion.DeviceList deviceList)
+            {
+                Debug.WriteLine($"{deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
+            }
+        }
+
+        private void BoardSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            (sender as ComboBox).SelectedIndex = -1;
+        }
     }
 }

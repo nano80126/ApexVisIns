@@ -625,6 +625,10 @@ namespace ApexVisIns
                 /// IO Exception Code
                 /// </summary>
                 IO,
+                /// <summary>
+                /// EtherCAT Motion Exception Code
+                /// </summary>
+                MOTION
             }
 
             /// <summary>

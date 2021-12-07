@@ -50,17 +50,26 @@
                     <!--//-->
                     <DockPanel DockPanel.Dock="Top">
                         <!--<TextBlock VerticalAlignment="Center" Text=""></TextBlock>-->
-                        <ComboBox x:Name="CardSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox x:Name="BoardSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                   materialDesign:HintAssist.Hint="EtherCAT Card"
-                                  MinWidth="135" Margin="0 0 0 0">
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  ItemsSource="{Binding BoardList, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  SelectionChanged="BoardSelector_SelectionChanged"
+                                  MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
+                                  MinWidth="200" Margin="0 0 12 0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DeviceName}" TextAlignment="Center"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <Button x:Name="CardOpen"
+                        <Button x:Name="BoardOpen"
                                 DockPanel.Dock="Right" Padding="0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right"
                                 materialDesign:ButtonAssist.CornerRadius="13"
                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                Click="CardOpen_Click">
+                                Click="BoardOpen_Click">
                             <!--<Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                 </Style>
@@ -91,7 +100,7 @@
                     <!--//-->
                     
                     <WrapPanel>
-                        <WrapPanel.Resources>
+                        <!--<WrapPanel.Resources>
                             <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
                                 <Setter Property="Width" Value="20"/>
                                 <Setter Property="Height" Value="20"/>
@@ -107,7 +116,7 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </WrapPanel.Resources>
+                        </WrapPanel.Resources>-->
 
 
                         <TextBlock Text="{Binding ServoReady.Name, Source={StaticResource ServoMotion}}"/>
