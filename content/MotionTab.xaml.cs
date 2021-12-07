@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Advantech.Motion;
+using System.Runtime.InteropServices;
 
 namespace ApexVisIns.content
 {
@@ -25,22 +26,7 @@ namespace ApexVisIns.content
         #region Variables
         private uint boardCount;
         private DEV_LIST[] BoardList = new DEV_LIST[Motion.MAX_DEVICES];
-
-        public struct struchA
-        {
-            //public byte a;
-            ////public char[] c = new char[4] { };
-            //public int c;
-            //public byte b;
-            public string str;
-
-            public struchA(string str)
-            {
-                this.str = str;
-                //this.a = a;
-                //this.b = b;
-            }
-        }
+        
         #endregion
 
 
@@ -51,15 +37,21 @@ namespace ApexVisIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            int a = System.Runtime.InteropServices.Marshal.SizeOf(MainWindow.ServoMotion.ServoReady);
-            int b = System.Runtime.InteropServices.Marshal.SizeOf(MainWindow.ServoMotion.ServoAlm);
+            //int a = Marshal.SizeOf(MainWindow.ServoMotion.ServoReady);
+            //int b = Marshal.SizeOf(MainWindow.ServoMotion.ServoAlm);
 
-            struchA struch = new struchA("1");
+            //structA struchA = new structA(10, 20, "123");
+            //structB struchB = new structB(1, 10, 20, 3, 4, 5);
 
-            int c = System.Runtime.InteropServices.Marshal.SizeOf(struch);
-            //struch.c = "456";
+            //int c = Marshal.SizeOf(struchA);
+            //int d = Marshal.SizeOf(struchB);
+            ////struch.c = "456";
 
-            Debug.WriteLine($"{a} {b} {c}");
+            //Debug.WriteLine($"{c} {d}");
+            #region 保留
+
+            #endregion
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
