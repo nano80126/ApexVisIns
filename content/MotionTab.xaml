@@ -36,7 +36,7 @@
             <!--軸卡選擇-->
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0">
-                    <DockPanel x:Name="CardSelectHeader" DockPanel.Dock="Top">
+                    <DockPanel x:Name="DeviceSelectHeader" DockPanel.Dock="Top">
                         <Canvas Style="{StaticResource ComplexPackIcon}">
                             <materialDesign:PackIcon Kind="CardTextOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Kind="Cog" Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16"/>
@@ -48,9 +48,9 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <DockPanel DockPanel.Dock="Top">
+                    <DockPanel DockPanel.Dock="Top" d:DataContext="{d:DesignInstance Type=app:ServoMotion}" DataContext="{StaticResource ServoMotion}">
                         <!--<TextBlock VerticalAlignment="Center" Text=""></TextBlock>-->
-                        <ComboBox x:Name="BoardSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox x:Name="DeviceSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                   materialDesign:HintAssist.Hint="EtherCAT Card"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
@@ -66,24 +66,46 @@
                         </ComboBox>
 
                         <Button x:Name="BoardOpen"
-                                DockPanel.Dock="Right" Padding="0" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                DockPanel.Dock="Right" Padding="0" Height="26" 
+                                VerticalAlignment="Center" HorizontalAlignment="Right"
                                 materialDesign:ButtonAssist.CornerRadius="13"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Click="BoardOpen_Click">
-                            <!--<Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                                </Style>
-                            </Button.Style>-->
-                            <materialDesign:PackIcon Kind="Connection" Width="30" Height="26"/>
+                                <!--IsEnabled="{Binding ElementName=DeviceSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"-->
+                            <materialDesign:PackIcon Width="30" Height="26">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Kind" Value="LinkVariant"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
+                                                <Setter Property="Kind" Value="LinkVariantRemove"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>    
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
                         </Button>
-                        <!--<Separator Margin="0 8"/>-->
                     </DockPanel>
                 </DockPanel>
             </materialDesign:Card>
             
             <!--軸選擇-->
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8">
-                
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Beige">
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="AxisSelectHeader" DockPanel.Dock="Top">
+                        <Canvas Style="{StaticResource ComplexPackIcon}">
+                            <materialDesign:PackIcon Kind="CardTextOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Kind="Cog" Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16"/>
+                        </Canvas>
+                        <!--//-->
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="軸選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        <!--<TextBlock Text="{x:Null}"/>-->
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+
+                </DockPanel>
             </materialDesign:Card>
 
             <!--軸狀態-->

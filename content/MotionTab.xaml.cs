@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 using Advantech.Motion;
 using System.Runtime.InteropServices;
 
+using System.Timers;
+
+
 namespace ApexVisIns.content
 {
     /// <summary>
@@ -26,6 +29,8 @@ namespace ApexVisIns.content
         #region Variables
         private uint boardCount;
         private DEV_LIST[] BoardList = new DEV_LIST[10];
+
+        private Timer Timer;
         #endregion
 
 
@@ -36,48 +41,41 @@ namespace ApexVisIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //int a = Marshal.SizeOf(MainWindow.ServoMotion.ServoReady);
-            //int b = Marshal.SizeOf(MainWindow.ServoMotion.ServoAlm);
-
-            //structA struchA = new structA(10, 20, "123");
-            //structB struchB = new structB(1, 10, 20, 3, 4, 5);
-
-            //int c = Marshal.SizeOf(struchA);
-            //int d = Marshal.SizeOf(struchB);
-            ////struch.c = "456";
-
-            //Debug.WriteLine($"{c} {d}");
-
-            //GetAvailableBoards();
-
             #region 保留
+            if (Timer == null)
+            {
+                Timer = new Timer(100)
+                {
+                    AutoReset = true,
+                };
+                Timer.Elapsed += Timer_Elapsed;
+            }
+            //else
+            //{
+            //    Timer.Start();
+            //}
+            //Timer.Start();
 
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Read Cmd pos and Act Pos and Status
+
+            //throw new NotImplementedException();
+        }
+
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-
+            Timer?.Stop();
         }
 
-        private void BoardOpen_Click(object sender, RoutedEventArgs e)
-        {
-            if (!MainWindow.ServoMotion.DeviceOpened)
-            {
-                MainWindow.ServoMotion.OpenDevice((BoardSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
-
-                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");            
-            }
-            else
-            {
-                MainWindow.ServoMotion.CloseDevice();
-
-                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
-            }
-        }
-
-        public void GetAvailableBoards()
+        /// <summary>
+        /// 取得可用之 Devices
+        /// </summary>
+        public void GetAvailableDevices()
         {
             int result = Motion.mAcm_GetAvailableDevs(BoardList, 10, ref boardCount);
 
@@ -94,8 +92,24 @@ namespace ApexVisIns.content
 
             if (boardCount > 0)
             {
-                BoardSelector.SelectedIndex = 0;
+                DeviceSelector.SelectedIndex = 0;
                 // Debug.WriteLine($"{BoardList[0].DeviceName} {BoardList[0].DeviceNum} {BoardList[0].NumofSubDevice}");
+            }
+        }
+
+        private void BoardOpen_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MainWindow.ServoMotion.DeviceOpened)
+            {
+                MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
+
+                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+            }
+            else
+            {
+                MainWindow.ServoMotion.CloseDevice();
+
+                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
             }
         }
 

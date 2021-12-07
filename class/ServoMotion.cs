@@ -15,7 +15,7 @@ namespace ApexVisIns
         #region Variables
         //private uint Result;
         private IntPtr DeviceHandle = IntPtr.Zero;
-        private IntPtr[] AxisHand = new IntPtr[8];
+        private IntPtr[] AxisHandle = new IntPtr[8];
         
         private int _posCmd;
         private int _posFdbk;
@@ -24,7 +24,7 @@ namespace ApexVisIns
         #endregion
 
         /// <summary>
-        /// EtherCAT board 已開啟
+        /// EtherCAT board 開啟旗標
         /// </summary>
         public bool DeviceOpened
         {
@@ -110,60 +110,75 @@ namespace ApexVisIns
         public void OpenDevice(uint deviceNum)
         {
             uint result;
-            bool rescan = false;
-            uint AxesPerDev = 0;
-            uint DiChannel = 0;
+            int retry = 0;          // 重試次數
+            uint AxesCount = 0;     // 裝置軸數 
+            uint DiChCount = 0;     // 裝置DI數
 
-            do
+            if (!DeviceOpened)
             {
-                result = Motion.mAcm_DevOpen(deviceNum, ref DeviceHandle);
+                bool rescanFlag;    // 重試 Flag
+                do
+                {
+                    result = Motion.mAcm_DevOpen(deviceNum, ref DeviceHandle);
+                    if (result != (int)ErrorCode.SUCCESS)
+                    {
+                        retry++;
+                        rescanFlag = true;  // 重試Flag
+                        if (retry > 5)
+                        {
+                            throw new Exception($"開啟 EtherCAT 卡失敗: Code[0x{result:X}]");
+                        }
+                    }
+                    else
+                    {
+                        rescanFlag = false;
+                    }
+                } while (rescanFlag);
+
+                // Get axis number of this device
+                result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DevAxesCount, ref AxesCount);
                 if (result != (int)ErrorCode.SUCCESS)
                 {
-
+                    throw new Exception($"取得軸數量失敗: Code[0x{result:X}]");
                 }
-                else
+                MaxAxisCount = AxesCount;
+
+                Axes.Clear();   // 清空軸數
+                for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    rescan = false;
+                    result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandle[i]);
+
+                    if (result != (int)ErrorCode.SUCCESS)
+                    {
+                        throw new Exception($"開啟軸失敗: Code[0x{result:X}]");
+                    }
+                    Axes.Add($"{i}-Axis");
+
+                    Debug.WriteLine($"Axis Count: {Axes.Count}");
+
+                    // Set Commnad pos to 0
+                    Motion.mAcm_AxSetCmdPosition(AxisHandle[i], 0);
                 }
-            } while (rescan == true);
 
-            result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DevAxesCount, ref AxesPerDev);
-            if (result != (int)ErrorCode.SUCCESS)
-            {
-
-                return;
-            }
-            MaxAxisCount = AxesPerDev;
-
-            for (int i = 0; i < MaxAxisCount; i++)
-            {
-                result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHand[i]);
-
-                if (result != (int)ErrorCode.SUCCESS)
+                // Get Di maximum number of this channel
+                result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
+                if (result != (uint)ErrorCode.SUCCESS)
                 {
-
-                    return;
+                    throw new Exception($"取得屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
                 }
-                Axes.Add($"{i}-Axis");
 
-                Debug.WriteLine($"Axis Count: {Axes.Count}");
+                // 這要幹麻? 
+                for (int i = 0; i < DiChCount; i++)
+                {
+                    Debug.WriteLine($"{i}");
+                }
+                Debug.WriteLine(DiChCount);
 
-                double cmdPosition = 0;
-                Motion.mAcm_AxSetCmdPosition(AxisHand[i], cmdPosition);
+
+                // 
+                DeviceOpened = true;    // 裝置開啟旗標
+                                        // 啟動 Timer 
             }
-
-            result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChannel);
-            if (result != (uint)ErrorCode.SUCCESS)
-            {
-
-            }
-            for (int i = 0; i < DiChannel; i++)
-            {
-                Debug.WriteLine($"{i}");
-            }
-            Debug.WriteLine(DiChannel);
-
-            DeviceOpened = true;
         }
 
         /// <summary>
@@ -171,36 +186,36 @@ namespace ApexVisIns
         /// </summary>
         public void CloseDevice()
         {
-            ushort[] usAxisState = new ushort[MaxAxisCount];
+            // 紀錄軸狀態
+            ushort[] AxisState = new ushort[MaxAxisCount];
 
             if (DeviceOpened)
             {
                 // Get the axis's current state
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    Motion.mAcm_AxGetState(AxisHand[i], ref usAxisState[i]);
+                    // 取得軸狀態
+                    Motion.mAcm_AxGetState(AxisHandle[i], ref AxisState[i]);
 
-                    if (usAxisState[i] == (uint)AxisState.STA_AX_ERROR_STOP)
+                    if (AxisState[i] == (uint)Advantech.Motion.AxisState.STA_AX_ERROR_STOP)
                     {
                         // 若軸狀態為Error，重置軸狀態
-                        Motion.mAcm_AxResetError(AxisHand[i]);
+                        Motion.mAcm_AxResetError(AxisHandle[i]);
                     }
-                    // 命令軸減速置停止
-                    Motion.mAcm_AxStopDec(AxisHand[i]);
+                    // 命令軸減速至停止
+                    Motion.mAcm_AxStopDec(AxisHandle[i]);
                 }
 
                 // Close Axes
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    Motion.mAcm_AxClose(ref AxisHand[i]);
+                    Motion.mAcm_AxClose(ref AxisHandle[i]);
                 }
                 MaxAxisCount = 0;
                 // Close Device
                 Motion.mAcm_DevClose(ref DeviceHandle);
-                DeviceHandle = IntPtr.Zero;
-                DeviceOpened = false;
-
-
+                DeviceHandle = IntPtr.Zero; // 重置裝置 Handle
+                DeviceOpened = false;       // 重置開啟旗標
             }
         }
 
