@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Threading.Tasks;
 using Advantech.Motion;
 
@@ -16,11 +17,14 @@ namespace ApexVisIns
         //private uint Result;
         private IntPtr DeviceHandle = IntPtr.Zero;
         private IntPtr[] AxisHandle = new IntPtr[8];
-        
-        private int _posCmd;
-        private int _posFdbk;
+
+        private double _posCmd;
+        private double _posAct;
         private string _currentStatus;
         private bool _deviceOpened;
+
+        private Timer statusTimer;
+        private int _sltAxis;
         #endregion
 
         /// <summary>
@@ -39,9 +43,30 @@ namespace ApexVisIns
             }
         }
 
+        public int SelectedAxis
+        {
+            get => _sltAxis;
+            set
+            {
+                if (value != _sltAxis)
+                {
+                    _sltAxis = value;
+                    OnPropertyChanged(nameof(SelectedAxis));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Status Timer 啟用旗標
+        /// </summary>
+        public bool StatusTimerOn
+        {
+            get => statusTimer.Enabled;
+        }
+
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
-        public int PosCommand
+        public double PosCommand
         {
             get => _posCmd;
             set
@@ -54,31 +79,52 @@ namespace ApexVisIns
             }
         }
 
-        public int PosFeedback
+        public double PosActual
         {
-            get => _posFdbk;
+            get => _posAct;
             set
             {
-                if (value != _posFdbk)
+                if (value != _posAct)
                 {
-                    _posFdbk = value;
-                    OnPropertyChanged(nameof(PosFeedback));
+                    _posAct = value;
+                    OnPropertyChanged(nameof(PosActual));
                 }
             }
         }
 
-        public AxisSignal ServoReady { get; set; } = new AxisSignal("SRDY", false);
+        /// <summary>
+        /// 伺服 Ready
+        /// </summary>
+        public AxisSignal ServoReady { get; set; } = new AxisSignal("SRDY");
 
-        public AxisSignal ServoAlm { get; set; } = new AxisSignal("ALM", false);
+        /// <summary>
+        /// 伺服警報
+        /// </summary>
+        public AxisSignal ServoALM { get; set; } = new AxisSignal("ALM");
 
-        public AxisSignal LMTP { get; set; } = new AxisSignal("LMT+", false);
+        /// <summary>
+        /// Positive Limit Flag
+        /// </summary>
+        public AxisSignal LMTP { get; set; } = new AxisSignal("LMT+");
 
-        public AxisSignal LMTN { get; set; } = new AxisSignal("LMT-", false);
+        /// <summary>
+        /// Native Limit Flag
+        /// </summary>
+        public AxisSignal LMTN { get; set; } = new AxisSignal("LMT-");
 
-        public AxisSignal SVON { get; set; } = new AxisSignal("SVON", false);
+        /// <summary>
+        /// Servo On Flag
+        /// </summary>
+        public AxisSignal ServoOn { get; set; } = new AxisSignal("SVON");
 
-        public AxisSignal EMG { get; set; } = new AxisSignal("EMG", false);
+        /// <summary>
+        /// Servo Emergency Flag
+        /// </summary>
+        public AxisSignal ServoEMG { get; set; } = new AxisSignal("EMG");
 
+        /// <summary>
+        /// 當前軸狀態
+        /// </summary>
         public string CurrentStatus
         {
             get => _currentStatus;
@@ -220,6 +266,97 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 啟用 Timer
+        /// </summary>
+        /// <param name="interval"></param>
+        public void EnableTimer(int interval)
+        {
+            if (statusTimer == null)
+            {
+                statusTimer = new Timer(interval)
+                {
+                    AutoReset = true
+                };
+
+                statusTimer.Elapsed += StatusTimer_Elapsed;
+                statusTimer.Start();
+            }
+            else
+            {
+                statusTimer.Interval = interval;
+                statusTimer.Start();
+            }
+        }
+
+        /// <summary>
+        /// Timer tick event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            GetMotionInformation();
+            //throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 關閉 Timer
+        /// </summary>
+        public void DisableTimer()
+        {
+            statusTimer?.Stop();
+        }
+
+        public void GetMotionInformation()
+        {
+            double cmd = 0;
+            double pos = 0;
+            ushort axState = 0;
+            uint result;
+            uint IOStatus = 0;
+
+            if (DeviceOpened)
+            {
+                // Get current command position
+                Motion.mAcm_AxGetCmdPosition(AxisHandle[0], ref cmd);
+                // Get current actual position
+                Motion.mAcm_AxGetActualPosition(AxisHandle[0], ref pos);
+
+                PosCommand = cmd;
+                PosActual = pos;
+
+                result = Motion.mAcm_AxGetMotionIO(AxisHandle[0], ref IOStatus);
+
+                if (result == (uint)ErrorCode.SUCCESS)
+                {
+                    SetMotionIOStatus(IOStatus);
+                }
+                // Get Axis current state
+                Motion.mAcm_AxGetState(AxisHandle[0], ref axState);
+                CurrentStatus = $"{(AxisState)axState}";
+            }
+        }
+    
+        /// <summary>
+        /// 更新 Servo IO Status
+        /// </summary>
+        /// <param name="IOStatus"></param>
+        private void SetMotionIOStatus(uint IOStatus)
+        {
+            ServoReady.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+
+            ServoALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+
+            LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+
+            LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+
+            ServoOn.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+
+            ServoEMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+        }
+
+        /// <summary>
         /// 重置位置
         /// </summary>
         public void ResetPos()
@@ -234,17 +371,18 @@ namespace ApexVisIns
         public void ResetError()
         {
 
+
         }
 
         /// <summary>
         /// 軸 IO 狀態
         /// </summary>
-        public struct AxisSignal
+        public class AxisSignal
         {
-            public AxisSignal(string name, bool bitOn)
+            public AxisSignal(string name)
             {
-                this.Name = name;
-                this.BitOn = bitOn;
+                Name = name;
+                BitOn = false;
             }
 
             /// <summary>

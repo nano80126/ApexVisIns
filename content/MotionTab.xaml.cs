@@ -56,6 +56,7 @@ namespace ApexVisIns.content
             //}
             //Timer.Start();
 
+            GetAvailableDevices();
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
