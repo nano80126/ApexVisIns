@@ -137,8 +137,8 @@
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
 
-                    <WrapPanel DataContext="{StaticResource ServoMotion}">
-                        <WrapPanel.Resources>
+                    <Grid DockPanel.Dock="Top" DataContext="{StaticResource ServoMotion}" Background="{StaticResource ColorGrayTransparent}">
+                        <Grid.Resources>
                             <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
                                 <Setter Property="Width" Value="20"/>
                                 <Setter Property="Height" Value="20"/>
@@ -154,18 +154,45 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </WrapPanel.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorPurple}"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
 
 
-                        <Ellipse Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
+                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
 
-                        <Ellipse Tag="{Binding ServoALM}" Style="{StaticResource DiSignal}"/>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
+                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
+
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
+                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
+
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
+                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
+
+                        <!--<Ellipse Tag="{Binding ServoALM}" Style="{StaticResource DiSignal}"/>
                         <Ellipse Tag="{Binding LMTP}" Style="{StaticResource DiSignal}"/>
                         <Ellipse Tag="{Binding LMTN}" Style="{StaticResource DiSignal}"/>
                         <Ellipse Tag="{Binding ServoOn}" Style="{StaticResource DiSignal}"/>
-                        <Ellipse Tag="{Binding ServoEMG}" Style="{StaticResource DiSignal}"/>
+                        <Ellipse Tag="{Binding ServoEMG}" Style="{StaticResource DiSignal}"/>-->
 
-                    </WrapPanel>
+                    </Grid>
 
                     <DockPanel DockPanel.Dock="Top">
                         
