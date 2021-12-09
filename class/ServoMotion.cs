@@ -446,7 +446,7 @@ namespace ApexVisIns
         public void ResetPos(int axis = 0)
         {
             double cmdPos = 0;
-            if (DeviceOpened)
+            if (DeviceOpened && ServoOn)
             {
                 uint result = Motion.mAcm_AxSetCmdPosition(AxisHandle[axis], cmdPos);
 

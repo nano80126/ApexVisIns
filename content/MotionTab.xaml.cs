@@ -82,16 +82,23 @@ namespace ApexVisIns.content
 
         private void BoardOpen_Click(object sender, RoutedEventArgs e)
         {
-            if (!MainWindow.ServoMotion.DeviceOpened)
+            try
             {
-                MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
-                MainWindow.ServoMotion.EnableTimer(100);
-                //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                if (!MainWindow.ServoMotion.DeviceOpened)
+                {
+                    MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
+                    MainWindow.ServoMotion.EnableTimer(100);
+                    //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                }
+                else
+                {
+                    MainWindow.ServoMotion.CloseDevice();
+                    //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MainWindow.ServoMotion.CloseDevice();
-                //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
 
@@ -110,9 +117,21 @@ namespace ApexVisIns.content
             (sender as ComboBox).SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// 切換 Servo On/Off
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ServoOnBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.ServoOnSwitch();
+            try
+            {
+                MainWindow.ServoMotion.ServoOnSwitch();
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         /// <summary>
@@ -122,7 +141,14 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void ResetCmdPos_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.ResetPos();
+            try
+            {
+                MainWindow.ServoMotion.ResetPos();
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         /// <summary>
@@ -132,7 +158,14 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void ResetAxisError_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.ResetPos();
+            try
+            {
+                MainWindow.ServoMotion.ResetPos();
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
     }
 }

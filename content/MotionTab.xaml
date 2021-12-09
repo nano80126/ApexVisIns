@@ -174,7 +174,7 @@
                                 <!--//-->
                                 <Setter Property="Fill" Value="{StaticResource ColorSecondary}"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Tag}" Value="True">
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
                                         <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -226,7 +226,7 @@
                         <Separator Grid.Row="0" Grid.RowSpan="100" Grid.Column="2" Width="1" Margin="0 4" Background="{StaticResource ColorGray}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                     </Grid>
                     <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="Red"/>
+                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="{StaticResource ColorOrange}"/>
                     <!--//-->
                     <Grid DockPanel.Dock="Top">
                         <Grid.ColumnDefinitions>
@@ -243,7 +243,14 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="位置資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置位置" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetCmdPos_Click"/>
+                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetCmdPos_Click">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                    <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
                         <!--//-->
                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Cmd" FontWeight="SemiBold" />
                         <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
@@ -257,7 +264,7 @@
                         <!--//-->
                     </Grid>
                     <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="Red"/>
+                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="{StaticResource ColorOrange}"/>
                     <!--//-->
                     <Grid DockPanel.Dock="Top">
                         <Grid.ColumnDefinitions>
@@ -273,7 +280,14 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="軸資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置錯誤" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetAxisError_Click"/>
+                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetAxisError_Click">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                    <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
                         <!--//-->
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Status" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
