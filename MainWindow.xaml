@@ -177,7 +177,7 @@
                 <!--//-->
                 <!--#region Main Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" Style="{StaticResource MaterialDesignNavigationRailTabItem}"
-                         ToolTip="Device" ToolTipService.Placement="Right" ToolTipService.VerticalOffset="8">
+                         ToolTip="Main" ToolTipService.Placement="Right" ToolTipService.VerticalOffset="8">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>

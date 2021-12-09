@@ -29,10 +29,7 @@ namespace ApexVisIns.content
         #region Variables
         private uint boardCount;
         private DEV_LIST[] BoardList = new DEV_LIST[10];
-
-        private Timer Timer;
         #endregion
-
 
         public MotionTab()
         {
@@ -42,14 +39,6 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 保留
-            if (Timer == null)
-            {
-                Timer = new Timer(100)
-                {
-                    AutoReset = true,
-                };
-                Timer.Elapsed += Timer_Elapsed;
-            }
             //else
             //{
             //    Timer.Start();
@@ -61,16 +50,9 @@ namespace ApexVisIns.content
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            // Read Cmd pos and Act Pos and Status
-
-            //throw new NotImplementedException();
-        }
-
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            Timer?.Stop();
+            MainWindow.ServoMotion.DisableTimer();
         }
 
         /// <summary>
@@ -103,14 +85,13 @@ namespace ApexVisIns.content
             if (!MainWindow.ServoMotion.DeviceOpened)
             {
                 MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
-
-                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                MainWindow.ServoMotion.EnableTimer(100);
+                //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
             }
             else
             {
                 MainWindow.ServoMotion.CloseDevice();
-
-                Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
             }
         }
 
@@ -127,6 +108,31 @@ namespace ApexVisIns.content
         private void BoardSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             (sender as ComboBox).SelectedIndex = -1;
+        }
+
+        private void ServoOnBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.ServoMotion.ServoOnSwitch();
+        }
+
+        /// <summary>
+        /// 重置命令位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ResetCmdPos_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.ServoMotion.ResetPos();
+        }
+
+        /// <summary>
+        /// 重置軸錯誤
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ResetAxisError_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.ServoMotion.ResetPos();
         }
     }
 }

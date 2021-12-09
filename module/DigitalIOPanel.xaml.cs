@@ -163,7 +163,6 @@ namespace ApexVisIns.module
             Debug.WriteLine($"{err} {err2}");
         }
 
-
         private void DoRead_Click(object sender, RoutedEventArgs e)
         {
             ErrorCode err = Controller.ReadDO(0);
@@ -171,7 +170,6 @@ namespace ApexVisIns.module
             err = Controller.ReadDO(1);
             Debug.WriteLine($"ErrorCode: {err}");
         }
-
 
         private void DoWrite_Click(object sender, RoutedEventArgs e)
         {
@@ -181,7 +179,6 @@ namespace ApexVisIns.module
             #endregion
             Controller.TriggerEvent();
         }
-
 
         private void SwitchInterrupt_Click(object sender, RoutedEventArgs e)
         {

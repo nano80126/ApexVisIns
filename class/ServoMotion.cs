@@ -16,7 +16,7 @@ namespace ApexVisIns
         #region Variables
         //private uint Result;
         private IntPtr DeviceHandle = IntPtr.Zero;
-        private IntPtr[] AxisHandle = new IntPtr[8];
+        private readonly IntPtr[] AxisHandle = new IntPtr[8];
 
         private double _posCmd;
         private double _posAct;
@@ -25,6 +25,7 @@ namespace ApexVisIns
 
         private Timer statusTimer;
         private int _sltAxis;
+        private bool _servoOn;
         #endregion
 
         /// <summary>
@@ -59,9 +60,22 @@ namespace ApexVisIns
         /// <summary>
         /// Status Timer 啟用旗標
         /// </summary>
-        public bool StatusTimerOn
+        public bool StatusTimerOn => statusTimer.Enabled;
+
+        /// <summary>
+        /// Servo Oo Flag
+        /// </summary>
+        public bool ServoOn
         {
-            get => statusTimer.Enabled;
+            get => _servoOn;
+            set
+            {
+                if (value != _servoOn)
+                {
+                    _servoOn = value;
+                    OnPropertyChanged(nameof(ServoOn));
+                }
+            }
         }
 
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
@@ -95,39 +109,52 @@ namespace ApexVisIns
         /// <summary>
         /// 伺服 Ready
         /// </summary>
-        public AxisSignal ServoReady { get; set; } = new AxisSignal("SRDY");
+        public AxisSignal IO_SRDY { get; set; } = new AxisSignal("SRDY");
 
         /// <summary>
         /// 伺服警報
         /// </summary>
-        public AxisSignal ServoALM { get; set; } = new AxisSignal("ALM");
+        public AxisSignal IO_ALM { get; set; } = new AxisSignal("ALM");
 
         /// <summary>
         /// Positive Limit Flag
         /// </summary>
-        public AxisSignal LMTP { get; set; } = new AxisSignal("LMT+");
+        public AxisSignal IO_LMTP { get; set; } = new AxisSignal("LMT+");
 
         /// <summary>
         /// Native Limit Flag
         /// </summary>
-        public AxisSignal LMTN { get; set; } = new AxisSignal("LMT-");
+        public AxisSignal IO_LMTN { get; set; } = new AxisSignal("LMT-");
 
         /// <summary>
         /// Servo On Flag
         /// </summary>
-        public AxisSignal ServoOn { get; set; } = new AxisSignal("SVON");
+        public AxisSignal IO_SVON { get; set; } = new AxisSignal("SVON");
 
         /// <summary>
         /// Servo Emergency Flag
         /// </summary>
-        public AxisSignal ServoEMG { get; set; } = new AxisSignal("EMG");
+        public AxisSignal IO_EMG { get; set; } = new AxisSignal("EMG");
+
+        /// <summary>
+        /// 更新 IO
+        /// </summary>
+        public void UpdateIO()
+        {
+            OnPropertyChanged(nameof(IO_SRDY));
+            OnPropertyChanged(nameof(IO_ALM));
+            OnPropertyChanged(nameof(IO_LMTP));
+            OnPropertyChanged(nameof(IO_LMTN));
+            OnPropertyChanged(nameof(IO_SVON));
+            OnPropertyChanged(nameof(IO_EMG));
+        }
 
         /// <summary>
         /// 當前軸狀態
         /// </summary>
         public string CurrentStatus
         {
-            get => _currentStatus;
+            get => !string.IsNullOrEmpty(_currentStatus) ? _currentStatus?.Remove(0, 7) : string.Empty;
             set
             {
                 if (value != _currentStatus)
@@ -148,6 +175,9 @@ namespace ApexVisIns
         /// </summary>
         public uint DiCount { get; private set; }
 
+        /// <summary>
+        /// 運動軸
+        /// </summary>
         public ObservableCollection<string> Axes { get; } = new ObservableCollection<string>();
 
         /// <summary>
@@ -213,13 +243,12 @@ namespace ApexVisIns
                     throw new Exception($"取得屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
                 }
 
-                // 這要幹麻? 
-                for (int i = 0; i < DiChCount; i++)
-                {
-                    Debug.WriteLine($"{i}");
-                }
-                Debug.WriteLine(DiChCount);
-
+                //// 這要幹麻? 
+                //for (int i = 0; i < DiChCount; i++)
+                //{
+                //    Debug.WriteLine($"{i}");
+                //}
+                //Debug.WriteLine(DiChCount);
 
                 // 
                 DeviceOpened = true;    // 裝置開啟旗標
@@ -260,8 +289,54 @@ namespace ApexVisIns
                 MaxAxisCount = 0;
                 // Close Device
                 Motion.mAcm_DevClose(ref DeviceHandle);
+
+                ResetMotionIOStatus();
+                UpdateIO();
+                CurrentStatus = string.Empty;
+
                 DeviceHandle = IntPtr.Zero; // 重置裝置 Handle
                 DeviceOpened = false;       // 重置開啟旗標
+            }
+        }
+
+        /// <summary>
+        /// 切換 ServoOn
+        /// </summary>
+        public void ServoOnSwitch()
+        {
+            uint result;
+
+            if (!DeviceOpened)
+            {
+                return;
+            }
+
+            if (!ServoOn)
+            {
+                for (int i = 0; i < MaxAxisCount; i++)
+                {
+                    // Servo On, augu 2 => 1
+                    result = Motion.mAcm_AxSetSvOn(AxisHandle[i], 1);
+
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        throw new Exception($"{i}-Axis Servo On 失敗: Code: [0x{result:X}]");
+                    }
+                    ServoOn = true;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < MaxAxisCount; i++)
+                {
+                    // Servo On, augu 2 => 0
+                    result = Motion.mAcm_AxSetSvOn(AxisHandle[i], 0);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        throw new Exception($"{i}-Axis Servo Off 失敗: Code: [0x{result:X}]");
+                    }
+                    ServoOn = false;
+                }
             }
         }
 
@@ -296,7 +371,6 @@ namespace ApexVisIns
         private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             GetMotionInformation();
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -330,48 +404,73 @@ namespace ApexVisIns
                 if (result == (uint)ErrorCode.SUCCESS)
                 {
                     SetMotionIOStatus(IOStatus);
+                    UpdateIO();
                 }
+
                 // Get Axis current state
                 Motion.mAcm_AxGetState(AxisHandle[0], ref axState);
                 CurrentStatus = $"{(AxisState)axState}";
             }
         }
-    
+
         /// <summary>
         /// 更新 Servo IO Status
         /// </summary>
         /// <param name="IOStatus"></param>
         private void SetMotionIOStatus(uint IOStatus)
         {
-            ServoReady.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+            IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
+            IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
+            IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
+            IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
+            IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
+        }
 
-            ServoALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
-
-            LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
-
-            LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
-
-            ServoOn.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
-
-            ServoEMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == 0b01;
+        /// <summary>
+        ///重置 Servo IO 狀態
+        /// </summary>
+        private void ResetMotionIOStatus()
+        {
+            IO_SRDY.BitOn = false;
+            IO_ALM.BitOn = false;
+            IO_LMTP.BitOn = false;
+            IO_LMTN.BitOn = false;
+            IO_SVON.BitOn = false;
+            IO_EMG.BitOn = false;
         }
 
         /// <summary>
         /// 重置位置
         /// </summary>
-        public void ResetPos()
+        public void ResetPos(int axis = 0)
         {
+            double cmdPos = 0;
+            if (DeviceOpened)
+            {
+                uint result = Motion.mAcm_AxSetCmdPosition(AxisHandle[axis], cmdPos);
 
-
+                if (result != (uint)ErrorCode.SUCCESS)
+                {
+                    throw new Exception($"重置位置命令失敗: Code[0x{result:X}]");
+                }
+            }
         }
 
         /// <summary>
         /// 重置錯誤
         /// </summary>
-        public void ResetError()
+        public void ResetError(int axis = 0)
         {
+            if (DeviceOpened)
+            {
+                uint result = Motion.mAcm_AxResetError(AxisHandle[axis]);
 
-
+                if (result != (uint)ErrorCode.SUCCESS)
+                {
+                    throw new Exception($"重置錯誤失敗: Code[0x{result:X}]");
+                }
+            }
         }
 
         /// <summary>
@@ -398,6 +497,10 @@ namespace ApexVisIns
 
         public class DeviceList
         {
+            /// <summary>
+            /// 建構子
+            /// </summary>
+            /// <param name="dev"></param>
             public DeviceList(DEV_LIST dev)
             {
                 DeviceName = dev.DeviceName;
@@ -405,6 +508,12 @@ namespace ApexVisIns
                 NumOfSubDevice = dev.NumofSubDevice;
             }
 
+            /// <summary>
+            /// 建構子
+            /// </summary>
+            /// <param name="deviceName"></param>
+            /// <param name="deviceNnumber"></param>
+            /// <param name="numOfSubDevice"></param>
             public DeviceList(string deviceName, uint deviceNnumber, short numOfSubDevice)
             {
                 DeviceName = deviceName;

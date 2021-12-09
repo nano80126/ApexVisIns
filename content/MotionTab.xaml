@@ -105,39 +105,64 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <ComboBox x:Name="AxisSelector" DockPanel.Dock="Top"
-                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                              Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
-                              materialDesign:HintAssist.Hint="Axis"
-                              materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                              ItemsSource="{Binding Axes, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                              SelectionChanged="BoardSelector_SelectionChanged"
-                              MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
-                              MinWidth="135" Margin="0 0 12 0">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-
+                    <DockPanel DockPanel.Dock="Top">
+                        <ComboBox x:Name="AxisSelector" DockPanel.Dock="Left"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                  materialDesign:HintAssist.Hint="Axis"
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  ItemsSource="{Binding Axes, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  SelectionChanged="BoardSelector_SelectionChanged"
+                                  MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
+                                  IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  MinWidth="135" Margin="0 0 12 0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" TextAlignment="Center"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <!--//-->
+                        <Button x:Name="ServoOnBtn"
+                                DockPanel.Dock="Right" Height="26" 
+                                MinWidth="135"
+                                VerticalAlignment="Center" HorizontalAlignment="Right"
+                                IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                Click="ServoOnBtn_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <TextBlock Text="Servo On" Foreground="{StaticResource ColorSuccess}"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <!--//-->
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ServoOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <TextBlock Text="Servo Off" Foreground="{StaticResource ColorInfo}"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </DockPanel>
                 </DockPanel>
             </materialDesign:Card>
-
             <!--軸狀態-->
             <materialDesign:Card Style="{StaticResource PanelBottomCard}" Padding="6 8">
-                <DockPanel Background="Transparent" Margin="2 0">
+                <DockPanel Background="Transparent" Margin="2 0" DataContext="{StaticResource ServoMotion}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
                     <DockPanel x:Name="MotionStatusHeader" DockPanel.Dock="Top">
-
                         <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
-
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="伺服狀態" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                     </DockPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-
-                    <Grid DockPanel.Dock="Top" DataContext="{StaticResource ServoMotion}" Background="{StaticResource ColorGrayTransparent}">
+                    <Grid DockPanel.Dock="Top">
                         <Grid.Resources>
                             <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
                                 <Setter Property="Width" Value="20"/>
@@ -146,63 +171,120 @@
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <Setter Property="Stroke" Value="{StaticResource ColorYellow}"/>
                                 <Setter Property="StrokeThickness" Value="1"/>
-
+                                <!--//-->
                                 <Setter Property="Fill" Value="{StaticResource ColorSecondary}"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Tag}" Value="True">
                                         <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
+                            <!--//-->
                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
                                 <Setter Property="FontSize" Value="16"/>
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="Foreground" Value="{StaticResource ColorPurple}"/>
                             </Style>
                         </Grid.Resources>
-
+                        <!--//-->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-
+                        <!--//-->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <!--//-->
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="I/O資訊"
+                                   FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
+                        <!--//-->
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SRDY.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="1" Tag="{Binding IO_SRDY.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTP.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="4" Tag="{Binding IO_LMTP.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SVON.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="1" Tag="{Binding IO_SVON.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTN.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="4" Tag="{Binding IO_LMTN.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_ALM.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_EMG.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
+                        <!--//-->
+                        <Separator Grid.Row="0" Grid.RowSpan="100" Grid.Column="2" Width="1" Margin="0 4" Background="{StaticResource ColorGray}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                    </Grid>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="Red"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--//-->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <!--Header-->
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="位置資訊"
+                                   FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
+                        <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置位置" Foreground="{StaticResource ColorInfo}"
+                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetCmdPos_Click"/>
+                        <!--//-->
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Cmd" FontWeight="SemiBold" />
+                        <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        <!--//-->
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Act" FontWeight="SemiBold"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        <!--//-->
+                    </Grid>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8" Background="Red"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--//-->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-
-
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
-                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
-
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
-                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
-
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
-                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
-
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="123"/>
-                        <Ellipse Grid.Column="1" Tag="{Binding ServoReady}" Style="{StaticResource DiSignal}" />
-
-                        <!--<Ellipse Tag="{Binding ServoALM}" Style="{StaticResource DiSignal}"/>
-                        <Ellipse Tag="{Binding LMTP}" Style="{StaticResource DiSignal}"/>
-                        <Ellipse Tag="{Binding LMTN}" Style="{StaticResource DiSignal}"/>
-                        <Ellipse Tag="{Binding ServoOn}" Style="{StaticResource DiSignal}"/>
-                        <Ellipse Tag="{Binding ServoEMG}" Style="{StaticResource DiSignal}"/>-->
-
+                        <!--//-->
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="軸資訊"
+                                   FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
+                        <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置錯誤" Foreground="{StaticResource ColorInfo}"
+                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetAxisError_Click"/>
+                        <!--//-->
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Status" FontWeight="SemiBold"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False"  Text="{Binding CurrentStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                 MaxWidth="150" TextAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        <!--//-->
                     </Grid>
-
-                    <DockPanel DockPanel.Dock="Top">
-                        
-                    </DockPanel>
                 </DockPanel>
             </materialDesign:Card>
-            
         </StackPanel>
         <!--#endregion-->
-
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionJogCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
