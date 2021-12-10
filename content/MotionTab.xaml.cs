@@ -165,5 +165,24 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
+
+        private void JogLeft_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+        private void JogLeft_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void JogRight_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void JogRight_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

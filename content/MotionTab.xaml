@@ -20,7 +20,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <!--#region First Col -->
+        <!--#region 1st column, selector and infomation panel -->
         <StackPanel Grid.Column="0" Width="300" Background="{x:Null}">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
@@ -243,7 +243,8 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="位置資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置位置" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetCmdPos_Click">
+                                Focusable="False" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="15"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetCmdPos_Click">
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
@@ -280,12 +281,13 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="軸資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置錯誤" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetAxisError_Click">
+                                Focusable="False" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="15"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetAxisError_Click">
                             <Button.IsEnabled>
-                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
+                                <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
+                                <!--<MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
-                                </MultiBinding>
+                                </MultiBinding>-->
                             </Button.IsEnabled>
                         </Button>
                         <!--//-->
@@ -300,7 +302,7 @@
         </StackPanel>
         <!--#endregion-->
 
-        <!--#region 寸動 -->
+        <!--#region 2nd column, jog panel -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionJogCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -356,10 +358,18 @@
 
                         <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
 
-                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="&lt;--"
-                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
-                        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="--&gt;"
-                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
+                                Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=18}"
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                MouseDown="JogLeft_MouseDown" MouseUp="JogLeft_MouseUp"
+                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
+                                Style="{StaticResource MaterialDesignToolButton}"/>
+                        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
+                                Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=20}"
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                MouseDown="JogRight_MouseDown" MouseUp="JogRight_MouseUp"
+                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
+                                Style="{StaticResource MaterialDesignToolButton}"/>
                     </Grid>
                     <!--//-->
                     <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
@@ -371,7 +381,8 @@
             </materialDesign:Card>
         </Border>
         <!--#endregion-->
-        
+
+        <!--#region 3rd column,  -->
         <Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -385,12 +396,13 @@
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
                     <Grid>
-                        
+
                     </Grid>
 
                 </DockPanel>
             </materialDesign:Card>
         </Border>
+        <!--#endregion-->
 
         <!--<Border Grid.Column="3" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionInfoCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
