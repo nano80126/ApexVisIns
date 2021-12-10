@@ -15,9 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Advantech.Motion;
 using System.Runtime.InteropServices;
-
 using System.Timers;
-
 
 namespace ApexVisIns.content
 {

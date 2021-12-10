@@ -17,7 +17,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
-            <!--<ColumnDefinition Width="auto"/>-->
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <!--#region First Col -->
@@ -299,6 +299,8 @@
             </materialDesign:Card>
         </StackPanel>
         <!--#endregion-->
+
+        <!--#region 寸動 -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionJogCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -311,13 +313,65 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <Grid>
-                        
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--//-->
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <!--//-->
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="Semibold"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="啟動速度"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0 4"  Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="運行速度" />
+                        <TextBox Grid.Row="0" Grid.Column="3" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="加速度"></TextBlock>
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="減速度"></TextBlock>
+                        <TextBox Grid.Row="1" Grid.Column="3" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="減速時間"></TextBlock>
+                        <TextBox Grid.Row="2" Grid.Column="1"  Margin="0 4 " Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入參數" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+                        <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
+
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="&lt;--"
+                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
+                        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="--&gt;"
+                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
                     </Grid>
+                    <!--//-->
+                    <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
+                    <!--//-->
+              
+                    
+                    
                 </DockPanel>
             </materialDesign:Card>
         </Border>
-
+        <!--#endregion-->
+        
         <Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">

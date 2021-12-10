@@ -70,10 +70,6 @@ Apex 外觀瑕疵檢測
 * [x] 移除 Thermoter ()
 * [x] 移除舊Tab
 * [x] Read/Write UserSet
-* [ ] 組態列表儲存 JSON
-	* Model
-	* S/N
-	* Character
 * [x] Hotkey 功能恢復
 * [ ] Camera Enumer Debug
 * [x] DeviceConfig 清除空儲存按鈕不能隱藏
@@ -81,11 +77,16 @@ Apex 外觀瑕疵檢測
 * [ ] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
 * [ ] 啟動速度優化
-* [ ] Add custom event for DI interrupt
-* [ ] 中斷器有可能啟用失敗
+* [x] Add custom event for DI interrupt
+* [x] 中斷器有可能啟用失敗
 	* 情境 CH0 啟用後再啟用CH1
 	* 反之亦然
-* [ ] Digital IO Debounce
+* [x] Digital IO Debounce
+* [x] 組態列表儲存 JSON
+	* Model
+	* S/N
+	* Character
+	* IP (之後IP要設定為固定)
  
 ### Config Logic
 
