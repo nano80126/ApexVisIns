@@ -43,7 +43,9 @@ namespace ApexVisIns.content
             //}
             //Timer.Start();
 
-            GetAvailableDevices();
+            //GetAvailableDevices();
+            GetAvaiDevs();
+
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
@@ -53,9 +55,25 @@ namespace ApexVisIns.content
             MainWindow.ServoMotion.DisableTimer();
         }
 
+
         /// <summary>
-        /// 取得可用之 Devices
+        /// 取得可用之 Device (EtherCAT卡)
         /// </summary>
+        public void GetAvaiDevs()
+        {
+            uint count = MainWindow.ServoMotion.GetAvailableDevices();
+
+            if (count > 0)
+            {
+                // 選擇 第一個 Device
+                DeviceSelector.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// 取得可用之 Devices (包進 Servo Motion)
+        /// </summary>
+        [Obsolete("此方法已加入Servo motion中")]
         public void GetAvailableDevices()
         {
             int result = Motion.mAcm_GetAvailableDevs(BoardList, 10, ref boardCount);
@@ -90,8 +108,14 @@ namespace ApexVisIns.content
                 }
                 else
                 {
+                    // 全部軸 Servo Off
+                    MainWindow.ServoMotion.SetAllServoOff();
+                    // 關閉 Timer
+                    MainWindow.ServoMotion.DisableTimer();
+                    // 重置選擇軸
+                    MainWindow.ServoMotion.SelectedAxis = AxisSelector.SelectedIndex = -1;
+                    // 關閉裝置
                     MainWindow.ServoMotion.CloseDevice();
-                    //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
                 }
             }
             catch (Exception ex)
@@ -100,19 +124,55 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 選擇 Device 變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
 
             if (comboBox.SelectedItem is ServoMotion.DeviceList deviceList)
             {
+                Debug.WriteLine("BoardSelector_SelectionChanged");
                 Debug.WriteLine($"{deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
             }
         }
 
+        /// <summary>
+        /// 重置選擇 Device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BoardSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             (sender as ComboBox).SelectedIndex = -1;
+        }
+
+        /// <summary>
+        /// 選擇軸變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AxisSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+
+            if (comboBox.SelectedItem is MotionAxis axis)
+            {
+                MainWindow.ServoMotion.SelectedAxis = comboBox.SelectedIndex;
+            }
+        }
+
+        /// <summary>
+        /// 重置選擇軸
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AxisSelector_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            MainWindow.ServoMotion.SelectedAxis = (sender as ComboBox).SelectedIndex = -1;
         }
 
         /// <summary>
@@ -124,7 +184,24 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.ServoOnSwitch();
+                MotionAxis motionAxis = AxisSelector.SelectedItem as MotionAxis;
+
+                Debug.WriteLine($"{motionAxis.AxisIndex} {motionAxis.AxisName}");
+
+                Debug.WriteLine($"{motionAxis.PosCommand} {motionAxis.PosActual} {motionAxis.CurrentStatus}");
+
+                //Debug.WriteLine($"{}")
+
+                if (!MainWindow.ServoMotion.SltMotionAxis.ServoOn)
+                {
+                    Debug.WriteLine("Servo On");
+                    MainWindow.ServoMotion.SltMotionAxis.SetServoOn();
+                }
+                else
+                {
+                    Debug.WriteLine("Servo Off");
+                    MainWindow.ServoMotion.SltMotionAxis.SetServoOff();
+                }
             }
             catch (Exception ex)
             {
@@ -141,7 +218,8 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.ResetPos();
+                MainWindow.ServoMotion.SltMotionAxis.ResetPos();
+                //MainWindow.ServoMotion.ResetPos();
             }
             catch (Exception ex)
             {
@@ -165,5 +243,33 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
+
+        private void ParaWriteBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+            MainWindow.ServoMotion.WriteParameter();
+
+
+        }
+
+        private void JogLeft_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+        private void JogLeft_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void JogRight_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void JogRight_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
     }
 }

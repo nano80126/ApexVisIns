@@ -111,14 +111,14 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Axis"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                                  ItemsSource="{Binding Axes, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  SelectionChanged="BoardSelector_SelectionChanged"
-                                  MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
+                                  ItemsSource="{Binding AxisList, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  SelectionChanged="AxisSelector_SelectionChanged"
+                                  MouseRightButtonUp="AxisSelector_MouseRightButtonUp"
                                   IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   MinWidth="135" Margin="0 0 12 0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" TextAlignment="Center"/>
+                                    <TextBlock Text="{Binding AxisName}" TextAlignment="Center" d:DataContext="{d:DesignInstance Type=app:MotionAxis}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
@@ -127,8 +127,16 @@
                                 DockPanel.Dock="Right" Height="26" 
                                 MinWidth="135"
                                 VerticalAlignment="Center" HorizontalAlignment="Right"
-                                IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Click="ServoOnBtn_Click">
+                                <!--IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"-->
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                    <Binding Source="{StaticResource ServoMotion}" Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged" Mode="OneWay"/>
+                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" UpdateSourceTrigger="PropertyChanged" Mode="OneWay" 
+                                             Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                     <Setter Property="Content">
@@ -138,7 +146,7 @@
                                     </Setter>
                                     <!--//-->
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ServoOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
+                                        <DataTrigger Binding="{Binding SltMotionAxis.ServoOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
                                             <Setter Property="Content">
                                                 <Setter.Value>
                                                     <TextBlock Text="Servo Off" Foreground="{StaticResource ColorInfo}"/>
@@ -205,23 +213,23 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="I/O資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <!--//-->
-                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SRDY.Name}"/>
-                        <Ellipse Grid.Row="1" Grid.Column="1" Tag="{Binding IO_SRDY.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_SRDY.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_SRDY.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTP.Name}"/>
-                        <Ellipse Grid.Row="1" Grid.Column="4" Tag="{Binding IO_LMTP.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_LMTP.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_LMTP.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SVON.Name}"/>
-                        <Ellipse Grid.Row="2" Grid.Column="1" Tag="{Binding IO_SVON.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_SVON.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_SVON.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTN.Name}"/>
-                        <Ellipse Grid.Row="2" Grid.Column="4" Tag="{Binding IO_LMTN.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_LMTN.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_LMTN.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_ALM.Name}"/>
-                        <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_ALM.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_EMG.Name}"/>
-                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_EMG.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
                         <Separator Grid.Row="0" Grid.RowSpan="100" Grid.Column="2" Width="1" Margin="0 4" Background="{StaticResource ColorGray}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                     </Grid>
@@ -243,23 +251,24 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="位置資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置位置" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetCmdPos_Click">
+                                Focusable="False" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="15"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetCmdPos_Click">
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
-                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="SltMotionAxis.ServoOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
                         <!--//-->
                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Cmd" FontWeight="SemiBold" />
                         <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding SltMotionAxis.PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Act" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding SltMotionAxis.PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                     </Grid>
@@ -280,18 +289,20 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="軸資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置錯誤" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignToolButton}" Click="ResetAxisError_Click">
-                            <Button.IsEnabled>
+                                Focusable="False" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="15"
+                                IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetAxisError_Click">
+                            <!--<Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
-                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="SltMotionAxis.ServoOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
-                            </Button.IsEnabled>
+                            </Button.IsEnabled>-->
                         </Button>
                         <!--//-->
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Status" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False"  Text="{Binding CurrentStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                 Focusable="False" Text="{Binding SltMotionAxis.CurrentStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                  MaxWidth="150" TextAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                     </Grid>
@@ -352,13 +363,21 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="減速時間"></TextBlock>
                         <TextBox Grid.Row="2" Grid.Column="1"  Margin="0 4 " Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
-                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入參數" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入參數" Click="ParaWriteBtn_Click"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
                         <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
 
-                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="&lt;--"
-                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
-                        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" Content="--&gt;"
+                        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
+                                Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=18}"
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                MouseDown="JogLeft_MouseDown" MouseUp="JogLeft_MouseUp"
+                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
+                                Style="{StaticResource MaterialDesignToolButton}"/>
+                        <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
+                                Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=18}"
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                MouseDown="JogRight_MouseDown" MouseUp="JogRight_MouseUp"
                                 FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignToolButton}"/>
                     </Grid>
                     <!--//-->
