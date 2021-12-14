@@ -87,6 +87,7 @@ Apex 外觀瑕疵檢測
 	* S/N
 	* Character
 	* IP (之後IP要設定為固定)
+* [ ] Jog 使用 Popupbox
  
 ### Config Logic
 
