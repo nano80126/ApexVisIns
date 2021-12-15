@@ -314,7 +314,7 @@
         <!--#region 2nd column, jog panel -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <StackPanel Orientation="Vertical">
-
+                <!--// 電子齒輪比-->
                 <materialDesign:Card x:Name="EcamCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <DockPanel Background="Transparent" Margin="2 0">
@@ -329,9 +329,7 @@
                         
                     </DockPanel>
                 </materialDesign:Card>
-
-
-
+                <!--// 速度參數-->
                 <materialDesign:Card x:Name="MotionJogCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <DockPanel Background="Transparent" Margin="2 0" >
@@ -403,9 +401,28 @@
                         <!--//-->
                         <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
                         <!--//-->
-
                     </DockPanel>
                 </materialDesign:Card>
+                
+                <!--// 位置控制-->
+                <materialDesign:Card x:Name="PosControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                    <DockPanel Background="Transparent" Margin="2 0" >
+                        <DockPanel x:Name="PosControlHeader" DockPanel.Dock="Top">
+                            <materialDesign:PackIcon Kind="ArrowLeftRightBold" Width="30" Height="26"></materialDesign:PackIcon>
+
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="位置控制" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        </DockPanel>
+                        <!--//-->
+                        <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                        <!--//-->
+                        <Grid>
+                            
+                        </Grid>
+                    </DockPanel>
+                </materialDesign:Card>
+
+
             </StackPanel>
         </Border>
         <!--#endregion-->
