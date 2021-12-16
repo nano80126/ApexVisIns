@@ -622,7 +622,7 @@ namespace ApexVisIns
                 /// </summary>
                 OPENCVS,
                 /// <summary>
-                /// IO Exception Code
+                /// I/O Control Exception Code
                 /// </summary>
                 IO,
                 /// <summary>

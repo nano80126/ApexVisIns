@@ -62,6 +62,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// Int32 equal 轉換器
+    /// </summary>
     public class EqualConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -76,7 +79,7 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// int not equal 轉換器
+    /// Int32 not equal 轉換器
     /// </summary>
     public class NotEqualConverter : IValueConverter
     {
@@ -92,7 +95,7 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// Math Plus 轉換器
+    ///  數學加法 轉換器
     /// </summary>
     public class MathPlusConverter : IValueConverter
     {
@@ -107,6 +110,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 數學乘法 轉換器
+    /// </summary>
     public class MathMultiplyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -121,13 +127,13 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// Math Minus 轉換器
+    /// 數學減法 轉換器
     /// </summary>
     public class MathMinusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ToDouble(value) - System.Convert.ToDouble(parameter);
+            return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) - System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -137,7 +143,7 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// Math Divide 轉換器
+    /// 數學除法 轉換器
     /// </summary>
     public class MathDivideConverter : IValueConverter
     {
@@ -152,6 +158,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 數學小於 轉換器
+    /// </summary>
     public class NumberLessConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -162,7 +171,7 @@ namespace ApexVisIns.Converter
             }
             else
             {
-                return System.Convert.ToDouble(value) < System.Convert.ToDouble(parameter);
+                return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) < System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
             }
         }
 
@@ -172,11 +181,21 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 數學大於 轉換器
+    /// </summary>
     public class NumberGreaterConvert : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ToDouble(value) > System.Convert.ToDouble(parameter);
+            if ((string)value == "N/A")
+            {
+                return "N/A";
+            }
+            else
+            {
+                return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) > System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -185,6 +204,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 布林轉Visibility 轉換器
+    /// </summary>
     public class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -197,6 +219,10 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// 字串陣列比較器 (每個元素相等則傳回true)
+    /// </summary>
     public class StringCompareConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -211,6 +237,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 數字陣列比較器 (每個元素相等則傳回true)
+    /// </summary>
     public class NumberCompareConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -226,6 +255,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 字串不為Null或Empty
+    /// </summary>
     public class StringNotNullOrEmptyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -239,6 +271,23 @@ namespace ApexVisIns.Converter
         }
     }
 
+    public class BooleanNotNullOrFalseConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    /// <summary>
+    /// Enum 轉 Description
+    /// </summary>
     public class EnumDescriptionConverter : IValueConverter
     {
         private static string GetEnumDescription(Enum @enum)
@@ -276,11 +325,14 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// Multiple value 轉陣列
+    /// </summary>
     public class CombineValueConvert : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            return values.Select(value => System.Convert.ToByte(value)).ToArray();
+            return values.Select(value => System.Convert.ToByte(value, CultureInfo.CurrentCulture)).ToArray();
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

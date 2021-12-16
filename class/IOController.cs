@@ -68,11 +68,18 @@ namespace ApexVisIns
         {
             if (_description != string.Empty)
             {
-                InstantDiCtrl = new InstantDiCtrl()
+                try
                 {
-                    SelectedDevice = new DeviceInformation(_description),
-                };
-                DiCtrlCreated = true;
+                    InstantDiCtrl = new InstantDiCtrl()
+                    {
+                        SelectedDevice = new DeviceInformation(_description),
+                    };
+                    DiCtrlCreated = true;
+                }
+                catch (DllNotFoundException dll)
+                {
+                    throw new DllNotFoundException(dll.Message);
+                }
 
                 // 新增 Collection, 全部拉低(等待讀取)
                 DiArrayColl.Clear();
@@ -114,11 +121,18 @@ namespace ApexVisIns
         {
             if (_description != string.Empty)
             {
-                InstantDoCtrl = new InstantDoCtrl()
+                try
                 {
-                    SelectedDevice = new DeviceInformation(_description)
-                };
-                DoCtrlCreated = true;
+                    InstantDoCtrl = new InstantDoCtrl()
+                    {
+                        SelectedDevice = new DeviceInformation(_description)
+                    };
+                    DoCtrlCreated = true;
+                }
+                catch (DllNotFoundException dll)
+                {
+                    throw new DllNotFoundException(dll.Message);
+                }
 
                 // 新增 Collection, 全部拉低
                 for (int i = 0; i < InstantDoCtrl.PortCount && i < EnabledDoPorts; i++)

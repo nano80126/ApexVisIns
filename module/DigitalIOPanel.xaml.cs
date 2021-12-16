@@ -47,18 +47,26 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            Controller = DataContext as IOController;
+            // 新增確認 Dll 邏輯在這
+            //try
+            //{
+            //    Controller = DataContext as IOController;
 
-            if (!Controller.DiCtrlCreated)
-            {
-                // Controller.DigitalInputChanged += Controller_DigitalInputChanged;
-                Controller.InitializeDiCtrl();
-            }
+            //    if (!Controller.DiCtrlCreated)
+            //    {
+            //        Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+            //        Controller.InitializeDiCtrl();
+            //    }
 
-            if (!Controller.DoCtrlCreated)
-            {
-                Controller.InitializeDoCtrl();
-            }
+            //    if (!Controller.DoCtrlCreated)
+            //    {
+            //        Controller.InitializeDoCtrl();
+            //    }
+            //}
+            //catch (DllNotFoundException ex)
+            //{
+            //    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, ex.Message);
+            //}
         }
 
         /// <summary>

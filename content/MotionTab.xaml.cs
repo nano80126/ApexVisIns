@@ -271,7 +271,14 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (Exception ex)
             {
@@ -288,7 +295,14 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (Exception ex)
             {
@@ -390,6 +404,21 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
                 //throw;
             }
+        }
+
+        private void PtToPtBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ChangePtBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ChangeVelBtn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

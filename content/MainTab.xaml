@@ -12,7 +12,7 @@
             Orientation="Vertical">
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region ToolBar 1 -->
-        <ToolBarTray DockPanel.Dock="Left"  VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{StaticResource ColorBlueGrayTranparent}" Margin="0">
+        <ToolBarTray DockPanel.Dock="Left"  VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <ToolBar.Resources>
                     <!--<Style></Style>-->
@@ -22,6 +22,7 @@
                     <materialDesign:PackIcon Kind="VideoOutline" Width="26" Height="24" />
                     <materialDesign:PackIcon Kind="Check" Canvas.Right="0" Canvas.Bottom="0" />
                 </Canvas>-->
+                <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -58,8 +59,38 @@
                 </Border>
                 <!--#endregion-->
 
+                <!--#region Motor Controller Connection Status -->
+                <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
+                    <StackPanel Orientation="Horizontal">
+                        <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
+                            <materialDesign:PackIcon Kind="AxisXRotateClockwise" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Kind" Value="Close"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Canvas>
+
+                        <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
+                            <materialDesign:PackIcon Kind="RotateLeft" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Kind" Value="Close"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Canvas>
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+
                 <!--#region Camera Connection Status Bar -->
-                <Border>
+                <Border FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Resources>
                             <Style TargetType="{x:Type Canvas}" BasedOn="{StaticResource ComplexPackIcon}">
