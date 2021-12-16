@@ -265,7 +265,7 @@ namespace ApexVisIns
         /// <param name="value">目標設定值</param>
         public void SetCannelValue(int ch, int value)
         {
-            if (ch < 0 && ch <= ChannelNumber)
+            if (0 < ch && ch <= ChannelNumber)
             {
                 string cmd = $"{ch},{value}\r\n";
                 _ = Write(cmd);     // 寫入控制器

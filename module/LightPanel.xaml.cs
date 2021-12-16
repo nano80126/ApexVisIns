@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
 using ApexVisIns.content;
+using System.Threading;
 
 namespace ApexVisIns.module
 {
@@ -101,8 +102,38 @@ namespace ApexVisIns.module
 
                 string ret = MainWindow.LightController.Write(cmd);
 
+                // 新增至 MsgInformer 
                 Debug.WriteLine(cmd);
                 Debug.WriteLine(ret);
+
+                #region 自動化測試
+                //Task.Run(() =>
+                //{
+                //    for (int j = 0; j < 60; j++)
+                //    {
+                //        MainWindow.LightController.SetCannelValue(j % 4 + 1, 192);
+                //        MainWindow.LightController.SetCannelValue((j + 1) % 4 + 1, 0);
+                //        MainWindow.LightController.SetCannelValue((j + 2) % 4 + 1, 0);
+                //        MainWindow.LightController.SetCannelValue((j + 3) % 4 + 1, 0);
+
+                //        string cmd = string.Empty;
+                //        for (int i = 0; i < MainWindow.LightController.ChannelNumber; i++)
+                //        {
+                //            LightChannel ch = MainWindow.LightController.Channels[i];
+                //            cmd += $"{i + 1},{ch.Value},";
+                //        }
+                //        cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+                //        string ret = MainWindow.LightController.Write(cmd);
+
+                //        // 新增 msg
+                //        Debug.WriteLine(cmd);
+                //        Debug.WriteLine(ret);
+
+                //        SpinWait.SpinUntil(() => false, 500);
+                //    }
+                //}); 
+                #endregion
             }
             else
             {

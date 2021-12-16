@@ -368,6 +368,7 @@ namespace ApexVisIns
         /// <summary>
         /// 切換 Servo On
         /// </summary>
+        [Obsolete("需明確指定要 servo on / off")]
         public void ServoOnSwitch()
         {
             uint result;
@@ -407,7 +408,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 設定 Servo On
+        /// 設定全部軸 Servo On
         /// </summary>
         public void SetAllServoOn()
         {
@@ -519,12 +520,9 @@ namespace ApexVisIns
 
                 SltMotionAxis.PosCommand = cmd;
                 SltMotionAxis.PosActual = pos;
-
-                //PosCommand = cmd;
-                //PosActual = pos;
-
+                
+                //Debug.WriteLine($"{(IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_DIR) == (uint)Ax_Motion_IO.AX_MOTION_IO_DIR}");
                 result = Motion.mAcm_AxGetMotionIO(AxisHandles[_sltAxis], ref IOStatus);
-
                 if (result == (uint)ErrorCode.SUCCESS)
                 {
                     SetMotionIOStatus(IOStatus);
@@ -534,7 +532,7 @@ namespace ApexVisIns
 
                 // Get Axis current state
                 Motion.mAcm_AxGetState(AxisHandles[_sltAxis], ref axState);
-                //CurrentStatus = $"{(AxisState)axState}";
+                // CurrentStatus = $"{(AxisState)axState}";
                 SltMotionAxis.CurrentStatus = $"{(AxisState)axState}";
                 OnPropertyChanged(nameof(SltMotionAxis));
             }
@@ -568,61 +566,6 @@ namespace ApexVisIns
             IO_EMG.BitOn = false;
         } 
 #endif
-
-        /// <summary>
-        /// 重置位置
-        /// </summary>
-        public void ResetPos(int axis = 0)
-        {
-            double cmdPos = 0;
-            if (DeviceOpened && ServoOn)
-            {
-                uint result = Motion.mAcm_AxSetCmdPosition(AxisHandles[axis], cmdPos);
-
-                if (result != (uint)ErrorCode.SUCCESS)
-                {
-                    throw new Exception($"重置位置命令失敗: Code[0x{result:X}]");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 重置錯誤
-        /// </summary>
-        public void ResetError(int axis = 0)
-        {
-            if (DeviceOpened)
-            {
-                uint result = Motion.mAcm_AxResetError(AxisHandles[axis]);
-
-                if (result != (uint)ErrorCode.SUCCESS)
-                {
-                    throw new Exception($"重置錯誤失敗: Code[0x{result:X}]");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 參數寫入
-        /// </summary>
-        public void WriteParameter()
-        {
-            uint ID = 0;
-
-
-            ADV_SLAVE_INFO aDV_SLAVE_INFO = new ADV_SLAVE_INFO();
-            uint result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, 0x2, ref aDV_SLAVE_INFO);
-            Debug.WriteLine($"{result:X} ID:{aDV_SLAVE_INFO.SlaveID} {aDV_SLAVE_INFO.Name} {aDV_SLAVE_INFO.RevisionNo}");
-
-
-            uint ppu = 0;
-            uint ppum = 0;
-            result = Motion.mAcm_GetU32Property(AxisHandles[_sltAxis], (uint)PropertyID.CFG_AxPPU, ref ppu);
-            Debug.WriteLine($"{result:X} PPU:{ppu}");
-
-            result = Motion.mAcm_GetU32Property(AxisHandles[_sltAxis], (uint)PropertyID.CFG_AxPPU, ref ppum);
-            Debug.WriteLine($"{result:X} PPUM:{ppum}");
-        }
 
         /// <summary>
         /// 軸 IO 狀態
@@ -1021,7 +964,7 @@ namespace ApexVisIns
 
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
-                    throw new Exception($"重置位置命令失敗: Code[0x{result:X}]");
+                    throw new InvalidOperationException($"重置位置命令失敗: Code[0x{result:X}]");
                 }
             }
         }
@@ -1035,7 +978,7 @@ namespace ApexVisIns
 
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"重置錯誤失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"重置錯誤失敗: Code[0x{result:X}]");
             }
         }
 
@@ -1047,13 +990,13 @@ namespace ApexVisIns
             uint result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU,  GearN1);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPUDenominator, GearM);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
             }
 
             GetGearRatio();
@@ -1070,7 +1013,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU, ref ppu);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取電子齒輪比 N1 失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取電子齒輪比 N1 失敗: Code[0x{result:X}]");
             }
 
             GearN1 = ppu;
@@ -1078,7 +1021,7 @@ namespace ApexVisIns
             result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPUDenominator, ref ppum);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取電子齒輪比 M 失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取電子齒輪比 M 失敗: Code[0x{result:X}]");
             }
             GearM = ppum;
 
@@ -1091,38 +1034,38 @@ namespace ApexVisIns
         /// </summary>
         public void SetAxisVelParam()
         {
-            Debug.WriteLine($"{JogVelLow} {JogVelHigh}");
-            Debug.WriteLine($"{JogAcc} {JogDec}");
-            Debug.WriteLine($"{JogVLTime}");
+            //Debug.WriteLine($"{JogVelLow} {JogVelHigh}");
+            //Debug.WriteLine($"{JogAcc} {JogDec}");
+            //Debug.WriteLine($"{JogVLTime}");
 
             uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, JogVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入初始速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, JogVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入目標速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, JogAcc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入加速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入加速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, JogDec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入減速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入減速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, JogVLTime);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"寫入初速時間失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入初速時間失敗: Code[0x{result:X}]");
             }
 
             GetAxisVelParam();
@@ -1139,30 +1082,32 @@ namespace ApexVisIns
             double axJogDec = 0;
             uint axJogVLTime = 0;
 
-
-            double axParJogVelLow = 0;
-            double axParJogVelHigh = 0;
+            //double axParJogVelLow = 0;
+            //double axParJogVelHigh = 0;
 
             uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, ref axJogVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取初始速度失敗: Code[0x{result:X}]");
             }
             JogVelLow = axJogVelLow;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, ref axJogVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取目標速度失敗: Code[0x{result:X}]");
             }
             JogVelHigh = axJogVelHigh;
 
+            
+            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
+            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.max, ref axParJogVelLow);
+            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
+            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelHigh, ref axParJogVelHigh);
 
-            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
 
-            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelHigh, ref axParJogVelHigh);
+            //Debug.WriteLine($"Par: {axParJogVelHigh} {axParJogVelLow}");
 
-            Debug.WriteLine($"Par: {axParJogVelHigh} {axParJogVelLow}");
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, ref axJogAcc);
             if (result != (uint)ErrorCode.SUCCESS)
@@ -1200,7 +1145,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxSetExtDrive(AxisHandle, 1);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"啟動 Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"啟動 Jog 模式失敗: Code[0x{result:X}]");
                 //throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
             }
             JogOn = true;
@@ -1214,7 +1159,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxSetExtDrive(AxisHandle, 0);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"停止 Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"停止 Jog 模式失敗: Code[0x{result:X}]");
                 //throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
             }
             JogOn = false;
@@ -1228,7 +1173,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxJog(AxisHandle, 1);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"Jog 模式失敗: Code[0x{result:X}]");
             }
         }
 
@@ -1240,22 +1185,70 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxJog(AxisHandle, 0);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"Jog 模式失敗: Code[0x{result:X}]");
             }
         }
 
-
         /// <summary>
-        /// Jog 停止
+        /// JOG 停止
         /// </summary>
         public void JogDecAction()
         {
             uint result = Motion.mAcm_AxStopDec(AxisHandle);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"停止 Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"停止 Jog 模式失敗: Code[0x{result:X}]");
             }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position">目標位置</param>
+        /// <param name="absolute">絕對定位</param>
+        public void PosMove(double position, bool absolute = false)
+        {
+            uint result;
+            if (absolute)
+            {
+                result = Motion.mAcm_AxMoveAbs(AxisHandle, position);
+            }
+            else
+            {
+                result = Motion.mAcm_AxMoveRel(AxisHandle, position);
+            }
+
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException("");
+            }
+        }
+
+        /// <summary>
+        /// 馬達停止
+        /// </summary>
+        public void StopMove()
+        {
+            uint result = Motion.mAcm_AxStopDec(AxisHandle);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"伺服馬達停止失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 馬達急停
+        /// </summary>
+        public void StopEmg()
+        {
+            uint result = Motion.mAcm_AxStopEmg(AxisHandle);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"伺服馬達緊急停止失敗: Code[0x{result:X}]");
+            }
+        }
+
 
         /// <summary>
         /// 軸 IO 狀態

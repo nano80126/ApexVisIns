@@ -269,7 +269,14 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void GearRationSetBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         /// <summary>
@@ -279,60 +286,14 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void VelParamSetBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
-        }
-
-        private void JogLeft_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.ServoMotion.SltMotionAxis.JogClock();
-            Debug.WriteLine($"Clock");
-        }
-
-        private void JogLeft_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
-            Debug.WriteLine("DecAction");
-        }
-
-        private void JogRight_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
-            Debug.WriteLine($"CtClock");
-        }
-
-        private void JogRight_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
-            Debug.WriteLine("DecAction");
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (!MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogStart();
+                MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
             }
-            else
+            catch (Exception ex)
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogStop();
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
-
-            Debug.WriteLine($"JogOn : {MainWindow.ServoMotion.SltMotionAxis.JogOn}");
-        }
-
-        private void Button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void Button_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Debug.WriteLine($"MouseDown");
-        }
-
-        private void Button_MouseDown_1(object sender, MouseButtonEventArgs e)
-        {
-            Debug.WriteLine($"MouseDown_1");
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -343,6 +304,92 @@ namespace ApexVisIns.content
         private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
         {
             (sender as TextBox).SelectAll();
+        }
+
+        private void JogStartPopupBox_Opened(object sender, RoutedEventArgs e)
+        {
+            if (!MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            {
+                try
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.JogStart();
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "JOG 開始");
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                }
+            
+            }
+        }
+
+        private void JogStartPopupBox_Closed(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            {
+                try
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.JogStop();
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "JOG 停止");
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                }
+            }
+        }
+
+        private void JogLeft_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogClock();
+                //Debug.WriteLine($"Clock");
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void JogLeft_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+                //Debug.WriteLine("DecAction");
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void JogRight_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
+                //Debug.WriteLine($"CtClock");
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void JogRight_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+                //Debug.WriteLine("DecAction");
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                //throw;
+            }
         }
     }
 }

@@ -299,10 +299,10 @@
                                 Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetAxisError_Click">
                                 <!--IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged}"-->
                             <Button.IsEnabled>
-                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
-                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
-                                </MultiBinding>
+                                <!--<MultiBinding Converter="{StaticResource BooleanAndGate}">-->
+                                <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
+                                <!--<Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>-->
+                                <!--</MultiBinding>-->
                             </Button.IsEnabled>
                         </Button>
                         <!--//-->
@@ -317,16 +317,15 @@
         </StackPanel>
         <!--#endregion-->
 
-        <!--#region 2nd column, jog panel -->
+        <!--#region 2nd column, Parameter, Jog Panel -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" DataContext="{Binding SltMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
-
+                <!--// 電子齒輪比-->
                 <materialDesign:Card x:Name="EcamCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                         <DockPanel x:Name="EcamHeader" DockPanel.Dock="Top">
                             <materialDesign:PackIcon Kind="Cogs" Width="30" Height="26"/>
-
                             <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="電子齒輪比" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                         </DockPanel>
                         <!--//-->
@@ -367,7 +366,6 @@
                             <!--//-->
                             <Button Grid.Row="1" Grid.Column="3" Height="26" Margin="0 3" Content="Write" Click="GearRationSetBtn_Click"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
                         </Grid>
                     </DockPanel>
                 </materialDesign:Card>
@@ -437,7 +435,40 @@
                             <!--//-->
                             <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
                             <!--//-->
-                            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
+                            <materialDesign:PopupBox x:Name="JogStartPopupBox" Grid.Row="3" Grid.ColumnSpan="4" Focusable="False"
+                                                     HorizontalAlignment="Center" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True"
+                                                     Padding="0" Opened="JogStartPopupBox_Opened" Closed="JogStartPopupBox_Closed" PlacementMode="BottomAndAlignCentres">
+
+                                <materialDesign:PopupBox.ToggleContent>
+                                    <Border BorderBrush="{StaticResource ColorSuccess}" BorderThickness="2" CornerRadius="15" Width="240" Margin="0 4 0 0" Focusable="False">
+                                        <TextBlock Text="開始 JOG" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 8" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource ColorSuccess}" />
+                                    </Border>
+                                    <!--
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding ElementName=togglebutton, Path=ActualWidth}" HorizontalAlignment="Stretch"></TextBlock>
+                                            <TextBlock Text="{Binding ElementName=togglebutton, Path=ActualHeight}" HorizontalAlignment="Stretch"></TextBlock>
+                                            <Button x:Name="togglebutton" Content="開始 JOG" HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignToolButton}"/>
+                                        </StackPanel>
+                                    -->
+                                </materialDesign:PopupBox.ToggleContent>
+                                <!-- // -->
+                                <DockPanel Background="{StaticResource ColorInfoTransparent}">
+                                    <Button Width="120" Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=20}"
+                                            materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                            PreviewMouseDown="JogLeft_MouseDown" PreviewMouseUp="JogLeft_MouseUp"
+                                            FontWeight="Bold" Foreground="{StaticResource ColorPurple}" 
+                                            Style="{StaticResource MaterialDesignToolButton}"/>
+                                    <Button Width="120" Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=20}"
+                                            materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                            PreviewMouseDown="JogRight_MouseDown" PreviewMouseUp="JogRight_MouseUp"
+                                            FontWeight="Bold" Foreground="{StaticResource ColorPurple}" 
+                                            Style="{StaticResource MaterialDesignToolButton}"/>
+                                </DockPanel>
+                            </materialDesign:PopupBox>
+
+                            <!--//-->
+                            <!--<Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
                                     Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=18}"
                                     materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                     PreviewMouseDown="JogLeft_MouseDown" PreviewMouseUp="JogLeft_MouseUp"
@@ -448,18 +479,16 @@
                                     materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                     PreviewMouseDown="JogRight_MouseDown" PreviewMouseUp="JogRight_MouseUp"
                                     FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
-                                    Style="{StaticResource MaterialDesignToolButton}"/>
+                                    Style="{StaticResource MaterialDesignToolButton}"/>-->
                             <!--//-->
-                            <Button Grid.Row="4" Grid.ColumnSpan="4" Width="80" Margin="0 4" Padding="0" Content="開始 JOG" 
-                                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
+                            <!--<Button Grid.Row="4" Grid.ColumnSpan="4" Width="80" Margin="0 4" Padding="0" Content="開始 JOG" 
+                                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
                         </Grid>
                         <!--//-->
                         <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
                         <!--//-->
                     </DockPanel>
                 </materialDesign:Card>
-                
                 <!--// 位置控制-->
                 <materialDesign:Card x:Name="PosControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -477,8 +506,6 @@
                         </Grid>
                     </DockPanel>
                 </materialDesign:Card>
-
-
             </StackPanel>
         </Border>
         <!--#endregion-->
@@ -492,7 +519,7 @@
                         <DockPanel x:Name="MotionMoveHeader" DockPanel.Dock="Top">
                             <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
 
-                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="位置控制"/>
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="保留"/>
                         </DockPanel>
                         <!--//-->
                         <Separator DockPanel.Dock="Top" Margin="0 8"/>
