@@ -5,13 +5,17 @@
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:ApexVisIns"
-            xmlns:local="clr-namespace:ApexVisIns.content"
+            xmlns:local="clr-namespace:ApexVisIns.content" 
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
+            d:DataContext="{d:DesignInstance Type=app:ServoMotion}"
+            DataContext="{StaticResource ServoMotion}"
             d:DesignHeight="450" d:DesignWidth="800"
             UseLayoutRounding="True"
             Orientation="Vertical">
+            <!--d:DataContext="{d:DesignInstance Type=app:ServoMotion}"
+            DataContext="{StaticResource ServoMotion}"-->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -54,7 +58,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                   materialDesign:HintAssist.Hint="EtherCAT Card"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                                  ItemsSource="{Binding BoardList, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  ItemsSource="{Binding BoardList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   SelectionChanged="BoardSelector_SelectionChanged"
                                   MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
                                   MinWidth="200" Margin="0 0 12 0">
@@ -77,7 +81,7 @@
                                     <Style TargetType="materialDesign:PackIcon">
                                         <Setter Property="Kind" Value="LinkVariant"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
+                                            <DataTrigger Binding="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
                                                 <Setter Property="Kind" Value="LinkVariantRemove"/>
                                                 <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
                                             </DataTrigger>
@@ -162,7 +166,7 @@
             </materialDesign:Card>
             <!--軸狀態-->
             <materialDesign:Card Style="{StaticResource PanelBottomCard}" Padding="6 8">
-                <DockPanel Background="Transparent" Margin="2 0" DataContext="{StaticResource ServoMotion}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
+                <DockPanel Background="Transparent" Margin="2 0" DataContext="{Binding SltMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
                     <DockPanel x:Name="MotionStatusHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="伺服狀態" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
@@ -170,9 +174,9 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top">
+                    <Grid DockPanel.Dock="Top" d:DataContext="{d:DesignInstance Type=app:MotionAxis}">
                         <Grid.Resources>
-                            <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
+                            <Style x:Key="DiSignal" TargetType="Ellipse">
                                 <Setter Property="Width" Value="20"/>
                                 <Setter Property="Height" Value="20"/>
                                 <Setter Property="Margin" Value="7 4"/>
@@ -186,6 +190,7 @@
                                         <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
+
                             </Style>
                             <!--//-->
                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
@@ -213,30 +218,30 @@
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="I/O資訊"
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <!--//-->
-                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_SRDY.Name}"/>
-                        <Ellipse Grid.Row="1" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_SRDY.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SRDY.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="1" Tag="{Binding IO_SRDY.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_LMTP.Name}"/>
-                        <Ellipse Grid.Row="1" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_LMTP.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTP.Name}"/>
+                        <Ellipse Grid.Row="1" Grid.Column="4" Tag="{Binding IO_LMTP.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_SVON.Name}"/>
-                        <Ellipse Grid.Row="2" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_SVON.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_SVON.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="1" Tag="{Binding IO_SVON.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_LMTN.Name}"/>
-                        <Ellipse Grid.Row="2" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_LMTN.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_LMTN.Name}"/>
+                        <Ellipse Grid.Row="2" Grid.Column="4" Tag="{Binding IO_LMTN.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_ALM.Name}"/>
-                        <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding SltMotionAxis.IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_ALM.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding SltMotionAxis.IO_EMG.Name}"/>
-                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding SltMotionAxis.IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_EMG.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
                         <Separator Grid.Row="0" Grid.RowSpan="100" Grid.Column="2" Width="1" Margin="0 4" Background="{StaticResource ColorGray}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8" Background="{StaticResource ColorOrange}"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top">
+                    <Grid DockPanel.Dock="Top"  d:DataContext="{d:DesignInstance Type=app:MotionAxis}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
@@ -255,27 +260,27 @@
                                 Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetCmdPos_Click">
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
-                                    <Binding Path="SltMotionAxis.ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
+                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
                         <!--//-->
                         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Cmd" FontWeight="SemiBold" />
                         <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding SltMotionAxis.PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Act" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding SltMotionAxis.PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8" Background="{StaticResource ColorOrange}"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top">
+                    <Grid DockPanel.Dock="Top" d:DataContext="{d:DesignInstance Type=app:MotionAxis}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
@@ -290,19 +295,19 @@
                                    FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ColorSecondary}"/>
                         <Button Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="重置錯誤" Foreground="{StaticResource ColorInfo}"
                                 Focusable="False" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="15"
-                                IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetAxisError_Click">
-                            <!--<Button.IsEnabled>
+                                <!--IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged}"-->
+                            <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged"/>
-                                    <Binding Path="SltMotionAxis.ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
+                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
-                            </Button.IsEnabled>-->
+                            </Button.IsEnabled>
                         </Button>
                         <!--//-->
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Status" FontWeight="SemiBold"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" Text="{Binding SltMotionAxis.CurrentStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                 Focusable="False" Text="{Binding CurrentStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                  MaxWidth="150" TextAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                     </Grid>
@@ -313,11 +318,11 @@
 
         <!--#region 2nd column, jog panel -->
         <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" DataContext="{Binding SltMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
 
                 <materialDesign:Card x:Name="EcamCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                    <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                         <DockPanel x:Name="EcamHeader" DockPanel.Dock="Top">
                             <materialDesign:PackIcon Kind="Cogs" Width="30" Height="26"/>
 
@@ -326,24 +331,58 @@
                         <!--//-->
                         <Separator DockPanel.Dock="Top" Margin="0 8"/>
                         <!--//-->
-                        
+                        <Grid d:DataContext="{d:DesignInstance Type=app:MotionAxis}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--//-->
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <!--//-->
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="FontWeight" Value="Semibold"/>
+                                </Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                    <Setter Property="Margin" Value="0 4"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </Grid.Resources>
+                            <!--//-->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="分子 N1" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" Text="{Binding GearN1}" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="分母 M"/>
+                            <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" Text="{Binding GearM}"/>
+                            <!--//-->
+                            <!--<Separator Grid.Row="1" Grid.ColumnSpan="4" Margin="0 8"/>-->
+                            <!--//-->
+                            <Button Grid.Row="1" Grid.Column="3" Height="26" Margin="0 3" Content="Write" Click="GearRationSetBtn_Click"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+                        </Grid>
                     </DockPanel>
                 </materialDesign:Card>
 
-
-
                 <materialDesign:Card x:Name="MotionJogCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                    <DockPanel Background="Transparent" Margin="2 0" >
+                    <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                         <DockPanel x:Name="MotionJogHeader" DockPanel.Dock="Top">
-                            <materialDesign:PackIcon Kind="Run" Width="30" Height="26"></materialDesign:PackIcon>
-
+                            <materialDesign:PackIcon Kind="Run" Width="30" Height="26"/>
+                            
                             <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="寸動" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                         </DockPanel>
                         <!--//-->
                         <Separator DockPanel.Dock="Top" Margin="0 8"/>
                         <!--//-->
-                        <Grid DockPanel.Dock="Top">
+                        <Grid DockPanel.Dock="Top" d:DataContext="{d:DesignInstance Type=app:MotionAxis}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
@@ -357,6 +396,7 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <!--//-->
                             <Grid.Resources>
@@ -365,45 +405,55 @@
                                     <Setter Property="TextAlignment" Value="Center"/>
                                     <Setter Property="FontWeight" Value="Semibold"/>
                                 </Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                    <Setter Property="Margin" Value="0 4"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
                             </Grid.Resources>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="啟動速度"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Margin="0 4"  Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding JogVelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                             <TextBlock Grid.Row="0" Grid.Column="2" Text="運行速度" />
-                            <TextBox Grid.Row="0" Grid.Column="3" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding JogVelHigh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="加速度"></TextBlock>
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="加速度"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding JogAcc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="1" Grid.Column="2" Text="減速度"></TextBlock>
-                            <TextBox Grid.Row="1" Grid.Column="3" Margin="0 4" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="減速度"/>
+                            <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding JogDec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="減速時間"></TextBlock>
-                            <TextBox Grid.Row="2" Grid.Column="1"  Margin="0 4 " Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="低速時間"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding JogVLTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入參數" Click="ParaWriteBtn_Click"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
+                            <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="Write" Click="VelParamSetBtn_Click" 
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            <!--//-->
                             <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
-
+                            <!--//-->
                             <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
-                                Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=18}"
-                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
-                                MouseDown="JogLeft_MouseDown" MouseUp="JogLeft_MouseUp"
-                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
-                                Style="{StaticResource MaterialDesignToolButton}"/>
+                                    Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=18}"
+                                    materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                    PreviewMouseDown="JogLeft_MouseDown" PreviewMouseUp="JogLeft_MouseUp"
+                                    FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
+                                    Style="{StaticResource MaterialDesignToolButton}"/>
                             <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Width="80" Margin="0 8" 
-                                Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=20}"
-                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
-                                MouseDown="JogRight_MouseDown" MouseUp="JogRight_MouseUp"
-                                FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
-                                Style="{StaticResource MaterialDesignToolButton}"/>
+                                    Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=20}"
+                                    materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                    PreviewMouseDown="JogRight_MouseDown" PreviewMouseUp="JogRight_MouseUp"
+                                    FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
+                                    Style="{StaticResource MaterialDesignToolButton}"/>
+                            <!--//-->
+                            <Button Grid.Row="4" Grid.ColumnSpan="4" Width="80" Margin="0 4" Padding="0" Content="開始 JOG" 
+                                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
                         </Grid>
                         <!--//-->
-                        <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
-                        <!--//-->
-
                     </DockPanel>
                 </materialDesign:Card>
             </StackPanel>
@@ -426,7 +476,6 @@
                     <Grid>
 
                     </Grid>
-
                 </DockPanel>
             </materialDesign:Card>
         </Border>

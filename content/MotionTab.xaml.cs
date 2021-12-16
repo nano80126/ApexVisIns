@@ -34,6 +34,7 @@ namespace ApexVisIns.content
             InitializeComponent();
         }
 
+
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 保留
@@ -42,19 +43,29 @@ namespace ApexVisIns.content
             //    Timer.Start();
             //}
             //Timer.Start();
-
-            //GetAvailableDevices();
             GetAvaiDevs();
 
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
+
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             MainWindow.ServoMotion.DisableTimer();
         }
 
+
+        /// <summary>
+        /// Clear Focus 用
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Keyboard.ClearFocus();
+            _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
+        }
 
         /// <summary>
         /// 取得可用之 Device (EtherCAT卡)
@@ -96,6 +107,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 開始軸卡
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BoardOpen_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -135,8 +151,7 @@ namespace ApexVisIns.content
 
             if (comboBox.SelectedItem is ServoMotion.DeviceList deviceList)
             {
-                Debug.WriteLine("BoardSelector_SelectionChanged");
-                Debug.WriteLine($"{deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
+                Debug.WriteLine($"BoardSelector_SelectionChanged {deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
             }
         }
 
@@ -162,6 +177,9 @@ namespace ApexVisIns.content
             if (comboBox.SelectedItem is MotionAxis axis)
             {
                 MainWindow.ServoMotion.SelectedAxis = comboBox.SelectedIndex;
+
+                MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
+                MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
             }
         }
 
@@ -236,7 +254,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.ResetPos();
+                MainWindow.ServoMotion.SltMotionAxis.ResetError();
             }
             catch (Exception ex)
             {
@@ -244,28 +262,87 @@ namespace ApexVisIns.content
             }
         }
 
-        private void ParaWriteBtn_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 寫入電子齒輪比
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GearRationSetBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.WriteParameter();
+            MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+        }
+
+        /// <summary>
+        /// 寫入速度參數
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VelParamSetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
         }
 
         private void JogLeft_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.ServoMotion.SltMotionAxis.JogClock();
+            Debug.WriteLine($"Clock");
         }
+
         private void JogLeft_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+            Debug.WriteLine("DecAction");
         }
 
         private void JogRight_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
+            Debug.WriteLine($"CtClock");
         }
 
         private void JogRight_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+            Debug.WriteLine("DecAction");
+        }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogStart();
+            }
+            else
+            {
+                MainWindow.ServoMotion.SltMotionAxis.JogStop();
+            }
+
+            Debug.WriteLine($"JogOn : {MainWindow.ServoMotion.SltMotionAxis.JogOn}");
+        }
+
+        private void Button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Button_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine($"MouseDown");
+        }
+
+        private void Button_MouseDown_1(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine($"MouseDown_1");
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
         }
     }
 }

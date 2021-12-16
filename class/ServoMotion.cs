@@ -29,6 +29,7 @@ namespace ApexVisIns
         private Timer statusTimer;
         private int _sltAxis = -1;
         private bool _servoOn;
+
         // private int _sltAxisIndex;
         #endregion
 
@@ -74,6 +75,8 @@ namespace ApexVisIns
             }
         }
 
+       
+
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
         /// <summary>
@@ -97,6 +100,7 @@ namespace ApexVisIns
 
         public MotionAxis SltMotionAxis => 0 <= _sltAxis && _sltAxis < AxisList.Count ? AxisList[_sltAxis] : null;
 
+#if false
         public double PosCommand
         {
             get => _posCmd;
@@ -121,8 +125,10 @@ namespace ApexVisIns
                     OnPropertyChanged(nameof(PosActual));
                 }
             }
-        }
+        } 
+#endif
 
+#if false
         /// <summary>
         /// 伺服 Ready
         /// </summary>
@@ -152,10 +158,12 @@ namespace ApexVisIns
         /// Servo Emergency Flag
         /// </summary>
         public AxisSignal IO_EMG { get; set; } = new AxisSignal("EMG");
+#endif
 
         /// <summary>
         /// 更新 IO
         /// </summary>
+#if false
         public void UpdateIO()
         {
             OnPropertyChanged(nameof(IO_SRDY));
@@ -164,7 +172,8 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(IO_LMTN));
             OnPropertyChanged(nameof(IO_SVON));
             OnPropertyChanged(nameof(IO_EMG));
-        }
+        } 
+#endif
 
         ///// <summary>
         ///// 當前軸狀態
@@ -190,9 +199,13 @@ namespace ApexVisIns
         /// <summary>
         /// 運動軸 (待刪除)
         /// </summary>
+        [Obsolete("待移除")]
         public ObservableCollection<string> Axes { get; } = new ObservableCollection<string>();
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public uint GetAvailableDevices()
         {
             int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref DEV_Count);
@@ -221,9 +234,9 @@ namespace ApexVisIns
             uint AxesCount = 0;     // 裝置軸數 
             uint DiChCount = 0;     // 裝置DI數
 
-            ushort ringNo = 0;
-            ushort[] slaveIPArr = new ushort[6];    
-            uint slaveCount = 0;    // 從站數量
+            //ushort ringNo = 0;
+            //ushort[] slaveIPArr = new ushort[6];
+            //uint slaveCount = 0;    // 從站數量
 
             if (!DeviceOpened)
             {
@@ -246,30 +259,31 @@ namespace ApexVisIns
                     }
                 } while (rescanFlag);
 
-                // Get axis number of this device // 取得最大軸數
+                // Get axis number of this device // 讀取最大軸數
                 result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DevAxesCount, ref AxesCount);
                 if (result != (int)ErrorCode.SUCCESS)
                 {
-                    throw new Exception($"取得軸數量失敗: Code[0x{result:X}]");
+                    throw new Exception($"讀取軸數量失敗: Code[0x{result:X}]");
                 }
                 MaxAxisCount = AxesCount;
 
                 #region 可略過
+#if false
                 result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
                 if (result != (int)ErrorCode.SUCCESS)
                 {
-                    throw new Exception($"取得從站資訊失敗: Code[0x{result:X}]");
+                    throw new Exception($"讀取主站資訊失敗: Code[0x{result:X}]");
                 }
-                Debug.WriteLine($"{string.Join(" , ", slaveIPArr)}");
+                Debug.WriteLine($"{ringNo} {string.Join(",", slaveIPArr)} {slaveCount}");
 
-
-                ADV_SLAVE_INFO info = new ADV_SLAVE_INFO();
-                result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, slaveIPArr[0], ref info); // argu 2 : 0 => Motion ring
+                ADV_SLAVE_INFO info = new();
+                result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, 0, ref info); // argu 2 : 0 => Motion ring
                 if (result != (int)ErrorCode.SUCCESS)
                 {
-                    throw new Exception($"取得從站資訊失敗: Code[0x{result:X}]");
+                    throw new Exception($"讀取從站資訊失敗: Code[0x{result:X}]");
                 }
                 Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}"); 
+#endif
                 #endregion
 
                 Axes.Clear();   // 清空軸數
@@ -292,7 +306,7 @@ namespace ApexVisIns
                 result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
-                    throw new Exception($"取得屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
+                    throw new Exception($"讀取屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
                 }
 
                 //// 這要幹麻? 
@@ -321,7 +335,7 @@ namespace ApexVisIns
                 // Get the axis's current state
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    // 取得軸狀態
+                    // 讀取軸狀態
                     Motion.mAcm_AxGetState(AxisHandles[i], ref AxisState[i]);
 
                     if (AxisState[i] == (uint)Advantech.Motion.AxisState.STA_AX_ERROR_STOP)
@@ -342,8 +356,8 @@ namespace ApexVisIns
                 // Close Device
                 Motion.mAcm_DevClose(ref DeviceHandle);
 
-                ResetMotionIOStatus();
-                UpdateIO();
+                //ResetMotionIOStatus();
+                //UpdateIO();
                 //CurrentStatus = string.Empty;
 
                 DeviceHandle = IntPtr.Zero; // 重置裝置 Handle
@@ -440,7 +454,11 @@ namespace ApexVisIns
                     throw new Exception($"{i}-Axis Servo Off 失敗: Code[0x{result:X}]");
                 }
             }
-            SltMotionAxis.ServoOn = false;
+
+            if (SltMotionAxis != null)
+            {
+                SltMotionAxis.ServoOn = false;
+            }
         }
 
         /// <summary>
@@ -510,7 +528,8 @@ namespace ApexVisIns
                 if (result == (uint)ErrorCode.SUCCESS)
                 {
                     SetMotionIOStatus(IOStatus);
-                    //UpdateIO();
+                    // UpdateIO();
+                    SltMotionAxis.UpdateIO();
                 }
 
                 // Get Axis current state
@@ -522,7 +541,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 更新 Servo IO Status
+        /// 更新選擇軸 Servo IO Status
         /// </summary>
         /// <param name="IOStatus"></param>
         private void SetMotionIOStatus(uint IOStatus)
@@ -538,6 +557,7 @@ namespace ApexVisIns
         /// <summary>
         ///重置 Servo IO 狀態
         /// </summary>
+#if false
         private void ResetMotionIOStatus()
         {
             IO_SRDY.BitOn = false;
@@ -546,7 +566,8 @@ namespace ApexVisIns
             IO_LMTN.BitOn = false;
             IO_SVON.BitOn = false;
             IO_EMG.BitOn = false;
-        }
+        } 
+#endif
 
         /// <summary>
         /// 重置位置
@@ -581,11 +602,12 @@ namespace ApexVisIns
             }
         }
 
-
+        /// <summary>
+        /// 參數寫入
+        /// </summary>
         public void WriteParameter()
         {
             uint ID = 0;
-
 
 
             ADV_SLAVE_INFO aDV_SLAVE_INFO = new ADV_SLAVE_INFO();
@@ -607,6 +629,10 @@ namespace ApexVisIns
         /// </summary>
         public class AxisSignal
         {
+            /// <summary>
+            /// 建構子
+            /// </summary>
+            /// <param name="name"></param>
             public AxisSignal(string name)
             {
                 Name = name;
@@ -624,6 +650,9 @@ namespace ApexVisIns
             public bool BitOn { get; set; }
         }
 
+        /// <summary>
+        /// 裝置列表
+        /// </summary>
         public class DeviceList
         {
             /// <summary>
@@ -684,8 +713,11 @@ namespace ApexVisIns
         /// <summary>
         /// 軸 Handle
         /// </summary>
-        private IntPtr AxisHandle = IntPtr.Zero;
+        private readonly IntPtr AxisHandle = IntPtr.Zero;
         private bool _servoOn;
+        private uint _geatrN1;
+        private uint _gearM;
+        private bool _jogOn;
 
         /// <summary>
         /// xaml 用建構子
@@ -707,7 +739,7 @@ namespace ApexVisIns
         /// 軸 Index
         /// </summary>
         public int AxisIndex { get; set; }
-            
+
         /// <summary>
         /// 軸名稱
         /// </summary>
@@ -730,33 +762,17 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 命令位置
+        /// Jog On Flag
         /// </summary>
-        public double PosCommand
+        public bool JogOn
         {
-            get => _posCmd;
-            set
+            get => _jogOn;
+            private set
             {
-                if (value != _posCmd)
+                if (value != _jogOn)
                 {
-                    _posCmd = value;
-                    OnPropertyChanged(nameof(PosCommand));
-                }
-            }
-        }
-        
-        /// <summary>
-        /// 實際位置
-        /// </summary>
-        public double PosActual
-        {
-            get => _posAct;
-            set
-            {
-                if (value != _posAct)
-                {
-                    _posAct = value;
-                    OnPropertyChanged(nameof(PosActual));
+                    _jogOn = value;
+                    OnPropertyChanged(nameof(JogOn));
                 }
             }
         }
@@ -792,6 +808,95 @@ namespace ApexVisIns
         public AxisSignal IO_EMG { get; set; } = new AxisSignal("EMG");
 
         /// <summary>
+        /// 命令位置
+        /// </summary>
+        public double PosCommand
+        {
+            get => _posCmd;
+            set
+            {
+                if (value != _posCmd)
+                {
+                    _posCmd = value;
+                    OnPropertyChanged(nameof(PosCommand));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 實際位置
+        /// </summary>
+        public double PosActual
+        {
+            get => _posAct;
+            set
+            {
+                if (value != _posAct)
+                {
+                    _posAct = value;
+                    OnPropertyChanged(nameof(PosActual));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 齒輪比分子
+        /// </summary>
+        public uint GearN1
+        {
+            get => _geatrN1;
+            set
+            {
+                if (value != _geatrN1)
+                {
+                    _geatrN1 = value;
+                    OnPropertyChanged(nameof(GearN1));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 齒輪比分母
+        /// </summary>
+        public uint GearM
+        {
+            get => _gearM;
+            set
+            {
+                if (value != _gearM)
+                {
+                    _gearM = value;
+                    OnPropertyChanged(nameof(GearM));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog 初速度
+        /// </summary>
+        public double JogVelLow { get; set; }
+
+        /// <summary>
+        /// Jog 目標速度
+        /// </summary>
+        public double JogVelHigh { get; set; }
+
+        /// <summary>
+        /// Jog 加速度
+        /// </summary>
+        public double JogAcc { get; set; }
+        
+        /// <summary>
+        /// Jog 減速度
+        /// </summary>
+        public double JogDec { get; set; }
+
+        /// <summary>
+        /// Jog 初速時間
+        /// </summary>
+        public uint JogVLTime { get; set; }
+
+        /// <summary>
         /// 更新 IO
         /// </summary>
         public void UpdateIO()
@@ -805,7 +910,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得軸資訊
+        /// 讀取軸資訊
         /// </summary>
         public void GetAxisInfo()
         {
@@ -815,8 +920,6 @@ namespace ApexVisIns
             uint result;
             uint IOStatus = 0;
 
-            //if (DeviceOpened)
-            //{
             // Get current command position
             Motion.mAcm_AxGetCmdPosition(AxisHandle, ref cmd);
             // Get current actual position
@@ -830,13 +933,12 @@ namespace ApexVisIns
             if (result == (uint)ErrorCode.SUCCESS)
             {
                 SetMotionIOStatus(IOStatus);
-                UpdateIO(); // 更新 IO (trigger property)
+                // UpdateIO(); // 更新 IO (trigger property)
             }
 
             // Get Axis current state
             Motion.mAcm_AxGetState(AxisHandle, ref axState);
             CurrentStatus = $"{(AxisState)axState}";
-            //}
         }
 
         /// <summary>
@@ -906,7 +1008,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 重置位置
         /// </summary>
@@ -939,6 +1040,224 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 寫入齒輪比
+        /// </summary>
+        public void SetGearRatio()
+        {
+            uint result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU,  GearN1);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPUDenominator, GearM);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
+            }
+
+            GetGearRatio();
+        }
+
+        /// <summary>
+        /// 讀取齒輪比
+        /// </summary>
+        public void GetGearRatio()
+        {
+            uint ppu = 0;
+            uint ppum = 0;
+
+            uint result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU, ref ppu);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取電子齒輪比 N1 失敗: Code[0x{result:X}]");
+            }
+
+            GearN1 = ppu;
+
+            result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPUDenominator, ref ppum);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取電子齒輪比 M 失敗: Code[0x{result:X}]");
+            }
+            GearM = ppum;
+
+            OnPropertyChanged(nameof(GearN1));
+            OnPropertyChanged(nameof(GearM));
+        }
+
+        /// <summary>
+        /// 寫入速度參數
+        /// </summary>
+        public void SetAxisVelParam()
+        {
+            Debug.WriteLine($"{JogVelLow} {JogVelHigh}");
+            Debug.WriteLine($"{JogAcc} {JogDec}");
+            Debug.WriteLine($"{JogVLTime}");
+
+            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, JogVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, JogVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入目標速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, JogAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入加速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, JogDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入減速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, JogVLTime);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"寫入初速時間失敗: Code[0x{result:X}]");
+            }
+
+            GetAxisVelParam();
+        }
+
+        /// <summary>
+        /// 讀取速度參數
+        /// </summary>
+        public void GetAxisVelParam()
+        {
+            double axJogVelLow = 0;
+            double axJogVelHigh = 0;
+            double axJogAcc = 0;
+            double axJogDec = 0;
+            uint axJogVLTime = 0;
+
+
+            double axParJogVelLow = 0;
+            double axParJogVelHigh = 0;
+
+            uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, ref axJogVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取初始速度失敗: Code[0x{result:X}]");
+            }
+            JogVelLow = axJogVelLow;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, ref axJogVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取目標速度失敗: Code[0x{result:X}]");
+            }
+            JogVelHigh = axJogVelHigh;
+
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelHigh, ref axParJogVelHigh);
+
+            Debug.WriteLine($"Par: {axParJogVelHigh} {axParJogVelLow}");
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, ref axJogAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取加速度失敗: Code[0x{result:X}]");
+            }
+            JogAcc = axJogAcc;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, ref axJogDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取減速度失敗: Code[0x{result:X}]");
+            }
+            JogDec = axJogDec;
+
+            result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, ref axJogVLTime);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"讀取初速時間失敗: Code[0x{result:X}]");
+            }
+            JogVLTime = axJogVLTime;
+
+            OnPropertyChanged(nameof(JogVelLow));
+            OnPropertyChanged(nameof(JogVelHigh));
+            OnPropertyChanged(nameof(JogAcc));
+            OnPropertyChanged(nameof(JogDec));
+            OnPropertyChanged(nameof(JogVLTime));
+        }
+
+        /// <summary>
+        /// Jog 開始
+        /// </summary>
+        public void JogStart()
+        {
+            uint result = Motion.mAcm_AxSetExtDrive(AxisHandle, 1);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"啟動 Jog 模式失敗: Code[0x{result:X}]");
+                //throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
+            }
+            JogOn = true;
+        }
+
+        /// <summary>
+        /// Jog 停止
+        /// </summary>
+        public void JogStop()
+        {
+            uint result = Motion.mAcm_AxSetExtDrive(AxisHandle, 0);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"停止 Jog 模式失敗: Code[0x{result:X}]");
+                //throw new Exception($"寫入初始速度失敗: Code[0x{result:X}]");
+            }
+            JogOn = false;
+        }
+
+        /// <summary>
+        /// 順時針旋轉
+        /// </summary>
+        public void JogClock()
+        {
+            uint result = Motion.mAcm_AxJog(AxisHandle, 1);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"Jog 模式失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 逆時針旋轉
+        /// </summary>
+        public void JogCtClock()
+        {
+            uint result = Motion.mAcm_AxJog(AxisHandle, 0);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"Jog 模式失敗: Code[0x{result:X}]");
+            }
+        }
+
+
+        /// <summary>
+        /// Jog 停止
+        /// </summary>
+        public void JogDecAction()
+        {
+            uint result = Motion.mAcm_AxStopDec(AxisHandle);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new Exception($"停止 Jog 模式失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
         /// 軸 IO 狀態
         /// </summary>
         public class AxisSignal
@@ -959,7 +1278,6 @@ namespace ApexVisIns
             /// </summary>
             public bool BitOn { get; set; }
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 
