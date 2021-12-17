@@ -226,13 +226,14 @@
             <!--#endregion-->
             <!--//-->
             <!--#region FooterBar -->
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" 
+            <DockPanel DockPanel.Dock="Bottom"
                         Grid.Row="2"
                         HorizontalAlignment="Stretch" VerticalAlignment="Bottom" 
-                        Background="{StaticResource ColorGrayTransparent}" FlowDirection="RightToLeft"
+                        Background="{StaticResource ColorGrayTransparent}" FlowDirection="LeftToRight"
                         DataContext="{StaticResource MsgInformer}">
                 <!--#region Error & Warning Popupbox -->
-                <materialDesign:PopupBox x:Name="ErrPopupBox" HorizontalAlignment="Left" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True" 
+                <materialDesign:PopupBox x:Name="ErrPopupBox" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True" 
+                                         DockPanel.Dock="Right"
                                          Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
                                          Opened="ErrPopupBox_Opened"
                                          Closed="PopupBox_Closed"
@@ -329,7 +330,8 @@
                 <!--#endregion-->
 
                 <!--#region Information Popupbox -->
-                <materialDesign:PopupBox x:Name="InfoPopupbox" HorizontalAlignment="Left" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True"
+                <materialDesign:PopupBox x:Name="InfoPopupbox" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True"
+                                         DockPanel.Dock="Right"
                                          Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
                                          Opened="InfoPopupbox_Opened" 
                                          Closed="PopupBox_Closed"
@@ -381,7 +383,7 @@
                                     <Setter Property="BorderBrush" Value="LightGray"/>
                                     <Setter Property="BorderThickness" Value="1 0 1 1"/>
                                     <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="0"/>
-                                </Style>    
+                                </Style>
                             </ListView.Resources>
                             <!--//-->
                             <ListView.View>
@@ -402,7 +404,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                </GridView>    
+                                </GridView>
                             </ListView.View>
                         </ListView>
                         <!--//-->
@@ -412,7 +414,16 @@
                     </StackPanel>
                 </materialDesign:PopupBox>
                 <!--#endregion-->
-            </StackPanel>
+
+
+                <ProgressBar DockPanel.Dock="Left" Margin="8 0 0 0" Value="50" Height="6" BorderThickness="0" BorderBrush="Gray"
+                             materialDesign:TransitionAssist.DisableTransitions="True" 
+                             HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
+                             Width="250" Visibility="Visible"/>
+                <!--// string format {}{0:D2%}-->
+                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="50" Visibility="Visible"
+                           Foreground="{StaticResource ColorBrown}"/>
+            </DockPanel>
             <!--#endregion-->
         </Grid>
     </Border>

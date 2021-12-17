@@ -22,7 +22,18 @@
                     <materialDesign:PackIcon Kind="VideoOutline" Width="26" Height="24" />
                     <materialDesign:PackIcon Kind="Check" Canvas.Right="0" Canvas.Bottom="0" />
                 </Canvas>-->
-                <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>
+                <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
+
+                <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
+                <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
+                         materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
+                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand"
+                         SelectedIndex="0">
+                    <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                </ListBox>
+                <!--<Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}"/>-->
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
