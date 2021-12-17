@@ -25,8 +25,12 @@ namespace ApexVisIns.content
     public partial class MotionTab : StackPanel
     {
         #region Variables
+        [Obsolete]
         private uint boardCount;
+        [Obsolete]
         private DEV_LIST[] BoardList = new DEV_LIST[10];
+
+        private bool DllIsValid;
         #endregion
 
         public MotionTab()
@@ -35,21 +39,32 @@ namespace ApexVisIns.content
         }
 
 
+        /// <summary>
+        /// Motion Tab 載入
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region 保留
-            //else
-            //{
-            //    Timer.Start();
-            //}
-            //Timer.Start();
-            GetAvaiDevs();
-
+            #region 確認驅動安裝
+            DllIsValid = ServoMotion.CheckDllVersion();
+            if (DllIsValid)
+            {
+                GetAvaiDevs();
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "Motion 控制驅動未安裝或版本不符");
+            }
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
-
+        /// <summary>
+        /// Motion Tab 卸載
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             MainWindow.ServoMotion.DisableTimer();
@@ -357,8 +372,8 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogClock();
-                //Debug.WriteLine($"Clock");
+                MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
+                //MainWindow.ServoMotion.SltMotionAxis.JogClock();
             }
             catch (Exception ex)
             {
@@ -383,8 +398,8 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
-                //Debug.WriteLine($"CtClock");
+                MainWindow.ServoMotion.SltMotionAxis.JogClock();
+                //MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
             }
             catch (Exception ex)
             {
@@ -397,28 +412,72 @@ namespace ApexVisIns.content
             try
             {
                 MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
-                //Debug.WriteLine("DecAction");
             }
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
-                //throw;
             }
         }
 
         private void PtToPtBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                // throw;
+            }
         }
 
         private void ChangePtBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.ChangePos();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         private void ChangeVelBtn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
 
+        private void MotionStop_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.StopMove();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void MotionEmgStop_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MainWindow.ServoMotion.SltMotionAxis.StopEmg();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
     }
 }

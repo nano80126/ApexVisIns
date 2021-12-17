@@ -74,7 +74,7 @@ Apex 外觀瑕疵檢測
 * [ ] Camera Enumer Debug
 * [x] DeviceConfig 清除空儲存按鈕不能隱藏
 * [ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
-* [ ] 確認 Device Tab 和 Enginner Tab 不會衝突
+* [x] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
 * [ ] 啟動速度優化
 * [x] Add custom event for DI interrupt
@@ -87,8 +87,11 @@ Apex 外觀瑕疵檢測
 	* S/N
 	* Character
 	* IP (之後IP要設定為固定)
-* [ ] Jog 使用 Popupbox
- 
+* [x] Jog 使用 Popupbox
+* [ ] Motion Tab Unload 的處置
+* [ ] Device Tab
+	* Device List 儲存IP，相機IP需要綁定
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

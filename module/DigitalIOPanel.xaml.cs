@@ -26,8 +26,14 @@ namespace ApexVisIns.module
     /// </summary>
     public partial class DigitalIOPanel : Card
     {
-        #region 
+        #region Variables
+        /// <summary>
+        /// IO 控制器
+        /// </summary>
         private IOController Controller { get; set; }
+
+        private bool DllIsValid;
+        
         #endregion
 
         /// <summary>
@@ -47,26 +53,22 @@ namespace ApexVisIns.module
 
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
-            // 新增確認 Dll 邏輯在這
-            //try
-            //{
-            //    Controller = DataContext as IOController;
+            DllIsValid = IOController.CheckDllVersion();    // 確認驅動安裝
+            if (DllIsValid)
+            {
+                Controller = DataContext as IOController;
 
-            //    if (!Controller.DiCtrlCreated)
-            //    {
-            //        Controller.DigitalInputChanged += Controller_DigitalInputChanged;
-            //        Controller.InitializeDiCtrl();
-            //    }
+                if (!Controller.DiCtrlCreated)
+                {
+                    Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+                    Controller.InitializeDiCtrl();
+                }
 
-            //    if (!Controller.DoCtrlCreated)
-            //    {
-            //        Controller.InitializeDoCtrl();
-            //    }
-            //}
-            //catch (DllNotFoundException ex)
-            //{
-            //    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, ex.Message);
-            //}
+                if (!Controller.DoCtrlCreated)
+                {
+                    Controller.InitializeDoCtrl();
+                }
+            }
         }
 
         /// <summary>

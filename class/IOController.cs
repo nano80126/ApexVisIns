@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +61,35 @@ namespace ApexVisIns
                 InstantDiCtrl = new InstantDiCtrl() { SelectedDevice = new DeviceInformation(description) };
             }
         }
+
+
+        /// <summary>
+        /// 確認 DLL 已安裝且版本符合
+        /// </summary>
+        /// <returns></returns>
+        public static bool CheckDllVersion()
+        {
+            string fileName = Environment.SystemDirectory + @"\biodaq.dll"; // SystemDirectory : System32
+
+            if (File.Exists(fileName))
+            {
+                string fileVersion = FileVersionInfo.GetVersionInfo(fileName).FileVersion;
+
+                string[] strSplit = fileVersion.Split(',');
+
+                if (Convert.ToUInt16(strSplit[0], CultureInfo.CurrentCulture) < 2)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                //throw new DllNotFoundException("Motion 控制驅動未安裝");
+                return false;
+            }
+            return true;
+        }
+
 
         /// <summary>
         /// 初始化 DI Control
@@ -551,7 +582,7 @@ namespace ApexVisIns
             {
                 throw new ArgumentOutOfRangeException("Invalid port number or out of range");
             }
-            else if (0 > bit || bit >= 8)
+            else if (bit is < 0 or >= 8)    // 模式比對，必須為常數值
             {
                 throw new ArgumentOutOfRangeException("Invalid bit value, argument bit must be set from 0 to 8");
             }
@@ -561,6 +592,7 @@ namespace ApexVisIns
             {
                 DoArrayColl[port][bit] = value;
             }
+            //Debug.WriteLine($"{port} {bit} {value}");
             return err;
         }
 

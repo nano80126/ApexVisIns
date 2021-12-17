@@ -365,7 +365,7 @@
                             <!--//-->
                             <!--<Separator Grid.Row="1" Grid.ColumnSpan="4" Margin="0 8"/>-->
                             <!--//-->
-                            <Button Grid.Row="1" Grid.Column="3" Height="26" Margin="0 3" Content="Write" Click="GearRationSetBtn_Click"
+                            <Button Grid.Row="1" Grid.Column="3" Height="26" Margin="0 3" Content="寫入" Click="GearRationSetBtn_Click"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         </Grid>
                     </DockPanel>
@@ -431,7 +431,7 @@
                             <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                      Text="{Binding JogVLTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="Write" Click="VelParamSetBtn_Click" 
+                            <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入" Click="VelParamSetBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             <!--//-->
                             <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
@@ -443,7 +443,7 @@
                                 <materialDesign:PopupBox.ToggleContent>
                                     <Border BorderBrush="{StaticResource ColorSuccess}" BorderThickness="2" CornerRadius="15" Width="240" Margin="0 4 0 0" Focusable="False">
                                         <TextBlock Text="開始 JOG" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 8" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource ColorSuccess}" />
+                                                   Foreground="{StaticResource ColorSuccess}"/>
                                     </Border>
                                     <!--
                                         <StackPanel Orientation="Horizontal">
@@ -482,18 +482,16 @@
                                     FontWeight="Bold" FontSize="16" Foreground="{StaticResource ColorInfo}" 
                                     Style="{StaticResource MaterialDesignToolButton}"/>-->
                             <!--//-->
-                            <!--<Button Grid.Row="4" Grid.ColumnSpan="4" Width="80" Margin="0 4" Padding="0" Content="開始 JOG" 
-                                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
                         </Grid>
                         <!--//-->
-                        <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
+                            <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
                         <!--//-->
                     </DockPanel>
                 </materialDesign:Card>
                 <!--// 位置控制-->
                 <materialDesign:Card x:Name="PosControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                    <DockPanel Background="Transparent" Margin="2 0" >
+                    <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                         <DockPanel x:Name="PosControlHeader" DockPanel.Dock="Top">
                             <materialDesign:PackIcon Kind="ArrowLeftRightBold" Width="30" Height="26"></materialDesign:PackIcon>
 
@@ -514,6 +512,9 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <!--//-->
                             <Grid.Resources>
@@ -530,22 +531,30 @@
                             <!--//-->
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="目標位置"/>
                             <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding JogVelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Row="0" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             <!--//-->
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="變更位置"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding JogVelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Row="1" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             <!--//-->
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="變更速度"/>
                             <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding JogVelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                     Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            <!--//-->
+                            <Button Grid.Row="3" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
+                                    Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
+
+                            <Button DockPanel.Dock="Bottom" Grid.Row="4" Grid.ColumnSpan="100" Margin="0 100 0 0" Height="120" Content="緊急停止" Click="MotionEmgStop_Click"
+                                    Foreground="{StaticResource ColorError}" BorderBrush="{StaticResource ColorError}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         </Grid>
+                        
                     </DockPanel>
                 </materialDesign:Card>
             </StackPanel>
@@ -553,7 +562,7 @@
         <!--#endregion-->
 
         <!--#region 3rd column, -->
-        <Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
+        <Border Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <StackPanel Orientation="Vertical">
                 <materialDesign:Card x:Name="MotionMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -561,22 +570,24 @@
                         <DockPanel x:Name="MotionMoveHeader" DockPanel.Dock="Top">
                             <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
 
-                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="保留"/>
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="多軸同步控制"/>
                         </DockPanel>
                         <!--//-->
                         <Separator DockPanel.Dock="Top" Margin="0 8"/>
                         <!--//-->
                         <Grid>
 
+                            
+                            
                         </Grid>
-
                     </DockPanel>
                 </materialDesign:Card>
             </StackPanel>
         </Border>
         <!--#endregion-->
 
-        <!--<Border Grid.Column="3" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
+        <!--
+        <Border Grid.Column="3" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
             <materialDesign:Card x:Name="MotionInfoCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <DockPanel Background="Transparent" Margin="2 0">
@@ -594,7 +605,7 @@
 
                 </DockPanel>
             </materialDesign:Card>
-        </Border>-->
-        
+        </Border>
+        -->
     </Grid>
 </StackPanel>

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System;
 
 namespace ApexVisIns
 {
@@ -31,7 +32,7 @@ namespace ApexVisIns
         private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // EngineerTab is focused
-            e.CanExecute = OnTabIndex == 2;
+            e.CanExecute = OnTabIndex == 3;
         }
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -61,7 +62,7 @@ namespace ApexVisIns
             // Grabber 不為啟動狀態 // CamSelector 有選擇相機
             switch (OnTabIndex)
             {
-                case 2:
+                case 3:
                     e.CanExecute = EngineerTab.CamConnect.IsEnabled;
                     break;
                 default:
@@ -73,7 +74,7 @@ namespace ApexVisIns
         {
             switch (OnTabIndex)
             {
-                case 2: // Engineer Tab
+                case 3: // Engineer Tab
                     if ((bool)EngineerTab.CamConnect.IsChecked)
                     {
                         EngineerTab.CamConnect.IsChecked = false;
@@ -98,6 +99,8 @@ namespace ApexVisIns
             //     //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
             // }
         }
+        
+        [Obsolete("不須另外啟動")]
         private void StartGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // 相機已開啟
@@ -113,7 +116,7 @@ namespace ApexVisIns
         {
             switch (OnTabIndex)
             {
-                case 2:
+                case 3:
                     e.CanExecute = EngineerTab.SingleShot.IsEnabled;
                     break;
                 default:
@@ -121,11 +124,12 @@ namespace ApexVisIns
                     break;
             }
         }
+        
         private void SingleShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
             {
-                case 2:
+                case 3:
                     EngineerTab.SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     break;
                 default:
@@ -133,11 +137,12 @@ namespace ApexVisIns
             }
             //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
+        
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             switch (OnTabIndex)
             {
-                case 2:
+                case 3:
                     e.CanExecute = EngineerTab.ContinouseShot.IsEnabled;
                     break;
                 default:
@@ -146,11 +151,12 @@ namespace ApexVisIns
             }
             //e.CanExecute = ContinouseShot.IsEnabled;
         }
+        
         private void ContinousShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
             {
-                case 2:
+                case 3:
                     EngineerTab.ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     break;
                 default:
@@ -158,24 +164,24 @@ namespace ApexVisIns
             }
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
+        
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
             {
-                case 2:
-                    //Crosshair.Enable = !Crosshair.Enable;
+                case 3: // 工程師Tab
                     EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
                     break;
                 default:
                     break;
             }
         }
+       
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
             switch (OnTabIndex)
             {
-                case 2:
-                    //AssistRect.Enable = !AssistRect.Enable;
+                case 3: // 工程師Tab
                     EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
                     break;
                 default:

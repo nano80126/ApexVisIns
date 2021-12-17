@@ -8,6 +8,8 @@ using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
 using Advantech.Motion;
+using System.IO;
+using System.Globalization;
 
 namespace ApexVisIns
 {
@@ -201,6 +203,35 @@ namespace ApexVisIns
         /// </summary>
         [Obsolete("待移除")]
         public ObservableCollection<string> Axes { get; } = new ObservableCollection<string>();
+
+
+        /// <summary>
+        /// 確認 DLL 已安裝且版本符合
+        /// </summary>
+        /// <returns>DLL是否安裝正確</returns>
+        public static bool CheckDllVersion()
+        {
+            string fileName = Environment.SystemDirectory + @"\ADVMOT.dll"; // SystemDirectory : System32
+
+            if (File.Exists(fileName))
+            {
+                string fileVersion = FileVersionInfo.GetVersionInfo(fileName).FileVersion;
+
+                string[] strSplit = fileVersion.Split(',');
+
+                if (Convert.ToUInt16(strSplit[0], CultureInfo.CurrentCulture) < 2)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                //throw new DllNotFoundException("Motion 控制驅動未安裝");
+                return false;
+            }
+            return true;
+        }
+
 
         /// <summary>
         /// 
@@ -661,6 +692,7 @@ namespace ApexVisIns
         private uint _geatrN1;
         private uint _gearM;
         private bool _jogOn;
+        private uint _targetPos;
 
         /// <summary>
         /// xaml 用建構子
@@ -838,6 +870,21 @@ namespace ApexVisIns
         /// Jog 初速時間
         /// </summary>
         public uint JogVLTime { get; set; }
+
+        /// <summary>
+        /// 目標位置
+        /// </summary>
+        public double TargetPos { get; set; }
+
+        /// <summary>
+        /// 變更位置脈波
+        /// </summary>
+        public double ChangePosPulse { get; set; }
+
+        /// <summary>
+        /// 變更速度脈波
+        /// </summary>
+        public double ChangeVelPulse { get; set; }
 
         /// <summary>
         /// 更新 IO
@@ -1173,7 +1220,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxJog(AxisHandle, 1);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"觸發順時針 JOG 失敗: Code[0x{result:X}]");
             }
         }
 
@@ -1185,7 +1232,7 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxJog(AxisHandle, 0);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"觸發逆時針 JOG 失敗: Code[0x{result:X}]");
             }
         }
 
@@ -1197,31 +1244,45 @@ namespace ApexVisIns
             uint result = Motion.mAcm_AxStopDec(AxisHandle);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"停止 Jog 模式失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"觸發馬達停止失敗: Code[0x{result:X}]");
             }
         }
 
-
         /// <summary>
-        /// 
+        /// 觸發位置控制
         /// </summary>
         /// <param name="position">目標位置</param>
         /// <param name="absolute">絕對定位</param>
-        public void PosMove(double position, bool absolute = false)
+        public void PosMove(bool absolute = false)
         {
-            uint result;
-            if (absolute)
-            {
-                result = Motion.mAcm_AxMoveAbs(AxisHandle, position);
-            }
-            else
-            {
-                result = Motion.mAcm_AxMoveRel(AxisHandle, position);
-            }
-
+            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 變更目標位置
+        /// </summary>
+        public void ChangePos()
+        {
+            uint result = Motion.mAcm_AxChangePos(AxisHandle, ChangePosPulse);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"位置控制變更目標位置失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 變更運轉速度
+        /// </summary>
+        public void ChangeVel()
+        {
+            uint result = Motion.mAcm_AxChangeVel(AxisHandle, ChangeVelPulse);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"位置控制變更運轉速度失敗: Code[0x{result:X}]");
             }
         }
 

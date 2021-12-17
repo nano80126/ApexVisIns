@@ -42,15 +42,25 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
-
-            <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
-                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
             <!--//-->
-            <!-- #region NewRegion -->
+            <!--<TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
+            <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
+                <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+
+                <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                           TextAlignment="Center" Width="20" Height="20" Text="7"/>
+
+                <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                           TextAlignment="Center" Width="20" Height="20" Text="0"/>
+            </DockPanel>
+            <!--//-->
+            <!-- #region Di Items -->
             <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
+                        <WrapPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -134,15 +144,23 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
-
-            <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+            <!--//-->            
+            <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
+                <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+
+                <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                           TextAlignment="Center" Width="20" Height="20" Text="7"/>
+
+                <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                           TextAlignment="Center" Width="20" Height="20" Text="0"/>
+            </DockPanel>
             <!--//-->
-            <!--#region Items Source -->
+            <!--#region Do Items -->
             <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 8 0 0"/>
+                        <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -202,13 +220,13 @@
         <!--//-->
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
         <!--//-->
-        <!--#region 測試用，待刪除 -->
         <StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Click="DiRead_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
             <Button Click="DoRead_Click" HorizontalAlignment="Left" Content="DO 回讀" Style="{StaticResource MaterialDesignFlatButton}"/>
             <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>
         </StackPanel>
 
+        <!--#region 測試用，待刪除 -->
         <!--<StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button HorizontalAlignment="Left" Content="啟動中斷器" Style="{StaticResource MaterialDesignFlatButton}" Click="SwitchInterrupt_Click"/>
         </StackPanel>-->
