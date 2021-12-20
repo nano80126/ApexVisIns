@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using Advantech.Motion;
 using System.Runtime.InteropServices;
 using System.Timers;
+using System.Text.Json;
+using System.IO;
 
 namespace ApexVisIns.content
 {
@@ -31,6 +33,9 @@ namespace ApexVisIns.content
         private DEV_LIST[] BoardList = new DEV_LIST[10];
 
         private bool DllIsValid;
+
+        private string MotionDirectory { get; } = @"./motions";
+
         #endregion
 
         public MotionTab()
@@ -57,6 +62,9 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "Motion 控制驅動未安裝或版本不符");
             }
             #endregion
+            // 初始化 json 路徑
+            InitMotionsConfigsRoot();
+
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
@@ -70,6 +78,39 @@ namespace ApexVisIns.content
             MainWindow.ServoMotion.DisableTimer();
         }
 
+
+        private void InitMotionsConfigsRoot()
+        {
+            string path = $@"{MotionDirectory}/motion.json";
+
+            if (!Directory.Exists(MotionDirectory))
+            {
+                // 新增路徑
+                _ = Directory.CreateDirectory(MotionDirectory);
+                // 新增檔案
+                _ = File.CreateText(path);
+            }
+            else if (!File.Exists(path))
+            {
+                _ = File.CreateText(path);
+            }
+            else
+            {
+                //using StreamReader reader = File.OpenText(path);
+                //string jsonStr = reader.ReadToEnd();
+
+                //if (jsonStr != string.Empty)
+                //{
+                //    // 反序列化
+
+
+
+
+
+
+                //}
+            }
+        }
 
         /// <summary>
         /// Clear Focus 用
@@ -194,7 +235,7 @@ namespace ApexVisIns.content
                 MainWindow.ServoMotion.SelectedAxis = comboBox.SelectedIndex;
 
                 MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
-                MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
+                MainWindow.ServoMotion.SltMotionAxis.GetJogVelParam();
             }
         }
 
@@ -312,7 +353,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
+                    MainWindow.ServoMotion.SltMotionAxis.SetJogVelParam();
                 }
                 else
                 {
@@ -348,7 +389,7 @@ namespace ApexVisIns.content
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
                 }
-            
+
             }
         }
 
@@ -423,12 +464,21 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+                //MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
-                // throw;
+                //Debug.WriteLine($"{ex.Message}");
             }
         }
 
@@ -436,7 +486,15 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.ChangePos();
+                //MainWindow.ServoMotion.SltMotionAxis.ChangePos();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.ChangePos();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (InvalidOperationException ex)
             {
@@ -448,7 +506,15 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+                //MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (InvalidOperationException ex)
             {
@@ -478,6 +544,48 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
+        }
+
+
+
+        /// <summary>
+        /// Motion 參數載入按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotionConfigLoad_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (MotionAxis item in MainWindow.ServoMotion.AxisList)
+            {
+                Debug.WriteLine($"{item.AxisIndex} {item.AxisIndex} 0x{item.SlaveNumber:X}");
+
+
+            }
+        }
+
+        /// <summary>
+        /// Motion 參數儲存按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotionConfigSave_Click(object sender, RoutedEventArgs e)
+        {
+            string path = $@"{MotionDirectory}/motion.json";
+
+            MotionVelParam[] axes = MainWindow.ServoMotion.AxisList.Select(axis => new MotionVelParam()
+            {
+                SlaveNumber = axis.SlaveNumber,
+                GearN1 = axis.GearN1,
+                GearM = axis.GearM,
+                JogVelLow = axis.JogVelLow,
+                JogVelHigh = axis.JogVelHigh,
+                JogAcc = axis.JogAcc,
+                JogDec = axis.JogDec,
+                JogVLTime = axis.JogVLTime,
+            }).ToArray();
+            string jsonStr = JsonSerializer.Serialize(axes, new JsonSerializerOptions { WriteIndented = true });
+
+            File.WriteAllText(path, jsonStr);
         }
     }
 }

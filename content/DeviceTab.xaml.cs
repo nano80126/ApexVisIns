@@ -213,7 +213,7 @@ namespace ApexVisIns.content
                     {
                         jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
 #if false
-                        #region 需要 與 CameraEnumer 比較
+                    #region 需要 與 CameraEnumer 比較
                         // 當前有連線之相機
                         List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
 
@@ -230,7 +230,7 @@ namespace ApexVisIns.content
                                 MainWindow.DeviceConfigs.Add(config);
                             }
                         }
-                        #endregion  
+                    #endregion
 #endif
                     } 
 #endif

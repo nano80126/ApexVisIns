@@ -59,7 +59,7 @@ namespace ApexVisIns
         /// <summary>
         /// 從站 ID 陣列
         /// </summary>
-        public ushort[] SlaveIDArray { get; private set; } = new ushort[10]; 
+        public ushort[] SlaveIDArray { get; private set; } = new ushort[10];
 
         /// <summary>
         /// Servo Oo Flag
@@ -76,8 +76,6 @@ namespace ApexVisIns
                 }
             }
         }
-
-       
 
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
@@ -265,9 +263,9 @@ namespace ApexVisIns
             uint AxesCount = 0;     // 裝置軸數 
             uint DiChCount = 0;     // 裝置DI數
 
-            //ushort ringNo = 0;
-            //ushort[] slaveIPArr = new ushort[6];
-            //uint slaveCount = 0;    // 從站數量
+            ushort ringNo = 0;      // 
+            ushort[] slaveIPArr = new ushort[10];   
+            uint slaveCount = 0;    // 從站數量
 
             if (!DeviceOpened)
             {
@@ -298,25 +296,6 @@ namespace ApexVisIns
                 }
                 MaxAxisCount = AxesCount;
 
-                #region 可略過
-#if false
-                result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
-                if (result != (int)ErrorCode.SUCCESS)
-                {
-                    throw new Exception($"讀取主站資訊失敗: Code[0x{result:X}]");
-                }
-                Debug.WriteLine($"{ringNo} {string.Join(",", slaveIPArr)} {slaveCount}");
-
-                ADV_SLAVE_INFO info = new();
-                result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, 0, ref info); // argu 2 : 0 => Motion ring
-                if (result != (int)ErrorCode.SUCCESS)
-                {
-                    throw new Exception($"讀取從站資訊失敗: Code[0x{result:X}]");
-                }
-                Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}"); 
-#endif
-                #endregion
-
                 Axes.Clear();   // 清空軸數
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
@@ -330,10 +309,51 @@ namespace ApexVisIns
                     AxisList.Add(new MotionAxis(AxisHandles[i], i));
 
                     // Set Commnad pos to 0
-                    Motion.mAcm_AxSetCmdPosition(AxisHandles[i], 0);
+                    _ = Motion.mAcm_AxSetCmdPosition(AxisHandles[i], 0);
                 }
 
-                // Get Di maximum number of this channel // 目前不知道要做啥
+                #region 可略過
+                //result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
+                //if (result != (int)ErrorCode.SUCCESS)
+                //{
+                //    throw new Exception($"讀取主站資訊失敗: Code[0x{result:X}]");
+                //}
+                //Debug.WriteLine($"RingNO: {ringNo} {string.Join(",", slaveIPArr)} {slaveCount}");
+
+#if true
+                ADV_SLAVE_INFO info = new();
+                ushort j = 0x01;    // 從站站號
+                int slvIndex = 0;   // 從站數量
+                //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+                do
+                {
+                    if (slvIndex < MaxAxisCount)
+                    {
+                        result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, j, ref info); // argu 2 : 0 => Motion ring
+                        if (result != (int)ErrorCode.SUCCESS)
+                        {
+                            //throw new Exception($"讀取從站資訊失敗: Code[0x{result:X}]");
+                            Debug.WriteLine($"result: {result:X} j:{j:X}");
+                        }
+                        else
+                        {
+                            AxisList[slvIndex].SlaveNumber = info.SlaveID;
+                            slvIndex++;
+                            Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}");
+                        }
+                        j++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (j < 0xFF);
+                //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+#endif
+                #endregion
+
+
+                // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
                 result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
@@ -551,7 +571,7 @@ namespace ApexVisIns
 
                 SltMotionAxis.PosCommand = cmd;
                 SltMotionAxis.PosActual = pos;
-                
+
                 //Debug.WriteLine($"{(IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_DIR) == (uint)Ax_Motion_IO.AX_MOTION_IO_DIR}");
                 result = Motion.mAcm_AxGetMotionIO(AxisHandles[_sltAxis], ref IOStatus);
                 if (result == (uint)ErrorCode.SUCCESS)
@@ -678,7 +698,244 @@ namespace ApexVisIns
         //}
     }
 
-    public class MotionAxis : INotifyPropertyChanged
+
+    /// <summary>
+    /// Motion 軸參數
+    /// </summary>
+    public class MotionVelParam : INotifyPropertyChanged
+    {
+        #region Varibles
+        private uint _gearN1;
+        private uint _gearM;
+        private double _jogVelLow;
+        private double _jogVelHigh;
+        private double _jogAcc;
+        private double _jogDec;
+        private uint _jogVLTime;
+
+
+        private double _velLow;
+        private double _velHigh;
+        private double _acc;
+        private double _dec;
+        
+
+        // public MotionVelParam(MotionAxis axis)
+        // {
+        //     SlaveNumber = axis.SlaveNumber;
+        //     GearN1 = axis.GearN1;
+        //     GearM = axis.GearM;
+        //     JogVelLow = axis.JogVelLow;
+        //     JogVelHigh = axis.JogVelHigh;
+        //     JogAcc = axis.JogAcc;
+        //     JogDec = axis.JogDec;
+        //     JogVLTime = axis.JogVLTime;
+        // }
+        #endregion
+
+        /// <summary>
+        /// 從站編號
+        /// </summary>
+        public uint SlaveNumber { get; set; }
+
+        /// <summary>
+        /// 齒輪比分子
+        /// </summary>
+        public uint GearN1
+        {
+            get => _gearN1;
+            set
+            {
+                if (value != _gearN1)
+                {
+                    _gearN1 = value;
+                    OnPropertyChanged(nameof(GearN1));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 齒輪比分母
+        /// </summary>
+        public uint GearM
+        {
+            get => _gearM;
+            set
+            {
+                if (value != _gearM)
+                {
+                    _gearM = value;
+                    OnPropertyChanged(nameof(GearM));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog 初速度
+        /// </summary>
+        public double JogVelLow
+        {
+            get => _jogVelLow;
+            set
+            {
+                if (value != _jogVelLow)
+                {
+                    _jogVelLow = value;
+                    OnPropertyChanged(nameof(JogVelLow));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog 目標速度
+        /// </summary>
+        public double JogVelHigh
+        {
+            get => _jogVelHigh;
+            set
+            {
+                if (value != _jogVelHigh)
+                {
+                    _jogVelHigh = value;
+                    OnPropertyChanged(nameof(JogVelHigh));
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Jog 加速度
+        /// </summary>
+        public double JogAcc
+        {
+            get => _jogAcc;
+            set
+            {
+                if (value != _jogAcc)
+                {
+                    _jogAcc = value;
+                    OnPropertyChanged(nameof(JogAcc));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog 減速度
+        /// </summary>
+        public double JogDec
+        {
+            get => _jogDec;
+            set
+            {
+                if (value != _jogDec)
+                {
+                    _jogDec = value;
+                    OnPropertyChanged(nameof(JogDec));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog 初速時間
+        /// </summary>
+        public uint JogVLTime
+        {
+            get => _jogVLTime;
+            set
+            {
+                if (value != _jogVLTime)
+                {
+                    _jogVLTime = value;
+                    OnPropertyChanged(nameof(JogVLTime));
+                }
+            }
+        }
+
+        /// <summary>
+        /// PAR_AxVelLow
+        /// </summary>
+        public double VelLow
+        {
+            get => _velLow;
+            set
+            {
+                if (value != _velLow)
+                {
+                    _velLow = value;
+                    OnPropertyChanged(nameof(VelLow));
+                }
+            }
+        }
+
+        /// <summary>
+        /// PAR_AxVelHigh
+        /// </summary>
+        public double VelHigh
+        {
+            get => _velHigh;
+            set
+            {
+                if (value != _velHigh)
+                {
+                    _velHigh = value;
+                    OnPropertyChanged(nameof(VelHigh));
+                }
+            }
+        }
+
+        /// <summary>
+        /// PAR_AxAcc
+        /// </summary>
+        public double Acc
+        {
+            get => _acc;
+            set
+            {
+                if (value != _acc)
+                {
+                    _acc = value;
+                    OnPropertyChanged(nameof(Acc));
+                }
+            }
+        }
+
+        /// <summary>
+        /// PAR_AxDec
+        /// </summary>
+        public double Dec
+        {
+            get => _dec;
+            set
+            {
+                if (value != _dec)
+                {
+                    _dec = value;
+                    OnPropertyChanged(nameof(Dec));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// 觸發 Property Change
+        /// </summary>
+        /// <param name="propertyName"></param>
+        public void PropertyChange(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+
+    /// <summary>
+    /// Motion 軸狀態、參數等
+    /// </summary>
+    public class MotionAxis : MotionVelParam
     {
         private string _currentStatus;
         private double _posCmd;
@@ -689,10 +946,9 @@ namespace ApexVisIns
         /// </summary>
         private readonly IntPtr AxisHandle = IntPtr.Zero;
         private bool _servoOn;
-        private uint _geatrN1;
-        private uint _gearM;
+        //private uint _gearN1;
+        //private uint _gearM;
         private bool _jogOn;
-        private uint _targetPos;
 
         /// <summary>
         /// xaml 用建構子
@@ -711,6 +967,18 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// MotionAxis 建構子
+        /// </summary>
+        /// <param name="axisHandle">軸 Handle</param>
+        /// <param name="axisIndex">軸 Index</param>
+        public MotionAxis(IntPtr axisHandle, int axisIndex, ushort slaveNumber)
+        {
+            AxisHandle = axisHandle;
+            AxisIndex = axisIndex;
+            SlaveNumber = slaveNumber;
+        }
+
+        /// <summary>
         /// 軸 Index
         /// </summary>
         public int AxisIndex { get; set; }
@@ -719,6 +987,8 @@ namespace ApexVisIns
         /// 軸名稱
         /// </summary>
         public string AxisName { get => $"{AxisIndex}-Axis"; }
+
+        //public uint SlaveNumber { get; set; }
 
         /// <summary>
         /// Servo Oo Flag
@@ -814,17 +1084,18 @@ namespace ApexVisIns
             }
         }
 
+#if false
         /// <summary>
         /// 齒輪比分子
         /// </summary>
         public uint GearN1
         {
-            get => _geatrN1;
+            get => _gearN1;
             set
             {
-                if (value != _geatrN1)
+                if (value != _gearN1)
                 {
-                    _geatrN1 = value;
+                    _gearN1 = value;
                     OnPropertyChanged(nameof(GearN1));
                 }
             }
@@ -860,7 +1131,7 @@ namespace ApexVisIns
         /// Jog 加速度
         /// </summary>
         public double JogAcc { get; set; }
-        
+
         /// <summary>
         /// Jog 減速度
         /// </summary>
@@ -869,7 +1140,8 @@ namespace ApexVisIns
         /// <summary>
         /// Jog 初速時間
         /// </summary>
-        public uint JogVLTime { get; set; }
+        public uint JogVLTime { get; set; } 
+#endif
 
         /// <summary>
         /// 目標位置
@@ -902,6 +1174,7 @@ namespace ApexVisIns
         /// <summary>
         /// 讀取軸資訊
         /// </summary>
+        [Obsolete]
         public void GetAxisInfo()
         {
             double cmd = 0;
@@ -919,7 +1192,6 @@ namespace ApexVisIns
             PosActual = pos;
 
             result = Motion.mAcm_AxGetMotionIO(AxisHandle, ref IOStatus);
-
             if (result == (uint)ErrorCode.SUCCESS)
             {
                 SetMotionIOStatus(IOStatus);
@@ -1071,50 +1343,38 @@ namespace ApexVisIns
                 throw new InvalidOperationException($"讀取電子齒輪比 M 失敗: Code[0x{result:X}]");
             }
             GearM = ppum;
-
-            OnPropertyChanged(nameof(GearN1));
-            OnPropertyChanged(nameof(GearM));
+            //OnPropertyChanged(nameof(GearN1));
+            //OnPropertyChanged(nameof(GearM));
         }
 
         /// <summary>
-        /// 寫入速度參數
+        ///寫入速度參數
         /// </summary>
         public void SetAxisVelParam()
         {
-            //Debug.WriteLine($"{JogVelLow} {JogVelHigh}");
-            //Debug.WriteLine($"{JogAcc} {JogDec}");
-            //Debug.WriteLine($"{JogVLTime}");
-
-            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, JogVelLow);
+            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelLow, VelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"寫入初始速度失敗: Code[0x{result:X}]");
             }
 
-            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, JogVelHigh);
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelHigh, VelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"寫入目標速度失敗: Code[0x{result:X}]");
             }
 
-            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, JogAcc);
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxAcc, Acc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"寫入加速度失敗: Code[0x{result:X}]");
             }
 
-            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, JogDec);
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxDec, Dec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"寫入減速度失敗: Code[0x{result:X}]");
             }
-
-            result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, JogVLTime);
-            if (result != (uint)ErrorCode.SUCCESS)
-            {
-                throw new InvalidOperationException($"寫入初速時間失敗: Code[0x{result:X}]");
-            }
-
             GetAxisVelParam();
         }
 
@@ -1123,65 +1383,126 @@ namespace ApexVisIns
         /// </summary>
         public void GetAxisVelParam()
         {
+            double axVelLow = 0;
+            double axVelHigh = 0;
+            double axAcc = 0;
+            double axDec = 0;
+
+            uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelLow, ref axVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG初始速度失敗: Code[0x{result:X}]");
+            }
+            VelLow = axVelLow;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelHigh, ref axVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG目標速度失敗: Code[0x{result:X}]");
+            }
+            VelHigh = axVelHigh;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxAcc, ref axAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG加速度失敗: Code[0x{result:X}]");
+            }
+            Acc = axAcc;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxDec, ref axDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG減速度失敗: Code[0x{result:X}]");
+            }
+            Dec = axDec;
+        }
+
+        /// <summary>
+        /// 寫入JOG速度參數
+        /// </summary>
+        public void SetJogVelParam()
+        {
+            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, JogVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入JOG初始速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, JogVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入JOG目標速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, JogAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入JOG加速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, JogDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入JOG減速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, JogVLTime);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入JOG初速時間失敗: Code[0x{result:X}]");
+            }
+
+            GetJogVelParam();
+        }
+
+        /// <summary>
+        /// 讀取JOG速度參數
+        /// </summary>
+        public void GetJogVelParam()
+        {
             double axJogVelLow = 0;
             double axJogVelHigh = 0;
             double axJogAcc = 0;
             double axJogDec = 0;
             uint axJogVLTime = 0;
 
-            //double axParJogVelLow = 0;
-            //double axParJogVelHigh = 0;
+            // double axParJogVelLow = 0;
+            // double axParJogVelHigh = 0;
 
             uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, ref axJogVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取JOG初始速度失敗: Code[0x{result:X}]");
             }
             JogVelLow = axJogVelLow;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, ref axJogVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取JOG目標速度失敗: Code[0x{result:X}]");
             }
             JogVelHigh = axJogVelHigh;
-
-            
-            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
-            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.max, ref axParJogVelLow);
-            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelLow, ref axParJogVelLow);
-            //result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxJogVelHigh, ref axParJogVelHigh);
-
-
-            //Debug.WriteLine($"Par: {axParJogVelHigh} {axParJogVelLow}");
-
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, ref axJogAcc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取加速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取JOG加速度失敗: Code[0x{result:X}]");
             }
             JogAcc = axJogAcc;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, ref axJogDec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取減速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取JOG減速度失敗: Code[0x{result:X}]");
             }
             JogDec = axJogDec;
 
             result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, ref axJogVLTime);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new Exception($"讀取初速時間失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取JOG初速時間失敗: Code[0x{result:X}]");
             }
             JogVLTime = axJogVLTime;
-
-            OnPropertyChanged(nameof(JogVelLow));
-            OnPropertyChanged(nameof(JogVelHigh));
-            OnPropertyChanged(nameof(JogAcc));
-            OnPropertyChanged(nameof(JogDec));
-            OnPropertyChanged(nameof(JogVLTime));
         }
 
         /// <summary>
@@ -1333,16 +1654,16 @@ namespace ApexVisIns
             public bool BitOn { get; set; }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        //private void OnPropertyChanged(string propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
 
-        public void PropertyChange(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        //public void PropertyChange(string propertyName = null)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
     }
 }
