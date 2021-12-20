@@ -30,10 +30,13 @@
         <!--//-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
+            <!--Separator-->
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <!--Separator-->
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <!--//-->
@@ -354,10 +357,10 @@
         <!--#endregion-->
 
         <!-- Separator -->
-        <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"/>
+        <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
 
-        <!--#region 2nd column, Parameter, Jog Panel -->
-        <!--<Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 0 0 0" Background="{x:Null}">-->
+        <!--#region 2nd column, Parameter, Home, Jog Panel -->
         <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}"
                     DataContext="{Binding SltMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}" >
             <!--#region 電子齒輪比 -->
@@ -472,7 +475,7 @@
                         <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                      Text="{Binding JogVLTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入" Click="VelParamSetBtn_Click" 
+                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入" Click="JogVelParamSetBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--//-->
                         <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
@@ -594,30 +597,30 @@
                         <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                  Text="{Binding JogDec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="VelParamSetBtn_Click" 
+                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="AxisVelParamSetBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--/-->
-                        <Separator Grid.Row="2" Grid.ColumnSpan="4" Margin="0 8"/>
+                        <Separator Grid.Row="3" Grid.ColumnSpan="4" Margin="0 8"/>
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="目標位置"/>
-                        <TextBox Grid.Row="3" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="3" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                        <!--//-->
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="變更位置"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="目標位置"/>
                         <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="4" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
+                                     Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="4" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--//-->
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="變更速度"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="變更位置"/>
                         <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="5" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
+                                     Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="5" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--//-->
-                        <Button Grid.Row="6" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="變更速度"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="6" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                        <!--//-->
+                        <Button Grid.Row="7" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
                                     Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
 
                         <!--<Button DockPanel.Dock="Bottom" Grid.Row="4" Grid.ColumnSpan="100" Margin="0 100 0 0" Height="120" Content="緊急停止" Click="MotionEmgStop_Click"
@@ -629,21 +632,20 @@
             <!--#endregion-->
         </StackPanel>
         
-        
         <StackPanel Grid.Column="2" Grid.Row="1" VerticalAlignment="Bottom" Background="{x:Null}">
             <Button Margin="2 0" Height="100" Content="緊急停止" Click="MotionEmgStop_Click" materialDesign:ButtonAssist.CornerRadius="50"
                     Foreground="{StaticResource ColorError}" BorderBrush="{StaticResource ColorError}" 
                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
         </StackPanel>
-        <!--</Border>-->
         <!--#endregion-->
 
         <!-- Separator -->
-        <Separator Grid.Column="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"/>
+        <Separator Grid.Column="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0" 
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
 
         <!--#region 3rd column, -->
-        <!--<Border Grid.Column="4" Grid.ColumnSpan="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 0 0 0" Background="{x:Null}">-->
-        <StackPanel Grid.Column="4" Grid.ColumnSpan="2" Orientation="Vertical" Background="{x:Null}">
+        <StackPanel Grid.Column="4" Grid.ColumnSpan="1" Orientation="Vertical" Background="{x:Null}">
+            
             <materialDesign:Card x:Name="MotionMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <DockPanel Background="Transparent" Margin="2 0">
@@ -658,12 +660,39 @@
                     <Grid>
 
 
-
                     </Grid>
                 </DockPanel>
             </materialDesign:Card>
         </StackPanel>
-        <!--</Border>-->
+        <!--#endregion-->
+
+        <!-- Separator -->
+        <Separator Grid.Column="5" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0" 
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+        <!--#region 4th column, -->
+        <StackPanel Grid.Column="6" Grid.ColumnSpan="1" Orientation="Vertical" Background="{x:Null}">
+            <!--#region 多軸控制 -->
+            <materialDesign:Card x:Name="MultiMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="MultiMoveHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
+
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="多軸同步控制"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid>
+
+
+
+                    </Grid>
+                </DockPanel>
+            </materialDesign:Card>
+            <!--#endregion-->
+        </StackPanel>
         <!--#endregion-->
 
         <!--

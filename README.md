@@ -91,6 +91,7 @@ Apex 外觀瑕疵檢測
 * [ ] Motion Tab Unload 的處置
 * [ ] Device Tab
 	* Device List 儲存IP，相機IP需要綁定
+* [ ] 原點賦歸
 
 ### Config Logic
 

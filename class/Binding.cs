@@ -20,10 +20,8 @@ namespace ApexVisIns
 #endif
 
         private ImageSource _imgSrc;
-        /// <summary>
-        /// DEBUG TAB
-        /// </summary>
         private int _onTabIndex = 0;
+        private int _progress;
 
         /// <summary>
         /// Tab active index
@@ -80,6 +78,16 @@ namespace ApexVisIns
             {
                 _imgSrc = value;
                 OnPropertyChanged(nameof(ImageSource));
+            }
+        }
+
+        public int ProgressValue
+        {
+            get => _progress;
+            set
+            {
+                _progress = value;
+                OnPropertyChanged(nameof(ProgressValue));
             }
         }
 

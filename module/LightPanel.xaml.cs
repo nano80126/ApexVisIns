@@ -84,7 +84,7 @@ namespace ApexVisIns.module
             }
             else
             {
-
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
             }
         }
 
@@ -102,9 +102,9 @@ namespace ApexVisIns.module
 
                 string ret = MainWindow.LightController.Write(cmd);
 
-                // 新增至 MsgInformer 
-                Debug.WriteLine(cmd);
-                Debug.WriteLine(ret);
+                //// 新增至 MsgInformer 
+                //Debug.WriteLine(cmd);
+                //Debug.WriteLine(ret);
 
                 #region 自動化測試
                 //Task.Run(() =>
@@ -137,7 +137,7 @@ namespace ApexVisIns.module
             }
             else
             {
-                //MainWindow.LightController.ResetValue();
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
             }
         }
         

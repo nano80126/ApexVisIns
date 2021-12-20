@@ -43,7 +43,7 @@ namespace ApexVisIns.content
             InitializeComponent();
         }
 
-
+        #region Load & Unload
         /// <summary>
         /// Motion Tab 載入
         /// </summary>
@@ -76,7 +76,8 @@ namespace ApexVisIns.content
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             MainWindow.ServoMotion.DisableTimer();
-        }
+        } 
+        #endregion
 
 
         private void InitMotionsConfigsRoot()
@@ -230,12 +231,13 @@ namespace ApexVisIns.content
         {
             ComboBox comboBox = sender as ComboBox;
 
-            if (comboBox.SelectedItem is MotionAxis axis)
+            if (comboBox.SelectedItem is MotionAxis)
             {
                 MainWindow.ServoMotion.SelectedAxis = comboBox.SelectedIndex;
 
                 MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
                 MainWindow.ServoMotion.SltMotionAxis.GetJogVelParam();
+                MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
             }
         }
 
@@ -318,6 +320,16 @@ namespace ApexVisIns.content
             }
         }
 
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
         /// <summary>
         /// 寫入電子齒輪比
         /// </summary>
@@ -343,11 +355,12 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 寫入速度參數
+        /// 寫入JOG速度參數
+        /// (CFG_AxJogXXX)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void VelParamSetBtn_Click(object sender, RoutedEventArgs e)
+        private void JogVelParamSetBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -364,16 +377,6 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
-        }
-
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            (sender as TextBox).SelectAll();
-        }
-
-        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            (sender as TextBox).SelectAll();
         }
 
         private void JogStartPopupBox_Opened(object sender, RoutedEventArgs e)
@@ -453,6 +456,31 @@ namespace ApexVisIns.content
             try
             {
                 MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 寫入速度參數
+        /// (PAR_AxVelXXX)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AxisVelParamSetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (Exception ex)
             {
@@ -546,8 +574,6 @@ namespace ApexVisIns.content
             }
         }
 
-
-
         /// <summary>
         /// Motion 參數載入按鈕
         /// </summary>
@@ -587,5 +613,6 @@ namespace ApexVisIns.content
 
             File.WriteAllText(path, jsonStr);
         }
+
     }
 }

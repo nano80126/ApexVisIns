@@ -115,7 +115,7 @@
                 </local:BaslerCam>
             </x:Array>
             
-            <!--裝置組態-->
+            <!--裝置組態 (線上使用之組態)-->
             <local:DeviceConfigList x:Key="DeviceConfigs">
                 <!--<local:DeviceConfig Name="Device1"/>-->
             </local:DeviceConfigList>
@@ -129,6 +129,7 @@
             <local:LightEnumer x:Key="LightEnumer"/>
             <!--光源控制器-->
             <local:LightController x:Key="LightController" ChannelNumber="4"/>
+            <local:LightController x:Key="LightController2" ChannelNumber="2"/>
             <!--#endregion-->
 
             <!--#region IO Control Resources -->

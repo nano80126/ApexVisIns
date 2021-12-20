@@ -414,15 +414,18 @@
                     </StackPanel>
                 </materialDesign:PopupBox>
                 <!--#endregion-->
+                
+                
 
-
-                <ProgressBar DockPanel.Dock="Left" Margin="8 0 0 0" Value="50" Height="6" BorderThickness="0" BorderBrush="Gray"
+                <ProgressBar DockPanel.Dock="Left" Margin="8 0 0 0" Height="6" BorderThickness="0" BorderBrush="Gray"
                              materialDesign:TransitionAssist.DisableTransitions="True" 
                              HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
-                             Width="250" Visibility="Visible"/>
+                             Width="250" Value="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}" 
+                             Visibility="Visible"/>
                 <!--// string format {}{0:D2%}-->
-                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="50" Visibility="Visible"
-                           Foreground="{StaticResource ColorBrown}"/>
+                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
+                           Text="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0, StringFormat={}{0} %}" 
+                           Visibility="Visible"/>
             </DockPanel>
             <!--#endregion-->
         </Grid>
