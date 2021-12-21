@@ -46,24 +46,24 @@ namespace ApexVisIns.content
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
             //Debug.WriteLine("Main Tab Load");
 
-            Task.Run(() =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    InitCamera();
-                    MainWindow.ProgressValue = 10;
-                    SpinWait.SpinUntil(() => false, 2000);
-                });
+            //Task.Run(() =>
+            //{
+            //    Dispatcher.Invoke(() =>
+            //    {
+            //        InitCamera();
+            //        MainWindow.ProgressValue = 10;
+            //        SpinWait.SpinUntil(() => false, 2000);
+            //    });
 
-                SpinWait.SpinUntil(() => false, 2000);
+            //    SpinWait.SpinUntil(() => false, 2000);
 
-                Dispatcher.Invoke(() =>
-                {
-                    InitCamera();
-                    MainWindow.ProgressValue = 20;
-                    SpinWait.SpinUntil(() => false, 2000);
-                });
-            });
+            //    Dispatcher.Invoke(() =>
+            //    {
+            //        InitCamera();
+            //        MainWindow.ProgressValue = 20;
+            //        SpinWait.SpinUntil(() => false, 2000);
+            //    });
+            //});
         }
         /// <summary>
         /// Main Tab 卸載

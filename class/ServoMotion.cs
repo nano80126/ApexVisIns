@@ -20,8 +20,8 @@ namespace ApexVisIns
         private uint DEV_Count;
 
         // private uint Result;
-        private IntPtr DeviceHandle = IntPtr.Zero;
-        private readonly IntPtr[] AxisHandles = new IntPtr[8];
+        public IntPtr DeviceHandle = IntPtr.Zero;
+        public readonly IntPtr[] AxisHandles = new IntPtr[8];
 
         private double _posCmd;
         private double _posAct;
@@ -84,6 +84,14 @@ namespace ApexVisIns
         /// </summary>
         public List<MotionAxis> AxisList { get; } = new List<MotionAxis>();
 
+        /// <summary>
+        /// 原點復歸模式列表
+        /// </summary>
+        public List<HomeMode> HomeModes { get; } = new List<HomeMode>();
+
+        /// <summary>
+        /// 選擇軸
+        /// </summary>
         public int SelectedAxis
         {
             get => _sltAxis;
@@ -95,10 +103,23 @@ namespace ApexVisIns
                     OnPropertyChanged(nameof(SelectedAxis));
                     OnPropertyChanged(nameof(SltMotionAxis));
                 }
+
+                if (_sltAxis != -1)
+                {
+                    EnableTimer(100);
+                }
+                else
+                {
+                    DisableTimer();
+                }
             }
         }
 
+        /// <summary>
+        /// 選擇軸
+        /// </summary>
         public MotionAxis SltMotionAxis => 0 <= _sltAxis && _sltAxis < AxisList.Count ? AxisList[_sltAxis] : null;
+
 
 #if false
         public double PosCommand
@@ -127,6 +148,7 @@ namespace ApexVisIns
             }
         } 
 #endif
+
 
 #if false
         /// <summary>
@@ -160,9 +182,7 @@ namespace ApexVisIns
         public AxisSignal IO_EMG { get; set; } = new AxisSignal("EMG");
 #endif
 
-        /// <summary>
-        /// 更新 IO
-        /// </summary>
+
 #if false
         public void UpdateIO()
         {
@@ -174,6 +194,7 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(IO_EMG));
         } 
 #endif
+
 
         ///// <summary>
         ///// 當前軸狀態
@@ -195,12 +216,6 @@ namespace ApexVisIns
         /// 最大軸數
         /// </summary>
         public uint MaxAxisCount { get; private set; }
-
-        /// <summary>
-        /// 運動軸 (待刪除)
-        /// </summary>
-        [Obsolete("待移除")]
-        public ObservableCollection<string> Axes { get; } = new ObservableCollection<string>();
 
 
         /// <summary>
@@ -263,9 +278,9 @@ namespace ApexVisIns
             uint AxesCount = 0;     // 裝置軸數 
             uint DiChCount = 0;     // 裝置DI數
 
-            ushort ringNo = 0;      // 
-            ushort[] slaveIPArr = new ushort[10];   
-            uint slaveCount = 0;    // 從站數量
+            // ushort ringNo = 0;      // 
+            // ushort[] slaveIPArr = new ushort[10];   
+            // uint slaveCount = 0;    // 從站數量
 
             if (!DeviceOpened)
             {
@@ -296,7 +311,7 @@ namespace ApexVisIns
                 }
                 MaxAxisCount = AxesCount;
 
-                Axes.Clear();   // 清空軸數
+                AxisList.Clear();
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
                     result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
@@ -305,7 +320,6 @@ namespace ApexVisIns
                     {
                         throw new Exception($"開啟軸失敗: Code[0x{result:X}]");
                     }
-                    Axes.Add($"{i}-Axis");
                     AxisList.Add(new MotionAxis(AxisHandles[i], i));
 
                     // Set Commnad pos to 0
@@ -324,7 +338,6 @@ namespace ApexVisIns
                 ADV_SLAVE_INFO info = new();
                 ushort j = 0x01;    // 從站站號
                 int slvIndex = 0;   // 從站數量
-                //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
                 do
                 {
                     if (slvIndex < MaxAxisCount)
@@ -332,8 +345,7 @@ namespace ApexVisIns
                         result = Motion.mAcm_DevGetSlaveInfo(DeviceHandle, 0, j, ref info); // argu 2 : 0 => Motion ring
                         if (result != (int)ErrorCode.SUCCESS)
                         {
-                            //throw new Exception($"讀取從站資訊失敗: Code[0x{result:X}]");
-                            Debug.WriteLine($"result: {result:X} j:{j:X}");
+                            // Debug.WriteLine($"result: {result:X} j:{j:X}");
                         }
                         else
                         {
@@ -348,17 +360,27 @@ namespace ApexVisIns
                         break;
                     }
                 } while (j < 0xFF);
-                //Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
 #endif
                 #endregion
 
 
-                // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
-                result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
-                if (result != (uint)ErrorCode.SUCCESS)
+                HomeModes.Clear();
+                foreach (Cia402HomeMode i in Enum.GetValues(typeof(Cia402HomeMode)))
                 {
-                    throw new Exception($"讀取屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
+                    HomeModes.Add(new HomeMode
+                    {
+                        ModeName = i.ToString(),
+                        ModeCode = (uint)i
+                    });
                 }
+                //OnPropertyChanged(nameof(HomeModes));
+
+                // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
+                //result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
+                //if (result != (uint)ErrorCode.SUCCESS)
+                //{
+                //    throw new Exception($"讀取屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
+                //}
 
                 //// 這要幹麻? 
                 //for (int i = 0; i < DiChCount; i++)
@@ -543,6 +565,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             GetMotionInfo();
         }
 
@@ -554,6 +577,9 @@ namespace ApexVisIns
             statusTimer?.Stop();
         }
 
+        /// <summary>
+        /// 取得 Motion Information
+        /// </summary>
         public void GetMotionInfo()
         {
             double cmd = 0;
@@ -602,10 +628,8 @@ namespace ApexVisIns
             SltMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
             SltMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
         }
+         
 
-        /// <summary>
-        ///重置 Servo IO 狀態
-        /// </summary>
 #if false
         private void ResetMotionIOStatus()
         {
@@ -617,6 +641,17 @@ namespace ApexVisIns
             IO_EMG.BitOn = false;
         } 
 #endif
+
+
+        /// <summary>
+        /// 原點復歸模式
+        /// </summary>
+        public class HomeMode
+        {
+            public string ModeName { get; set; }
+
+            public uint ModeCode { get; set; }
+        }
 
         /// <summary>
         /// 軸 IO 狀態
@@ -707,18 +742,28 @@ namespace ApexVisIns
         #region Varibles
         private uint _gearN1;
         private uint _gearM;
+        #region JOG
         private double _jogVelLow;
         private double _jogVelHigh;
         private double _jogAcc;
         private double _jogDec;
         private uint _jogVLTime;
+        #endregion
 
+        #region HOME
+        private double _homeVelLow;
+        private double _homeVelHigh;
+        private double _homeAcc;
+        private double _homeDec;
+        #endregion
 
+        #region Velocity
         private double _velLow;
         private double _velHigh;
         private double _acc;
-        private double _dec;
-        
+        private double _dec; 
+        #endregion
+
 
         // public MotionVelParam(MotionAxis axis)
         // {
@@ -847,6 +892,71 @@ namespace ApexVisIns
                 {
                     _jogVLTime = value;
                     OnPropertyChanged(nameof(JogVLTime));
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 回原點
+        /// </summary>
+        public double HomeVelLow
+        {
+            get => _homeVelLow;
+            set
+            {
+                if (value != _homeVelLow)
+                {
+                    _homeVelLow = value;
+                    OnPropertyChanged(nameof(HomeVelLow));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 回原點 目標速度
+        /// </summary>
+        public double HomeVelHigh
+        {
+            get => _homeVelHigh;
+            set
+            {
+                if (value != _homeVelHigh)
+                {
+                    _homeVelHigh = value;
+                    OnPropertyChanged(nameof(HomeVelHigh));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 回原點 加速度
+        /// </summary>
+        public double HomeAcc
+        {
+            get => _homeAcc;
+            set
+            {
+                if (value != _homeAcc)
+                {
+                    _homeAcc = value;
+                    OnPropertyChanged(nameof(HomeAcc));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 回原點 減速度
+        /// </summary>
+        public double HomeDec
+        {
+            get => _homeDec;
+            set
+            {
+                if (value != _homeDec)
+                {
+                    _homeDec = value;
+                    OnPropertyChanged(nameof(HomeDec));
                 }
             }
         }
@@ -1240,6 +1350,8 @@ namespace ApexVisIns
         {
             uint result;
 
+            Debug.WriteLine($"Handle{AxisHandle}");
+
             if (!ServoOn)
             {
                 // Servo On augu 2 => 1
@@ -1253,9 +1365,14 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 設定 Servo Off
+        /// </summary>
         public void SetServoOff()
         {
             uint result;
+
+            Debug.WriteLine($"Handle{AxisHandle}");
 
             if (ServoOn)
             {
@@ -1306,7 +1423,7 @@ namespace ApexVisIns
         /// </summary>
         public void SetGearRatio()
         {
-            uint result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU,  GearN1);
+            uint result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPU, GearN1);
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"寫入電子齒輪比 N1 失敗: Code[0x{result:X}]");
@@ -1343,8 +1460,6 @@ namespace ApexVisIns
                 throw new InvalidOperationException($"讀取電子齒輪比 M 失敗: Code[0x{result:X}]");
             }
             GearM = ppum;
-            //OnPropertyChanged(nameof(GearN1));
-            //OnPropertyChanged(nameof(GearM));
         }
 
         /// <summary>
@@ -1425,31 +1540,31 @@ namespace ApexVisIns
             uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, JogVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"寫入JOG初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入 JOG 初始速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, JogVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"寫入JOG目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入 JOG 目標速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, JogAcc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"寫入JOG加速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入 JOG 加速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, JogDec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"寫入JOG減速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入 JOG 減速度失敗: Code[0x{result:X}]");
             }
 
             result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, JogVLTime);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"寫入JOG初速時間失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"寫入 JOG 初速時間失敗: Code[0x{result:X}]");
             }
 
             GetJogVelParam();
@@ -1504,6 +1619,81 @@ namespace ApexVisIns
             }
             JogVLTime = axJogVLTime;
         }
+
+        /// <summary>
+        /// 設定 HOME 速度參數
+        /// </summary>
+        public void SetHomeVelParam()
+        {
+            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeVelLow, HomeVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入 HOME 初始速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeVelHigh, HomeVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入 HOME 目標速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeAcc, HomeAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入 HOME 加速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeDec, HomeDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入 HOME 減速度失敗: Code[0x{result:X}]");
+            }
+            GetHomeVelParam();
+        }
+
+
+        /// <summary>
+        /// 讀取 HOME  速度參數
+        /// </summary>
+        public void GetHomeVelParam()
+        {
+            double axHomeVelLow = 0;
+            double axHomeVelHigh = 0;
+            double axHomeAcc = 0;
+            double axHomeDec = 0;
+
+            // double axParJogVelLow = 0;
+            // double axParJogVelHigh = 0;
+
+            uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeVelLow, ref axHomeVelLow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG初始速度失敗: Code[0x{result:X}]");
+            }
+            HomeVelLow = axHomeVelLow;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeVelHigh, ref axHomeVelHigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG目標速度失敗: Code[0x{result:X}]");
+            }
+            HomeVelHigh = axHomeVelHigh;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeAcc, ref axHomeAcc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG加速度失敗: Code[0x{result:X}]");
+            }
+            HomeAcc = axHomeAcc;
+
+            result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeDec, ref axHomeDec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"讀取JOG減速度失敗: Code[0x{result:X}]");
+            }
+            HomeDec = axHomeDec;
+        }
+
 
         /// <summary>
         /// Jog 開始

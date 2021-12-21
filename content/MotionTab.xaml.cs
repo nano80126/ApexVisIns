@@ -27,13 +27,10 @@ namespace ApexVisIns.content
     public partial class MotionTab : StackPanel
     {
         #region Variables
-        [Obsolete]
-        private uint boardCount;
-        [Obsolete]
-        private DEV_LIST[] BoardList = new DEV_LIST[10];
-
+        /// <summary>
+        /// Dll 是否正確安裝
+        /// </summary>
         private bool DllIsValid;
-
         private string MotionDirectory { get; } = @"./motions";
 
         #endregion
@@ -65,6 +62,14 @@ namespace ApexVisIns.content
             // 初始化 json 路徑
             InitMotionsConfigsRoot();
 
+            if (MainWindow.ServoMotion.DeviceOpened)
+            {
+                //MainWindow.ServoMotion.
+                Debug.WriteLine($"Handle: {MainWindow.ServoMotion.DeviceHandle}");
+                Debug.WriteLine($"AxisHandlex: {string.Join('|', MainWindow.ServoMotion.AxisHandles)}");
+                MainWindow.ServoMotion.EnableTimer(100);
+            }
+
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
@@ -76,10 +81,12 @@ namespace ApexVisIns.content
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             MainWindow.ServoMotion.DisableTimer();
-        } 
+        }
         #endregion
 
-
+        /// <summary>
+        /// 初始化 Motion Config 路徑
+        /// </summary>
         private void InitMotionsConfigsRoot()
         {
             string path = $@"{MotionDirectory}/motion.json";
@@ -103,12 +110,6 @@ namespace ApexVisIns.content
                 //if (jsonStr != string.Empty)
                 //{
                 //    // 反序列化
-
-
-
-
-
-
                 //}
             }
         }
@@ -139,32 +140,6 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 取得可用之 Devices (包進 Servo Motion)
-        /// </summary>
-        [Obsolete("此方法已加入Servo motion中")]
-        public void GetAvailableDevices()
-        {
-            int result = Motion.mAcm_GetAvailableDevs(BoardList, 10, ref boardCount);
-
-            if (result != (int)ErrorCode.SUCCESS)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"列舉 EtherCAT Card 失敗 : {result}");
-            }
-
-            MainWindow.ServoMotion.BoardList.Clear();
-            for (int i = 0; i < boardCount; i++)
-            {
-                MainWindow.ServoMotion.BoardList.Add(new ServoMotion.DeviceList(BoardList[i]));
-            }
-
-            if (boardCount > 0)
-            {
-                DeviceSelector.SelectedIndex = 0;
-                // Debug.WriteLine($"{BoardList[0].DeviceName} {BoardList[0].DeviceNum} {BoardList[0].NumofSubDevice}");
-            }
-        }
-
-        /// <summary>
         /// 開始軸卡
         /// </summary>
         /// <param name="sender"></param>
@@ -176,8 +151,9 @@ namespace ApexVisIns.content
                 if (!MainWindow.ServoMotion.DeviceOpened)
                 {
                     MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
-                    MainWindow.ServoMotion.EnableTimer(100);
-                    //Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                    // // // 
+                    // MainWindow.ServoMotion.EnableTimer(100);
+                    // Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
                 }
                 else
                 {
@@ -235,9 +211,17 @@ namespace ApexVisIns.content
             {
                 MainWindow.ServoMotion.SelectedAxis = comboBox.SelectedIndex;
 
-                MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
-                MainWindow.ServoMotion.SltMotionAxis.GetJogVelParam();
-                MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
+                try
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
+                    MainWindow.ServoMotion.SltMotionAxis.GetJogVelParam();
+                    MainWindow.ServoMotion.SltMotionAxis.GetHomeVelParam();
+                    MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                }
             }
         }
 
@@ -262,20 +246,14 @@ namespace ApexVisIns.content
             {
                 MotionAxis motionAxis = AxisSelector.SelectedItem as MotionAxis;
 
-                Debug.WriteLine($"{motionAxis.AxisIndex} {motionAxis.AxisName}");
-
-                Debug.WriteLine($"{motionAxis.PosCommand} {motionAxis.PosActual} {motionAxis.CurrentStatus}");
-
                 //Debug.WriteLine($"{}")
 
                 if (!MainWindow.ServoMotion.SltMotionAxis.ServoOn)
                 {
-                    Debug.WriteLine("Servo On");
                     MainWindow.ServoMotion.SltMotionAxis.SetServoOn();
                 }
                 else
                 {
-                    Debug.WriteLine("Servo Off");
                     MainWindow.ServoMotion.SltMotionAxis.SetServoOff();
                 }
             }
@@ -355,7 +333,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 寫入JOG速度參數
+        /// 寫入寸動模式(JOG)速度參數
         /// (CFG_AxJogXXX)
         /// </summary>
         /// <param name="sender"></param>
@@ -464,6 +442,30 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 寫入原點復歸(HOME)速度參數
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HomeVelParamSetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SltMotionAxis.SetHomeVelParam();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 寫入速度參數
         /// (PAR_AxVelXXX)
         /// </summary>
@@ -488,6 +490,23 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 執行原點復歸
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HomeStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ServoMotion.HomeMode homeMode = (HomeModeSelector.SelectedItem as ServoMotion.HomeMode);
+
+            Debug.WriteLine($"{homeMode.ModeName} {homeMode.ModeCode}");
+        }
+
+        /// <summary>
+        /// 點到點移動
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PtToPtBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -510,6 +529,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 變更目標位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangePtBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -585,7 +609,6 @@ namespace ApexVisIns.content
             {
                 Debug.WriteLine($"{item.AxisIndex} {item.AxisIndex} 0x{item.SlaveNumber:X}");
 
-
             }
         }
 
@@ -613,6 +636,5 @@ namespace ApexVisIns.content
 
             File.WriteAllText(path, jsonStr);
         }
-
     }
 }

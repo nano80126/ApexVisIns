@@ -190,6 +190,7 @@
             <Style x:Key="PanelBottomCard" TargetType="materialDesign:Card" BasedOn="{StaticResource PanelTopCard}">
                 <Setter Property="Margin" Value="2 8 2 0"/>
             </Style>
+            <!--//-->
         </ResourceDictionary>
     </Application.Resources>
 </Application>
