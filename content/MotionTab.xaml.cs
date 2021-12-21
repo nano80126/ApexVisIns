@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Timers;
 using System.Text.Json;
 using System.IO;
+using Microsoft.Win32;
 
 namespace ApexVisIns.content
 {
@@ -515,7 +516,6 @@ namespace ApexVisIns.content
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
                     MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
-
                 }
                 else
                 {
@@ -605,10 +605,35 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void MotionConfigLoad_Click(object sender, RoutedEventArgs e)
         {
-            foreach (MotionAxis item in MainWindow.ServoMotion.AxisList)
+            OpenFileDialog openFileDialog = new()
             {
-                Debug.WriteLine($"{item.AxisIndex} {item.AxisIndex} 0x{item.SlaveNumber:X}");
+                FileName = string.Empty,
+                Filter = "JSON File(*.json)|*.json",
+                Title = "載入 json 檔",
+                InitialDirectory = Environment.CurrentDirectory + @"\motions"
+            };
 
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using StreamReader reader = File.OpenText(openFileDialog.FileName);
+                    string jsonStr = reader.ReadToEnd();
+
+                    if (jsonStr != string.Empty)
+                    {
+                        MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
+
+                        foreach (var item in velParams)
+                        {
+                            Debug.WriteLine($"{item.SlaveNumber} {item.VelHigh} {item.VelLow}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"開啟 Motion 設定失敗: {ex.Message}");
+                }
             }
         }
 
@@ -635,6 +660,13 @@ namespace ApexVisIns.content
             string jsonStr = JsonSerializer.Serialize(axes, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);
+        }
+
+        [Obsolete("測試完刪除")]
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            //bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
+            //Debug.WriteLine(abs);
         }
     }
 }

@@ -275,37 +275,39 @@
                                            FontSize="20" FontWeight="Bold"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
                                     <!--//-->
-                                    <Run>經過時間</Run>
+                                    <Run>經過時間：12:00:00</Run>
+                                    <!--<LineBreak/>
+                                    <Run Text="12:00:00"/>-->
                                     <LineBreak/>
-                                    <Run Text="12:00:00"/>
-                                    <LineBreak/>
-                                    <!--//-->
-                                    <Run>檢驗數量</Run>
-                                    <LineBreak/>
+                                    <Run>檢驗數量: 0</Run>
+                                    <!--<LineBreak/>
                                     <Run Text="0"/>
-                                    <LineBreak/>
-                                    <!--//-->
+                                    <LineBreak/>-->
                                 </TextBlock>    
                             </StackPanel>
                             
                             <!-- Row 1, Col 1, OK / NG 數量 -->
                             <DockPanel Grid.Column= "1" Grid.Row="1" HorizontalAlignment="Stretch">
-                                <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                <!--<TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                            FontSize="20" FontWeight="Bold"
                                            FontFamily="Consolas" LineHeight="32" Foreground="Green"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
                                     <Run Text="OK 數量"/>
                                     <LineBreak/>
                                     <Run Text="0"/>
-                                </TextBlock>
+                                </TextBlock>-->
 
                                 <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                            FontSize="20" FontWeight="Bold" 
-                                           FontFamily="Consolas" LineHeight="32" Foreground="Red"
+                                           FontFamily="Consolas" LineHeight="32" Foreground="{StaticResource ColorSecondary}"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
-                                    <Run Text="NG 數量"/>
+                                    <Run Text="OK" Foreground="{StaticResource ColorSuccess}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="NG" Foreground="{StaticResource ColorError}"/>
                                     <LineBreak/>
-                                    <Run Text="0"/>
+                                    <Run Text="200000" Foreground="{StaticResource ColorSuccess}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="10" Foreground="{StaticResource ColorError}"/>
                                 </TextBlock>
                             </DockPanel>
                         </Grid>

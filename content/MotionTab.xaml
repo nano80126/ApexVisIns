@@ -133,8 +133,7 @@
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
                     <DockPanel DockPanel.Dock="Top">
-                        <ComboBox x:Name="AxisSelector" DockPanel.Dock="Left"
-                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox x:Name="AxisSelector" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Axis"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
@@ -601,11 +600,14 @@
 
 
                         <ComboBox x:Name="HomeModeSelector" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                  Padding="5 4"  FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
-                                  materialDesign:HintAssist.Hint="復歸模式" 
+                                  Padding="5 4" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                                  materialDesign:HintAssist.Hint="Home Mode" 
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding HomeModes, Source={StaticResource ServoMotion}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                  MinWidth="120" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                  IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  MinWidth="120" 
+                                  ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                            <!--// 隱藏 Scroll bar-->
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ModeName}" TextAlignment="Center"/>
@@ -624,7 +626,7 @@
                                   MinWidth="200" Margin="0 0 12 0">
                         -->
 
-
+                        
                         <Button Grid.Row="3" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="開始" Click="HomeStartBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
@@ -650,23 +652,6 @@
         <!--#region 3rd column, -->
         <StackPanel Grid.Column="4" Grid.ColumnSpan="1" Orientation="Vertical" Background="{x:Null}"
                     DataContext="{Binding SltMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
-           
-            <!--<materialDesign:Card x:Name="MotionMoveCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
-                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <DockPanel Background="Transparent" Margin="2 0">
-                    <DockPanel x:Name="MotionMoveHeader" DockPanel.Dock="Top">
-                        <materialDesign:PackIcon Kind="InformationVariant" Width="30" Height="26"/>
-
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="多軸同步控制"/>
-                    </DockPanel>
-                    --><!--//--><!--
-                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
-                    --><!--//--><!--
-                    <Grid>
-                    </Grid>
-                </DockPanel>
-            </materialDesign:Card>-->
-            
             <!--#region 位置控制 -->
             <materialDesign:Card x:Name="PosControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -688,6 +673,7 @@
                         </Grid.ColumnDefinitions>
                         <!--//-->
                         <Grid.RowDefinitions>
+                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -728,28 +714,42 @@
 
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="AxisVelParamSetBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                        <!--/-->
+                        <!--//-->
                         <Separator Grid.Row="3" Grid.ColumnSpan="4" Margin="0 8"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="移動模式"/>
+
+                        <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RadioButton Grid.Row="4" Grid.Column="1" GroupName="MoveMode" HorizontalAlignment="Center" Cursor="Hand" Margin="12 3" Height="26"
+                                         Style="{DynamicResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Content="Relative"
+                                         IsChecked="{Binding Absolute, Mode=TwoWay, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"
+                                         Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Row="4" Grid.Column="3" GroupName="MoveMode" HorizontalAlignment="Center" Cursor="Hand" Margin="12 3" Height="26" 
+                                         Style="{DynamicResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Content="Absolute" 
+                                         IsChecked="{Binding Absolute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                          Checked="RadioButton_Checked"/>
+                        </StackPanel>
+
                         <!--//-->
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="目標位置"/>
-                        <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="4" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                        <!--//-->
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="變更位置"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="目標位置"/>
                         <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="5" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
+                                     Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="5" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--//-->
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="變更速度"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="變更位置"/>
                         <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                     Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="6" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
+                                     Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="6" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                         <!--//-->
-                        <Button Grid.Row="7" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="變更速度"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                     Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Row="7" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                        <!--//-->
+                        <Button Grid.Row="8" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
                                     Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
 
                         <!--<Button DockPanel.Dock="Bottom" Grid.Row="4" Grid.ColumnSpan="100" Margin="0 100 0 0" Height="120" Content="緊急停止" Click="MotionEmgStop_Click"

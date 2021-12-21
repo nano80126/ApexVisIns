@@ -364,14 +364,12 @@ namespace ApexVisIns
                 #endregion
 
 
-                HomeModes.Clear();
-                foreach (Cia402HomeMode i in Enum.GetValues(typeof(Cia402HomeMode)))
+                if (HomeModes.Count == 0)
                 {
-                    HomeModes.Add(new HomeMode
+                    foreach (Cia402HomeMode i in Enum.GetValues(typeof(Cia402HomeMode)))
                     {
-                        ModeName = i.ToString(),
-                        ModeCode = (uint)i
-                    });
+                        HomeModes.Add(new HomeMode(i.ToString(), (uint)i));
+                    }
                 }
                 //OnPropertyChanged(nameof(HomeModes));
 
@@ -648,6 +646,12 @@ namespace ApexVisIns
         /// </summary>
         public class HomeMode
         {
+            public HomeMode(string modeName, uint modeCode)
+            {
+                ModeName = modeName;
+                ModeCode = modeCode;
+            }
+
             public string ModeName { get; set; }
 
             public uint ModeCode { get; set; }
@@ -758,6 +762,7 @@ namespace ApexVisIns
         #endregion
 
         #region Velocity
+        private bool _absolute;
         private double _velLow;
         private double _velHigh;
         private double _acc;
@@ -957,6 +962,22 @@ namespace ApexVisIns
                 {
                     _homeDec = value;
                     OnPropertyChanged(nameof(HomeDec));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move Mode Absolute or Relative
+        /// </summary>
+        public bool Absolute
+        {
+            get => _absolute;
+            set
+            {
+                if (value != _absolute)
+                {
+                    _absolute = value;
+                    OnPropertyChanged(nameof(Absolute));
                 }
             }
         }
