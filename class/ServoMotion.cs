@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Advantech.Motion;
 using System.IO;
 using System.Globalization;
+using System.Threading;
 
 namespace ApexVisIns
 {
@@ -28,7 +29,7 @@ namespace ApexVisIns
         private string _currentStatus;
         private bool _deviceOpened;
 
-        private Timer statusTimer;
+        private System.Timers.Timer statusTimer;
         private int _sltAxis = -1;
         private bool _servoOn;
 
@@ -366,12 +367,16 @@ namespace ApexVisIns
 
                 if (HomeModes.Count == 0)
                 {
-                    foreach (Cia402HomeMode i in Enum.GetValues(typeof(Cia402HomeMode)))
+                    foreach (Advantech.Motion.HomeMode mode in Enum.GetValues(typeof(Advantech.Motion.HomeMode)))
                     {
-                        HomeModes.Add(new HomeMode(i.ToString(), (uint)i));
+                        HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
+                    }
+
+                    foreach (Cia402HomeMode mode in Enum.GetValues(typeof(Cia402HomeMode)))
+                    {
+                        HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
                     }
                 }
-                //OnPropertyChanged(nameof(HomeModes));
 
                 // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
                 //result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
@@ -541,7 +546,7 @@ namespace ApexVisIns
         {
             if (statusTimer == null)
             {
-                statusTimer = new Timer(interval)
+                statusTimer = new System.Timers.Timer(interval)
                 {
                     AutoReset = true
                 };
@@ -563,7 +568,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             GetMotionInfo();
         }
 
@@ -625,8 +630,9 @@ namespace ApexVisIns
             SltMotionAxis.IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
             SltMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
             SltMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
+            SltMotionAxis.IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
         }
-         
+
 
 #if false
         private void ResetMotionIOStatus()
@@ -1063,6 +1069,7 @@ namespace ApexVisIns
     }
 
 
+
     /// <summary>
     /// Motion 軸狀態、參數等
     /// </summary>
@@ -1172,6 +1179,8 @@ namespace ApexVisIns
         /// Native Limit Flag
         /// </summary>
         public AxisSignal IO_LMTN { get; set; } = new AxisSignal("LMT-");
+
+        public AxisSignal IO_ORG { get; set; } = new AxisSignal("ORG");
 
         /// <summary>
         /// Servo On Flag
@@ -1300,6 +1309,7 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(IO_LMTN));
             OnPropertyChanged(nameof(IO_SVON));
             OnPropertyChanged(nameof(IO_EMG));
+            OnPropertyChanged(nameof(IO_ORG));
         }
 
         /// <summary>
@@ -1370,8 +1380,6 @@ namespace ApexVisIns
         public void SetServoOn()
         {
             uint result;
-
-            Debug.WriteLine($"Handle{AxisHandle}");
 
             if (!ServoOn)
             {
@@ -1669,9 +1677,16 @@ namespace ApexVisIns
             {
                 throw new InvalidOperationException($"寫入 HOME 減速度失敗: Code[0x{result:X}]");
             }
+
+            /// 不支援
+            //result = Motion.mAcm_SetU32Property(AxisHandle, (uint)PropertyID.CFG_AxHomeResetEnable, 1);
+            //if (result != (uint)ErrorCode.SUCCESS)
+            //{
+            //    throw new InvalidOperationException($"寫入 HOME Auto Reset 失敗: Code[0x{result:X}]");
+            //}
+
             GetHomeVelParam();
         }
-
 
         /// <summary>
         /// 讀取 HOME  速度參數
@@ -1682,6 +1697,8 @@ namespace ApexVisIns
             double axHomeVelHigh = 0;
             double axHomeAcc = 0;
             double axHomeDec = 0;
+            uint orgReact = 0;
+            uint homeResetEnable = 0;
 
             // double axParJogVelLow = 0;
             // double axParJogVelHigh = 0;
@@ -1714,7 +1731,6 @@ namespace ApexVisIns
             }
             HomeDec = axHomeDec;
         }
-
 
         /// <summary>
         /// Jog 開始
@@ -1777,6 +1793,136 @@ namespace ApexVisIns
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"觸發馬達停止失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 原點復歸
+        /// </summary>
+        /// <param name="homeMode">復歸模式</param>
+        public void HomeMove(uint homeMode)
+        {
+            // Dir: 0 => 正方向, 1 => 負方向
+            uint result = Motion.mAcm_AxMoveHome(AxisHandle, homeMode, 0);
+
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"啟動原點復歸失敗: Code:[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 往負方向找 HOME
+        /// </summary>
+        public async Task NegativeWayHomeMove()
+        {
+            if (CurrentStatus == "READY")
+            {
+                uint result = await Task.Run(() =>
+                {
+                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);    // 1 => 先往復方向找 HOME
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    /// 等待碰到 ORG 或 LMTN
+                    SpinWait.SpinUntil(() => IO_ORG.BitOn || IO_LMTN.BitOn);
+                    if (IO_ORG.BitOn)
+                    {
+                        return result;
+                    }
+
+                    result = Motion.mAcm_AxResetError(AxisHandle);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    // 等待碰到 ORG
+                    SpinWait.SpinUntil(() => IO_ORG.BitOn);
+                    return result;
+                });
+
+
+                if (result != (uint)ErrorCode.SUCCESS)
+                {
+                    throw new Exception($"原點復歸過程中發生錯誤: Code[0x{result:X}]");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("伺服軸狀態不允許此操作");
+            }
+        }
+
+        /// <summary>
+        /// 往政方向找 HOME
+        /// </summary>
+        public async Task PositiveWayHomeMove()
+        {
+            if (CurrentStatus == "READY")
+            {
+                uint result = await Task.Run(() =>
+                {
+                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);    // 0 => 先往正方向找 HOME
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    /// 等待碰到 ORG 或 LMTN
+                    SpinWait.SpinUntil(() => IO_ORG.BitOn || IO_LMTP.BitOn);
+                    if (IO_ORG.BitOn)
+                    {
+                        return result;
+                    }
+
+                    result = Motion.mAcm_AxResetError(AxisHandle);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);
+                    if (result != (uint)ErrorCode.SUCCESS)
+                    {
+                        return result;
+                    }
+
+                    // 等待碰到 ORG
+                    SpinWait.SpinUntil(() => IO_ORG.BitOn);
+                    return result;
+                });
+
+
+                if (result != (uint)ErrorCode.SUCCESS)
+                {
+                    throw new Exception($"原點復歸過程中發生錯誤: Code[0x{result:X}]");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("伺服軸狀態不允許此操作");
+            }
+        }
+
+        /// <summary>
+        /// 觸發位置控制
+        /// </summary>
+        /// <param name="absolute"></param>
+        public void PosMove()
+        {
+            uint result = Absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
             }
         }
 

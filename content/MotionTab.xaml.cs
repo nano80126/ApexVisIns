@@ -299,10 +299,12 @@ namespace ApexVisIns.content
             }
         }
 
+
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             (sender as TextBox).SelectAll();
         }
+
 
         private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
         {
@@ -467,6 +469,32 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 執行原點復歸
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void HomeStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ServoMotion.HomeMode homeMode = HomeModeSelector.SelectedItem as ServoMotion.HomeMode;
+
+            try
+            {
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    await MainWindow.ServoMotion.SltMotionAxis.NegativeWayHomeMove();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// 寫入速度參數
         /// (PAR_AxVelXXX)
         /// </summary>
@@ -492,18 +520,6 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 執行原點復歸
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HomeStartBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ServoMotion.HomeMode homeMode = (HomeModeSelector.SelectedItem as ServoMotion.HomeMode);
-
-            Debug.WriteLine($"{homeMode.ModeName} {homeMode.ModeCode}");
-        }
-
-        /// <summary>
         /// 點到點移動
         /// </summary>
         /// <param name="sender"></param>
@@ -515,7 +531,8 @@ namespace ApexVisIns.content
                 //MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+                    bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
+                    MainWindow.ServoMotion.SltMotionAxis.PosMove(abs);
                 }
                 else
                 {
@@ -554,6 +571,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 變更速度
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangeVelBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -574,6 +596,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 運動停止
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MotionStop_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -586,6 +613,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 運動緊急停止
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MotionEmgStop_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -665,8 +697,8 @@ namespace ApexVisIns.content
         [Obsolete("測試完刪除")]
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            //bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
-            //Debug.WriteLine(abs);
+            bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
+            Debug.WriteLine(abs);
         }
     }
 }

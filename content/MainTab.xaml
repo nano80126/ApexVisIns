@@ -49,9 +49,11 @@
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Padding" Value="0 2"/>
                     </Style>
-                    <!--<Style TargetType="DockPanel" x:Key="IconPanel">
+                    <!--
+                    <Style TargetType="DockPanel" x:Key="IconPanel">
                         <Setter Property="Width"
-                    </Style>-->
+                    </Style>
+                    -->
                 </ToolBar.Resources>
 
                 <!--#region Light Contorller Connection Status Bar -->
@@ -244,10 +246,11 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Row 0, Col 0, 檢測運作狀態 -->
-                            <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="20">
+                            <!-- Control Panel 1st col, 1st row, 檢驗狀態 -->
+                            <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
                                 <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
                                     <TextBlock.Style>
                                         <Style TargetType="{x:Type TextBlock}">
@@ -259,45 +262,62 @@
                                 </TextBlock>
                             </Border>
 
-                            <!-- Row 1, Col 0, 啟動 / 停止檢測 -->
-                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                <Button Content="開始檢測" Width="{Binding ElementName=TestStatusBorder, Path=ActualWidth}" Margin="0 12"  
+                            <!-- Control Panel 1st col, 2nd row, 開始 / 停止 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Button Content="開始檢測" Margin="12 0" HorizontalAlignment="Center"
                                         Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}"  FontSize="16"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                                <Button Content="停止檢測" Width="{Binding ElementName=TestStatusBorder, Path=ActualWidth}" Margin="0 12"
+                                <Button Content="停止檢測" Margin="12 0" HorizontalAlignment="Center"
                                         Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" FontSize="16"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             </StackPanel>
 
+                            <!-- Control Panel 1st col, 3rd row, 經過時間 -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" FontFamily="Consolas" LineHeight="32" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       TextAlignment="Center" FontSize="20" FontWeight="Bold" Text="經過時間&#x000A;12:00:00">
+                            </TextBlock>
+
+                            <!--
+                                <StackPanel Grid.Row="2" Grid.Column="0">
+                                </StackPanel>
+                            -->
+
                             <!-- Row 0, Col 1, 經過時間 / 檢驗數量 -->
-                            <StackPanel Grid.Column="1" Grid.Row="0">
+                            <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                           FontSize="20" FontWeight="Bold"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                       Text="檢驗數量&#x000A;0">
+                            </TextBlock>
+                            <!--<StackPanel Grid.Column="1" Grid.Row="0">
                                 <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
                                            FontSize="20" FontWeight="Bold"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
-                                    <!--//-->
-                                    <Run>經過時間：12:00:00</Run>
-                                    <!--<LineBreak/>
-                                    <Run Text="12:00:00"/>-->
-                                    <LineBreak/>
                                     <Run>檢驗數量: 0</Run>
-                                    <!--<LineBreak/>
-                                    <Run Text="0"/>
-                                    <LineBreak/>-->
                                 </TextBlock>    
-                            </StackPanel>
+                            </StackPanel>-->
                             
                             <!-- Row 1, Col 1, OK / NG 數量 -->
-                            <DockPanel Grid.Column= "1" Grid.Row="1" HorizontalAlignment="Stretch">
-                                <!--<TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                            <DockPanel Grid.Column= "1" Grid.Row="2" HorizontalAlignment="Stretch">
+                                <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                            FontSize="20" FontWeight="Bold"
                                            FontFamily="Consolas" LineHeight="32" Foreground="Green"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
                                     <Run Text="OK 數量"/>
                                     <LineBreak/>
-                                    <Run Text="0"/>
-                                </TextBlock>-->
+                                    <Run Text="30000"/>
+                                </TextBlock>
 
-                                <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+
+                                <TextBlock DockPanel.Dock="Left" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                                           FontSize="20" FontWeight="Bold"
+                                           FontFamily="Consolas" LineHeight="32" Foreground="Red"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                    <Run Text="NG 數量"/>
+                                    <LineBreak/>
+                                    <Run Text="10000"/>
+                                </TextBlock>
+
+                                <!--<TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                            FontSize="20" FontWeight="Bold" 
                                            FontFamily="Consolas" LineHeight="32" Foreground="{StaticResource ColorSecondary}"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
@@ -308,7 +328,7 @@
                                     <Run Text="200000" Foreground="{StaticResource ColorSuccess}"/>
                                     <Run Text="/"/>
                                     <Run Text="10" Foreground="{StaticResource ColorError}"/>
-                                </TextBlock>
+                                </TextBlock>-->
                             </DockPanel>
                         </Grid>
                     </DockPanel>

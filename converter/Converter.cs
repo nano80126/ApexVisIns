@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -20,7 +21,8 @@ namespace ApexVisIns.Converter
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            //Debug.WriteLine($"ConvertBack: {value}");
+            return !(bool)value;
         }
     }
 

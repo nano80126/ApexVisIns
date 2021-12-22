@@ -92,8 +92,11 @@ Apex 外觀瑕疵檢測
 * [ ] Device Tab
 	* Device List 儲存IP，相機IP需要綁定
 * [ ] 原點賦歸
-* [ ] 測試 MoveAbs & ModeRel
+	* 待測試
+* [x] 測試 MoveAbs & ModeRel
 * [ ] 簡化控制板 UI
+* [ ] Handle 遺失問題待處理
+* [ ] 新增光源控制器 (MainTab)
 
 ### Config Logic
 

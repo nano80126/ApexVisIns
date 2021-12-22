@@ -256,8 +256,8 @@
                         <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_ALM.Name}"/>
                         <Ellipse Grid.Row="3" Grid.Column="1" Tag="{Binding IO_ALM.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
-                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_EMG.Name}"/>
-                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding IO_EMG.BitOn}" Style="{StaticResource DiSignal}" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding IO_ORG.Name}"/>
+                        <Ellipse Grid.Row="3" Grid.Column="4" Tag="{Binding IO_ORG.BitOn}" Style="{StaticResource DiSignal}" />
                         <!--//-->
                         <Separator Grid.Row="0" Grid.RowSpan="100" Grid.Column="2" Width="1" Margin="0 4" Background="{StaticResource ColorGray}" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                     </Grid>
@@ -598,14 +598,13 @@
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="HomeVelParamSetBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
-
-                        <ComboBox x:Name="HomeModeSelector" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox x:Name="HomeModeSelector" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
                                   materialDesign:HintAssist.Hint="Home Mode" 
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding HomeModes, Source={StaticResource ServoMotion}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                   IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  MinWidth="120" 
+                                  MinWidth="120" Margin="0 0 12 0"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden">
                             <!--// 隱藏 Scroll bar-->
                             <ComboBox.ItemTemplate>
@@ -617,18 +616,22 @@
                         <!--<TextBlock Text="{Binding AxisName}" TextAlignment="Center" d:DataContext="{d:DesignInstance Type=app:MotionAxis}"/>-->
 
                         <!--
-                        Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                                  materialDesign:HintAssist.Hint="EtherCAT Card"
-                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                                  ItemsSource="{Binding BoardList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  SelectionChanged="BoardSelector_SelectionChanged"
-                                  MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
-                                  MinWidth="200" Margin="0 0 12 0">
+                                Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                                materialDesign:HintAssist.Hint="EtherCAT Card"
+                                materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                ItemsSource="{Binding BoardList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                SelectionChanged="BoardSelector_SelectionChanged"
+                                MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
+                                MinWidth="200" Margin="0 0 12 0">
                         -->
-
                         
                         <Button Grid.Row="3" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="開始" Click="HomeStartBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+                        <!--停止-->
+                        <Button Grid.Row="4" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
+                                    Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
+
 
                     </Grid>
                 </DockPanel>
@@ -698,19 +701,19 @@
                         <!--//-->
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="啟動速度"/>
                         <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding JogVelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                 Text="{Binding VelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Grid.Row="0" Grid.Column="2" Text="運行速度" />
                         <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding JogVelHigh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding VelHigh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="加速度"/>
                         <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding JogAcc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding Acc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="減速度"/>
                         <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding JogDec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="AxisVelParamSetBtn_Click" 
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
@@ -748,7 +751,7 @@
                                      Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Grid.Row="7" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                        <!--//-->
+                        <!--停止-->
                         <Button Grid.Row="8" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
                                     Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
 
