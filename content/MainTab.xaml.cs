@@ -117,5 +117,14 @@ namespace ApexVisIns.content
         }
         #endregion
 
+        /// <summary>
+        /// 規格選擇變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SpecSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
+        }
     }
 }

@@ -4,6 +4,8 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:ApexVisIns"
+            xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
@@ -27,8 +29,7 @@
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
                 <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
-                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand"
-                         SelectedIndex="0">
+                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged">
                     <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -54,49 +55,59 @@
                         <Setter Property="Width"
                     </Style>
                     -->
+                    <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
+                        <Setter Property="FlowDirection" Value="LeftToRight"/>
+                        <Setter Property="Margin" Value="8 0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+
+                    <Style TargetType="materialDesign:PackIcon" x:Key="HWStatus">
+                        <Setter Property="Width" Value="16"/>
+                        <Setter Property="Height" Value="16"/>
+                        <Setter Property="Canvas.Right" Value="0"/>
+                        <Setter Property="Canvas.Bottom" Value="0"/>
+                        
+                        
+                        <Setter Property="Kind" Value="CloseCircle"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Connected), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                <Setter Property="Kind" Value="CheckCircle"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                            </DataTrigger>  
+                        </Style.Triggers>
+                    </Style>
                 </ToolBar.Resources>
 
                 <!--#region Light Contorller Connection Status Bar -->
                 <Border Margin="0 0 12 0">
-                    <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
-                        <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                        <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                            <materialDesign:PackIcon.Style>
-                                <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Kind" Value="Close"/>
-                                    <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                </Style>
-                            </materialDesign:PackIcon.Style>
-                        </materialDesign:PackIcon>
-                    </Canvas>
+                    <StackPanel Orientation="Horizontal">
+                        <!--// 6V Light Controller-->
+                        <Canvas ToolTip="6V 光源控制器">
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
+                        </Canvas> 
+                        <!--// 24V Light Controller-->
+                        <Canvas ToolTip="24V 光源控制器">
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="False"/>
+                        </Canvas>
+                    </StackPanel>
                 </Border>
                 <!--#endregion-->
 
                 <!--#region Motor Controller Connection Status -->
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
-                        <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
+                        <!--//-->
+                        <Canvas ToolTip="X 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="AxisXRotateClockwise" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="False"/>
                         </Canvas>
-
-                        <Canvas Style="{StaticResource ComplexPackIcon}" FlowDirection="LeftToRight" Margin="8 0" >
+                        <!--//-->
+                        <Canvas ToolTip="A 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="RotateLeft" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -105,14 +116,7 @@
                 <!--#region Camera Connection Status Bar -->
                 <Border FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
-                        <StackPanel.Resources>
-                            <Style TargetType="{x:Type Canvas}" BasedOn="{StaticResource ComplexPackIcon}">
-                                <Setter Property="FlowDirection" Value="LeftToRight"/>
-                                <Setter Property="Margin" Value="8 0"/>
-                            </Style>
-                        </StackPanel.Resources>
-
-                        <Canvas VerticalAlignment="Center">
+                        <Canvas ToolTip="CA">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
                                 <materialDesign:PackIcon.Style>
@@ -130,7 +134,7 @@
                             </materialDesign:PackIcon>
                         </Canvas>
 
-                        <Canvas VerticalAlignment="Center">
+                        <Canvas ToolTip="">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
                                 <materialDesign:PackIcon.Style>
@@ -149,7 +153,7 @@
                             </materialDesign:PackIcon>
                         </Canvas>
 
-                        <Canvas VerticalAlignment="Center">
+                        <Canvas ToolTip="">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
                                 <materialDesign:PackIcon.Style>
@@ -168,7 +172,7 @@
                             </materialDesign:PackIcon>
                         </Canvas>
 
-                        <Canvas VerticalAlignment="Center">
+                        <Canvas ToolTip="">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
                                 <materialDesign:PackIcon.Style>
