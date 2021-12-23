@@ -33,7 +33,7 @@ namespace ApexVisIns
         #endregion
 
         #region Cameras
-        public static BaslerCam BaslerCam { get; set; }
+        public static BaslerCam BaslerCam { get; set; } 
         public static BaslerCam[] BaslerCams { get; set; }
 
         //public UvcCam UvcCam;
@@ -123,13 +123,10 @@ namespace ApexVisIns
             CameraEnumer = TryFindResource(nameof(CameraEnumer)) as CameraEnumer;
             CameraEnumer?.WorkerStart();
 
+#if DEBUG
             BaslerCam = FindResource(nameof(BaslerCam)) as BaslerCam;
-            BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
-
-#if false // 測試用, 不開啟 Camera 也可以操作AssistRect & Crosshair
-            //BaslerCam.Width = BaslerCam.Height = 1920;
-            //BaslerCam.PropertyChange();
 #endif
+            BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
             #endregion
 
             #region Light Controller

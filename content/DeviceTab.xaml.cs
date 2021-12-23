@@ -74,14 +74,12 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            #region 保留，確認無用途則刪除
             // 取消 Collection 變更事件
             if (EventHasBound)  // 確認已綁定
             {
                 MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
                 EventHasBound = false;
             }
-            #endregion
         }
 
         /// <summary>
@@ -181,14 +179,14 @@ namespace ApexVisIns.content
                 {
                     // 反序列化
                     //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-                    BaslerCamInfo[] devices = JsonSerializer.Deserialize<BaslerCamInfo[]>(jsonStr);
+                    DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
 
                     List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
 
                     // 還是需要 和 MainWindow.CameraEnumer.CamsSource 比較
                     if (devices.Length > MainWindow.DeviceConfigs.Count)
                     {
-                        foreach (BaslerCamInfo d in devices)
+                        foreach (DeviceConfigBase d in devices)
                         {
                             // 判斷 Json Config 尚未新增進 DeviceConfigs
                             if (!MainWindow.DeviceConfigs.Any(e => e.SerialNumber == d.SerialNumber))
@@ -388,7 +386,8 @@ namespace ApexVisIns.content
             // }
             // return;
 
-            BaslerCamInfo[] infos = MainWindow.DeviceConfigs.Select(item => new BaslerCamInfo()
+
+            DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
             {
                 VendorName = item.VendorName,
                 FullName = item.FullName,
@@ -399,6 +398,7 @@ namespace ApexVisIns.content
                 MAC = item.MAC,
                 TargetFeature = item.TargetFeature
             }).ToArray();
+
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);

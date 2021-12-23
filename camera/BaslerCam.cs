@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Data;
 
@@ -58,6 +59,12 @@ namespace ApexVisIns
         {
             BindingOperations.EnableCollectionSynchronization(CamsSource, _CollectionLock);
             base.WorkerStart();
+        }
+
+        public override void WorkerEnd()
+        {
+            BindingOperations.DisableCollectionSynchronization(CamsSource);
+            base.WorkerEnd();
         }
 
         /// <summary>
@@ -171,12 +178,13 @@ namespace ApexVisIns
         /// 相機 S/N
         /// </summary>
         public string SerialNumber { get; set; }
+    }
 
-        // public string
-
-        /// <summary>
-        /// 擔任角色
-        /// </summary>
+    /// <summary>
+    /// DeviceConfigs 儲存用基底
+    /// </summary>
+    public class DeviceConfigBase : BaslerCamInfo
+    {
         public enum TargetFeatureType
         {
             [Description("耳朵")]
@@ -189,20 +197,14 @@ namespace ApexVisIns
             Surface2 = 4
         }
 
-        /// <summary>
-        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
-        /// </summary>
-        public TargetFeatureType TargetFeature { get; set; }
 
-        ///// <summary>
-        ///// 裝置版本
-        ///// </summary>
-        //public string DeviceVersion { get; set; }
-        ///// <summary>
-        ///// 韌體版本
-        ///// </summary>
-        //public string FirmwareVersion { get; set; }
+        /// <summary>
+        /// 目標特徵
+        /// </summary>
+        [JsonConverter(typeof(TargetFeatureType))]
+        public TargetFeatureType TargetFeature { get; set; }
     }
+
 
 
     /// <summary>
@@ -1056,7 +1058,27 @@ namespace ApexVisIns
         #endregion
 
         #region Application 應用
-        public TargetFeatureType TargetFeature { get; set; }
+
+        /// <summary>
+        /// 擔任角色
+        /// </summary>
+        //public enum TargetFeatureType
+        //{
+        //    [Description("耳朵")]
+        //    Ear = 1,
+        //    [Description("窗戶")]
+        //    Window = 2,
+        //    [Description("表面 1")]
+        //    Surface1 = 3,
+        //    [Description("表面 2")]
+        //    Surface2 = 4
+        //}
+
+        /// <summary>
+        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
+        /// </summary>
+        [JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
+        public DeviceConfigBase.TargetFeatureType TargetFeature { get; set; }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

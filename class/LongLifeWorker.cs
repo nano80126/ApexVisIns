@@ -93,7 +93,6 @@ namespace ApexVisIns
                 Worker.Wait();
                 Worker = null;
             }
-            Console.WriteLine("Worker end");
         }
 
         /// <summary>

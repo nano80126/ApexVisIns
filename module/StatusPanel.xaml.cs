@@ -28,8 +28,5 @@ namespace ApexVisIns.module
         {
             InitializeComponent();
         }
-
-
-
     }
 }

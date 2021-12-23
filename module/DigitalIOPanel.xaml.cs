@@ -69,6 +69,10 @@ namespace ApexVisIns.module
                     Controller.InitializeDoCtrl();
                 }
             }
+            else
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+            }
         }
 
         /// <summary>

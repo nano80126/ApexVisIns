@@ -48,29 +48,6 @@ namespace ApexVisIns.content
         {
             InitializeComponent();
 
-            InitializePanelObjects();
-
-            CheckPanelsObject();
-        }
-
-        /// <summary>
-        /// 綁定 Panel 物件
-        /// </summary>
-        private void InitializePanelObjects()
-        {
-            ConfigPanel.EngineerTab = this;
-            LightPanel.EngineerTab = this;
-        }
-
-        private void CheckPanelsObject()
-        {
-            // 確認物件細節正確
-            //Task.Run(() =>
-            //{
-            //    SpinWait.SpinUntil(() => false, 2000);
-            //    Debug.WriteLine($"MainWindow : {MainWindow}");
-            //    Debug.WriteLine($"EngineerTab : {this}");
-            //});
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -78,19 +55,21 @@ namespace ApexVisIns.content
             #region Find Resource
             if (Crosshair == null)
             {
-                Crosshair = TryFindResource("Crosshair") as Crosshair;
+                Crosshair = TryFindResource(nameof(Crosshair)) as Crosshair;
             }
 
             if (AssistRect == null)
             {
-                AssistRect = TryFindResource("AssistRect") as AssistRect;
+                AssistRect = TryFindResource(nameof(AssistRect)) as AssistRect;
             }
 
             if (Indicator == null)
             {
-                Indicator = TryFindResource("Indicator") as Indicator;
+                Indicator = TryFindResource(nameof(Indicator)) as Indicator;
             }
             #endregion
+
+            InitializePanelObjects();
 
             #region Reset ZoomRetio
             ZoomRatio = 100;
@@ -101,6 +80,16 @@ namespace ApexVisIns.content
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Engineer Tab Unload");
+        }
+
+        /// <summary>
+        /// 綁定 Panel 物件
+        /// </summary>
+        private void InitializePanelObjects()
+        {
+            ConfigPanel.EngineerTab = this;
+            LightPanel.EngineerTab = this;
+            DigitalIOPanel.EngineerTab = this;
         }
 
         /// <summary>

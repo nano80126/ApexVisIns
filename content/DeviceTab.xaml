@@ -349,7 +349,7 @@
                             <ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                 <ObjectDataProvider.MethodParameters>
                                     <!--<x:Type TypeName="app:DeviceConfig+TargetFeatureType"/>-->
-                                    <x:Type TypeName="app:BaslerCamInfo+TargetFeatureType"/>
+                                    <x:Type TypeName="app:DeviceConfigBase+TargetFeatureType"/>
                                 </ObjectDataProvider.MethodParameters>
                             </ObjectDataProvider>
                         </StackPanel.Resources>

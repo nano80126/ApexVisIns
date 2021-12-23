@@ -60,14 +60,13 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "Motion 控制驅動未安裝或版本不符");
             }
             #endregion
-            // 初始化 json 路徑
             InitMotionsConfigsRoot();
 
             if (MainWindow.ServoMotion.DeviceOpened)
             {
-                //MainWindow.ServoMotion.
-                Debug.WriteLine($"Handle: {MainWindow.ServoMotion.DeviceHandle}");
-                Debug.WriteLine($"AxisHandlex: {string.Join('|', MainWindow.ServoMotion.AxisHandles)}");
+                ////MainWindow.ServoMotion.
+                // Debug.WriteLine($"Handle: {MainWindow.ServoMotion.DeviceHandle}");
+                // Debug.WriteLine($"AxisHandlex: {string.Join('|', MainWindow.ServoMotion.AxisHandles)}");
                 MainWindow.ServoMotion.EnableTimer(100);
             }
 
@@ -107,7 +106,6 @@ namespace ApexVisIns.content
             {
                 //using StreamReader reader = File.OpenText(path);
                 //string jsonStr = reader.ReadToEnd();
-
                 //if (jsonStr != string.Empty)
                 //{
                 //    // 反序列化
