@@ -62,21 +62,6 @@ namespace ApexVisIns
         /// </summary>
         public ushort[] SlaveIDArray { get; private set; } = new ushort[10];
 
-        /// <summary>
-        /// Servo Oo Flag
-        /// </summary>
-        public bool ServoOn
-        {
-            get => _servoOn;
-            private set
-            {
-                if (value != _servoOn)
-                {
-                    _servoOn = value;
-                    OnPropertyChanged(nameof(ServoOn));
-                }
-            }
-        }
 
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
@@ -441,47 +426,6 @@ namespace ApexVisIns
             }
         }
 
-        /// <summary>
-        /// 切換 Servo On
-        /// </summary>
-        [Obsolete("需明確指定要 servo on / off")]
-        public void ServoOnSwitch()
-        {
-            uint result;
-
-            if (!DeviceOpened)
-            {
-                return;
-            }
-
-            if (!ServoOn)
-            {
-                for (int i = 0; i < MaxAxisCount; i++)
-                {
-                    // Servo On, augu 2 => 1
-                    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 1);
-
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        throw new Exception($"{i}-Axis Servo On 失敗: Code: [0x{result:X}]");
-                    }
-                    ServoOn = true;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < MaxAxisCount; i++)
-                {
-                    // Servo On, augu 2 => 0
-                    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 0);
-                    if (result != (uint)ErrorCode.SUCCESS)
-                    {
-                        throw new Exception($"{i}-Axis Servo Off 失敗: Code: [0x{result:X}]");
-                    }
-                    ServoOn = false;
-                }
-            }
-        }
 
         /// <summary>
         /// 設定全部軸 Servo On

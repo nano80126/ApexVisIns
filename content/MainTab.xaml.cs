@@ -126,5 +126,18 @@ namespace ApexVisIns.content
         {
             MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
         }
+
+        private void CheckHwStatus_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (BaslerCam cam in MainWindow.BaslerCams)
+            {
+                Debug.WriteLine(cam.IsConnected);
+            }
+
+            bool open = MainWindow.LightController.IsComOpen;
+            Debug.WriteLine(open);
+
+            Debug.WriteLine(MainWindow.ServoMotion.MaxAxisCount);
+        }
     }
 }

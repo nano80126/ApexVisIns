@@ -172,6 +172,28 @@ namespace ApexVisIns
         /// </summary>
         public string SerialNumber { get; set; }
 
+        // public string
+
+        /// <summary>
+        /// 擔任角色
+        /// </summary>
+        public enum TargetFeatureType
+        {
+            [Description("耳朵")]
+            Ear = 1,
+            [Description("窗戶")]
+            Window = 2,
+            [Description("表面 1")]
+            Surface1 = 3,
+            [Description("表面 2")]
+            Surface2 = 4
+        }
+
+        /// <summary>
+        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
+        /// </summary>
+        public TargetFeatureType TargetFeature { get; set; }
+
         ///// <summary>
         ///// 裝置版本
         ///// </summary>
@@ -1034,25 +1056,8 @@ namespace ApexVisIns
         #endregion
 
         #region Application 應用
-        /// <summary>
-        /// 擔任角色
-        /// </summary>
-        public enum TargetFeatureType
-        {
-            [Description("耳朵")]
-            Ear = 1,
-            [Description("窗戶")]
-            Window = 2,
-            [Description("表面 1")]
-            Surface1 = 3,
-            [Description("表面 2")]
-            Surface2 = 4
-        }
-
-        /// <summary>
-        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
-        /// </summary>
         public TargetFeatureType TargetFeature { get; set; }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
@@ -1068,7 +1073,6 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
         #endregion
     }
 

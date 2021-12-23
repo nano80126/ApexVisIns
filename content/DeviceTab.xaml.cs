@@ -61,7 +61,7 @@ namespace ApexVisIns.content
                 MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
                 EventHasBound = true;
             }
-            // 載入
+            // 載入 Config
             LoadDeviceConfigs();
             #endregion
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
@@ -190,14 +190,16 @@ namespace ApexVisIns.content
                     {
                         foreach (BaslerCamInfo d in devices)
                         {
-                            // 判斷 Json Config 尚未新增進 
+                            // 判斷 Json Config 尚未新增進 DeviceConfigs
                             if (!MainWindow.DeviceConfigs.Any(e => e.SerialNumber == d.SerialNumber))
                             {
                                 DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
                                 {
                                     VendorName = d.VendorName,
                                     CameraType = d.CameraType,
-                                    //Online = false
+                                    // 確認 目標特徵載入沒有問題
+                                    TargetFeature = d.TargetFeature,
+                                    // Online = false
                                     // CameraEnumer CamsSource 有物件且有被新增過
                                     Online = cams.Count > 0 && cams.Exists(e => e.SerialNumber == d.SerialNumber)
                                 };
@@ -375,7 +377,16 @@ namespace ApexVisIns.content
         private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
         {
             string path = $@"{DevicesDirectory}/device.json";
-            //string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
+            // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
+
+            // foreach (var item in MainWindow.DeviceConfigs)
+            // {
+            //     Debug.WriteLine($"{item.VendorName} {item.FullName}");
+            //     Debug.WriteLine($"{item.Model} {item.SerialNumber} {item.CameraType}");
+            //     Debug.WriteLine($"{item.IP} {item.MAC}");
+            //     Debug.WriteLine($"{item.TargetFeature}");
+            // }
+            // return;
 
             BaslerCamInfo[] infos = MainWindow.DeviceConfigs.Select(item => new BaslerCamInfo()
             {
@@ -384,7 +395,9 @@ namespace ApexVisIns.content
                 Model = item.Model,
                 SerialNumber = item.SerialNumber,
                 CameraType = item.CameraType,
-                MAC = item.MAC
+                IP = item.IP,
+                MAC = item.MAC,
+                TargetFeature = item.TargetFeature
             }).ToArray();
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
@@ -441,6 +454,7 @@ namespace ApexVisIns.content
                         // 更新 UserSet Read
                         config.UserSetRead = config.UserSet;
                     });
+
 #if false
                     // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
                     // config.CameraType = camera.CameraInfo[CameraInfoKey.DeviceType];
@@ -483,6 +497,7 @@ namespace ApexVisIns.content
                     config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
                     // // // // // // // // // // // // // /  
 #endif
+
                 }
                 catch (Exception ex)
                 {
@@ -504,7 +519,7 @@ namespace ApexVisIns.content
         private void Camera_CameraOpened(object sender, EventArgs e)
         {
             Camera camera = sender as Camera;
-            // Timeout 設定 30 秒
+            // 斷線 Timeout 設定 30 秒
             camera.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(1000 * 30);
             //throw new NotImplementedException();
         }
@@ -741,16 +756,17 @@ namespace ApexVisIns.content
             textBox.SelectAll();
         }
 
-
         /// <summary>
         /// 待刪除
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TargetFeatureCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine($"{(sender as ComboBox).SelectedItem}");
+            ComboBox combobox = sender as ComboBox;
+            Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
         }
+
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{

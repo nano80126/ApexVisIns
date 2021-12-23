@@ -34,7 +34,10 @@
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
-                <!--<Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}"/>-->
+                
+                
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
+                
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -116,79 +119,24 @@
                 <!--#region Camera Connection Status Bar -->
                 <Border FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
-                        <Canvas ToolTip="CA">
+                        <Canvas ToolTip="Camera 1">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                        <!--<Style.Triggers>
-                                            <DataTrigger>
-                                                <Setter Property="Kind" Value="Check"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>-->
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
                         </Canvas>
 
-                        <Canvas ToolTip="">
+                        <Canvas ToolTip="Camera 2">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-
-                                        <!--<Style.Triggers>
-                                            <DataTrigger>
-                                                <Setter Property="Kind" Value="Check"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>-->
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
                         </Canvas>
 
-                        <Canvas ToolTip="">
+                        <Canvas ToolTip="Camera 3">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-
-                                        <!--<Style.Triggers>
-                                            <DataTrigger>
-                                                <Setter Property="Kind" Value="Check"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>-->
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
                         </Canvas>
 
-                        <Canvas ToolTip="">
+                        <Canvas ToolTip="Camera 4">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Canvas.Right="0" Canvas.Bottom="0" Width="16" Height="16">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-
-                                        <!--<Style.Triggers>
-                                            <DataTrigger>
-                                                <Setter Property="Kind" Value="Check"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>-->
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="False"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -310,7 +258,6 @@
                                     <LineBreak/>
                                     <Run Text="30000"/>
                                 </TextBlock>
-
 
                                 <TextBlock DockPanel.Dock="Left" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                            FontSize="20" FontWeight="Bold"
