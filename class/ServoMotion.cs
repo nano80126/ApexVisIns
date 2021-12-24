@@ -65,10 +65,12 @@ namespace ApexVisIns
 
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
+        public int BoardCount => BoardList.Count;
+
         /// <summary>
         /// 軸列表
         /// </summary>
-        public List<MotionAxis> AxisList { get; } = new List<MotionAxis>();
+        public ObservableCollection<MotionAxis> AxisList { get; } = new ObservableCollection<MotionAxis>();
 
         /// <summary>
         /// 原點復歸模式列表
@@ -300,16 +302,15 @@ namespace ApexVisIns
                 AxisList.Clear();
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
+                    //result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
+                 
+                    AxisList.Add(new MotionAxis(DeviceHandle, i));
+                    result = AxisList[i].AxisOpen(out AxisHandles[i]);
 
                     if (result != (int)ErrorCode.SUCCESS)
                     {
                         throw new Exception($"開啟軸失敗: Code[0x{result:X}]");
                     }
-                    AxisList.Add(new MotionAxis(AxisHandles[i], i));
-
-                    // Set Commnad pos to 0
-                    _ = Motion.mAcm_AxSetCmdPosition(AxisHandles[i], 0);
                 }
 
                 #region 可略過
@@ -388,6 +389,7 @@ namespace ApexVisIns
         /// </summary>
         public void CloseDevice()
         {
+            uint result;
             // 紀錄軸狀態
             ushort[] AxisState = new ushort[MaxAxisCount];
 
@@ -411,11 +413,12 @@ namespace ApexVisIns
                 // Close Axes
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    Motion.mAcm_AxClose(ref AxisHandles[i]);
+                    //Motion.mAcm_AxClose(ref AxisHandles[i]);
+                    _ = AxisList[i].AxisClose(out AxisHandles[i]);
                 }
                 MaxAxisCount = 0;
                 // Close Device
-                Motion.mAcm_DevClose(ref DeviceHandle);
+                _ = Motion.mAcm_DevClose(ref DeviceHandle);
 
                 //ResetMotionIOStatus();
                 //UpdateIO();
@@ -425,7 +428,6 @@ namespace ApexVisIns
                 DeviceOpened = false;       // 重置開啟旗標
             }
         }
-
 
         /// <summary>
         /// 設定全部軸 Servo On
@@ -464,22 +466,41 @@ namespace ApexVisIns
                 return;
             }
 
-            for (int i = 0; i < MaxAxisCount; i++)
+            //for (int i = 0; i < MaxAxisCount; i++)
+            //{
+            //    Debug.WriteLine($"Axis: {i} {AxisHandles[i]}");
+
+            //    // Servo Off augu 2 => 0
+            //    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 0);
+
+            //    if (result != (uint)ErrorCode.SUCCESS)
+            //    {
+            //        throw new Exception($"{i}-Axis Servo Off 失敗: Code[0x{result:X}]");
+            //    }
+            //}
+
+            //if (SltMotionAxis != null)
+            //{
+            //    SltMotionAxis.ServoOn = false;
+            //}
+
+
+            try
             {
-                // Servo Off augu 2 => 0
-                result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 0);
-
-                if (result != (uint)ErrorCode.SUCCESS)
+                for (int i = 0; i < AxisList.Count; i++)
                 {
-
-                    throw new Exception($"{i}-Axis Servo Off 失敗: Code[0x{result:X}]");
+                    AxisList[i].SetServoOff();
                 }
             }
-
-            if (SltMotionAxis != null)
+            catch (Exception)
             {
-                SltMotionAxis.ServoOn = false;
+                throw;
             }
+
+            //foreach (MotionAxis item in AxisList)
+            //{
+            //    item.SetServoOff();
+            //}
         }
 
         /// <summary>
@@ -1026,11 +1047,12 @@ namespace ApexVisIns
         /// <summary>
         /// 軸 Handle
         /// </summary>
-        private readonly IntPtr AxisHandle = IntPtr.Zero;
+        public IntPtr AxisHandle = IntPtr.Zero;
+        private readonly IntPtr DeviceHandle = IntPtr.Zero;
         private bool _servoOn;
-        //private uint _gearN1;
-        //private uint _gearM;
+
         private bool _jogOn;
+        private bool _isAxisOpen;
 
         /// <summary>
         /// xaml 用建構子
@@ -1042,9 +1064,10 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="axisHandle">軸 Handle</param>
         /// <param name="axisIndex">軸 Index</param>
-        public MotionAxis(IntPtr axisHandle, int axisIndex)
+        public MotionAxis(IntPtr deviceHandle, int axisIndex)
         {
-            AxisHandle = axisHandle;
+            DeviceHandle = deviceHandle;
+            //AxisHandle = axisHandle;
             AxisIndex = axisIndex;
         }
 
@@ -1053,9 +1076,10 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="axisHandle">軸 Handle</param>
         /// <param name="axisIndex">軸 Index</param>
-        public MotionAxis(IntPtr axisHandle, int axisIndex, ushort slaveNumber)
+        public MotionAxis(IntPtr deviceHandle, int axisIndex, ushort slaveNumber)
         {
-            AxisHandle = axisHandle;
+            DeviceHandle = deviceHandle;
+            //AxisHandle = axisHandle;
             AxisIndex = axisIndex;
             SlaveNumber = slaveNumber;
         }
@@ -1071,6 +1095,47 @@ namespace ApexVisIns
         public string AxisName { get => $"{AxisIndex}-Axis"; }
 
         //public uint SlaveNumber { get; set; }
+
+        public bool IsAxisOpen
+        {
+            get => _isAxisOpen;
+            set
+            {
+                if (value != _isAxisOpen)
+                {
+                    _isAxisOpen = value;
+                    OnPropertyChanged(nameof(IsAxisOpen));
+                }
+            }
+        }
+
+        public uint AxisOpen(out IntPtr handle)
+        {
+            handle = IntPtr.Zero;
+            uint result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)AxisIndex, ref AxisHandle);
+
+            if (result == (int)ErrorCode.SUCCESS)
+            {
+                //throw new Exception($"{AxisIndex}-Axis 開啟失敗: Code[0x{result:X}]");
+                IsAxisOpen = true;
+                handle = AxisHandle;
+            }
+            return result;
+        }
+
+        public uint AxisClose(out IntPtr handle)
+        {
+            handle = IntPtr.Zero;
+            uint result = Motion.mAcm_AxClose(ref AxisHandle);
+
+            if (result == (uint)ErrorCode.SUCCESS)
+            {
+                IsAxisOpen = false;
+                handle = AxisHandle;
+                //throw new Exception($"{AxisIndex}-Axis 關閉失敗: Code[0x{result:X}]");
+            }
+            return result;
+        }
 
         /// <summary>
         /// Servo Oo Flag
@@ -1324,7 +1389,6 @@ namespace ApexVisIns
         public void SetServoOn()
         {
             uint result;
-
             if (!ServoOn)
             {
                 // Servo On augu 2 => 1
@@ -1344,9 +1408,6 @@ namespace ApexVisIns
         public void SetServoOff()
         {
             uint result;
-
-            Debug.WriteLine($"Handle{AxisHandle}");
-
             if (ServoOn)
             {
                 // Servo Off augu 2 => 0

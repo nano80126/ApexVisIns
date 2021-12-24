@@ -70,6 +70,14 @@ namespace ApexVisIns.content
                 MainWindow.ServoMotion.EnableTimer(100);
             }
 
+
+            Debug.WriteLine($"{MainWindow.ServoMotion.DeviceHandle}");
+
+            foreach (var h in MainWindow.ServoMotion.AxisHandles)
+            {
+                Debug.WriteLine($"Axis Handle: {h}");
+            }
+
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
 
@@ -129,12 +137,18 @@ namespace ApexVisIns.content
         /// </summary>
         public void GetAvaiDevs()
         {
-            uint count = MainWindow.ServoMotion.GetAvailableDevices();
+            // Board Count == 0 時才尋找
+            // 重新尋找會導致 Handle 參考出問題
 
-            if (count > 0)
+            if (MainWindow.ServoMotion.BoardCount == 0)
             {
-                // 選擇 第一個 Device
-                DeviceSelector.SelectedIndex = 0;
+                uint count = MainWindow.ServoMotion.GetAvailableDevices();
+
+                if (count > 0)
+                {
+                    // 選擇 第一個 Device
+                    DeviceSelector.SelectedIndex = 0;
+                }
             }
         }
 
@@ -244,8 +258,6 @@ namespace ApexVisIns.content
             try
             {
                 MotionAxis motionAxis = AxisSelector.SelectedItem as MotionAxis;
-
-                //Debug.WriteLine($"{}")
 
                 if (!MainWindow.ServoMotion.SltMotionAxis.ServoOn)
                 {

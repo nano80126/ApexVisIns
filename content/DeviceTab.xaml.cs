@@ -323,7 +323,6 @@ namespace ApexVisIns.content
                     camera.Parameters[PLGigECamera.ExposureMode].SetValue(PLGigECamera.ExposureMode.Off);
 
                     Debug.WriteLine($"{width} {height}");
-
                     Debug.WriteLine($"{fps} {exposure}");
 
                     //camera.Parameters[PLGigECamera.Width].SetValue(2040);

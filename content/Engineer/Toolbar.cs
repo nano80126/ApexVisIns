@@ -87,7 +87,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region Toolbar 引發之 Basler Camera Event
         private bool Basler_Connect(BaslerCam cam, string serialNumber)
         {
@@ -352,7 +351,6 @@ namespace ApexVisIns.content
             }
         }
         #endregion
-
 
         #endregion
     }

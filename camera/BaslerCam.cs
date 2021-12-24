@@ -185,6 +185,10 @@ namespace ApexVisIns
     /// </summary>
     public class DeviceConfigBase : BaslerCamInfo
     {
+        public DeviceConfigBase()
+        {
+        }
+
         public enum TargetFeatureType
         {
             [Description("耳朵")]
@@ -197,11 +201,9 @@ namespace ApexVisIns
             Surface2 = 4
         }
 
-
         /// <summary>
         /// 目標特徵
         /// </summary>
-        [JsonConverter(typeof(TargetFeatureType))]
         public TargetFeatureType TargetFeature { get; set; }
     }
 
@@ -619,7 +621,7 @@ namespace ApexVisIns
         public string Name { get; set; }
 
         #region AOI Controls (Classify by Basler Pylon)
-       
+
         /// <summary>
         /// Sensor 寬度
         /// </summary>
@@ -1055,6 +1057,7 @@ namespace ApexVisIns
         ///// </summary>
         //public string SerialNumber { get; set; }  
 #endif
+
         #endregion
 
         #region Application 應用
@@ -1077,9 +1080,8 @@ namespace ApexVisIns
         /// <summary>
         /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
         /// </summary>
-        [JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
+        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
         public DeviceConfigBase.TargetFeatureType TargetFeature { get; set; }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)

@@ -44,27 +44,9 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
-            //Debug.WriteLine("Main Tab Load");
 
-            //Task.Run(() =>
-            //{
-            //    Dispatcher.Invoke(() =>
-            //    {
-            //        InitCamera();
-            //        MainWindow.ProgressValue = 10;
-            //        SpinWait.SpinUntil(() => false, 2000);
-            //    });
-
-            //    SpinWait.SpinUntil(() => false, 2000);
-
-            //    Dispatcher.Invoke(() =>
-            //    {
-            //        InitCamera();
-            //        MainWindow.ProgressValue = 20;
-            //        SpinWait.SpinUntil(() => false, 2000);
-            //    });
-            //});
         }
+
         /// <summary>
         /// Main Tab 卸載
         /// </summary>
@@ -127,6 +109,12 @@ namespace ApexVisIns.content
             MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
         }
 
+        /// <summary>
+        /// 測試完刪除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        [Obsolete("確認硬體狀態")]
         private void CheckHwStatus_Click(object sender, RoutedEventArgs e)
         {
             foreach (BaslerCam cam in MainWindow.BaslerCams)
@@ -136,6 +124,7 @@ namespace ApexVisIns.content
 
             bool open = MainWindow.LightController.IsComOpen;
             Debug.WriteLine(open);
+
 
             Debug.WriteLine(MainWindow.ServoMotion.MaxAxisCount);
         }
