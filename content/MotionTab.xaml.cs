@@ -70,13 +70,11 @@ namespace ApexVisIns.content
                 MainWindow.ServoMotion.EnableTimer(100);
             }
 
-
-            Debug.WriteLine($"{MainWindow.ServoMotion.DeviceHandle}");
-
-            foreach (var h in MainWindow.ServoMotion.AxisHandles)
-            {
-                Debug.WriteLine($"Axis Handle: {h}");
-            }
+            //Debug.WriteLine($"{MainWindow.ServoMotion.DeviceHandle}");
+            //foreach (var h in MainWindow.ServoMotion.AxisHandles)
+            //{
+            //    Debug.WriteLine($"Axis Handle: {h}");
+            //}
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }

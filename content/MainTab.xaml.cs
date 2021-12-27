@@ -88,8 +88,13 @@ namespace ApexVisIns.content
         /// <summary>
         /// 光源控制初始化
         /// </summary>
-        private void InitLighCtrl()
+        private void InitLighCtrls()
         {
+            LightController light24V = MainWindow.LightCtrls[0];
+
+
+
+            //MainWindow.LightCtrls[1];
 
 
 

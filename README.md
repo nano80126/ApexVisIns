@@ -88,15 +88,18 @@ Apex 外觀瑕疵檢測
 	* Character
 	* IP (之後IP要設定為固定)
 * [x] Jog 使用 Popupbox
-* [ ] Motion Tab Unload 的處置
-* [ ] Device Tab
+* [x] Motion Tab Unload 的處置
+	* 暫停 Timer
+* [x] Device Tab
 	* Device List 儲存IP，相機IP需要綁定
+
 * [ ] 原點賦歸
 	* 待測試
 * [x] 測試 MoveAbs & ModeRel
-* [ ] 簡化控制板 UI
-* [ ] Handle 遺失問題待處理
-* [ ] 新增光源控制器 (MainTab)
+* [x] 簡化控制板 UI
+* [x] Handle 遺失問題待處理
+* [x] 新增光源控制器 (MainTab)
+
 
 ### Config Logic
 
