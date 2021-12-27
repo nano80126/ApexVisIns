@@ -91,12 +91,27 @@ namespace ApexVisIns.content
         private void InitLighCtrls()
         {
             LightController light24V = MainWindow.LightCtrls[0];
+            LightController light_6V = MainWindow.LightCtrls[1];
 
 
+            if (!light24V.IsComOpen)
+            {
+                light24V.ComOpen("COM1", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                // 重置所有通道
+                light24V.ResetAllValue();
 
-            //MainWindow.LightCtrls[1];
+            }
 
 
+            if (!light_6V.IsComOpen)
+            {
+                light_6V.ComOpen("COM2", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                // 重置所有通道
+                light_6V.ResetAllValue();
+            }
+
+
+            // 下面需要停止 LightEnumer
 
 
             MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成");

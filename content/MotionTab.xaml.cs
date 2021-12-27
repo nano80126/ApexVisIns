@@ -62,6 +62,7 @@ namespace ApexVisIns.content
             #endregion
             InitMotionsConfigsRoot();
 
+            // 若D eviceOpened，始能 Timer
             if (MainWindow.ServoMotion.DeviceOpened)
             {
                 ////MainWindow.ServoMotion.
@@ -69,12 +70,6 @@ namespace ApexVisIns.content
                 // Debug.WriteLine($"AxisHandlex: {string.Join('|', MainWindow.ServoMotion.AxisHandles)}");
                 MainWindow.ServoMotion.EnableTimer(100);
             }
-
-            //Debug.WriteLine($"{MainWindow.ServoMotion.DeviceHandle}");
-            //foreach (var h in MainWindow.ServoMotion.AxisHandles)
-            //{
-            //    Debug.WriteLine($"Axis Handle: {h}");
-            //}
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
         }
