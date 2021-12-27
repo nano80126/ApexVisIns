@@ -84,17 +84,32 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <!--// 24V Light Controller-->
-                        <Canvas ToolTip="24V 光源控制器">
+                        <!--<Canvas ToolTip="24V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
                                                      ctProperty:StatusHelper.Connected="{Binding IsComOpen, Source={StaticResource LightController}, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Canvas>-->
+                        <!--// 6V Light Controller-->
+                        <!--<Canvas ToolTip="6V 光源控制器">
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                                                     ctProperty:StatusHelper.Connected="{Binding IsComOpen, Source={StaticResource LightController2}, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Canvas>-->
+
+                        <!-- 光源(測試) -->
+                        <!--// 24V Light Controller-->
+                        <Canvas ToolTip="24V 光源控制器">
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
                         <!--// 6V Light Controller-->
                         <Canvas ToolTip="6V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding IsComOpen, Source={StaticResource LightController2}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
+
                     </StackPanel>
                 </Border>
                 <!--#endregion-->

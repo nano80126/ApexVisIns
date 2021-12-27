@@ -28,12 +28,16 @@ namespace ApexVisIns
     public partial class MainWindow : System.Windows.Window
     {
         #region Long life worker
+        /// <summary>
+        /// Camera 列舉器
+        /// 綁在 MainWindow
+        /// </summary>
         public CameraEnumer CameraEnumer;
         //public Thermometer Thermometer;
         #endregion
 
         #region Cameras
-        public static BaslerCam BaslerCam { get; set; } 
+        public static BaslerCam BaslerCam { get; set; }
         public static BaslerCam[] BaslerCams { get; set; }
 
         //public UvcCam UvcCam;
@@ -41,17 +45,20 @@ namespace ApexVisIns
 
         #region Light Controller
         /// <summary>
-        /// Com Port 列舉器
+        /// Com Port 列舉器，
+        /// 綁在 MainWindow
         /// </summary>
         public LightEnumer LightEnumer;
+
         /// <summary>
         /// 光源控制器
         /// </summary>
         public static LightController LightController { get; set; }
+
         /// <summary>
-        /// (待刪除)
+        /// 光源控制器陣列
         /// </summary>
-        public static SerialPort SerialPort { get; set; }
+        public static LightController[] LightCtrls { get; set; }
         #endregion
 
         #region I/O Controller
@@ -117,6 +124,12 @@ namespace ApexVisIns
             #endregion
         }
 
+        /// <summary>
+        /// 主視窗載入，
+        /// 資源尋找等初始化在此
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             #region Cameras
@@ -133,7 +146,10 @@ namespace ApexVisIns
             LightEnumer = TryFindResource(nameof(LightEnumer)) as LightEnumer;
             LightEnumer?.WorkerStart();
 
+#if DEBUG
             LightController = FindResource(nameof(LightController)) as LightController;
+#endif
+            LightCtrls = FindResource(nameof(LightCtrls)) as LightController[];
             #endregion
 
             #region IO Controller
@@ -149,10 +165,10 @@ namespace ApexVisIns
             #endregion
 
             #region Find Resource
-            //Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
-            //AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
-            //Indicator = FindResource(nameof(Indicator)) as Indicator;
-            //AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
+            // Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
+            // AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
+            // Indicator = FindResource(nameof(Indicator)) as Indicator;
+            // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             #endregion
 
@@ -160,6 +176,12 @@ namespace ApexVisIns
             _ = Focus();
         }
 
+        /// <summary>
+        /// 主視窗關閉，
+        /// 停止 LongLifeWorker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             CameraEnumer?.WorkerEnd();
