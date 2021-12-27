@@ -35,7 +35,6 @@
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
                 
-                
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
                 
             </ToolBar>
@@ -117,6 +116,7 @@
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
                                                      ctProperty:StatusHelper.Connected="{Binding AxisList[1].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
+                        <!--//-->
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
@@ -127,22 +127,25 @@
                         <Canvas ToolTip="Camera 1">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="True"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 2">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 3">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="True"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                                                     ctProperty:StatusHelper.Connected="{Binding [2].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 4">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" ctProperty:StatusHelper.Connected="False"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [3].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                     </StackPanel>
                 </Border>

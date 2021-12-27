@@ -235,9 +235,9 @@
                 <Separator/>
 
                 <!--#region Region For Test Region For Test Region For Test Region For Test Region For Test -->
-                <Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                <!--<Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26"/>
-                </Button>
+                </Button>-->
                 <!--#endregion-->
 
             </ToolBar>
@@ -249,11 +249,10 @@
                      Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <!--//-->
 
+                <!--<TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=CamSelector, Path=SelectedIndex , Converter={StaticResource EqualConverter}, ConverterParameter=-1, FallbackValue=False}"/>
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding IsGrabbing, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"/>-->
 
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=CamSelector, Path=SelectedIndex , Converter={StaticResource EqualConverter}, ConverterParameter=-1, FallbackValue=False}"/>
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding IsGrabbing, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <TextBlock Margin="12 0" VerticalAlignment="Center">
+                <!--<TextBlock Margin="12 0" VerticalAlignment="Center">
                     <TextBlock.Text>
                         <MultiBinding Converter="{StaticResource BooleanOrGate}" FallbackValue="123" StringFormat="{}{0}">
                             <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource EqualConverter}" ConverterParameter="-1" FallbackValue="True"/>
@@ -262,14 +261,14 @@
                     </TextBlock.Text>
                 </TextBlock>
 
-                <!--// // // // // // // // // //-->
+                --><!--// // // // // // // // // //--><!--
                 <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualWidth}"/>
                 
                 <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualHeight}"/>
 
                 <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualWidth}"/>
 
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualHeight}"/>
+                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualHeight}"/>-->
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->

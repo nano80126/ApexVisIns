@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -342,6 +344,27 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+
+    //public class GetListElementConvert : IValueConverter
+    //{
+    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        ushort idx = System.Convert.ToUInt16(parameter);
+    //        ObservableCollection<MotionAxis> coll = value as ObservableCollection<MotionAxis>;
+
+    //        Debug.WriteLine(value);
+    //        Debug.WriteLine(coll.Count);
+
+
+    //        return false;
+    //    }
+
+    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
 
     //public class GetIndexConvertor : IMultiValueConverter
     //{

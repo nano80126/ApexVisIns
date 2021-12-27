@@ -74,6 +74,7 @@
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <!--<cvt:GetIndexConvertor x:Key="GetIndexConvertor"/>-->
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
+            <!--<cvt:GetListElementConvert x:Key="GetListElementConvert"/>-->
             <!--#endregion-->
 
             <!--#region Public Resources -->
