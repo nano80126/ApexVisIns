@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace ApexVisIns
@@ -342,6 +343,7 @@ namespace ApexVisIns
         private bool _enable;
         #endregion
 
+
         /// <summary>
         /// Point X
         /// </summary>
@@ -453,6 +455,33 @@ namespace ApexVisIns
 
     public class MsgInformer : INotifyPropertyChanged
     {
+
+        #region LockObject
+        /// <summary>
+        /// Info Collection Lock
+        /// </summary>
+        private readonly object _infoCollLock = new();
+        /// <summary>
+        /// Error Collection Lock
+        /// </summary>
+        private readonly object _errCollLock = new();
+        #endregion
+
+
+        public void CollecionBinding()
+        {
+            BindingOperations.EnableCollectionSynchronization(InfoSource, _infoCollLock);
+            BindingOperations.EnableCollectionSynchronization(ErrSource, _errCollLock);
+        }
+
+
+        public void CollectionDebinding()
+        {
+            BindingOperations.DisableCollectionSynchronization(InfoSource);
+            BindingOperations.DisableCollectionSynchronization(ErrSource);
+        }
+
+
         public int NewError { get; private set; }
 
         public int ErrorCount => ErrSource.Count;
@@ -464,12 +493,15 @@ namespace ApexVisIns
         /// <param name="description"></param>
         public void AddWarning(Message.MsgCode code, string description)
         {
-            ErrSource.Push(new Message
+            lock (_errCollLock)
             {
-                Code = code,
-                Description = description,
-                MsgType = Message.MessageType.Warning
-            });
+                ErrSource.Push(new Message
+                {
+                    Code = code,
+                    Description = description,
+                    MsgType = Message.MessageType.Warning
+                });
+            }
             NewError++;
             OnPropertyChanged(nameof(NewError));
             OnPropertyChanged(nameof(ErrorCount));
@@ -483,17 +515,23 @@ namespace ApexVisIns
         /// <param name="type">Message Type, 若為 info, 自動改為 warngin</param>
         public void AddError(Message.MsgCode code, string description)
         {
-            ErrSource.Push(new Message
+            lock (_errCollLock)
             {
-                Code = code,
-                Description = description,
-                MsgType = Message.MessageType.Error
-            });
+                ErrSource.Push(new Message
+                {
+                    Code = code,
+                    Description = description,
+                    MsgType = Message.MessageType.Error
+                });
+            }
             NewError++;
             OnPropertyChanged(nameof(NewError));
             OnPropertyChanged(nameof(ErrorCount));
         }
 
+        /// <summary>
+        /// 清空 Error
+        /// </summary>
         public void ClearError()
         {
             ErrSource.Clear();
@@ -516,6 +554,7 @@ namespace ApexVisIns
         /// 新增 Information
         /// </summary>
         /// <param name="msg">Message, 強制 type 為 info</param>
+        [Obsolete("待廢")]
         public void AddInfo(Message msg)
         {
             msg.MsgType = Message.MessageType.Info;
@@ -532,12 +571,15 @@ namespace ApexVisIns
         /// <param name="description">Description</param>
         public void AddSuccess(Message.MsgCode code, string description)
         {
-            InfoSource.Push(new Message
+            lock (_infoCollLock)
             {
-                Code = code,
-                Description = description,
-                MsgType = Message.MessageType.Success
-            });
+                InfoSource.Push(new Message
+                {
+                    Code = code,
+                    Description = description,
+                    MsgType = Message.MessageType.Success
+                });
+            }
             NewInfo++;
             OnPropertyChanged(nameof(NewInfo));
             OnPropertyChanged(nameof(InfoCount));
@@ -550,17 +592,23 @@ namespace ApexVisIns
         /// <param name="description">Description</param>
         public void AddInfo(Message.MsgCode code, string description)
         {
-            InfoSource.Push(new Message
+            lock (_infoCollLock)
             {
-                Code = code,
-                Description = description,
-                MsgType = Message.MessageType.Info
-            });
+                InfoSource.Push(new Message
+                {
+                    Code = code,
+                    Description = description,
+                    MsgType = Message.MessageType.Info
+                });
+            }
             NewInfo++;
             OnPropertyChanged(nameof(NewInfo));
             OnPropertyChanged(nameof(InfoCount));
         }
 
+        /// <summary>
+        /// 清空 Info
+        /// </summary>
         public void ClearInfo()
         {
             InfoSource.Clear();
@@ -574,7 +622,8 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(NewInfo));
         }
 
-        //public ObservableCollection<Message> MessageSource { get; set; } = new ObservableCollection<Message>();
+        // public ObservableCollection<Message> MessageSource { get; set; } = new ObservableCollection<Message>();
+
 
         /// <summary>
         /// Stack Source of Message

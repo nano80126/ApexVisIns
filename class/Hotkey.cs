@@ -55,6 +55,11 @@ namespace ApexVisIns
         }
         private void QuitCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            //Debug.WriteLine(BaslerCam.IsConnected);
+            //foreach (var item in BaslerCams)
+            //{
+            //    Debug.WriteLine($"Connected {item.IsConnected}");
+            //}
             Quitbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)

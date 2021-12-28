@@ -1,17 +1,11 @@
 ﻿using Basler.Pylon;
 using OpenCvSharp;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ApexVisIns.content
 {
@@ -102,7 +96,7 @@ namespace ApexVisIns.content
 
                 // 開啟相機
                 cam.Open();
-                cam.PropertyChange();
+                //cam.PropertyChange();
             }
             catch (Exception ex)
             {

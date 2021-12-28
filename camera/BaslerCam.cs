@@ -309,6 +309,9 @@ namespace ApexVisIns
             _ = Camera == null
                 ? throw new ArgumentNullException("Camera is a null object, initialize it before calling this function")
                 : Camera.Open();
+
+            OnPropertyChanged(nameof(IsConnected));
+            OnPropertyChanged(nameof(IsOpen));
         }
 
         public override void Close()
@@ -316,6 +319,9 @@ namespace ApexVisIns
             Camera.Close();
             Camera.Dispose();
             Camera = null;
+
+            OnPropertyChanged(nameof(IsConnected));
+            OnPropertyChanged(nameof(IsOpen));
         }
 
         // 手動觸發 Property Change

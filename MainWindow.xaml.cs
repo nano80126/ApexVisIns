@@ -170,6 +170,7 @@ namespace ApexVisIns
             // Indicator = FindResource(nameof(Indicator)) as Indicator;
             // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer.CollecionBinding();
             #endregion
 
             // 載入後, focus 視窗
@@ -184,6 +185,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            MsgInformer.CollectionDebinding();
             CameraEnumer?.WorkerEnd();
             LightEnumer?.WorkerEnd();
         }

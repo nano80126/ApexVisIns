@@ -27,15 +27,30 @@
                 <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
 
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
+                
+                
                 <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
-                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged">
+                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged"
+                         IsEnabled="False">
+                    <!--<ListBox.IsEnabled>
+                        1. 確認 Servo Motion 連線狀態
+                        2. 確認 是否有原點復歸
+                    </ListBox.IsEnabled>-->
+                    
+                    
                     <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
                 
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="DeinitBtn_Click"/>
+
+                
+                
+                
+                <Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
                 
             </ToolBar>
         </ToolBarTray>
