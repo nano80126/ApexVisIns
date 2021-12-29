@@ -11,6 +11,7 @@ using Advantech.Motion;
 using System.IO;
 using System.Globalization;
 using System.Threading;
+using System.Windows.Data;
 
 namespace ApexVisIns
 {
@@ -24,16 +25,19 @@ namespace ApexVisIns
         public IntPtr DeviceHandle = IntPtr.Zero;
         public readonly IntPtr[] AxisHandles = new IntPtr[8];
 
-        private double _posCmd;
-        private double _posAct;
-        private string _currentStatus;
+        //private double _posCmd;
+        //private double _posAct;
+        //private string _currentStatus;
         private bool _deviceOpened;
 
         private System.Timers.Timer statusTimer;
         private int _sltAxis = -1;
-        private bool _servoOn;
+        //private bool _servoOn;
 
         // private int _sltAxisIndex;
+
+        private readonly object _deviceColltionLock = new();
+        private readonly object _axisColltionLock = new();
         #endregion
 
         /// <summary>
@@ -62,7 +66,6 @@ namespace ApexVisIns
         /// </summary>
         public ushort[] SlaveIDArray { get; private set; } = new ushort[10];
 
-
         public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
         public int BoardCount => BoardList.Count;
@@ -76,6 +79,9 @@ namespace ApexVisIns
         /// 原點復歸模式列表
         /// </summary>
         public List<HomeMode> HomeModes { get; } = new List<HomeMode>();
+
+
+
 
         /// <summary>
         /// 選擇軸
@@ -233,6 +239,15 @@ namespace ApexVisIns
             return true;
         }
 
+        /// <summary>
+        /// 啟用 Collecion Binding
+        /// </summary>
+        public void EnableCollectionBinding()
+        {
+            BindingOperations.EnableCollectionSynchronization(BoardList, _deviceColltionLock);
+            BindingOperations.EnableCollectionSynchronization(AxisList, _axisColltionLock);
+        }
+
 
         /// <summary>
         /// 
@@ -247,10 +262,13 @@ namespace ApexVisIns
                 throw new Exception($"列舉 EtherCAT Card 失敗: Code[0x{result:X}]");
             }
 
-            BoardList.Clear();
-            for (int i = 0; i < DEV_Count; i++)
+            lock (_deviceColltionLock)
             {
-                BoardList.Add(new DeviceList(DEV_LISTs[i]));
+                BoardList.Clear();
+                for (int i = 0; i < DEV_Count; i++)
+                {
+                    BoardList.Add(new DeviceList(DEV_LISTs[i]));
+                }
             }
 
             return DEV_Count;
@@ -264,7 +282,7 @@ namespace ApexVisIns
             uint result;
             int retry = 0;          // 重試次數
             uint AxesCount = 0;     // 裝置軸數 
-            uint DiChCount = 0;     // 裝置DI數
+            // uint DiChCount = 0;     // 裝置DI數，用不到
 
             // ushort ringNo = 0;      // 
             // ushort[] slaveIPArr = new ushort[10];   
@@ -389,7 +407,7 @@ namespace ApexVisIns
         /// </summary>
         public void CloseDevice()
         {
-            uint result;
+            //uint result;
             // 紀錄軸狀態
             ushort[] AxisState = new ushort[MaxAxisCount];
 
@@ -459,7 +477,7 @@ namespace ApexVisIns
         /// </summary>
         public void SetAllServoOff()
         {
-            uint result;
+            // uint result;
 
             if (!DeviceOpened)
             {
@@ -1702,11 +1720,8 @@ namespace ApexVisIns
             double axHomeVelHigh = 0;
             double axHomeAcc = 0;
             double axHomeDec = 0;
-            uint orgReact = 0;
-            uint homeResetEnable = 0;
-
-            // double axParJogVelLow = 0;
-            // double axParJogVelHigh = 0;
+            //uint orgReact = 0;
+            //uint homeResetEnable = 0;
 
             uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxHomeVelLow, ref axHomeVelLow);
             if (result != (uint)ErrorCode.SUCCESS)

@@ -445,6 +445,11 @@
                                 IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                 Click="ReadUserSet_Click"/>
 
+
+                        <Button x:Name="SetDefaultUserSet" Margin="12 0 0 0" Content="設為預設" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
+                                IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Click="SetDefaultUserSet_Click"/>
+
                         <!--待移除-->
                         <!--<Button x:Name="UpdateUserSet" Margin="12 0 0 0" Content="更新" 
                         Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"

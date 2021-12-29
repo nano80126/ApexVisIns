@@ -19,10 +19,17 @@ namespace ApexVisIns
     {
         private readonly object _CollectionLock = new();
 
+
         /// <summary>
         /// Camera source list
         /// </summary>
         public ObservableCollection<BaslerCamInfo> CamsSource { get; set; } = new ObservableCollection<BaslerCamInfo>();
+
+        /// <summary>
+        /// 初始化旗標，
+        /// DoWork 後常為 True
+        /// </summary>
+        public bool InitFlag { get; set; }
 
         private void CamsSourceAdd(BaslerCamInfo info)
         {
@@ -79,7 +86,8 @@ namespace ApexVisIns
                 if (cams.Count == 0)
                 {
                     CamsSourceClear();                          // 清空 Cams Source
-                    _ = SpinWait.SpinUntil(() => false, 500);   // 等待五秒
+                    InitFlag = true;
+                    _ = SpinWait.SpinUntil(() => false, 3000);  // 等待三秒
                     return;
                 }
 
@@ -98,11 +106,12 @@ namespace ApexVisIns
 
                         // 需要變更
                         // 當有相機被移除
-                        // CamsSourceRemove(camInfo);6
+                        // CamsSourceRemove(camInfo);
                     }
                 }
 
                 // Cams Source Count > cams Count => 移除未連線之 BaslerInfo 
+                // 確認一下功能
                 if (CamsSource.Count > cams.Count)
                 {
                     foreach (BaslerCamInfo camInfo in CamsSource)
@@ -113,11 +122,13 @@ namespace ApexVisIns
                         }
                     }
                 }
+
+                InitFlag = true;
             }
             catch (Exception)
             {
                 // Display in message list
-                //Console.WriteLine(ex.Message);
+                // Console.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -309,6 +320,9 @@ namespace ApexVisIns
             _ = Camera == null
                 ? throw new ArgumentNullException("Camera is a null object, initialize it before calling this function")
                 : Camera.Open();
+
+            OnPropertyChanged(nameof(IsConnected));
+            OnPropertyChanged(nameof(IsOpen));
         }
 
         public override void Close()
@@ -316,6 +330,9 @@ namespace ApexVisIns
             Camera.Close();
             Camera.Dispose();
             Camera = null;
+
+            OnPropertyChanged(nameof(IsConnected));
+            OnPropertyChanged(nameof(IsOpen));
         }
 
         // 手動觸發 Property Change

@@ -13,6 +13,16 @@ using System.Windows.Input;
 using Basler.Pylon;
 using System.Windows.Controls.Primitives;
 
+
+//
+// 確認無用後可以刪除
+// 確認無用後可以刪除
+// 確認無用後可以刪除
+// 確認無用後可以刪除
+// 確認無用後可以刪除
+//
+
+
 namespace ApexVisIns
 {
     public partial class MainWindow : System.Windows.Window

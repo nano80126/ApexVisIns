@@ -184,6 +184,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        [Obsolete("待刪除，正常用不到")]
         private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;

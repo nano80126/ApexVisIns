@@ -134,7 +134,7 @@
                 <!--Footer-->
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            
+
             <!--#region Appbar, Set focusale because needing to blur other control -->
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3" Background="Transparent" MouseLeftButtonDown="TitleGrid_MouseLeftButtonDown" Focusable="True">
                 <Grid.ColumnDefinitions>
@@ -181,7 +181,7 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-                    
+
                     <content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
                 <!--#endregion-->
@@ -192,7 +192,7 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-                    
+
                     <!--//-->
                     <content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
@@ -204,7 +204,7 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-                    
+
                     <!--//-->
                     <content:MotionTab x:Name="MotionTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
@@ -414,18 +414,38 @@
                     </StackPanel>
                 </materialDesign:PopupBox>
                 <!--#endregion-->
-                
-                
 
-                <ProgressBar DockPanel.Dock="Left" Margin="8 0 0 0" Height="6" BorderThickness="0" BorderBrush="Gray"
+
+                <!--內部資料，Binding 進MsgInformer-->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}" Value="100">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <!--// 淡出，時間 3 秒-->
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+
+                    <ProgressBar Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
                              materialDesign:TransitionAssist.DisableTransitions="True" 
                              HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
-                             Width="250" Value="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}" 
-                             Visibility="Visible"/>
-                <!--// string format {}{0:D2%}-->
-                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
-                           Text="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0, StringFormat={}{0} %}" 
-                           Visibility="Visible"/>
+                             Width="250" Value="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}"/>
+
+
+                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
+                               Text="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0, StringFormat={}{0} %}"/>
+                </StackPanel>
+
             </DockPanel>
             <!--#endregion-->
         </Grid>

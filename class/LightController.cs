@@ -18,6 +18,11 @@ namespace ApexVisIns
 
         public ObservableCollection<string> ComPortSource { get; set; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// 初始化旗標
+        /// </summary>
+        public bool InitFlag { get; set; }
+
         private void ComPortSourceAdd(string comPort)
         {
             lock (_CollectionLock)
@@ -200,6 +205,7 @@ namespace ApexVisIns
         {
             SerialPort = new SerialPort(com, 9600, Parity.None, 8, StopBits.One);
             SerialPort.Open();
+            Ping();
             OnPropertyChanged(nameof(IsComOpen));
         }
 
@@ -211,50 +217,127 @@ namespace ApexVisIns
         /// <param name="parity"></param>
         /// <param name="dataBits"></param>
         /// <param name="stopBits"></param>
-        public void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        /// <returns>Serial Port 連線狀態</returns>
+        public bool ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
         {
             SerialPort = new SerialPort(com, baudRate, parity, dataBits, stopBits);
             SerialPort.Open();
+            bool success = Ping();
             OnPropertyChanged(nameof(IsComOpen));
+            return success;
         }
 
         /// <summary>
         /// 關閉 COM
         /// </summary>
-        public void ComClose()
+        /// <returns>Serial Port 連線狀態</returns>
+        public bool ComClose()
         {
-            SerialPort.Close();
-            OnPropertyChanged(nameof(IsComOpen));
+            if (IsComOpen)
+            {
+                SerialPort.Close();
+                OnPropertyChanged(nameof(IsComOpen));
+            }
+            return false;
         }
+
+        private bool Ping()
+        {
+            if (SerialPort.IsOpen)
+            {
+                string cmd = string.Empty;
+                for (int i = 0; i < ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+                try
+                {
+                    _ = Write(cmd);
+                    return true;
+                }
+                catch (TimeoutException)
+                {
+                    // Timeout 則直接關閉 Port
+                    SerialPort.Close();
+                    //throw;
+                    return false;
+                }
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// 歸零所有通道
         /// </summary>
         public void ResetAllValue()
         {
-            string cmd = string.Empty;
-            for (int i = 1; i <= ChannelNumber; i++)
+            if (IsComOpen)
             {
-                cmd += $"{i},0,";
-            }
-            cmd = $"{cmd.TrimEnd(',')}\r\n";
-
-            try
-            {
-                _ = Write(cmd);
-                foreach (LightChannel ch in Channels) // 歸零 channel
+                string cmd = string.Empty;
+                for (int i = 1; i <= ChannelNumber; i++)
                 {
-                    ch.Value = 0;
+                    cmd += $"{i},0,";
+                }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+                try
+                {
+                    _ = Write(cmd);
+                    foreach (LightChannel ch in Channels) // 歸零 channel
+                    {
+                        ch.Value = 0;
+                    }
+                }
+                catch (TimeoutException T)
+                {
+                    throw new TimeoutException($"重置光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"重置光源設置失敗: {ex.Message}");
                 }
             }
-            catch (TimeoutException T)
+        }
+
+        /// <summary>
+        /// 重置所有通道
+        /// </summary>
+        /// <returns>Error Message</returns>
+        public string TryResetAllValue()
+        {
+            if (IsComOpen)
             {
-                throw new TimeoutException($"重置光源設置失敗: {T.Message}");
+                string cmd = string.Empty;
+                for (int i = 1; i <= ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+                try
+                {
+                    _ = Write(cmd);
+                    foreach (LightChannel ch in Channels) // 歸零 channel
+                    {
+                        ch.Value = 0;
+                    }
+                }
+                catch (TimeoutException T)
+                {
+                    return $"重置光源設置失敗 {T.Message}";
+                    //return new TimeoutException($"重置光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return $"重置光源設置失敗 {ex.Message}";
+                    //return new Exception($"重置光源設置失敗: {ex.Message}");
+                }
+                return string.Empty;
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"重置光源設置失敗: {ex.Message}");
-            }
+            return "光源控制器 ComPort未開啟";
         }
 
         /// <summary>

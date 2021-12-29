@@ -44,17 +44,16 @@ namespace ApexVisIns
         }
         private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            //e.CanExecute = !(bool)CamConnect.IsChecked;
             e.CanExecute = !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
-            //#if BASLER 
-            //            // 相機不為開啟狀態
-            //            e.CanExecute = !BaslerCam.IsConnected;
-            //#elif UVC
-            //            e.CanExecute = !UvcCam.IsOpen;
-            //#endif
         }
+
         private void QuitCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            //Debug.WriteLine(BaslerCam.IsConnected);
+            //foreach (var item in BaslerCams)
+            //{
+            //    Debug.WriteLine($"Connected {item.IsConnected}");
+            //}
             Quitbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)

@@ -70,7 +70,6 @@ namespace ApexVisIns
         /// 相機裝置列表
         /// </summary>
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
-        // public static DeviceConfig[] DeviceConfigs;
         #endregion
 
         #region EtherCAT Motion
@@ -89,6 +88,9 @@ namespace ApexVisIns
         #endregion
 
         #region Varibles
+        /// <summary>
+        /// 影像處理中
+        /// </summary>
         public static bool IsProcessing { get; set; }
 
         private readonly PixelDataConverter pxConverter = new()
@@ -162,6 +164,7 @@ namespace ApexVisIns
 
             #region EtherCAT Motion
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+            ServoMotion.EnableCollectionBinding();
             #endregion
 
             #region Find Resource
@@ -170,6 +173,7 @@ namespace ApexVisIns
             // Indicator = FindResource(nameof(Indicator)) as Indicator;
             // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer.EnableCollectionBinding();
             #endregion
 
             // 載入後, focus 視窗
@@ -184,6 +188,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            MsgInformer.CollectionDebinding();
             CameraEnumer?.WorkerEnd();
             LightEnumer?.WorkerEnd();
         }

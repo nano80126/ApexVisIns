@@ -9,10 +9,8 @@ Apex 外觀瑕疵檢測
 	* 毛邊
 	* 銑銷不良
 
-
 * 窗戶
 	* 毛邊
-
 
 * 管件
 	* 亮紋
@@ -93,12 +91,28 @@ Apex 外觀瑕疵檢測
 * [x] Device Tab
 	* Device List 儲存IP，相機IP需要綁定
 
-* [ ] 原點賦歸
+* [ ] 原點復歸
 	* 待測試
+
 * [x] 測試 MoveAbs & ModeRel
 * [x] 簡化控制板 UI
 * [x] Handle 遺失問題待處理
 * [x] 新增光源控制器 (MainTab)
+
+* [ ] MainTab.xaml
+	* 光源控制器 初始化
+	* 相機 初始化
+		* 尚未錯誤處理
+	* 伺服馬達 初始化
+
+* [ ] MainTab.xaml 反初始化
+
+* [ ] CameraEnumer 
+	* 初始化 Flag
+	* 單支相機被移除時的處置 (camsSourc.Remove)
+	
+* [ ] Navigation 新增登入按鈕
+	* 登入後才可以進入 DeviceTab & MotionTab
 
 
 ### Config Logic

@@ -20,23 +20,46 @@
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
-                <!--<Canvas VerticalAlignment="Center" Style="{StaticResource ComplexPackIcon}" Background="White">
+                <!--
+                <Canvas VerticalAlignment="Center" Style="{StaticResource ComplexPackIcon}" Background="White">
                     <materialDesign:PackIcon Kind="VideoOutline" Width="26" Height="24" />
                     <materialDesign:PackIcon Kind="Check" Canvas.Right="0" Canvas.Bottom="0" />
-                </Canvas>-->
-                <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
+                </Canvas>
+                -->
 
+                <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
+
+
                 <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
-                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged">
+                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged"
+                         IsEnabled="False">
+                    <!--<ListBox.IsEnabled>
+                        1. 確認 Servo Motion 連線狀態
+                        2. 確認 是否有原點復歸
+                    </ListBox.IsEnabled>-->
+
                     <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
-                
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="確認" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
-                
+
+
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="啟動相機" Foreground="{StaticResource ColorSuccess}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="StartCameraGrab_Click"/>
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止相機" Foreground="{StaticResource ColorSuccess}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="StopCameraGrab_Click"/>
+
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="DeinitBtn_Click"/>
+
+
+                <Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
+
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -53,9 +76,11 @@
                         <Setter Property="Padding" Value="0 2"/>
                     </Style>
                     
-                    <!--<Style TargetType="DockPanel" x:Key="IconPanel">
+                    <!--
+                    <Style TargetType="DockPanel" x:Key="IconPanel">
                         <Setter Property="Width"
-                    </Style>-->
+                    </Style>
+                    -->
                     
                     <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
                         <Setter Property="FlowDirection" Value="LeftToRight"/>
@@ -97,13 +122,14 @@
                         </Canvas>-->
 
                         <!-- 光源(測試) -->
-                        <!--// 24V Light Controller-->
+                        <!--// 24V Light Controller -->
                         <Canvas ToolTip="24V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
                                                      ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
-                        <!--// 6V Light Controller-->
+                        
+                        <!--// 6V Light Controller -->
                         <Canvas ToolTip="6V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
@@ -118,7 +144,7 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <!--// 改動態? => 有問題 -->
-                        
+
                         <!--//-->
                         <Canvas ToolTip="X 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="AxisXRotateClockwise" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
@@ -141,7 +167,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="Camera 1">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
                                                      ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
@@ -153,7 +179,7 @@
 
                         <Canvas ToolTip="Camera 3">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
                                                      ctProperty:StatusHelper.Connected="{Binding [2].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 

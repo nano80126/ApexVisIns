@@ -593,6 +593,10 @@ namespace ApexVisIns.content
 
             config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
             config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+
+            string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
+
+            Debug.WriteLine($"{userSet}");
         }
 
         /// <summary>
@@ -695,6 +699,19 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 設為 預設 UserSet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetDefaultUserSet_Click(object sender, RoutedEventArgs e)
+        {
+            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+            Camera camera = MainWindow.BaslerCam.Camera;
+
+            camera.Parameters[PLGigECamera.UserSetDefaultSelector].SetValue(config.UserSet);
+        }
+
+        /// <summary>
         /// 更新 Config
         /// Config 寫入 Camera
         /// </summary>
@@ -765,6 +782,8 @@ namespace ApexVisIns.content
             ComboBox combobox = sender as ComboBox;
             Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
         }
+
+     
 
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
