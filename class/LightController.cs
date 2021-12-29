@@ -340,6 +340,7 @@ namespace ApexVisIns
             return "光源控制器 ComPort未開啟";
         }
 
+
         /// <summary>
         /// 設定通道光源大小,
         /// 後端使用

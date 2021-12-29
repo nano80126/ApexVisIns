@@ -70,6 +70,7 @@ namespace ApexVisIns.content
 
         #endregion
 
+
         public MainTab()
         {
             InitializeComponent();
