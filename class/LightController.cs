@@ -340,6 +340,41 @@ namespace ApexVisIns
             return "光源控制器 ComPort未開啟";
         }
 
+        public string TryResetAllValue()
+        {
+            if (IsComOpen)
+            {
+                string cmd = string.Empty;
+                for (int i = 1; i <= ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
+
+                try
+                {
+                    _ = Write(cmd);
+                    foreach (LightChannel ch in Channels) // 歸零 channel
+                    {
+                        ch.Value = 0;
+                    }
+                }
+                catch (TimeoutException T)
+                {
+                    return $"重置光源設置失敗 {T.Message}";
+                    //return new TimeoutException($"重置光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return $"重置光源設置失敗 {ex.Message}";
+                    //return new Exception($"重置光源設置失敗: {ex.Message}");
+                }
+                return string.Empty;
+            }
+            return "光源控制器 ComPort未開啟";
+        }
+
+
         /// <summary>
         /// 設定通道光源大小,
         /// 後端使用
