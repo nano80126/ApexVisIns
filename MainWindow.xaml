@@ -25,6 +25,7 @@
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
+        Closed="Window_Closed"
         Topmost="False"
         Title="MainWindow" Width="1600" Height="900">
     <Window.Resources>
@@ -127,11 +128,11 @@
     <Border x:Name="MainBorder" HorizontalAlignment="Stretch" Style="{StaticResource MainWindowBorder}">
         <Grid>
             <Grid.RowDefinitions>
-                <!--Appbar-->
+                <!-- Appbar -->
                 <RowDefinition Height="auto"/>
-                <!--Content-->
+                <!-- Content -->
                 <RowDefinition Height="1*"/>
-                <!--Footer-->
+                <!-- Footer -->
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
@@ -142,7 +143,7 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png" />
+                <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
                 <!--<TextBlock Grid.Column="0" Text="{Binding Title, FallbackValue=Default, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
                            Style="{StaticResource MainWindowTitle}" VerticalAlignment="Center"/>-->
 
@@ -169,8 +170,7 @@
             <!--//-->
             <!--#region TabControl -->
             <TabControl x:Name="AppTabControl"
-                        DockPanel.Dock="Top" Grid.Row="1"
-                        VerticalAlignment="Stretch" 
+                        Grid.Row="1" VerticalAlignment="Stretch" 
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ColorZoneAssist.Mode="Custom" 
                         materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
                         SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -218,12 +218,89 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-
+                    <!-- // -->
                     <content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />
                 </TabItem>
                 <!--#endregion-->
+
+                <!--#region For Test -->
+                <!--<Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
+                        Padding="0"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right"
+                        Content="123" 
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        Background="Red">
+                </Button>-->
+                <!--#endregion-->
+                <!--//-->
             </TabControl>
             <!--#endregion-->
+            
+            <!--#region User Account -->
+            <!--<Button x:Name="UserLogin" Grid.Row="1" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                    Style="{StaticResource MaterialDesignToolButton}" Click="UserLogin_Click">
+                <materialDesign:PackIcon Kind="AccountLock" Width="30" Height="26" Foreground="{StaticResource ColorWhiteTransparent}">
+                    <materialDesign:PackIcon.Style>
+                        <Style TargetType="materialDesign:PackIcon">
+                            <Style.Triggers>
+                                --><!-- Binding Admini 登入權限-->
+                                <!--<DataTrigger Binding="{}">
+                                AccountCheck
+                                ColorSuccess
+                                </DataTrigger>--><!--
+                            </Style.Triggers>
+                        </Style>    
+                    </materialDesign:PackIcon.Style>
+                </materialDesign:PackIcon>
+            </Button>-->
+            <!--#endregion-->
+
+
+            <!--#region Dialog -->
+            <materialDesign:DialogHost Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
+                                       OverlayBackground="{DynamicResource ColorBlueGrayTranparent}" 
+                                       DialogTheme="Dark">
+                <materialDesign:DialogHost.DialogContent>
+                    <StackPanel MinWidth="200" Margin="16" MouseDown="Panels_MouseDown" Background="Transparent">
+                        <TextBox materialDesign:HintAssist.Hint="Password" Padding="0 3" FontWeight="Bold" 
+                                 TextAlignment="Center"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        
+                        <Button Margin="0 12 0 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="CANCEL" 
+                                BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="16"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                    </StackPanel>
+                </materialDesign:DialogHost.DialogContent>
+                
+                <Border ClipToBounds="True">
+                    <!--<Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="RUN" />-->
+                    <Button x:Name="UserLogin2" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                            Style="{StaticResource MaterialDesignToolButton}" Click="UserLogin_Click">
+                        <materialDesign:PackIcon Kind="AccountLock" Width="30" Height="26" Foreground="{StaticResource ColorWhiteTransparent}">
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <!-- Binding Admini 登入權限-->
+                                        <!--<DataTrigger Binding="{}">
+                                
+                                        AccountCheck
+                                        ColorSuccess
+                                
+                                        </DataTrigger>-->
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
+                    </Button>
+                </Border>
+            </materialDesign:DialogHost>
+            <!--#endregion-->
+
+
             <!--//-->
             <!--#region FooterBar -->
             <DockPanel DockPanel.Dock="Bottom"
@@ -421,12 +498,13 @@
                     <StackPanel.Style>
                         <Style TargetType="StackPanel">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}" Value="100">
+                                <!--<DataTrigger Binding="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}" Value="100">-->
+                                <DataTrigger Binding="{Binding ProgressValue}" Value="100">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
                                                 <!--// 淡出，時間 3 秒-->
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:3"/>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:2"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
@@ -437,13 +515,13 @@
 
 
                     <ProgressBar Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
-                             materialDesign:TransitionAssist.DisableTransitions="True" 
-                             HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
-                             Width="250" Value="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0}"/>
-
+                                 materialDesign:TransitionAssist.DisableTransitions="True" 
+                                 HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
+                                 Minimum="0" Maximum="100" Width="250" 
+                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"/>
 
                     <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
-                               Text="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, FallbackValue=0, StringFormat={}{0} %}"/>
+                               Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"/>
                 </StackPanel>
 
             </DockPanel>

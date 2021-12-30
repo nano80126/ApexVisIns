@@ -87,7 +87,7 @@ namespace ApexVisIns
                 {
                     CamsSourceClear();                          // 清空 Cams Source
                     InitFlag = true;
-                    _ = SpinWait.SpinUntil(() => false, 3000);  // 等待三秒
+                    _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, 3000);  // 等待三秒
                     return;
                 }
 
@@ -127,8 +127,6 @@ namespace ApexVisIns
             }
             catch (Exception)
             {
-                // Display in message list
-                // Console.WriteLine(ex.Message);
                 throw;
             }
         }

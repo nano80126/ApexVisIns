@@ -45,6 +45,13 @@ namespace ApexVisIns
             base.WorkerStart();
         }
 
+        public override void WorkerEnd()
+        {
+            BindingOperations.DisableCollectionSynchronization(ComPortSource);
+            base.WorkerEnd();
+        }
+
+
         public override void DoWork()
         {
             try
@@ -54,7 +61,8 @@ namespace ApexVisIns
                 if (portNames.Length == 0)
                 {
                     ComPortSourceClear();
-                    _ = SpinWait.SpinUntil(() => false, 500);
+                    InitFlag = true;
+                    _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, 3000);
                 }
 
                 foreach (string com in portNames)
@@ -64,6 +72,8 @@ namespace ApexVisIns
                         ComPortSourceAdd(com);
                     }
                 }
+
+                InitFlag = true;
             }
             catch (Exception)
             {

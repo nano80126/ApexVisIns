@@ -4,8 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace ApexVisIns
 {
@@ -467,6 +469,56 @@ namespace ApexVisIns
         private readonly object _errCollLock = new();
         #endregion
 
+        #region Varibles
+        private int _progress;
+
+        private Task progressTask;
+        private CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
+        #endregion
+
+
+        public int ProgressValue
+        {
+            get => _progress;
+            set
+            {
+                _progress = value > 100 ? 100 : value;
+                OnPropertyChanged(nameof(ProgressValue));
+            }
+        }
+        public int TargetProgressValue { get; set; }
+
+
+        public void EnableProgressBar()
+        {
+            progressTask = Task.Run(() =>
+            {
+                while (ProgressValue < 100 && !CancellationTokenSource.IsCancellationRequested)
+                {
+                    if (ProgressValue < TargetProgressValue)
+                    {
+                        ProgressValue += 2;
+                    }
+
+                    _ = SpinWait.SpinUntil(() => false, 50);
+                }
+            });
+        }
+
+        public void DisposeProgressTask()
+        {
+            if (!CancellationTokenSource.IsCancellationRequested)
+            {
+                CancellationTokenSource.Cancel();
+            }
+
+            if (progressTask != null)
+            {
+                progressTask.Wait();
+                progressTask.Dispose();
+            }
+        }
+
 
         public void EnableCollectionBinding()
         {
@@ -474,13 +526,11 @@ namespace ApexVisIns
             BindingOperations.EnableCollectionSynchronization(ErrSource, _errCollLock);
         }
 
-
-        public void CollectionDebinding()
+        public void DisableCollectionBinding()
         {
             BindingOperations.DisableCollectionSynchronization(InfoSource);
             BindingOperations.DisableCollectionSynchronization(ErrSource);
         }
-
 
         public int NewError { get; private set; }
 
@@ -544,7 +594,6 @@ namespace ApexVisIns
             NewError = 0;
             OnPropertyChanged(nameof(NewError));
         }
-
 
         public int NewInfo { get; private set; }
 
@@ -778,7 +827,6 @@ namespace ApexVisIns
         }
 
         public bool IsReadOnly => throw new NotImplementedException();
-
 
         public void Add(T item)
         {

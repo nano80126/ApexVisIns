@@ -173,6 +173,7 @@ namespace ApexVisIns
             // Indicator = FindResource(nameof(Indicator)) as Indicator;
             // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer.EnableProgressBar();
             MsgInformer.EnableCollectionBinding();
             #endregion
 
@@ -188,10 +189,31 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MsgInformer.CollectionDebinding();
-            CameraEnumer?.WorkerEnd();
-            LightEnumer?.WorkerEnd();
+            MsgInformer.DisableCollectionBinding();
+            MsgInformer.DisposeProgressTask();
+
+            CameraEnumer.WorkerEnd();
+            LightEnumer.WorkerEnd();
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            #region 保留
+            //MsgInformer.CollectionDebinding();
+            //MsgInformer.DisposeProgressTask();
+            //CameraEnumer?.WorkerEnd();
+            //LightEnumer?.WorkerEnd(); 
+            #endregion
+        }
+
+        #region User Login
+        private void UserLogin_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. 管理者登入
+            // 2. 彈出視窗輸入操作密碼
+            // 3. 登入後變更ICON
+        }
+        #endregion
 
         #region Footer Message
         private void ErrPopupBox_Opened(object sender, RoutedEventArgs e)
@@ -220,8 +242,24 @@ namespace ApexVisIns
             _ = TitleGrid.Focus();
         }
         #endregion
+
+
+        /// <summary>
+        /// 讓 TextBox 失去 Focus用
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Panels_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Keyboard.ClearFocus();
+            _ = TitleGrid.Focus();
+        }
     }
 
+
+    /// <summary>
+    /// ImageSource 轉換器
+    /// </summary>
     public static class ImageSourceConverter
     {
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]

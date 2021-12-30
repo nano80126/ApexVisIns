@@ -31,6 +31,9 @@ namespace ApexVisIns.content
         #endregion
 
         #region Variables
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
         public MainWindow MainWindow { get; set; }
 
         /// <summary>
@@ -52,24 +55,43 @@ namespace ApexVisIns.content
         /// IO 卡初始化 Flag
         /// </summary>
         private bool IoInitialized { get; set; }
+        #endregion
 
-        #region 
+        #region Local Object (方便 CALL)
+        /// <summary>
+        /// IO 控制器
+        /// </summary>
         private IOController IOController;
-
+        /// <summary>
+        /// 24V 光源控制器
+        /// </summary>
         private LightController Light24V;
+        /// <summary>
+        /// 6V 光源控制器
+        /// </summary>
         private LightController Light_6V;
 
+        /// <summary>
+        /// 相機 1
+        /// </summary>
         private BaslerCam BaslerCam1;
+        /// <summary>
+        /// 相機 2
+        /// </summary>
         private BaslerCam BaslerCam2;
+        /// <summary>
+        /// 相機 3
+        /// </summary>
         private BaslerCam BaslerCam3;
+        /// <summary>
+        /// 相機 4
+        /// </summary>
         private BaslerCam BaslerCam4;
-
+        /// <summary>
+        /// Motion 控制器
+        /// </summary>
         private ServoMotion ServoMotion;
         #endregion
-
-
-        #endregion
-
 
         public MainTab()
         {
@@ -84,18 +106,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //Initializer();
-
-
-            Debug.WriteLine($"Camera: {CameraInitialized}");
-            Debug.WriteLine($"LightCtrl: {LightCtrlsInitiliazed}");
-            Debug.WriteLine($"Motion: {MotionInitialized}");
-
-            //InitLighCtrls();
-
-            //InitMotion();
-
-            //InitCamera();
+            Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
         }
@@ -111,9 +122,7 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region 初始化
-
         /// <summary>
         /// 建立初始化工作者
         /// </summary>
@@ -121,29 +130,35 @@ namespace ApexVisIns.content
         {
             _ = Task.Run(() =>
             {
-                // 等待相機連線
+                // 等待相機 Enumerator 搜尋完畢
                 _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag, 3000);
 
                 InitCamera();
 
                 InitMotion();
 
+                // 等待Com Port 搜尋完畢
+                _ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag, 3000);
+
                 InitLighCtrls();
 
                 InitIOCtrl();
+
+                //_ = SpinWait.SpinUntil(() => false, 1500);
+                //MainWindow.MsgInformer.TargetProgressValue = 200;
             });
 
             // UX Progress Bar
             // 之後整合到 MsgInformer
-            _ = Task.Run(() =>
-            {
-                while (MainWindow.ProgressValue < 100)
-                {
-                    MainWindow.ProgressValue += 2;
+            //_ = Task.Run(() =>
+            //{
+            //    while (MainWindow.ProgressValue < 100)
+            //    {
+            //        MainWindow.ProgressValue += 2;
 
-                    _ = SpinWait.SpinUntil(() => false, 50);
-                }
-            });
+            //        _ = SpinWait.SpinUntil(() => false, 50);
+            //    }
+            //});
         }
 
         /// <summary>
@@ -168,6 +183,11 @@ namespace ApexVisIns.content
                 _ = Light_6V.TryResetAllValue();
                 Light_6V.ComClose();
             }
+
+
+            // 關閉 Motion Control
+            // 
+            
         }
 
         /// <summary>
@@ -252,7 +272,8 @@ namespace ApexVisIns.content
                                 break;
                         }
                         // 更新 Progress Value
-                        MainWindow.ProgressValue += 5;
+                        //MainWindow.ProgressValue += 5;
+                        MainWindow.MsgInformer.TargetProgressValue += 5;
                     }
                 }
             }

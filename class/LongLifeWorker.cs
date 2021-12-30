@@ -74,7 +74,6 @@ namespace ApexVisIns
             else
             {
                 throw new ApplicationException("Worker is running");
-                //throw new Exception("Worker is running");
             }
         }
 
@@ -91,6 +90,7 @@ namespace ApexVisIns
             if (Worker != null)
             {
                 Worker.Wait();
+                Worker.Dispose();
                 Worker = null;
             }
         }

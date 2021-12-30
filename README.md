@@ -114,6 +114,7 @@ Apex 外觀瑕疵檢測
 * [ ] Navigation 新增登入按鈕
 	* 登入後才可以進入 DeviceTab & MotionTab
 
+* [ ] ProgressBar UI 會卡
 
 ### Config Logic
 
