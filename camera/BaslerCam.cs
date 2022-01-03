@@ -17,43 +17,50 @@ namespace ApexVisIns
     /// </summary>
     public class CameraEnumer : LongLifeWorker
     {
-        private readonly object _CollectionLock = new();
+        private readonly object _camsSourceLock = new();
+
+        private readonly object _deviceConfigsLock = new();
 
 
         /// <summary>
-        /// Camera source list
+        /// 目前連線之Camera Source
         /// </summary>
         public ObservableCollection<BaslerCamInfo> CamsSource { get; set; } = new ObservableCollection<BaslerCamInfo>();
 
         /// <summary>
-        /// 初始化旗標，
-        /// DoWork 後常為 True
+        /// JSON FILE 儲存之CONFIG
         /// </summary>
-        //public bool InitFlag { get; set; }
+        public ObservableCollection<DeviceConfig> DeviceConfigs { get; set; } = new ObservableCollection<DeviceConfig>();
 
-        private void CamsSourceAdd(BaslerCamInfo info)
+        #region CamsSource 操作
+        /// <summary>
+        /// 新增相機至 CamsSource
+        /// </summary>
+        /// <param name="info"></param>
+        private void AddCamsSource(BaslerCamInfo info)
         {
-            lock (_CollectionLock)
+            lock (_camsSourceLock)
             {
                 CamsSource.Add(info);
             }
         }
-
         /// <summary>
-        /// 移除指定 S/N 之 camera
+        /// 從 CamsSource 移除指定相機
         /// </summary>
-        /// <param name="serialNumber">S/N</param>
-        private void CamsSourceRemove(BaslerCamInfo info)
+        /// <param name="info"></param>
+        private void RemoveCamsSource(BaslerCamInfo info)
         {
-            lock (_CollectionLock)
+            lock (_camsSourceLock)
             {
                 CamsSource.Remove(info);
             }
         }
-
-        private void CamsSourceClear()
+        /// <summary>
+        /// 清除 CamsSource 集合
+        /// </summary>
+        private void ClearCamsSource()
         {
-            lock (_CollectionLock)
+            lock (_camsSourceLock)
             {
                 if (CamsSource.Count > 0)
                 {
@@ -61,16 +68,55 @@ namespace ApexVisIns
                 }
             }
         }
+        #endregion
+
+
+        #region DeviceConfigs 操作
+        /// <summary>
+        /// 新增 Config 至 DeviceConfig
+        /// </summary>
+        /// <param name="config"></param>
+        private void AddDeviceConfigs(DeviceConfig config)
+        {
+
+        }
+        /// <summary>
+        /// 從 DeviceConfigs 移除指定物件
+        /// </summary>
+        /// <param name="config"></param>
+        private void RemoveDeviceConfigs(DeviceConfig config)
+        {
+
+        }
+        /// <summary>
+        /// 清空 DeviceConfigs
+        /// </summary>
+        private void ClearDeviceConfigs()
+        {
+
+        }
+        /// <summary>
+        /// 變更 DeviceConfigs
+        /// </summary>
+        private void ChangeDeviceConfigs()
+        {
+
+        }
+        #endregion
+
+
 
         public override void WorkerStart()
         {
-            BindingOperations.EnableCollectionSynchronization(CamsSource, _CollectionLock);
+            BindingOperations.EnableCollectionSynchronization(CamsSource, _camsSourceLock);
+            BindingOperations.EnableCollectionSynchronization(DeviceConfigs, _deviceConfigsLock);
             base.WorkerStart();
         }
 
         public override void WorkerEnd()
         {
             BindingOperations.DisableCollectionSynchronization(CamsSource);
+            BindingOperations.DisableCollectionSynchronization(DeviceConfigs);
             base.WorkerEnd();
         }
 
@@ -85,7 +131,7 @@ namespace ApexVisIns
 
                 if (cams.Count == 0)
                 {
-                    CamsSourceClear();                          // 清空 Cams Source
+                    ClearCamsSource();                          // 清空 Cams Source
                     InitFlag = InitFlags.Finished;
                     _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, 3000);  // 等待三秒
                     return;
@@ -102,7 +148,7 @@ namespace ApexVisIns
                             CameraType = info[CameraInfoKey.DeviceType],
                             //DeviceVersion = info[CameraInfoKey.DeviceVersion],
                         };
-                        CamsSourceAdd(camInfo);
+                        AddCamsSource(camInfo);
 
                         // 需要變更
                         // 當有相機被移除
@@ -118,7 +164,7 @@ namespace ApexVisIns
                     {
                         if (!cams.Any(e => e[CameraInfoKey.SerialNumber] == camInfo.SerialNumber))
                         {
-                            CamsSourceRemove(camInfo);
+                            RemoveCamsSource(camInfo);
                         }
                     }
                 }

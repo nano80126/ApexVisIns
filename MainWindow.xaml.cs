@@ -37,10 +37,18 @@ namespace ApexVisIns
         #endregion
 
         #region Cameras
+        /// <summary>
+        ///相機物件 (工程師頁面使用)
+        /// </summary>
         public static BaslerCam BaslerCam { get; set; }
+        /// <summary>
+        /// 相機陣列 (上限正式使用)
+        /// </summary>
         public static BaslerCam[] BaslerCams { get; set; }
-
-        //public UvcCam UvcCam;
+        /// <summary>
+        /// 已儲存的相機組態
+        /// </summary>
+        public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         #endregion
 
         #region Light Controller
@@ -48,7 +56,7 @@ namespace ApexVisIns
         /// Com Port 列舉器，
         /// 綁在 MainWindow
         /// </summary>
-        public LightEnumer LightEnumer;
+        public LightEnumer LightEnumer { get; set; }
 
         /// <summary>
         /// 光源控制器
@@ -69,14 +77,14 @@ namespace ApexVisIns
         /// <summary>
         /// 相機裝置列表
         /// </summary>
-        public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
+        //public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         #endregion
 
         #region EtherCAT Motion
         /// <summary>
         /// Motion Device 列舉器，綁在 MainWindow
         /// </summary>
-        public MotionEnumer MotionEnumer;
+        public MotionEnumer MotionEnumer { get; set; }
 
         public static ServoMotion ServoMotion { get; set; }
         #endregion
@@ -174,7 +182,7 @@ namespace ApexVisIns
             IOController = FindResource(nameof(IOController)) as IOController;
             #endregion
 
-            #region Device
+            #region Device Configs
             DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 

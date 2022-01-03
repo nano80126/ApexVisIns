@@ -184,9 +184,7 @@ namespace ApexVisIns.content
                                 {
                                     VendorName = d.VendorName,
                                     CameraType = d.CameraType,
-                                    // 確認 目標特徵載入沒有問題
                                     TargetFeature = d.TargetFeature,
-                                    // Online = false
                                     // CameraEnumer CamsSource 有連線且有被新增過
                                     Online = cams.Count > 0 && cams.Exists(e => e.SerialNumber == d.SerialNumber)
                                 };

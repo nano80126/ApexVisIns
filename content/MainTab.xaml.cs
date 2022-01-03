@@ -230,61 +230,68 @@ namespace ApexVisIns.content
                 using StreamReader reader = new StreamReader(path);
                 string jsonStr = reader.ReadToEnd();
 
-                // 有組態的 camera
-                DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
-
-                // 在線上的 camera
-                List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                // Devices 排序
-                Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
-
-                foreach (DeviceConfigBase device in devices)
+                if (jsonStr != string.Empty)
                 {
-                    // 確認有組態的 camera 在線上
-                    if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
+                    // 有組態的 camera
+                    DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+
+                    // 在線上的 camera
+                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                    // Devices 排序
+                    Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
+
+                    foreach (DeviceConfigBase device in devices)
                     {
-                        switch (device.TargetFeature)
+                        // 確認有組態的 camera 在線上
+                        if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                         {
-                            case DeviceConfigBase.TargetFeatureType.Ear:
-                                if (!MainWindow.BaslerCams[0].IsConnected)
-                                {
-                                    BaslerCam1 = MainWindow.BaslerCams[0];
-                                    //BaslerCam1.SerialNumber = device.SerialNumber;
-                                    Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature.ToString());
-                                }
-                                break;
-                            case DeviceConfigBase.TargetFeatureType.Window:
-                                if (!MainWindow.BaslerCams[1].IsConnected)
-                                {
-                                    BaslerCam2 = MainWindow.BaslerCams[1];
-                                    //BaslerCam2.SerialNumber = device.SerialNumber;
-                                    Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature.ToString());
-                                }
-                                break;
-                            case DeviceConfigBase.TargetFeatureType.Surface1:
-                                if (!MainWindow.BaslerCams[2].IsConnected)
-                                {
-                                    BaslerCam3 = MainWindow.BaslerCams[2];
-                                    //BaslerCam3.SerialNumber = device.SerialNumber;
-                                    Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature.ToString());
-                                }
-                                break;
-                            case DeviceConfigBase.TargetFeatureType.Surface2:
-                                if (!MainWindow.BaslerCams[3].IsConnected)
-                                {
-                                    BaslerCam4 = MainWindow.BaslerCams[3];
-                                    //BaslerCam4.SerialNumber = device.SerialNumber;
-                                    Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature.ToString());
-                                }
-                                break;
-                            default:
-                                break;
+                            switch (device.TargetFeature)
+                            {
+                                case DeviceConfigBase.TargetFeatureType.Ear:
+                                    if (!MainWindow.BaslerCams[0].IsConnected)
+                                    {
+                                        BaslerCam1 = MainWindow.BaslerCams[0];
+                                        //BaslerCam1.SerialNumber = device.SerialNumber;
+                                        Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature.ToString());
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Window:
+                                    if (!MainWindow.BaslerCams[1].IsConnected)
+                                    {
+                                        BaslerCam2 = MainWindow.BaslerCams[1];
+                                        //BaslerCam2.SerialNumber = device.SerialNumber;
+                                        Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature.ToString());
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Surface1:
+                                    if (!MainWindow.BaslerCams[2].IsConnected)
+                                    {
+                                        BaslerCam3 = MainWindow.BaslerCams[2];
+                                        //BaslerCam3.SerialNumber = device.SerialNumber;
+                                        Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature.ToString());
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Surface2:
+                                    if (!MainWindow.BaslerCams[3].IsConnected)
+                                    {
+                                        BaslerCam4 = MainWindow.BaslerCams[3];
+                                        //BaslerCam4.SerialNumber = device.SerialNumber;
+                                        Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature.ToString());
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                            // 更新 Progress Value
+                            //MainWindow.ProgressValue += 5;
+                            MainWindow.MsgInformer.TargetProgressValue += 5;
                         }
-                        // 更新 Progress Value
-                        //MainWindow.ProgressValue += 5;
-                        MainWindow.MsgInformer.TargetProgressValue += 5;
                     }
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
                 }
             }
 
@@ -492,7 +499,6 @@ namespace ApexVisIns.content
 
             MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
         }
-
 
         /// <summary>
         /// 反初始化按鈕，
