@@ -29,7 +29,7 @@ namespace ApexVisIns
         /// 初始化旗標，
         /// DoWork 後常為 True
         /// </summary>
-        public bool InitFlag { get; set; }
+        //public bool InitFlag { get; set; }
 
         private void CamsSourceAdd(BaslerCamInfo info)
         {
@@ -86,7 +86,7 @@ namespace ApexVisIns
                 if (cams.Count == 0)
                 {
                     CamsSourceClear();                          // 清空 Cams Source
-                    InitFlag = true;
+                    InitFlag = InitFlags.Finished;
                     _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, 3000);  // 等待三秒
                     return;
                 }
@@ -123,7 +123,7 @@ namespace ApexVisIns
                     }
                 }
 
-                InitFlag = true;
+                InitFlag = InitFlags.Finished;
             }
             catch (Exception)
             {
@@ -215,7 +215,6 @@ namespace ApexVisIns
         /// </summary>
         public TargetFeatureType TargetFeature { get; set; }
     }
-
 
 
     /// <summary>

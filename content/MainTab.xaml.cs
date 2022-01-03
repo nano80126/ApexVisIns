@@ -131,18 +131,30 @@ namespace ApexVisIns.content
             _ = Task.Run(() =>
             {
                 // 等待相機 Enumerator 搜尋完畢
-                _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag, 3000);
+                _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
 
                 InitCamera();
 
-                InitMotion();
+                // 等待 Motion Device 搜尋完畢
+                _ = SpinWait.SpinUntil(() =>
+                    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished ||
+                    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Interrupt, 3000
+                );
 
-                // 等待Com Port 搜尋完畢
-                _ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag, 3000);
+                if (MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished)
+                {
+                    InitMotion();
+                }
 
-                InitLighCtrls();
+                // 等待 Com Port 搜尋完畢
+                _ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
 
-                InitIOCtrl();
+                InitLightCtrls();
+
+
+                // 
+
+                //InitIOCtrl(); // 跨執行續
 
                 //_ = SpinWait.SpinUntil(() => false, 1500);
                 //MainWindow.MsgInformer.TargetProgressValue = 200;
@@ -232,8 +244,6 @@ namespace ApexVisIns.content
                     // 確認有組態的 camera 在線上
                     if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                     {
-                        Debug.WriteLine($"S/N:{device.SerialNumber}, Line 214");
-
                         switch (device.TargetFeature)
                         {
                             case DeviceConfigBase.TargetFeatureType.Ear:
@@ -295,52 +305,63 @@ namespace ApexVisIns.content
             {
                 return;
             }
-            // 1. 確認驅動
+            // 1. 確認驅動 (移動到 Motion Enumer)
             // 2. Get Device
             // 3. 取得 Motor Configs
             // 4. Device Open
             // 5. Axis Open
             // 6. 寫入 Config
 
-            bool DllIsValid = ServoMotion.CheckDllVersion();
+            ServoMotion = MainWindow.ServoMotion;
 
-            if (DllIsValid)
+            try
             {
-                ServoMotion = MainWindow.ServoMotion;
-
-                uint count = ServoMotion.GetAvailableDevices();
-
-                Debug.WriteLine($"{count}");
-                if (count > 0)
+                if (MainWindow.MotionEnumer.Count() > 0)
                 {
-                    // 預設載入第一張卡
-                    uint deviceNumber = ServoMotion.BoardList[0].DeviceNumber;
+                    uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
 
                     if (!ServoMotion.DeviceOpened)
                     {
-                        // 開啟裝置 
-                        ServoMotion.OpenDevice(deviceNumber);
+                        // ServoMotion.OpenDevice(deviceNumber);
 
+                        // try
+                        // {
 
-
+                        // }
+                        // catch (Exception)
+                        // {
+                        //     throw;
+                        // }
                     }
 
-                    // 卡 (device) 關閉處置
+                    // 更新 Progress Value
+                    MainWindow.MsgInformer.ProgressValue += 20;
+
+                    // Motion 初始化旗標
+                    MotionInitialized = true;
+
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制初始化完成");
+                }
+                else // 軸卡未連線
+                {
+                    throw new Exception("找不到控制軸卡");
                 }
             }
-
-            MotionInitialized = true;
-
-            //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "運動軸初始化完成"));
-            MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "運動軸初始化完成");
-            MainWindow.ProgressValue += 20;
-            // 更新progress value
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"MOTION 控制初始化失敗: {ex.Message}");
+            }
+            finally
+            {
+                // 這邊需要暫停 Enumer
+                MainWindow.MotionEnumer.WorkerPause();
+            }
         }
 
         /// <summary>
         /// 光源控制初始化
         /// </summary>
-        private void InitLighCtrls()
+        private void InitLightCtrls()
         {
             if (LightCtrlsInitiliazed)
             {
@@ -393,12 +414,12 @@ namespace ApexVisIns.content
                 LightCtrlsInitiliazed = true;
 
                 //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
-                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制器初始化完成");
+                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
             }
             catch (Exception ex)
             {
                 //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"光源控制器初始化失敗: {ex.Message}"));
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制器初始化失敗: {ex.Message}");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
             }
             finally
             {
@@ -417,6 +438,7 @@ namespace ApexVisIns.content
                 return;
             }
 
+            // 確認驅動安裝
             bool IO_DllIsValid = IOController.CheckDllVersion();
 
             if (IO_DllIsValid)
@@ -690,7 +712,7 @@ namespace ApexVisIns.content
             // baslerCam.Camera.StreamGrabber.UserData = baslerCam.
             baslerCam.PropertyChange();
 
-            Debug.WriteLine($"UserData : " + baslerCam.Camera.StreamGrabber.UserData + "LINE: 671");
+            Debug.WriteLine($"UserData : " + baslerCam.Camera.StreamGrabber.UserData + ", LINE: 671");
         }
 
         private void Camera_CameraClosing(object sender, EventArgs e)

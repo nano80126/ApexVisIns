@@ -22,7 +22,6 @@ namespace ApexVisIns
 
         protected Task Worker { get; set; }
 
-
         /// <summary>
         /// Sampling interval
         /// </summary>
@@ -34,10 +33,24 @@ namespace ApexVisIns
         public bool Paused { get; set; }
 
         /// <summary>
+        /// 初始化旗標 Enum
+        /// </summary>
+        public enum InitFlags
+        {
+            Starting = 0,
+            Interrupt = 1,
+            Finished = 2,
+        }
+
+        /// <summary>
+        /// 初始化旗標
+        /// </summary>
+        public InitFlags InitFlag { get; protected set; } = InitFlags.Starting;
+
+        /// <summary>
         /// If worker completed flag
         /// </summary>
         public bool Completed => Worker != null && Worker.IsCompleted;
-
 
         /// <summary>
         /// Cancel worker token

@@ -60,21 +60,11 @@ Apex 外觀瑕疵檢測
 	* 需要建立 class for json object
 * [ ] 建立樹狀圖 (draw.io) 
 	* DataContext
-* [x] 確認 BaslerFunc 是否可以控制 MainWindow.ImageSource
-	* 否 => 拆除移至Toolbar.cs
-* [x] DebugTab 綁定回BaslerCam
-	* 一次只會有一台相機
-* [x] Config 根據型號儲存
-* [x] 移除 Thermoter ()
-* [x] 移除舊Tab
-* [x] Read/Write UserSet
-* [x] Hotkey 功能恢復
 * [ ] Camera Enumer Debug
 * [x] DeviceConfig 清除空儲存按鈕不能隱藏
 * [ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
 * [x] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
-* [ ] 啟動速度優化
 * [x] Add custom event for DI interrupt
 * [x] 中斷器有可能啟用失敗
 	* 情境 CH0 啟用後再啟用CH1
@@ -90,31 +80,30 @@ Apex 外觀瑕疵檢測
 	* 暫停 Timer
 * [x] Device Tab
 	* Device List 儲存IP，相機IP需要綁定
-
 * [ ] 原點復歸
 	* 待測試
-
 * [x] 測試 MoveAbs & ModeRel
 * [x] 簡化控制板 UI
 * [x] Handle 遺失問題待處理
 * [x] 新增光源控制器 (MainTab)
-
 * [ ] MainTab.xaml
 	* 光源控制器 初始化
 	* 相機 初始化
 		* 尚未錯誤處理
 	* 伺服馬達 初始化
-
+* [ ] 啟動速度優化
 * [ ] MainTab.xaml 反初始化
-
 * [ ] CameraEnumer 
 	* 初始化 Flag
 	* 單支相機被移除時的處置 (camsSourc.Remove)
-	
 * [ ] Navigation 新增登入按鈕
 	* 登入後才可以進入 DeviceTab & MotionTab
-
 * [ ] ProgressBar UI 會卡
+* [ ] 確認Motion GetDevices 會不會讓Handle 遺失 
+* [ ] Motion Config 載入/儲存
+* [ ] ImageSource Array
+* [ ] 轉移 DeviceConfig 到物件上
+	* 方便直接比對
 
 ### Config Logic
 

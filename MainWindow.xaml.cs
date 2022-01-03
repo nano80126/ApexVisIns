@@ -33,7 +33,7 @@ namespace ApexVisIns
         /// 綁在 MainWindow
         /// </summary>
         public CameraEnumer CameraEnumer;
-        //public Thermometer Thermometer;
+        // public Thermometer Thermometer;
         #endregion
 
         #region Cameras
@@ -73,6 +73,11 @@ namespace ApexVisIns
         #endregion
 
         #region EtherCAT Motion
+        /// <summary>
+        /// Motion Device 列舉器，綁在 MainWindow
+        /// </summary>
+        public MotionEnumer MotionEnumer;
+
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
@@ -134,6 +139,17 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            #region Find Resource
+            // Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
+            // AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
+            // Indicator = FindResource(nameof(Indicator)) as Indicator;
+            // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
+
+            MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer.EnableProgressBar();
+            MsgInformer.EnableCollectionBinding();
+            #endregion
+
             #region Cameras
             CameraEnumer = TryFindResource(nameof(CameraEnumer)) as CameraEnumer;
             CameraEnumer?.WorkerStart();
@@ -163,19 +179,19 @@ namespace ApexVisIns
             #endregion
 
             #region EtherCAT Motion
+            MotionEnumer = TryFindResource(nameof(MotionEnumer)) as MotionEnumer;
+            try
+            {
+                MotionEnumer?.WorkerStart();
+            }
+            catch (Exception ex)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             ServoMotion.EnableCollectionBinding();
             #endregion
 
-            #region Find Resource
-            // Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
-            // AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
-            // Indicator = FindResource(nameof(Indicator)) as Indicator;
-            // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
-            MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
-            MsgInformer.EnableProgressBar();
-            MsgInformer.EnableCollectionBinding();
-            #endregion
 
             // 載入後, focus 視窗
             _ = Focus();

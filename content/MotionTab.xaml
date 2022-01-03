@@ -79,7 +79,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                   materialDesign:HintAssist.Hint="EtherCAT Card"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                                  ItemsSource="{Binding BoardList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  ItemsSource="{Binding MotionDevices, Source={StaticResource MotionEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   SelectionChanged="BoardSelector_SelectionChanged"
                                   MouseRightButtonUp="BoardSelector_MouseRightButtonUp"
                                   MinWidth="200" Margin="0 0 12 0">
@@ -137,7 +137,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Left" 
                                   materialDesign:HintAssist.Hint="Axis"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
-                                  ItemsSource="{Binding AxisList, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  ItemsSource="{Binding Axes, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   SelectionChanged="AxisSelector_SelectionChanged"
                                   MouseRightButtonUp="AxisSelector_MouseRightButtonUp"
                                   IsEnabled="{Binding DeviceOpened, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"

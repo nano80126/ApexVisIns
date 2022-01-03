@@ -49,16 +49,16 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region 確認驅動安裝
-            DllIsValid = ServoMotion.CheckDllVersion();
-            if (DllIsValid)
-            {
-                GetAvaiDevs();
-            }
-            else
-            {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "Motion 控制驅動未安裝或版本不符");
-            }
+            #region 確認驅動安裝 => 移動到 MotionEnumer 處理
+            //DllIsValid = ServoMotion.CheckDllVersion();
+            //if (DllIsValid)
+            //{
+            //    //GetAvaiDevs();
+            //}
+            //else
+            //{
+            //    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
+            //}
             #endregion
             InitMotionsConfigsRoot();
 
@@ -86,22 +86,30 @@ namespace ApexVisIns.content
         #endregion
 
         /// <summary>
-        /// 初始化 Motion Config 路徑
+        /// 初始化 Motion Config 路徑，
+        /// 
         /// </summary>
         private void InitMotionsConfigsRoot()
         {
+            // Directory 不存在則新增
+            if (!Directory.Exists(MotionDirectory))
+            {
+                _ = Directory.CreateDirectory(MotionDirectory);
+            }
+
+#if false
             string path = $@"{MotionDirectory}/motion.json";
 
             if (!Directory.Exists(MotionDirectory))
             {
                 // 新增路徑
                 _ = Directory.CreateDirectory(MotionDirectory);
-                // 新增檔案
-                _ = File.CreateText(path);
+                //// 新增檔案
+                //_ = File.CreateText(path);
             }
             else if (!File.Exists(path))
             {
-                _ = File.CreateText(path);
+                //_ = File.CreateText(path);
             }
             else
             {
@@ -111,7 +119,8 @@ namespace ApexVisIns.content
                 //{
                 //    // 反序列化
                 //}
-            }
+            } 
+#endif
         }
 
         /// <summary>
@@ -128,25 +137,42 @@ namespace ApexVisIns.content
         /// <summary>
         /// 取得可用之 Device (EtherCAT卡)
         /// </summary>
-        public void GetAvaiDevs()
+        //public void GetAvaiDevs()
+        //{
+        //    // Board Count == 0 時才尋找
+        //    // 重新尋找會導致 Handle 參考出問題
+
+        //    if (MainWindow.ServoMotion.BoardCount == 0)
+        //    {
+        //        uint count = MainWindow.ServoMotion.GetAvailableDevices();
+
+        //        if (count > 0)
+        //        {
+        //            // 選擇 第一個 Device
+        //            DeviceSelector.SelectedIndex = 0;
+        //        }
+        //    }
+        //}
+
+
+        /// <summary>
+        /// 選擇 Device 變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        [Obsolete("待刪除，正常用不到")]
+        private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Board Count == 0 時才尋找
-            // 重新尋找會導致 Handle 參考出問題
+            ComboBox comboBox = sender as ComboBox;
 
-            if (MainWindow.ServoMotion.BoardCount == 0)
+            if (comboBox.SelectedItem is ServoMotion.MotionDevice deviceList)
             {
-                uint count = MainWindow.ServoMotion.GetAvailableDevices();
-
-                if (count > 0)
-                {
-                    // 選擇 第一個 Device
-                    DeviceSelector.SelectedIndex = 0;
-                }
+                Debug.WriteLine($"BoardSelector_SelectionChanged {deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
             }
         }
 
         /// <summary>
-        /// 開始軸卡
+        /// 開啟軸卡
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -156,7 +182,7 @@ namespace ApexVisIns.content
             {
                 if (!MainWindow.ServoMotion.DeviceOpened)
                 {
-                    MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.DeviceList).DeviceNumber);
+                    MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.MotionDevice).DeviceNumber);
                     // // // 
                     // MainWindow.ServoMotion.EnableTimer(100);
                     // Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
@@ -176,22 +202,6 @@ namespace ApexVisIns.content
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// 選擇 Device 變更
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        [Obsolete("待刪除，正常用不到")]
-        private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox comboBox = sender as ComboBox;
-
-            if (comboBox.SelectedItem is ServoMotion.DeviceList deviceList)
-            {
-                Debug.WriteLine($"BoardSelector_SelectionChanged {deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
             }
         }
 
@@ -303,13 +313,21 @@ namespace ApexVisIns.content
             }
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             (sender as TextBox).SelectAll();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
         {
             (sender as TextBox).SelectAll();
@@ -660,15 +678,25 @@ namespace ApexVisIns.content
                     {
                         MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
 
-                        foreach (var item in velParams)
+                        foreach (MotionVelParam item in velParams)
                         {
-                            Debug.WriteLine($"{item.SlaveNumber} {item.VelHigh} {item.VelLow}");
+                            MotionAxis axis = MainWindow.ServoMotion.Axes.First(axis => axis.SlaveNumber == item.SlaveNumber);
+
+                            axis.LoadFromVelParam(item);
+
+                            // 先不要寫入
+#if false
+                            axis.SetGearRatio();
+                            axis.SetJogVelParam();
+                            axis.SetHomeVelParam();
+                            axis.SetAxisVelParam(); 
+#endif
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"開啟 Motion 設定失敗: {ex.Message}");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"載入 Motion 設定失敗: {ex.Message}");
                 }
             }
         }
@@ -680,22 +708,48 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void MotionConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{MotionDirectory}/motion.json";
-
-            MotionVelParam[] axes = MainWindow.ServoMotion.AxisList.Select(axis => new MotionVelParam()
+            SaveFileDialog saveFileDialog = new()
             {
-                SlaveNumber = axis.SlaveNumber,
-                GearN1 = axis.GearN1,
-                GearM = axis.GearM,
-                JogVelLow = axis.JogVelLow,
-                JogVelHigh = axis.JogVelHigh,
-                JogAcc = axis.JogAcc,
-                JogDec = axis.JogDec,
-                JogVLTime = axis.JogVLTime,
-            }).ToArray();
-            string jsonStr = JsonSerializer.Serialize(axes, new JsonSerializerOptions { WriteIndented = true });
+                FileName = string.Empty,
+                Filter = "JSON File(*.json)|*.json",
+                InitialDirectory = Environment.CurrentDirectory + @"\motions"
+            };
 
-            File.WriteAllText(path, jsonStr);
+            if (saveFileDialog.ShowDialog() == true)
+            {
+
+                try
+                {
+                    // 這邊要儲存所有參數
+                    MotionVelParam[] AxisArray = MainWindow.ServoMotion.Axes.Select(axis => new MotionVelParam()
+                    {
+                        SlaveNumber = axis.SlaveNumber,
+                        GearN1 = axis.GearN1,
+                        GearM = axis.GearM,
+                        JogVelLow = axis.JogVelLow,
+                        JogVelHigh = axis.JogVelHigh,
+                        JogAcc = axis.JogAcc,
+                        JogDec = axis.JogDec,
+                        JogVLTime = axis.JogVLTime,
+                        HomeVelLow = axis.HomeVelLow,
+                        HomeVelHigh = axis.HomeVelHigh,
+                        HomeAcc = axis.HomeAcc,
+                        HomeDec = axis.HomeDec,
+                        Absolute = axis.Absolute,
+                        VelLow = axis.VelLow,
+                        VelHigh = axis.VelHigh,
+                        Acc = axis.Acc,
+                        Dec = axis.Dec
+                    }).ToArray();
+                    string jsonStr = JsonSerializer.Serialize(AxisArray, new JsonSerializerOptions { WriteIndented = true });
+
+                    File.WriteAllText(saveFileDialog.FileName, jsonStr);
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"儲存 Motion 設定失敗: {ex.Message}");
+                }
+            }
         }
 
         [Obsolete("測試完刪除")]

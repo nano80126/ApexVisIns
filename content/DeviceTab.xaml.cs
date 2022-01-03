@@ -89,7 +89,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            // 三個動作
+            // Collection Changed 有三個動作
             // 1. 新增 => MainWindow.DeviceConfigs Config.Online 設為 True
             // 2. 移除 => MainWindow.DeviceConfigs Config.Online 設為 Off
             // 3. 清空 => MainWindow.DeviceConfigs Online 全部設為 Off
@@ -100,20 +100,7 @@ namespace ApexVisIns.content
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:  // Add();
                     // 取得已連線相機 List
                     list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
-                    //foreach (BaslerCamInfo item in list)
-                    //{
-                    //    if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
-                    //    {
-                    //        DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
-                    //        {
-                    //            VendorName = item.VendorName,
-                    //            CameraType = item.CameraType,
-                    //            Online = true   // 標記為 "在線"
-                    //        };
-                    //        // 不應該有新增事件
-                    //        Dispatcher.Invoke(() => MainWindow.DeviceConfigs.Add(config));
-                    //    }
-                    //}
+               
                     // 循環比較，標記已連線之相機
                     foreach (DeviceConfig device in MainWindow.DeviceConfigs)
                     {
@@ -128,6 +115,7 @@ namespace ApexVisIns.content
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:   // Remove();
                     // 取得已連線相機 LIst
                     list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+
                     // 循環比較，標記已斷線之相機
                     foreach (DeviceConfig cfg in MainWindow.DeviceConfigs)
                     {
@@ -177,13 +165,14 @@ namespace ApexVisIns.content
 
                 if (jsonStr != string.Empty)
                 {
-                    // 反序列化
-                    //List<BaslerCamInfo> infos = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
+                    // 反序列化，載入JSON FILE
                     DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
 
+                    // 目前有連線的相機
                     List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
 
-                    // 還是需要 和 MainWindow.CameraEnumer.CamsSource 比較
+                    #region 第一次才會比較
+                    // JSON FILE 讀取出來的陣列長度 > 目前 DeviceConfigs 的長度
                     if (devices.Length > MainWindow.DeviceConfigs.Count)
                     {
                         foreach (DeviceConfigBase d in devices)
@@ -198,42 +187,29 @@ namespace ApexVisIns.content
                                     // 確認 目標特徵載入沒有問題
                                     TargetFeature = d.TargetFeature,
                                     // Online = false
-                                    // CameraEnumer CamsSource 有物件且有被新增過
+                                    // CameraEnumer CamsSource 有連線且有被新增過
                                     Online = cams.Count > 0 && cams.Exists(e => e.SerialNumber == d.SerialNumber)
                                 };
                                 MainWindow.DeviceConfigs.Add(config);
                             }
                         }
-                    }
-
-                    // 初始化後就不為 null, 之後由 DeviceConfigs Collection Change 來尋找交集
-                    // 待移除
-#if false
-                    if (jsonCfgInfo == null || jsonCfgInfo.Count != tempList.Count)
-                    {
-                        jsonCfgInfo = JsonSerializer.Deserialize<List<BaslerCamInfo>>(jsonStr);
-#if false
-                    #region 需要 與 CameraEnumer 比較
-                        // 當前有連線之相機
-                        List<BaslerCamInfo> camsOnLink = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                        // 循環確認是否為已加入使用之相機 (有儲存在 json file 裡)
-                        foreach (BaslerCamInfo item in camsOnLink)
-                        {
-                            if (jsonCfgInfo.Exists(e => e.SerialNumber == item.SerialNumber))
-                            {
-                                DeviceConfig config = new(item.FullName, item.Model, item.IP, item.MAC, item.SerialNumber)
-                                {
-                                    VendorName = item.VendorName,
-                                    CameraType = item.CameraType
-                                };
-                                MainWindow.DeviceConfigs.Add(config);
-                            }
-                        }
-                    #endregion
-#endif
                     } 
-#endif
+                    #endregion
+
+                    #region 每次載入都會確認
+                    List<BaslerCamInfo> list = MainWindow.CameraEnumer.CamsSource.ToList();
+                    foreach (DeviceConfig cfg in MainWindow.DeviceConfigs)
+                    {
+                        if (list.Any(info => info.SerialNumber == cfg.SerialNumber))
+                        {
+                            Dispatcher.Invoke(() => cfg.Online = true);
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() => cfg.Online = false);
+                        }
+                    } 
+                    #endregion
                 }
             }
         }
@@ -275,6 +251,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 備份用 (待刪除)
         /// </summary>
+        [Obsolete("備份用")]
         private void FunctionBack()
         {
             BaslerCamInfo info = CameraSelector.SelectedItem as BaslerCamInfo;
@@ -670,10 +647,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 待刪除
         /// </summary>
-        private static void SaveConfig()
-        {
-
-        }
+        private static void SaveConfig() { }
 
         /// <summary>
         /// 讀取 UserSet
@@ -782,9 +756,6 @@ namespace ApexVisIns.content
             ComboBox combobox = sender as ComboBox;
             Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
         }
-
-     
-
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{

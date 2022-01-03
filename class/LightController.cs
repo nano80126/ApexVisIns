@@ -21,7 +21,7 @@ namespace ApexVisIns
         /// <summary>
         /// 初始化旗標
         /// </summary>
-        public bool InitFlag { get; set; }
+        //public LongLifeWorker.InitFlags InitFlag { get; private set; } = InitFlags.Starting;
 
         private void ComPortSourceAdd(string comPort)
         {
@@ -51,7 +51,6 @@ namespace ApexVisIns
             base.WorkerEnd();
         }
 
-
         public override void DoWork()
         {
             try
@@ -61,7 +60,7 @@ namespace ApexVisIns
                 if (portNames.Length == 0)
                 {
                     ComPortSourceClear();
-                    InitFlag = true;
+                    InitFlag = InitFlags.Finished;
                     _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, 3000);
                 }
 
@@ -73,12 +72,21 @@ namespace ApexVisIns
                     }
                 }
 
-                InitFlag = true;
+                InitFlag = InitFlags.Finished;
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// ComPort 數量
+        /// </summary>
+        /// <returns></returns>
+        public int Count()
+        {
+            return ComPortSource.Count;
         }
 
         //public void CloseSerialPort()
@@ -95,7 +103,6 @@ namespace ApexVisIns
         //    //CloseSerialPort();
         //    base.WorkerEnd();
         //}
-
 
         //public event PropertyChangedEventHandler PropertyChanged;
         //private void OnPropertyChanged(string propertyName = null)

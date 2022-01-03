@@ -13,17 +13,133 @@ using System.Globalization;
 using System.Threading;
 using System.Windows.Data;
 
+
 namespace ApexVisIns
 {
-    public class ServoMotion : INotifyPropertyChanged
+    public class MotionEnumer : LongLifeWorker
     {
-        #region Variables
+        private readonly object _ColleciotnLock = new();
+
         private DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
         private uint DEV_Count;
 
+        public ObservableCollection<ServoMotion.MotionDevice> MotionDevices { get; } = new();
+
+        /// <summary>
+        /// 初始化旗標
+        /// </summary>
+        //public bool InitFlag { get; private set; }
+
+        private void DevicesAdd(ServoMotion.MotionDevice device)
+        {
+            lock (_ColleciotnLock)
+            {
+                MotionDevices.Add(device);
+            }
+        }
+
+        private void DevicesClear()
+        {
+            lock (_ColleciotnLock)
+            {
+                MotionDevices.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 工作者啟動，
+        /// 先確認DLL是否已正確安裝
+        /// </summary>
+        public override void WorkerStart()
+        {
+            bool dllIsValid = ServoMotion.CheckDllVersion();
+            if (dllIsValid)
+            {
+                BindingOperations.EnableCollectionSynchronization(MotionDevices, _ColleciotnLock);
+                base.WorkerStart();
+            }
+            else
+            {
+                InitFlag = InitFlags.Interrupt;
+                throw new DllNotFoundException("MOTION 控制驅動未安裝或版本不符");
+            }
+        }
+
+        /// <summary>
+        /// 工作者停止
+        /// </summary>
+        public override void WorkerEnd()
+        {
+            BindingOperations.DisableCollectionSynchronization(MotionDevices);
+            base.WorkerEnd();
+        }
+
+        /// <summary>
+        /// 作業迴圈
+        /// </summary>
+        public override void DoWork()
+        {
+            try
+            {
+                int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref DEV_Count);
+
+                if (result != (int)ErrorCode.SUCCESS)
+                {
+                    throw new InvalidOperationException($"取得 EtherCAT Cards 失敗: Code[0x{result:X}]");
+                }
+
+                if (DEV_Count == 0)
+                {
+                    DevicesClear();
+                    InitFlag = InitFlags.Finished;
+                }
+
+                for (int i = 0; i < DEV_Count; i++)
+                {
+                    // 先確認集合內不包含
+                    if (!MotionDevices.ToList().Exists(x => x.DeviceNumber == DEV_LISTs[i].DeviceNum))
+                    {
+                        DevicesAdd(new ServoMotion.MotionDevice(DEV_LISTs[i]));
+                    }
+                }
+
+                InitFlag = InitFlags.Finished;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Motion Devices 數量
+        /// </summary>
+        /// <returns></returns>
+        public int Count()
+        {
+            return MotionDevices.Count;
+        }
+
+        /// <summary>
+        /// 取得第一張卡號碼
+        /// </summary>
+        /// <returns></returns>
+        public uint GetFirstDeivceNum()
+        {
+            return MotionDevices[0].DeviceNumber;
+        }
+    }
+
+
+    public class ServoMotion : INotifyPropertyChanged, IDisposable
+    {
+        #region Variables
+        //private DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
+        //private uint DEV_Count;
+
         // private uint Result;
         public IntPtr DeviceHandle = IntPtr.Zero;
-        public readonly IntPtr[] AxisHandles = new IntPtr[8];
+        private readonly IntPtr[] AxisHandles = new IntPtr[4];
 
         //private double _posCmd;
         //private double _posAct;
@@ -36,7 +152,7 @@ namespace ApexVisIns
 
         // private int _sltAxisIndex;
 
-        private readonly object _deviceColltionLock = new();
+        //private readonly object _deviceColltionLock = new();
         private readonly object _axisColltionLock = new();
         #endregion
 
@@ -64,24 +180,23 @@ namespace ApexVisIns
         /// <summary>
         /// 從站 ID 陣列
         /// </summary>
-        public ushort[] SlaveIDArray { get; private set; } = new ushort[10];
+        public ushort[] SlaveIDArray { get; private set; } = new ushort[4];
 
-        public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
+        //public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
 
-        public int BoardCount => BoardList.Count;
+        //public int BoardCount => BoardList.Count;
 
         /// <summary>
-        /// 軸列表
+        /// 軸列表，
+        /// 預設四軸 null，
+        /// OpenDevice 時會重置
         /// </summary>
-        public ObservableCollection<MotionAxis> AxisList { get; } = new ObservableCollection<MotionAxis>();
+        public ObservableCollection<MotionAxis> Axes { get; } = new ObservableCollection<MotionAxis>() { null, null, null, null };
 
         /// <summary>
         /// 原點復歸模式列表
         /// </summary>
         public List<HomeMode> HomeModes { get; } = new List<HomeMode>();
-
-
-
 
         /// <summary>
         /// 選擇軸
@@ -112,8 +227,7 @@ namespace ApexVisIns
         /// <summary>
         /// 選擇軸
         /// </summary>
-        public MotionAxis SltMotionAxis => 0 <= _sltAxis && _sltAxis < AxisList.Count ? AxisList[_sltAxis] : null;
-
+        public MotionAxis SltMotionAxis => 0 <= _sltAxis && _sltAxis < Axes.Count ? Axes[_sltAxis] : null;
 
 #if false
         public double PosCommand
@@ -189,7 +303,6 @@ namespace ApexVisIns
         } 
 #endif
 
-
         ///// <summary>
         ///// 當前軸狀態
         ///// </summary>
@@ -244,11 +357,17 @@ namespace ApexVisIns
         /// </summary>
         public void EnableCollectionBinding()
         {
-            BindingOperations.EnableCollectionSynchronization(BoardList, _deviceColltionLock);
-            BindingOperations.EnableCollectionSynchronization(AxisList, _axisColltionLock);
+            //BindingOperations.EnableCollectionSynchronization(BoardList, _deviceColltionLock);
+            BindingOperations.EnableCollectionSynchronization(Axes, _axisColltionLock);
         }
 
+        public void DisableCollectionBinding()
+        {
+            BindingOperations.DisableCollectionSynchronization(Axes);
+        }
+        
 
+#if false
         /// <summary>
         /// 
         /// </summary>
@@ -272,7 +391,8 @@ namespace ApexVisIns
             }
 
             return DEV_Count;
-        }
+        } 
+#endif
 
         /// <summary>
         /// 開啟 Board
@@ -317,13 +437,13 @@ namespace ApexVisIns
                 }
                 MaxAxisCount = AxesCount;
 
-                AxisList.Clear();
+                Axes.Clear();
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
                     //result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
                  
-                    AxisList.Add(new MotionAxis(DeviceHandle, i));
-                    result = AxisList[i].AxisOpen(out AxisHandles[i]);
+                    Axes.Add(new MotionAxis(DeviceHandle, i));
+                    result = Axes[i].AxisOpen(out AxisHandles[i]);
 
                     if (result != (int)ErrorCode.SUCCESS)
                     {
@@ -331,13 +451,13 @@ namespace ApexVisIns
                     }
                 }
 
-                #region 可略過
-                //result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
-                //if (result != (int)ErrorCode.SUCCESS)
-                //{
-                //    throw new Exception($"讀取主站資訊失敗: Code[0x{result:X}]");
-                //}
-                //Debug.WriteLine($"RingNO: {ringNo} {string.Join(",", slaveIPArr)} {slaveCount}");
+                #region 可略過，不知道能幹嘛
+                // result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
+                // if (result != (int)ErrorCode.SUCCESS)
+                // {
+                //     throw new Exception($"讀取主站資訊失敗: Code[0x{result:X}]");
+                // }
+                // Debug.WriteLine($"RingNO: {ringNo} {string.Join(",", slaveIPArr)} {slaveCount}");
 
 #if true
                 ADV_SLAVE_INFO info = new();
@@ -354,7 +474,7 @@ namespace ApexVisIns
                         }
                         else
                         {
-                            AxisList[slvIndex].SlaveNumber = info.SlaveID;
+                            Axes[slvIndex].SlaveNumber = info.SlaveID;
                             slvIndex++;
                             Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}");
                         }
@@ -432,7 +552,7 @@ namespace ApexVisIns
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
                     //Motion.mAcm_AxClose(ref AxisHandles[i]);
-                    _ = AxisList[i].AxisClose(out AxisHandles[i]);
+                    _ = Axes[i].AxisClose(out AxisHandles[i]);
                 }
                 MaxAxisCount = 0;
                 // Close Device
@@ -452,24 +572,36 @@ namespace ApexVisIns
         /// </summary>
         public void SetAllServoOn()
         {
-            uint result;
-
             if (!DeviceOpened)
             {
                 return;
             }
 
-            for (int i = 0; i < MaxAxisCount; i++)
-            {
-                // Servo On augu 2 => 1
-                result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 1);
+            #region 待刪除
+            //for (int i = 0; i < MaxAxisCount; i++)
+            //{
+            //    // Servo On augu 2 => 1
+            //    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 1);
 
-                if (result != (uint)ErrorCode.SUCCESS)
+            //    if (result != (uint)ErrorCode.SUCCESS)
+            //    {
+            //        throw new Exception($"{i}-Axis Servo On 失敗: Code[0x{result:X}]");
+            //    }
+            //}
+            //SltMotionAxis.ServoOn = true; 
+            #endregion
+
+            try
+            {
+                for (int i = 0; i < Axes.Count; i++)
                 {
-                    throw new Exception($"{i}-Axis Servo On 失敗: Code[0x{result:X}]");
+                    Axes[i].SetServoOn();
                 }
             }
-            SltMotionAxis.ServoOn = true;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -477,8 +609,6 @@ namespace ApexVisIns
         /// </summary>
         public void SetAllServoOff()
         {
-            // uint result;
-
             if (!DeviceOpened)
             {
                 return;
@@ -497,28 +627,17 @@ namespace ApexVisIns
             //    }
             //}
 
-            //if (SltMotionAxis != null)
-            //{
-            //    SltMotionAxis.ServoOn = false;
-            //}
-
-
             try
             {
-                for (int i = 0; i < AxisList.Count; i++)
+                for (int i = 0; i < Axes.Count; i++)
                 {
-                    AxisList[i].SetServoOff();
+                    Axes[i].SetServoOff();
                 }
             }
             catch (Exception)
             {
                 throw;
             }
-
-            //foreach (MotionAxis item in AxisList)
-            //{
-            //    item.SetServoOff();
-            //}
         }
 
         /// <summary>
@@ -675,13 +794,13 @@ namespace ApexVisIns
         /// <summary>
         /// 裝置列表
         /// </summary>
-        public class DeviceList
+        public class MotionDevice
         {
             /// <summary>
             /// 建構子
             /// </summary>
             /// <param name="dev"></param>
-            public DeviceList(DEV_LIST dev)
+            public MotionDevice(DEV_LIST dev)
             {
                 DeviceName = dev.DeviceName;
                 DeviceNumber = dev.DeviceNum;
@@ -694,7 +813,7 @@ namespace ApexVisIns
             /// <param name="deviceName"></param>
             /// <param name="deviceNnumber"></param>
             /// <param name="numOfSubDevice"></param>
-            public DeviceList(string deviceName, uint deviceNnumber, short numOfSubDevice)
+            public MotionDevice(string deviceName, uint deviceNnumber, short numOfSubDevice)
             {
                 DeviceName = deviceName;
                 DeviceNumber = deviceNnumber;
@@ -719,6 +838,11 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         //public void Dispose()
         //{
         //    statusTimer.Dispose();
@@ -733,8 +857,12 @@ namespace ApexVisIns
     public class MotionVelParam : INotifyPropertyChanged
     {
         #region Varibles
+
+        #region Gear Ratio
         private uint _gearN1;
         private uint _gearM;
+        #endregion
+        
         #region JOG
         private double _jogVelLow;
         private double _jogVelHigh;
@@ -757,7 +885,6 @@ namespace ApexVisIns
         private double _acc;
         private double _dec; 
         #endregion
-
 
         // public MotionVelParam(MotionAxis axis)
         // {
@@ -889,7 +1016,6 @@ namespace ApexVisIns
                 }
             }
         }
-
 
         /// <summary>
         /// 回原點
@@ -1052,7 +1178,6 @@ namespace ApexVisIns
     }
 
 
-
     /// <summary>
     /// Motion 軸狀態、參數等
     /// </summary>
@@ -1065,7 +1190,7 @@ namespace ApexVisIns
         /// <summary>
         /// 軸 Handle
         /// </summary>
-        public IntPtr AxisHandle = IntPtr.Zero;
+        private IntPtr AxisHandle = IntPtr.Zero;
         private readonly IntPtr DeviceHandle = IntPtr.Zero;
         private bool _servoOn;
 
@@ -1075,7 +1200,7 @@ namespace ApexVisIns
         /// <summary>
         /// xaml 用建構子
         /// </summary>
-        public MotionAxis() { }
+        public MotionAxis() {}
 
         /// <summary>
         /// MotionAxis 建構子
@@ -1112,8 +1237,38 @@ namespace ApexVisIns
         /// </summary>
         public string AxisName { get => $"{AxisIndex}-Axis"; }
 
-        //public uint SlaveNumber { get; set; }
+        // public uint SlaveNumber { get; set; }
 
+        /// <summary>
+        /// 從 Json 載入 Param
+        /// </summary>
+        /// <param name="param"></param>
+        public void LoadFromVelParam(MotionVelParam param)
+        {
+            GearN1 = param.GearN1;
+            GearM = param.GearM;
+            // JOG
+            JogVelLow = param.JogVelLow;
+            JogVelHigh = param.JogVelHigh;
+            JogAcc = param.JogAcc;
+            JogDec = param.JogDec;
+            JogVLTime = param.JogVLTime;
+            // HOME
+            HomeVelLow = param.HomeVelLow;
+            HomeVelHigh = param.HomeVelHigh;
+            HomeAcc = param.HomeAcc;
+            HomeDec = param.HomeDec;
+            // AXIS
+            Absolute = param.Absolute;
+            VelHigh = param.VelHigh;
+            VelLow = param.VelLow;
+            Acc = param.Acc;
+            Dec = param.Dec;
+        }
+
+        /// <summary>
+        /// 是否開啟軸
+        /// </summary>
         public bool IsAxisOpen
         {
             get => _isAxisOpen;
@@ -1127,6 +1282,11 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 開啟軸
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
         public uint AxisOpen(out IntPtr handle)
         {
             handle = IntPtr.Zero;
@@ -1141,6 +1301,11 @@ namespace ApexVisIns
             return result;
         }
 
+        /// <summary>
+        /// 關閉軸
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
         public uint AxisClose(out IntPtr handle)
         {
             handle = IntPtr.Zero;
@@ -1207,6 +1372,9 @@ namespace ApexVisIns
         /// </summary>
         public AxisSignal IO_LMTN { get; set; } = new AxisSignal("LMT-");
 
+        /// <summary>
+        /// Origin Flag
+        /// </summary>
         public AxisSignal IO_ORG { get; set; } = new AxisSignal("ORG");
 
         /// <summary>
@@ -1883,7 +2051,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 往政方向找 HOME
+        /// 往正方向找 HOME
         /// </summary>
         public async Task PositiveWayHomeMove()
         {

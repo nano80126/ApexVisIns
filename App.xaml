@@ -122,6 +122,7 @@
             </local:DeviceConfigList>
             
             <!--EtherCAT for ServoMotion-->
+            <local:MotionEnumer x:Key="MotionEnumer"/>
             <local:ServoMotion x:Key="ServoMotion"/>
             <!--#endregion-->
 

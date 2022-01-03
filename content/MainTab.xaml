@@ -149,13 +149,13 @@
                         <Canvas ToolTip="X 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="AxisXRotateClockwise" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding AxisList[0].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding Axes[0].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                         <!--//-->
                         <Canvas ToolTip="A 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="RotateLeft" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding AxisList[1].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding Axes[1].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                         <!--//-->
                     </StackPanel>
