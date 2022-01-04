@@ -151,13 +151,10 @@ namespace ApexVisIns.content
 
                 InitLightCtrls();
 
-
-                // 
-
                 //InitIOCtrl(); // 跨執行續
 
-                //_ = SpinWait.SpinUntil(() => false, 1500);
-                //MainWindow.MsgInformer.TargetProgressValue = 200;
+                // _ = SpinWait.SpinUntil(() => false, 1500);
+                // MainWindow.MsgInformer.TargetProgressValue = 200;
             });
 
             // UX Progress Bar
@@ -397,7 +394,8 @@ namespace ApexVisIns.content
                         throw new Exception("控制器沒有回應");
                     }
                 }
-                MainWindow.ProgressValue += 10;     // 更新 Progress Value
+                //MainWindow.ProgressValue += 10;     // 更新 Progress Value
+                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
 
                 if (!Light_6V.IsComOpen)
                 {
@@ -416,7 +414,8 @@ namespace ApexVisIns.content
                         throw new Exception("控制器沒有回應");
                     }
                 }
-                MainWindow.ProgressValue += 10;     // 更新 Progress Value
+                //MainWindow.ProgressValue += 10;     // 更新 Progress Value
+                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
 
                 LightCtrlsInitiliazed = true;
 
@@ -452,22 +451,29 @@ namespace ApexVisIns.content
             {
                 IOController = MainWindow.IOController;
 
-                // 初始化 DI
-                if (!IOController.DiCtrlCreated)
+                Dispatcher.Invoke(() =>
                 {
-                    IOController.DigitalInputChanged += Controller_DigitalInputChanged;
-                    IOController.InitializeDiCtrl();
-                }
-                MainWindow.ProgressValue += 10; // 更新 Progress Value
+                    // 初始化 DI
+                    if (!IOController.DiCtrlCreated)
+                    {
+                        IOController.DigitalInputChanged += Controller_DigitalInputChanged;
+                        IOController.InitializeDiCtrl();
+                    }
+                });
+                //MainWindow.ProgressValue += 10; // 更新 Progress Value
+                MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
 
 
-                // 初始化 DO
-                if (!IOController.DoCtrlCreated)
+                Dispatcher.Invoke(() =>
                 {
-                    IOController.InitializeDoCtrl();
-                }
-
-                MainWindow.ProgressValue += 10; // 更新 Progress Value
+                    // 初始化 DO
+                    if (!IOController.DoCtrlCreated)
+                    {
+                        IOController.InitializeDoCtrl();
+                    }
+                });
+                //MainWindow.ProgressValue += 10; // 更新 Progress Value
+                MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
             }
             else
             {

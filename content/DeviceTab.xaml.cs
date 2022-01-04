@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using Basler.Pylon;
+using System.Collections.Specialized;
 
 
 namespace ApexVisIns.content
@@ -34,7 +35,8 @@ namespace ApexVisIns.content
         /// <summary>
         /// CamsSource.CollectionChanged Evnet has bound flag
         /// </summary>
-        private bool EventHasBound;
+        // private bool EventHasBound;
+
         /// <summary>
         /// Device Configs Directory
         /// </summary>
@@ -56,11 +58,11 @@ namespace ApexVisIns.content
         {
             #region 綁定事件、載入 Configs
             // 綁定 Collection 變更事件
-            if (!EventHasBound) // 避免重複綁定
-            {
-                MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
-                EventHasBound = true;
-            }
+            //if (!EventHasBound) // 避免重複綁定
+            //{
+            //    MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
+            //    EventHasBound = true;
+            //}
             // 載入 Config
             LoadDeviceConfigs();
             #endregion
@@ -75,11 +77,11 @@ namespace ApexVisIns.content
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             // 取消 Collection 變更事件
-            if (EventHasBound)  // 確認已綁定
-            {
-                MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
-                EventHasBound = false;
-            }
+            // if (EventHasBound)  // 確認已綁定
+            // {
+            //     MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
+            //     EventHasBound = false;
+            // }
         }
 
         /// <summary>
@@ -87,7 +89,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void CamsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             // Collection Changed 有三個動作
             // 1. 新增 => MainWindow.DeviceConfigs Config.Online 設為 True
@@ -169,8 +171,34 @@ namespace ApexVisIns.content
                     DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
 
                     // 目前有連線的相機
-                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+                    //List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+                    BaslerCamInfo[] cams = MainWindow.CameraEnumer.CamsSource.ToArray();
 
+                    // JSON FILE 儲存之 DeviceConfig
+                    DeviceConfig[] deviceConfig = MainWindow.CameraEnumer.DeviceConfigs.ToArray();
+
+                    if (devices.Length > deviceConfig.Length)
+                    {
+                        foreach (DeviceConfigBase d in devices)
+                        {
+                            //Debug.WriteLine(deviceConfig.Any(e => e.SerialNumber == d.SerialNumber));
+
+                            if (!deviceConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                            {
+                                DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                {
+                                    VendorName = d.VendorName,
+                                    CameraType = d.CameraType,
+                                    TargetFeature = d.TargetFeature,
+                                    // 
+                                    Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                };
+                                MainWindow.CameraEnumer.DeviceConfigs.Add(config);
+                            }
+                        }
+                    }
+
+#if false
                     #region 第一次才會比較
                     // JSON FILE 讀取出來的陣列長度 > 目前 DeviceConfigs 的長度
                     if (devices.Length > MainWindow.DeviceConfigs.Count)
@@ -191,7 +219,7 @@ namespace ApexVisIns.content
                                 MainWindow.DeviceConfigs.Add(config);
                             }
                         }
-                    } 
+                    }
                     #endregion
 
                     #region 每次載入都會確認
@@ -206,8 +234,13 @@ namespace ApexVisIns.content
                         {
                             Dispatcher.Invoke(() => cfg.Online = false);
                         }
-                    } 
-                    #endregion
+                    }
+                    #endregion  
+#endif
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
                 }
             }
         }
@@ -231,18 +264,23 @@ namespace ApexVisIns.content
         {
             if (CameraSelector.SelectedItem is BaslerCamInfo info)
             {
-                if (!MainWindow.DeviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
+                ObservableCollection<DeviceConfig> deviceConfigs = MainWindow.CameraEnumer.DeviceConfigs;
+
+                if (!deviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
+                // if (!MainWindow.DeviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
                 {
                     DeviceConfig config = new(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber)
                     {
                         VendorName = info.VendorName,
                         CameraType = info.CameraType,
-                        //DeviceVersion = info.DeviceVersion
+                        // DeviceVersion = info.DeviceVersion
                     };
 
-                    //MainWindow.DeviceConfigs.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
-                    MainWindow.DeviceConfigs.Add(config);
+                    // MainWindow.DeviceConfigs.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
+                    // MainWindow.CameraEnumer.DeviceConfigs.Add(config);
+                    deviceConfigs.Add(config);
                 }
+                deviceConfigs = null;   // 
             }
         }
 
@@ -335,10 +373,14 @@ namespace ApexVisIns.content
             RadioButton radioButton = sender as RadioButton;
             string serialNumber = radioButton.CommandParameter as string;
 
-            int idx = Array.FindIndex(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
+            int idx = Array.FindIndex(MainWindow.CameraEnumer.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
 
-            //DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
-            DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
+            if (idx > -1)
+            {
+                // DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
+                // DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
+                DeviceCard.DataContext = MainWindow.CameraEnumer.DeviceConfigs[idx];
+            }
         }
 
         /// <summary>
@@ -350,16 +392,6 @@ namespace ApexVisIns.content
         {
             string path = $@"{DevicesDirectory}/device.json";
             // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
-
-            // foreach (var item in MainWindow.DeviceConfigs)
-            // {
-            //     Debug.WriteLine($"{item.VendorName} {item.FullName}");
-            //     Debug.WriteLine($"{item.Model} {item.SerialNumber} {item.CameraType}");
-            //     Debug.WriteLine($"{item.IP} {item.MAC}");
-            //     Debug.WriteLine($"{item.TargetFeature}");
-            // }
-            // return;
-
 
             DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
             {
@@ -414,20 +446,34 @@ namespace ApexVisIns.content
                     string serialNumber = config.SerialNumber;
 
                     // 優化 UX，不會卡住 UI 執行緒 (測試中)
-                    await Task.Run(() =>
+                    string res = await Task.Run(() =>
                     {
-                        MainWindow.BaslerCam.CreateCam(serialNumber);
-                        MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
-                        MainWindow.BaslerCam.Open();
-                        MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
+                        try
+                        {
+                            MainWindow.BaslerCam.CreateCam(serialNumber);
+                            MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
+                            MainWindow.BaslerCam.Open();
+                            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
 
-                        Camera camera = MainWindow.BaslerCam.Camera;
+                            Camera camera = MainWindow.BaslerCam.Camera;
 
-                        // 讀取 camera 的 config
-                        ReadConfig(camera, config);
-                        // 更新 UserSet Read
-                        config.UserSetRead = config.UserSet;
+                            // 讀取 camera 的 config
+                            ReadConfig(camera, config);
+                            // 更新 UserSet Read
+                            config.UserSetRead = config.UserSet;
+
+                            return string.Empty;
+                        }
+                        catch (Exception ex)
+                        {
+                            return ex.Message;
+                        }
                     });
+
+                    if (res != string.Empty)
+                    {
+                        throw new Exception(res);
+                    }
 
 #if false
                     // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];

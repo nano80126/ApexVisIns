@@ -19,6 +19,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
+using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes;
+using System.Windows.Controls.Primitives;
 
 namespace ApexVisIns
 {
@@ -218,6 +221,8 @@ namespace ApexVisIns
 
             CameraEnumer.WorkerEnd();
             LightEnumer.WorkerEnd();
+
+            IOController.Dispose();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -229,15 +234,6 @@ namespace ApexVisIns
             //LightEnumer?.WorkerEnd(); 
             #endregion
         }
-
-        #region User Login
-        private void UserLogin_Click(object sender, RoutedEventArgs e)
-        {
-            // 1. 管理者登入
-            // 2. 彈出視窗輸入操作密碼
-            // 3. 登入後變更ICON
-        }
-        #endregion
 
         #region Footer Message
         private void ErrPopupBox_Opened(object sender, RoutedEventArgs e)
@@ -267,7 +263,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         /// <summary>
         /// 讓 TextBox 失去 Focus用
         /// </summary>
@@ -278,8 +273,57 @@ namespace ApexVisIns
             Keyboard.ClearFocus();
             _ = TitleGrid.Focus();
         }
-    }
 
+        #region User Login
+        private void LoginBtn_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (password.Password == Password)
+                {
+                    LoginFlag = true;
+                    passwordHint.Text = string.Empty;
+                    passwordHint.Visibility = Visibility.Hidden;
+                    LoginDialog.IsOpen = false;
+                }
+                else
+                {
+                    passwordHint.Text = "密碼錯誤";
+                    passwordHint.Visibility = Visibility.Visible;
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void LoginActionKeyUp_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                LoginBtn.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                {
+                    RoutedEvent = Mouse.PreviewMouseDownEvent,
+                    Source = this
+                });
+                // LoginDialog.IsOpen = false;
+            }
+        }
+
+        private void DialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
+            password.Password = string.Empty;
+            passwordHint.Text = string.Empty;
+            passwordHint.Visibility = Visibility.Hidden;
+        }
+
+        private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (LoginFlag)
+            {
+                e.Handled = true;
+            }
+        }
+        #endregion
+    }
 
     /// <summary>
     /// ImageSource 轉換器

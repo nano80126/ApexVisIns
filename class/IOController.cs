@@ -16,16 +16,18 @@ namespace ApexVisIns
     /// <summary>
     /// Advantech PCI 1730U I/O Card 控制器
     /// </summary>
-    public class IOController : INotifyPropertyChanged
+    public class IOController : INotifyPropertyChanged, IDisposable
     {
         #region Private elements
         private readonly object _CollectionLock = new();
 
         private string _description;
         private bool _interruptEnabled;
-        private int _interruptCount = 0;
+        private int _interruptCount;
 
         private Task debounceTask;
+
+        private bool _disposed;
         #endregion
 
         /// <summary>
@@ -48,10 +50,18 @@ namespace ApexVisIns
         /// </summary>
         public int EnabledDoPorts { get; set; } = 999;
 
+        /// <summary>
+        /// 建構子
+        /// </summary>
         public IOController()
         {
         }
 
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="description"></param>
+        /// <param name="initialize"></param>
         public IOController(string description, bool initialize = false)
         {
             _description = description;
@@ -61,7 +71,6 @@ namespace ApexVisIns
                 InstantDiCtrl = new InstantDiCtrl() { SelectedDevice = new DeviceInformation(description) };
             }
         }
-
 
         /// <summary>
         /// 確認 DLL 已安裝且版本符合
@@ -89,7 +98,6 @@ namespace ApexVisIns
             }
             return true;
         }
-
 
         /// <summary>
         /// 初始化 DI Control
@@ -195,52 +203,6 @@ namespace ApexVisIns
         /// </summary>
         public bool DoCtrlCreated { get; private set; }
 
-        //public DiintChannel[] GetInterruptChannel()
-        //{
-        //    DiintChannel[] channels = InstantDiCtrl.DiintChannels;
-        //    return channels;
-        //}
-
-
-        /// <summary>
-        /// 設定 Channel 啟用中斷 (deprecated)
-        /// </summary>
-        /// <param name="ch">通道</param>
-        /// <param name="signel">觸發邊緣</param>
-        /// <param name="enable">啟用 / 停用</param>
-        /// <returns></returns>
-        [Obsolete("SetInterrutChannel is deprecated, use SetInterruptChannel instead")]
-        public ErrorCode SetInterrutChannel(int ch, ActiveSignal signel, bool enable = true)
-        {
-            if (DiCtrlCreated)
-            {
-                bool success = false;
-                DiintChannel[] channels = InstantDiCtrl.DiintChannels;
-                InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
-
-                foreach (DiintChannel channel in channels)
-                {
-                    if (channel.Channel == ch)
-                    {
-                        channel.Enabled = enable;
-                        channel.TrigEdge = signel;
-                        success = true;
-
-                        // 綁定 Event
-                        InstantDiCtrl.Interrupt += InstantDiCtrl_Interrupt;
-                        // 啟用 Collection Sync
-                        //BindingOperations.EnableCollectionSynchronization(DiArrayColl[ch / 8], _CollectionLock);
-                        break;
-                    }
-                }
-                return success ? ErrorCode.Success : ErrorCode.ErrorIntrNotAvailable;
-            }
-            else
-            {
-                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
-            }
-        }
-
         /// <summary>
         /// 設定中斷器，設定過後必須重設 SnapStart()
         /// </summary>
@@ -285,12 +247,13 @@ namespace ApexVisIns
         private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
             // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
-            /// 防止彈跳 (但邏輯上較接近節流)
+            // 防止彈跳 (但邏輯上較接近節流)
             if (debounceTask == null || debounceTask.IsCompleted)
             {
                 debounceTask = Task.Run(() =>
                 {
-                    SpinWait.SpinUntil(() => false, 125);
+                    // 節流，125ms內不允許第二次輸入
+                    _ = SpinWait.SpinUntil(() => false, 125);
 
                     InterruptCount++;
                     int port = e.SrcNum / 8;
@@ -596,40 +559,7 @@ namespace ApexVisIns
             return err;
         }
 
-        /// <summary>
-        /// 變更 DI (待刪除)
-        /// </summary>
-        /// <param name="port">目標 Port</param>
-        /// <param name="bit">指定 Bit</param>
-        /// <param name="value">指定 Value</param>
-        public void ChangeDI(int port, int bit, bool value)
-        {
-            BitArray bitArray = (BitArray)GetType().GetProperty($"DiArray{port}").GetValue(this);
-            bitArray[bit] = value;
-            OnPropertyChanged($"DiArray{port}");
-        }
-
-        /// <summary>
-        /// 反轉 DI (待刪除)
-        /// </summary>
-        /// <param name="port"></param>
-        /// <param name="bit"></param>
-        public void InvertDI(int port, int bit)
-        {
-            BitArray bitArray = (BitArray)GetType().GetProperty($"DiArray{port}").GetValue(this);
-            bitArray[bit] = !bitArray[bit];
-            OnPropertyChanged($"DiArray{port}");
-        }
-
-        /// <summary>
-        /// 測試用
-        /// </summary>
-        public void TriggerEvent()
-        {
-            //OnDigitalInputChanged();
-        }
-
-        //public event DIChangedEventHandler DIChangedEventHandler;
+        // public event DIChangedEventHandler DIChangedEventHandler;
 
         public delegate void DigitalInputChangedEventHandler(object sender, DigitalInputChangedEventArgs e);
         public event DigitalInputChangedEventHandler DigitalInputChanged;
@@ -649,6 +579,32 @@ namespace ApexVisIns
         public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                InstantDiCtrl?.Dispose();
+                InstantDiCtrl = null;
+                InstantDoCtrl?.Dispose();
+                InstantDoCtrl = null;
+
+                debounceTask?.Dispose();
+                debounceTask = null;
+            }
+            _disposed = true;
         }
 
         public class DigitalInputChangedEventArgs : EventArgs

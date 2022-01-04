@@ -98,6 +98,10 @@ Apex 外觀瑕疵檢測
 	* 單支相機被移除時的處置 (camsSourc.Remove)
 * [ ] Navigation 新增登入按鈕
 	* 登入後才可以進入 DeviceTab & MotionTab
+	* 密碼錯誤警告
+	* 自動登出
+	* 手動登出
+
 * [ ] ProgressBar UI 會卡
 * [ ] 確認Motion GetDevices 會不會讓Handle 遺失 
 * [ ] Motion Config 載入/儲存

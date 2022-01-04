@@ -70,7 +70,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         #region DeviceConfigs 操作
         /// <summary>
         /// 新增 Config 至 DeviceConfig
@@ -78,7 +77,10 @@ namespace ApexVisIns
         /// <param name="config"></param>
         private void AddDeviceConfigs(DeviceConfig config)
         {
-
+            lock (_deviceConfigsLock)
+            {
+                DeviceConfigs.Add(config);
+            }
         }
         /// <summary>
         /// 從 DeviceConfigs 移除指定物件
@@ -86,37 +88,118 @@ namespace ApexVisIns
         /// <param name="config"></param>
         private void RemoveDeviceConfigs(DeviceConfig config)
         {
-
+            lock (_deviceConfigsLock)
+            {
+                DeviceConfigs.Remove(config);
+            }
         }
         /// <summary>
         /// 清空 DeviceConfigs
         /// </summary>
         private void ClearDeviceConfigs()
         {
-
+            lock (_deviceConfigsLock)
+            {
+                if (DeviceConfigs.Count > 0)
+                {
+                    DeviceConfigs.Clear();
+                }
+            }
         }
+
         /// <summary>
         /// 變更 DeviceConfigs
         /// </summary>
-        private void ChangeDeviceConfigs()
+        private void ChangeDeviceConfigs(int idx, string propertyName, object value)
         {
+            lock (_deviceConfigsLock)
+            {
+                DeviceConfigs[idx].GetType().GetProperty(propertyName).SetValue(DeviceConfigs[idx], value);
+            }
+        }
 
+        private void AllSetOnlineDeviceConfigs(bool online)
+        {
+            lock (_deviceConfigsLock)
+            {
+                foreach (DeviceConfig cfg in DeviceConfigs)
+                {
+                    cfg.Online = online;
+                }
+            }
         }
         #endregion
-
 
 
         public override void WorkerStart()
         {
             BindingOperations.EnableCollectionSynchronization(CamsSource, _camsSourceLock);
             BindingOperations.EnableCollectionSynchronization(DeviceConfigs, _deviceConfigsLock);
+            CamsSource.CollectionChanged += CamsSource_CollectionChanged;
             base.WorkerStart();
         }
+
+        private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            List<BaslerCamInfo> list;
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    // Get CamsSource 
+                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+
+                    //foreach (DeviceConfig dev in DeviceConfigs)
+                    //{
+                    //    if (list.Any(cam => cam.SerialNumber == dev.SerialNumber))
+                    //    {
+                    //        //ChangeDeviceConfigs();
+                    //    }
+                    //}
+                    for (int i = 0; i < DeviceConfigs.Count; i++)
+                    {
+                        if (list.Any(cam => cam.SerialNumber == DeviceConfigs[i].SerialNumber))
+                        {
+                            ChangeDeviceConfigs(i, "Online", true);
+                        }
+                    }
+
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    // Get CamsSource
+                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+
+                    // foreach (DeviceConfig dev in DeviceConfigs)
+                    // {
+                    //     if (!list.Any(cam => cam.SerialNumber == dev.SerialNumber))
+                    //     {
+                    //     }
+                    // }
+                    for (int i = 0; i < DeviceConfigs.Count; i++)
+                    {
+                        if (!list.Any(cam => cam.SerialNumber == DeviceConfigs[i].SerialNumber))
+                        {
+                            ChangeDeviceConfigs(i, "Online", false);
+                        }
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    // CamsSource
+                    // for (int i = 0; i < DeviceConfigs.Count; i++)
+                    // {
+                    //     ChangeDeviceConfigs(i, "Online", false);
+                    // }
+                    AllSetOnlineDeviceConfigs(false);
+                    break;
+            }
+            // throw new NotImplementedException();
+        }
+
 
         public override void WorkerEnd()
         {
             BindingOperations.DisableCollectionSynchronization(CamsSource);
             BindingOperations.DisableCollectionSynchronization(DeviceConfigs);
+            CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
             base.WorkerEnd();
         }
 

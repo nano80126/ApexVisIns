@@ -25,6 +25,7 @@ namespace ApexVisIns
         private ImageSource _imgSrc;
         private int _onTabIndex = 0;
         private int _progress;
+        private bool _loginFlag;
 
         /// <summary>
         /// Tab active index
@@ -70,6 +71,27 @@ namespace ApexVisIns
         /// Debug 模式
         /// </summary>
         public bool DebugMode => _debugMode;
+
+        #region Admin Password
+        public string Password { get; } = "admin";
+
+        /// <summary>
+        /// 是否已登入
+        /// </summary>
+        public bool LoginFlag
+        {
+            get => _loginFlag;
+            set
+            {
+                if (value != _loginFlag)
+                {
+                    _loginFlag = value;
+                    OnPropertyChanged(nameof(LoginFlag));
+                }
+            }
+        }
+        #endregion
+
 
         /// <summary>
         /// 主影像 Source

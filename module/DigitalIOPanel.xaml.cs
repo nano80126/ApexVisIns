@@ -140,7 +140,11 @@ namespace ApexVisIns.module
         /// <param name="e"></param>
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
+            // DI 變更事件
             Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
+
+
+
         }
 
         /// <summary>
@@ -158,7 +162,7 @@ namespace ApexVisIns.module
             _ = Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
         }
 
-        #region 測試用 控制項
+        #region 測試用 控制項，只有 DI 讀取要用到
         private void DiRead_Click(object sender, RoutedEventArgs e)
         {
             ErrorCode err = Controller.ReadDI(0);
@@ -167,15 +171,6 @@ namespace ApexVisIns.module
             Debug.WriteLine($"ErrorCode: {err}");
         }
 
-        /// <summary>
-        /// Digital Read Function
-        /// </summary>
-        private void DiRead()
-        {
-            ErrorCode err = Controller.ReadDI(0);
-            ErrorCode err2 = Controller.ReadDI(1);
-            Debug.WriteLine($"{err} {err2}");
-        }
 
         private void DoRead_Click(object sender, RoutedEventArgs e)
         {
@@ -191,36 +186,7 @@ namespace ApexVisIns.module
             //Controller.WriteDO(0, 0b10100110);
             //Controller.WriteDO(1, 0b00111001); 
             #endregion
-            Controller.TriggerEvent();
         }
-
-        private void SwitchInterrupt_Click(object sender, RoutedEventArgs e)
-        {
-            if (!Controller.InterruptEnabled)
-            {
-                //Controller.DisableInterrupt();
-
-                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge);
-                Debug.WriteLine($"{err}");
-                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge);
-                Debug.WriteLine($"{err}");
-
-                err = Controller.EnableInterrut();
-                Debug.WriteLine($"{err}");
-            }
-            else
-            {
-                Controller.DisableInterrupt();
-
-                ErrorCode err = Controller.SetInterrutChannel(0, ActiveSignal.RisingEdge, false);
-                Debug.WriteLine($"{err}");
-                err = Controller.SetInterrutChannel(8, ActiveSignal.RisingEdge, false);
-                Debug.WriteLine($"{err}");
-
-                err = Controller.DisableInterrupt();
-                Debug.WriteLine($"{err}");
-            }
-        } 
         #endregion
     }
 }
