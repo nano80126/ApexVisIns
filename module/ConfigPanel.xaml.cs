@@ -36,7 +36,7 @@ namespace ApexVisIns.module
         /// <summary>
         /// 
         /// </summary>
-        public BaslerConfig Config { get; set; }
+        public BaslerConfig BaslerConfig { get; set; }
         /// <summary>
         /// Config 路徑
         /// </summary>
@@ -51,9 +51,10 @@ namespace ApexVisIns.module
         {
             Cam = DataContext as BaslerCam;
 
-            if (Config == null)
+            if (BaslerConfig == null)
             {
-                Config = FindResource("BaslerConfig") as BaslerConfig;
+                // 建立在 ConfigPanel.xaml 裡
+                BaslerConfig = FindResource(nameof(BaslerConfig)) as BaslerConfig;
             }
         }
 

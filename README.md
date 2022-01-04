@@ -108,6 +108,8 @@ Apex 外觀瑕疵檢測
 * [ ] ImageSource Array
 * [ ] 轉移 DeviceConfig 到物件上
 	* 方便直接比對
+* [ ] 測試 EngineerTab
+
 
 ### Config Logic
 
