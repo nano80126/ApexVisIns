@@ -142,10 +142,7 @@ namespace ApexVisIns.module
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
             // DI 變更事件
-            Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
-
-
-
+            Debug.WriteLine($"Port{e.Port}, Bit{e.Bit}, {e.Data}");
         }
 
         /// <summary>
