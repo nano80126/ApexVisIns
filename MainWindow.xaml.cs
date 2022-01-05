@@ -23,6 +23,7 @@ using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes;
 using System.Windows.Controls.Primitives;
 
+
 namespace ApexVisIns
 {
     /// <summary>
@@ -190,21 +191,24 @@ namespace ApexVisIns
             #endregion
 
             #region EtherCAT Motion
-            MotionEnumer = TryFindResource(nameof(MotionEnumer)) as MotionEnumer;
-            try
+            // Resource 一樣尋找
+            MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
+            ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+
+            if (MotionEnumer.CheckDllVersion())
             {
                 MotionEnumer?.WorkerStart();
+                ServoMotion.EnableCollectionBinding();
             }
-            catch (Exception ex)
+            else
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                MotionEnumer.Interrupt();
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
             }
-            ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
-            ServoMotion.EnableCollectionBinding();
             #endregion
 
-
             // 載入後, focus 視窗
+
             _ = Focus();
         }
 

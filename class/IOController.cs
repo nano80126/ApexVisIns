@@ -27,6 +27,8 @@ namespace ApexVisIns
 
         private Task debounceTask;
 
+        private System.Timers.Timer debounceTimer;
+
         private bool _disposed;
         #endregion
 
@@ -244,32 +246,73 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        //private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
+        //{
+        //    // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
+        //    // 節流邏輯
+        //    //if (debounceTask == null || debounceTask.IsCompleted)
+        //    //{
+        //    //    debounceTask = Task.Run(() =>
+        //    //    {
+        //            // 節流，125ms內不允許第二次輸入
+        //            _ = SpinWait.SpinUntil(() => false, 125);
+
+        //            InterruptCount++;
+        //            int port = e.SrcNum / 8;
+        //            byte bit = (byte)(e.SrcNum % 8);
+        //            // Trigger Digital Changed
+        //            OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
+        //            lock (_CollectionLock)
+        //            {
+        //                for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+        //                {
+        //                    SetDI(i, e.PortData[i]);
+        //                }
+        //            }
+        //    //    });
+        //    //}
+        //}
+
         private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
-            // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
-            // 防止彈跳 (但邏輯上較接近節流)
-            if (debounceTask == null || debounceTask.IsCompleted)
+            //lock (this)
+            //{
+            if (debounceTimer == null)
             {
-                debounceTask = Task.Run(() =>
+                debounceTimer = new System.Timers.Timer(125)
                 {
-                    // 節流，125ms內不允許第二次輸入
-                    _ = SpinWait.SpinUntil(() => false, 125);
+                    AutoReset = false,
+                };
+
+                debounceTimer.Elapsed += (o, e2) =>
+                {
+                    debounceTimer.Stop();
+                    debounceTimer.Close();
+                    debounceTimer = null;
 
                     InterruptCount++;
                     int port = e.SrcNum / 8;
                     byte bit = (byte)(e.SrcNum % 8);
                     // Trigger Digital Changed
                     OnDigitalInputChanged(port, bit, ((e.PortData[port] >> bit) & 0b01) == 0b01);
-                    lock (_CollectionLock)
+
+                    if (_interruptEnabled)
                     {
-                        for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                        lock (_CollectionLock)
                         {
-                            SetDI(i, e.PortData[i]);
+                            for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
+                            {
+                                SetDI(i, e.PortData[i]);
+                            }
                         }
                     }
-                });
+                };
             }
+            debounceTimer.Stop();
+            debounceTimer.Start();
+            //}
         }
+
 
         /// <summary>
         /// 設定 Digital Input
@@ -327,7 +370,6 @@ namespace ApexVisIns
                 if (err == ErrorCode.Success)
                 {
                     _interruptEnabled = false;
-                    //InstantDiCtrl.Interrupt -= InstantDiCtrl_Interrupt;
 
                     foreach (ObservableCollection<bool> collection in DiArrayColl)
                     {

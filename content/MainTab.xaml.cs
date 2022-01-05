@@ -151,7 +151,7 @@ namespace ApexVisIns.content
 
                 InitLightCtrls();
 
-                //InitIOCtrl(); // 跨執行續
+                InitIOCtrl(); // 跨執行續
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
@@ -375,23 +375,15 @@ namespace ApexVisIns.content
             Light24V = MainWindow.LightCtrls[0];
             Light_6V = MainWindow.LightCtrls[1];
 
-
             try
             {
                 if (!Light24V.IsComOpen)
                 {
                     bool res24V = Light24V.ComOpen("COM1", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-                    //// 重置所有通道
-                    //string res24V = Light24V.TryResetAllValue();
 
-                    // if (res24V != string.Empty)
-                    // {
-                    //     Light24V.ComClose();
-                    //     throw new Exception(res24V);
-                    // }
                     if (!res24V)
                     {
-                        throw new Exception("控制器沒有回應");
+                        throw new Exception("24V 控制器沒有回應");
                     }
                 }
                 //MainWindow.ProgressValue += 10;     // 更新 Progress Value
@@ -400,18 +392,10 @@ namespace ApexVisIns.content
                 if (!Light_6V.IsComOpen)
                 {
                     bool res_6V = Light_6V.ComOpen("COM2", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-                    //// 重置所有通道
-                    //string res_6V = Light_6V.TryResetAllValue();
-
-                    // if (res_6V != string.Empty)
-                    // {
-                    //     Light_6V.ComClose();
-                    //     throw new Exception(res_6V);
-                    // }
 
                     if (!res_6V)
                     {
-                        throw new Exception("控制器沒有回應");
+                        throw new Exception("6V 控制器沒有回應");
                     }
                 }
                 //MainWindow.ProgressValue += 10;     // 更新 Progress Value
@@ -462,7 +446,6 @@ namespace ApexVisIns.content
                 });
                 //MainWindow.ProgressValue += 10; // 更新 Progress Value
                 MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
-
 
                 Dispatcher.Invoke(() =>
                 {

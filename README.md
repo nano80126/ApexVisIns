@@ -96,6 +96,8 @@ Apex 外觀瑕疵檢測
 * [ ] CameraEnumer 
 	* 初始化 Flag
 	* 單支相機被移除時的處置 (camsSourc.Remove)
+		* DeviceConfigs 狀態變更
+
 * [ ] Navigation 新增登入按鈕
 	* 登入後才可以進入 DeviceTab & MotionTab
 	* 密碼錯誤警告
@@ -104,11 +106,21 @@ Apex 外觀瑕疵檢測
 
 * [ ] ProgressBar UI 會卡
 * [ ] 確認Motion GetDevices 會不會讓Handle 遺失 
+	※ 要等220V
 * [ ] Motion Config 載入/儲存
 * [ ] ImageSource Array
-* [ ] 轉移 DeviceConfig 到物件上
+* [x] 轉移 DeviceConfig 到物件上
 	* 方便直接比對
 * [ ] 測試 EngineerTab
+* [ ] IO Control 重複初始化
+	* 執行緒有時會衝突
+* [ ] ServoMotion 實作 Dispose
+
+* [ ] 光源新增 Tab?
+
+* [ ] 隱藏 App Toolbar
+	* 上線使用
+	* 關閉程式 = 關機
 
 
 ### Config Logic
@@ -136,10 +148,12 @@ Apex 外觀瑕疵檢測
 * DebugTab
 	 * ConfigPanel 比較邏輯需更改 (Textbox & Config)
 * Read UserSet Center X, Center Y 紀錄會失效
+	* UserSet 不會儲存 Center X, Center Y
 
 ###  RELEASE MODE 
 
 * [ ] 程式碼優化過(release mode)，FPS才不會掉張
 	* 機率性
+	* 效能影響最大
 
 ### 

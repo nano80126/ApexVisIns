@@ -57,6 +57,7 @@ namespace ApexVisIns.module
             if (DllIsValid)
             {
                 Controller = DataContext as IOController;
+                return;
 
                 if (!Controller.DiCtrlCreated)
                 {
@@ -170,7 +171,6 @@ namespace ApexVisIns.module
             err = Controller.ReadDI(1);
             Debug.WriteLine($"ErrorCode: {err}");
         }
-
 
         private void DoRead_Click(object sender, RoutedEventArgs e)
         {

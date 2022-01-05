@@ -63,11 +63,8 @@ namespace ApexVisIns.content
             InitMotionsConfigsRoot();
 
             // 若D eviceOpened，始能 Timer
-            if (MainWindow.ServoMotion.DeviceOpened)
+            if (MainWindow.ServoMotion.DeviceOpened == true)
             {
-                ////MainWindow.ServoMotion.
-                // Debug.WriteLine($"Handle: {MainWindow.ServoMotion.DeviceHandle}");
-                // Debug.WriteLine($"AxisHandlex: {string.Join('|', MainWindow.ServoMotion.AxisHandles)}");
                 MainWindow.ServoMotion.EnableTimer(100);
             }
 

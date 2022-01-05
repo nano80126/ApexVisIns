@@ -26,9 +26,31 @@ namespace ApexVisIns
         public ObservableCollection<ServoMotion.MotionDevice> MotionDevices { get; } = new();
 
         /// <summary>
-        /// 初始化旗標
+        /// 確認 DLL 已安裝且版本符合
         /// </summary>
-        //public bool InitFlag { get; private set; }
+        /// <returns>DLL是否安裝正確</returns>
+        public static bool CheckDllVersion()
+        {
+            string fileName = Environment.SystemDirectory + @"\ADVMOT.dll"; // SystemDirectory : System32
+
+            if (File.Exists(fileName))
+            {
+                string fileVersion = FileVersionInfo.GetVersionInfo(fileName).FileVersion;
+
+                string[] strSplit = fileVersion.Split(',');
+
+                if (Convert.ToUInt16(strSplit[0], CultureInfo.CurrentCulture) < 2)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
 
         private void DevicesAdd(ServoMotion.MotionDevice device)
         {
@@ -46,23 +68,31 @@ namespace ApexVisIns
             }
         }
 
+
+        public void Interrupt()
+        {
+            InitFlag = InitFlags.Interrupt;
+        }
+
         /// <summary>
         /// 工作者啟動，
         /// 先確認DLL是否已正確安裝
         /// </summary>
         public override void WorkerStart()
         {
-            bool dllIsValid = ServoMotion.CheckDllVersion();
-            if (dllIsValid)
-            {
-                BindingOperations.EnableCollectionSynchronization(MotionDevices, _ColleciotnLock);
-                base.WorkerStart();
-            }
-            else
-            {
-                InitFlag = InitFlags.Interrupt;
-                throw new DllNotFoundException("MOTION 控制驅動未安裝或版本不符");
-            }
+            // bool dllIsValid = ServoMotion.CheckDllVersion();
+            // if (dllIsValid)
+            // {
+            //     BindingOperations.EnableCollectionSynchronization(MotionDevices, _ColleciotnLock);
+            //     base.WorkerStart();
+            // }
+            // else
+            // {
+            //     InitFlag = InitFlags.Interrupt;
+            //     throw new DllNotFoundException("MOTION 控制驅動未安裝或版本不符");
+            // }
+            BindingOperations.EnableCollectionSynchronization(MotionDevices, _ColleciotnLock);
+            base.WorkerStart();
         }
 
         /// <summary>
@@ -324,7 +354,6 @@ namespace ApexVisIns
         /// </summary>
         public uint MaxAxisCount { get; private set; }
 
-
         /// <summary>
         /// 確認 DLL 已安裝且版本符合
         /// </summary>
@@ -365,7 +394,7 @@ namespace ApexVisIns
         {
             BindingOperations.DisableCollectionSynchronization(Axes);
         }
-        
+
 
 #if false
         /// <summary>
@@ -441,7 +470,7 @@ namespace ApexVisIns
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
                     //result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
-                 
+
                     Axes.Add(new MotionAxis(DeviceHandle, i));
                     result = Axes[i].AxisOpen(out AxisHandles[i]);
 
