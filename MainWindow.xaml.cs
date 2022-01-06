@@ -299,7 +299,29 @@ namespace ApexVisIns
             }
         }
 
-        private void LoginActionKeyUp_KeyUp(object sender, KeyEventArgs e)
+        private void DialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
+        {
+            password.Password = string.Empty;
+            passwordHint.Text = string.Empty;
+            passwordHint.Visibility = Visibility.Hidden;
+        }
+
+        /// <summary>
+        /// 開啟 Login Panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // 若已登入，不做任何反應
+            if (LoginFlag)
+            {
+                e.Handled = true;
+            }
+        }
+        #endregion
+
+        private void LoginDialog_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {
@@ -308,25 +330,12 @@ namespace ApexVisIns
                     RoutedEvent = Mouse.PreviewMouseDownEvent,
                     Source = this
                 });
-                // LoginDialog.IsOpen = false;
             }
-        }
-
-        private void DialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
-        {
-            password.Password = string.Empty;
-            passwordHint.Text = string.Empty;
-            passwordHint.Visibility = Visibility.Hidden;
-        }
-
-        private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (LoginFlag)
+            else if (e.Key == Key.Escape)
             {
-                e.Handled = true;
+                (sender as DialogHost).IsOpen = false;
             }
         }
-        #endregion
     }
 
     /// <summary>
@@ -419,6 +428,9 @@ namespace ApexVisIns
 }
 
 
+/// <summary>
+/// 自訂義 property 用
+/// </summary>
 namespace ApexVisIns.CustomProperty
 {
     public class StatusHelper : DependencyObject
@@ -436,5 +448,22 @@ namespace ApexVisIns.CustomProperty
             return (bool)target.GetValue(ConnectedProperty);
         }
     }
+
+    // 確認為什麼不能兩個
+    //public class ProcedureBlock : DependencyObject
+    //{
+    //    public static readonly DependencyProperty ProcedureNameProperty = DependencyProperty.RegisterAttached(
+    //      "ProcedureName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(""));
+
+    //    public static void SetConnected(DependencyObject target, string value)
+    //    {
+    //        target.SetValue(ProcedureNameProperty, value);
+    //    }
+
+    //    public static string GetConnected(DependencyObject target)
+    //    {
+    //        return (string)target.GetValue(ProcedureNameProperty);
+    //    }
+    //}
 }
 

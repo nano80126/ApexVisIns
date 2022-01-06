@@ -435,6 +435,7 @@ namespace ApexVisIns.content
             {
                 IOController = MainWindow.IOController;
 
+                // IOContoller 內部沒有Dispacher
                 Dispatcher.Invoke(() =>
                 {
                     // 初始化 DI
@@ -447,6 +448,8 @@ namespace ApexVisIns.content
                 //MainWindow.ProgressValue += 10; // 更新 Progress Value
                 MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
 
+
+                // IOContoller 內部沒有Dispacher
                 Dispatcher.Invoke(() =>
                 {
                     // 初始化 DO

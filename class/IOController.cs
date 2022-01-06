@@ -122,6 +122,7 @@ namespace ApexVisIns
                     throw new DllNotFoundException(dll.Message);
                 }
 
+                
                 // 新增 Collection, 全部拉低(等待讀取)
                 DiArrayColl.Clear();
                 for (int i = 0; i < InstantDiCtrl.PortCount && i < EnabledDiPorts; i++)
@@ -133,20 +134,12 @@ namespace ApexVisIns
                 Interrupts.Clear();
                 foreach (DiintChannel item in InstantDiCtrl.DiintChannels)
                 {
-                    // 判斷 Ch 號, 小於 
+                    // 判斷 Ch 號, 小於啟用 Port 數 * 8 個 Ch
                     if (item.Channel < EnabledDiPorts * 8)
                     {
                         Interrupts.Add(new InterruptChannel(item.Channel));
                     }
                 }
-
-                // 測試
-                // DioPort[] ports = InstantDiCtrl.Ports;
-                // for (int i = 0; i < ports.Length; i++)
-                // {
-                //     // input: 0b00
-                //     Debug.WriteLine($"Di Direction: {ports[i].DirectionMask}");
-                // }
             }
             else
             {
@@ -180,14 +173,6 @@ namespace ApexVisIns
                 {
                     DoArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
                 }
-
-                // 測試 
-                // DioPort[] ports = InstantDoCtrl.Ports;
-                // for (int i = 0; i < ports.Length; i++)
-                // {
-                //     // Output: 0b01
-                //     Debug.WriteLine($"Do Direction: {ports[i].DirectionMask}");
-                // }
             }
             else
             {
@@ -236,10 +221,7 @@ namespace ApexVisIns
             return ErrorCode.Success;
         }
 
-        public DiintChannel[] InterruptEnabledChannel
-        {
-            get => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
-        }
+        public DiintChannel[] InterruptEnabledChannel => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
 
         /// <summary>
         /// Interrupt Event

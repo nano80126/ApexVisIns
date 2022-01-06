@@ -188,11 +188,10 @@
                 <!--//-->
                 <!--#region Config Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="False">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-
                     <!--//-->
                     <content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
@@ -200,11 +199,10 @@
                 <!--//-->
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="False">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-
                     <!--//-->
                     <content:MotionTab x:Name="MotionTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
@@ -220,6 +218,17 @@
                     </TabItem.Header>
                     <!-- // -->
                     <content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />
+                </TabItem>
+                <!--#endregion-->
+
+                <!--#region Test Lazy Loading -->
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                    <TabItem.Header>
+                        <materialDesign:PackIcon Kind="Database" Width="30" Height="26" Foreground="White"/>
+                    </TabItem.Header>
+                    <!-- // -->
+                    <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
                 </TabItem>
                 <!--#endregion-->
 
@@ -258,6 +267,7 @@
             <!--#region Dialog，考慮建立物件來 Binding -->
             <materialDesign:DialogHost x:Name="LoginDialog" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
                                        OverlayBackground="{DynamicResource ColorBlueGrayTranparent}"
+                                       KeyUp="LoginDialog_KeyUp"
                                        DialogTheme="Dark" DialogClosing="DialogHost_DialogClosing">
                 <!--// Dialog 內容, 登入方法、邏輯需要再確認 -->
                 <materialDesign:DialogHost.DialogContent>
@@ -267,8 +277,7 @@
 
                         <!--#region 密碼 & Hint -->
                         <PasswordBox x:Name="password" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password" 
-                                     Padding="4 3" FontWeight="Bold" Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                     KeyUp="LoginActionKeyUp_KeyUp"/>
+                                     Padding="4 3" FontWeight="Bold" Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
 
                         <TextBlock x:Name="passwordHint" DockPanel.Dock="Top" Height="12" HorizontalAlignment="Center" FontWeight="SemiBold" Padding="8 0" Margin="0" FontSize="12" Foreground="{StaticResource ColorErrorTransparent}"/>
                         <!--#endregion-->
@@ -279,12 +288,14 @@
                                 materialDesign:ButtonAssist.CornerRadius="16"
                                 Foreground="{StaticResource ColorSuccess}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Focusable="False"
                                 PreviewMouseDown="LoginBtn_PreviewMouseDown"/>
 
                         <Button DockPanel.Dock="Right" Margin="8 0 8 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="CANCEL" 
                                 HorizontalAlignment="Right" Width="120" BorderThickness="0" 
                                 materialDesign:RippleAssist.IsDisabled="True"
                                 materialDesign:ButtonAssist.CornerRadius="16"
+                                Focusable="False"
                                 Foreground="{StaticResource ColorWarning}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </DockPanel>

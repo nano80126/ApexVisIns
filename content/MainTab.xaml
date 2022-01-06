@@ -206,7 +206,7 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
-            <!-- Control Panel -->
+            <!--#region Control Panel-->
             <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource ColorErrorTransparent}">
                 <materialDesign:Card Style="{StaticResource GeneralCard}">
                     <DockPanel Background="Transparent">
@@ -215,9 +215,9 @@
                             <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"/>
                             <!--  -->
                             <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="控制板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                            <!--  -->   
+                            <!--  -->
                             <TextBlock Text="{x:Null}"/>
-                        </DockPanel>    
+                        </DockPanel>
                         <!-- Seperator -->
                         <Separator DockPanel.Dock="Top" Margin="0 8"/>
                         <!-- Panel Body -->
@@ -278,7 +278,7 @@
                                     <Run>檢驗數量: 0</Run>
                                 </TextBlock>    
                             </StackPanel>-->
-                            
+
                             <!-- Row 1, Col 1, OK / NG 數量 -->
                             <DockPanel Grid.Column= "1" Grid.Row="2" HorizontalAlignment="Stretch">
                                 <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
@@ -315,8 +315,9 @@
                         </Grid>
                     </DockPanel>
                     <!--//-->
-                </materialDesign:Card> 
+                </materialDesign:Card>
             </Border>
+            <!--#endregion-->
 
             <!-- Image 1 -->
             <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" Background="{StaticResource ColorPrimaryTransparent}">
@@ -384,22 +385,113 @@
                 </TextBlock>
             </Border>
 
-            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" Background="{StaticResource ColorSuccessTransparent}">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
-                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <!--<Run Text="Procedure Block"/>
-                    <LineBreak/>
-                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualWidth, Mode=OneWay}"/>
-                    <Run>x</Run>
-                    <Run Text="{Binding ElementName=ProcedureBorder, Path=ActualHeight, Mode=OneWay}"/>-->
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="Procedure Block&#x0d;&#x0a;{0} x {1}">
-                            <Binding ElementName="ProcedureBorder"  Path="ActualWidth" Mode="OneWay"/>
-                            <Binding ElementName="ProcedureBorder" Path="ActualHeight" Mode="OneWay"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+
+         
+            <!--#region 方塊流程圖 -->
+            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" Background="{x:Null}">
+                <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 8">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type StackPanel}" x:Key="BlockStackPanel">
+                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="16"/>
+                            </Style>
+
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Width" Value="64"/>
+                                <Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>
+                            </Style>
+
+                            <!--<Style>
+                                
+                            </Style>-->
+                        </StackPanel.Resources>
+
+                        
+                        <StackPanel>
+                            <TextBlock Text="硬體初始化" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="原點復歸" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="選擇規格" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="等待上料" HorizontalAlignment="Center"/>
+
+                            <Grid>
+                                <materialDesign:PackIcon Kind="SquareRoundedOutline" Background="{x:Null}"/>
+
+                                <materialDesign:PackIcon Kind="User" Width="26" HorizontalAlignment="Center" Foreground="{StaticResource ColorInfo}"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="工件對位" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="毛邊檢測" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="外觀檢測" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
+
+                        <StackPanel>
+                            <TextBlock Text="等待下料" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="SquareRoundedOutline"/>
+                        </StackPanel>
+
+
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
+
+            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder2" CornerRadius="8" BorderThickness="5" BorderBrush="{StaticResource ColorSuccessTransparent}">
+                <!--<Border CornerRadius="3" BorderThickness="3" BorderBrush="{StaticResource ColorSuccess}">-->
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}}{0} x {1}">
+                                <Binding ElementName="ProcedureBorder"  Path="ActualWidth" Mode="OneWay"/>
+                                <Binding ElementName="ProcedureBorder" Path="ActualHeight" Mode="OneWay"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                <!--</Border>-->
+            </Border>
+            <!--#endregion-->
 
             <!--Record List-->
             <Border Grid.RowSpan="4" Grid.Column="3" x:Name="RecordListBorder" Background="{StaticResource ColorBlueGrayTranparent}">

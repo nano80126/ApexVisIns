@@ -122,6 +122,10 @@ Apex 外觀瑕疵檢測
 	* 上線使用
 	* 關閉程式 = 關機
 
+* [ ] IO Control Panel 改為按鈕建立實例
+	* 避免和 MainTab 衝突
+	
+* [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
 
 ### Config Logic
 

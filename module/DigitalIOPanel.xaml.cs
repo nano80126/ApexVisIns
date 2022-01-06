@@ -18,6 +18,7 @@ using Automation.BDaq;
 using System.Diagnostics;
 using System.Threading;
 using System.Collections;
+using System.Globalization;
 
 namespace ApexVisIns.module
 {
@@ -58,6 +59,7 @@ namespace ApexVisIns.module
             {
                 Controller = DataContext as IOController;
                 return;
+
 
                 if (!Controller.DiCtrlCreated)
                 {
@@ -114,7 +116,7 @@ namespace ApexVisIns.module
         {
             ErrorCode err;
             CheckBox checkBox = sender as CheckBox;
-            int channel = Convert.ToInt32(checkBox.CommandParameter);
+            int channel = Convert.ToInt32(checkBox.CommandParameter, CultureInfo.CurrentCulture);
 
             _ = Controller.DisableInterrupt();
             err = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge, false);
