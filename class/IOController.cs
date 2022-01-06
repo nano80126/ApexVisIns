@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -25,6 +26,7 @@ namespace ApexVisIns
         private bool _interruptEnabled;
         private int _interruptCount;
 
+        [Obsolete]
         private Task debounceTask;
 
         private System.Timers.Timer debounceTimer;
@@ -43,12 +45,12 @@ namespace ApexVisIns
         public InstantDoCtrl InstantDoCtrl { get; set; }
 
         /// <summary>
-        /// 啟用之 Digital Input Ports
+        /// 啟用的 Digital Input Ports
         /// </summary>
         public int EnabledDiPorts { get; set; } = 999;
 
         /// <summary>
-        /// 啟用之 Digital Outp Ports
+        /// 啟用的 Digital Output Ports
         /// </summary>
         public int EnabledDoPorts { get; set; } = 999;
 
@@ -73,6 +75,84 @@ namespace ApexVisIns
                 InstantDiCtrl = new InstantDiCtrl() { SelectedDevice = new DeviceInformation(description) };
             }
         }
+
+        /// <summary>
+        /// 中斷是否啟用
+        /// </summary>
+        public bool InterruptEnabled
+        {
+            get => _interruptEnabled;
+            set
+            {
+                if (value != _interruptEnabled)
+                {
+                    _interruptEnabled = value;
+                    //OnPropertyChanged(nameof(InterruptEnabled));
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 中斷計數器
+        /// </summary>
+        public int InterruptCount
+        {
+            get => _interruptCount;
+            set
+            {
+                _interruptCount = value;
+                //OnPropertyChanged(nameof(InterruptCount));
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// IO Card Description
+        /// </summary>
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                if (value != _description)
+                {
+                    _description = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// DI Port 數
+        /// </summary>
+        public int DiPortCount => InstantDiCtrl.Features.PortCount;
+
+        /// <summary>
+        /// DI 通道數
+        /// </summary>
+        public int DiChannelCount => InstantDiCtrl.Features.ChannelCountMax;
+
+        /// <summary>
+        /// Do Port 數
+        /// </summary>
+        public int DoPortCount => InstantDoCtrl.Features.PortCount;
+
+        /// <summary>
+        /// Do 通道數
+        /// </summary>
+        public int DoChannelCount => InstantDoCtrl.Features.ChannelCountMax;
+
+        /// <summary>
+        /// DI Collection
+        /// </summary>
+        public ObservableCollection<ObservableCollection<bool>> DiArrayColl { get; } = new ObservableCollection<ObservableCollection<bool>>();
+
+        /// <summary>
+        /// DO Collection
+        /// </summary>
+        public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
+
 
         /// <summary>
         /// 確認 DLL 已安裝且版本符合
@@ -191,6 +271,26 @@ namespace ApexVisIns
         public bool DoCtrlCreated { get; private set; }
 
         /// <summary>
+        /// Interrupt Channel Object
+        /// </summary>
+        public class InterruptChannel
+        {
+            public InterruptChannel(int channel)
+            {
+                Channel = channel;
+            }
+
+            public int Channel { get; }
+
+            public bool Enabled { get; set; }
+        }
+
+        /// <summary>
+        /// 可啟用 Interrupt 之通道
+        /// </summary>
+        public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
+
+        /// <summary>
         /// 設定中斷器，設定過後必須重設 SnapStart()
         /// </summary>
         /// <param name="ch">通道號碼</param>
@@ -223,11 +323,7 @@ namespace ApexVisIns
 
         public DiintChannel[] InterruptEnabledChannel => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
 
-        /// <summary>
-        /// Interrupt Event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+       
         //private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         //{
         //    // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
@@ -255,10 +351,20 @@ namespace ApexVisIns
         //    //}
         //}
 
+
+        /// <summary>
+        /// 中斷事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
-            //lock (this)
-            //{
+            // lock (this)
+            // {
+            InterruptCount++;
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss:fff}");
+            // return;
+
             if (debounceTimer == null)
             {
                 debounceTimer = new System.Timers.Timer(125)
@@ -284,7 +390,7 @@ namespace ApexVisIns
                         {
                             for (int i = 0; i < e.Length && i < EnabledDiPorts; i++)
                             {
-                                SetDI(i, e.PortData[i]);
+                                UpdateDIColl(i, e.PortData[i]);
                             }
                         }
                     }
@@ -295,17 +401,16 @@ namespace ApexVisIns
             //}
         }
 
-
         /// <summary>
         /// 設定 Digital Input
         /// </summary>
         /// <param name="port"></param>
         /// <param name="data"></param>
-        private void SetDI(int port, int data)
+        private void UpdateDIColl(int port, int data)
         {
-            for (int i = 0; i < DiArrayColl[port].Count; i++)
+            for (int ch = 0; ch < DiArrayColl[port].Count; ch++)
             {
-                DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
+                DiArrayColl[port][ch] = ((data >> (ch % 8)) & 0b01) == 0b1;
             }
         }
 
@@ -322,19 +427,18 @@ namespace ApexVisIns
                 ErrorCode err = InstantDiCtrl.SnapStart();
                 if (err == ErrorCode.Success)
                 {
-                    _interruptEnabled = true;
-                    InterruptCount = 0;
-
                     foreach (ObservableCollection<bool> collection in DiArrayColl)
                     {
                         BindingOperations.EnableCollectionSynchronization(collection, _CollectionLock);
                     }
+                    _interruptEnabled = true;
+                    InterruptCount = 0;
                 }
                 return err;
             }
             else
             {
-                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+                throw new InvalidOperationException("在生成 DI 實例之前不允許啟用中斷");
             }
         }
 
@@ -351,113 +455,19 @@ namespace ApexVisIns
                 ErrorCode err = InstantDiCtrl.SnapStop();
                 if (err == ErrorCode.Success)
                 {
-                    _interruptEnabled = false;
-
                     foreach (ObservableCollection<bool> collection in DiArrayColl)
                     {
                         BindingOperations.DisableCollectionSynchronization(collection);
                     }
+                    _interruptEnabled = false;
                 }
                 return err;
             }
             else
             {
-                throw new InvalidOperationException("Create DiCtrl before enable interrupt.");
+                throw new InvalidOperationException("在生成 DI 實例之前不允許停用中斷");
             }
         }
-
-        public bool InterruptEnabled
-        {
-            get => _interruptEnabled;
-            set
-            {
-                if (value != _interruptEnabled)
-                {
-                    _interruptEnabled = value;
-                    OnPropertyChanged(nameof(InterruptEnabled));
-                }
-            }
-        }
-
-        public int InterruptCount
-        {
-            get => _interruptCount;
-            set
-            {
-                if (value != _interruptCount)
-                {
-                    _interruptCount = value;
-                    OnPropertyChanged(nameof(InterruptCount));
-                }
-            }
-        }
-
-        /// <summary>
-        /// IO Card Description
-        /// </summary>
-        public string Description
-        {
-            get => _description;
-            set
-            {
-                if (value != _description)
-                {
-                    _description = value;
-                    OnPropertyChanged(nameof(Description));
-                }
-            }
-        }
-
-        /// <summary>
-        /// DI Port 數
-        /// </summary>
-        public int DiPortCount => InstantDiCtrl.Features.PortCount;
-
-        /// <summary>
-        /// DI 通道數
-        /// </summary>
-        public int DiChannelCount => InstantDiCtrl.Features.ChannelCountMax;
-
-        /// <summary>
-        /// Do Port 數
-        /// </summary>
-        public int DoPortCount => InstantDoCtrl.Features.PortCount;
-
-        /// <summary>
-        /// Do 通道數
-        /// </summary>
-        public int DoChannelCount => InstantDoCtrl.Features.ChannelCountMax;
-
-        /// <summary>
-        /// DI Collection
-        /// </summary>
-        public ObservableCollection<ObservableCollection<bool>> DiArrayColl { get; } = new ObservableCollection<ObservableCollection<bool>>();
-
-        /// <summary>
-        /// DO Collection
-        /// </summary>
-        public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
-
-        /// <summary>
-        /// Interrupt Channel Object
-        /// </summary>
-        public class InterruptChannel
-        {
-            public InterruptChannel(int channel)
-            {
-                Channel = channel;
-            }
-
-            public int Channel { get; }
-
-            public bool Enabled { get; set; }
-        }
-
-        /// <summary>
-        /// 可啟用 Interrupt 之通道
-        /// </summary>
-        public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
-
 
         /// <summary>
         /// DI 讀取
@@ -588,6 +598,12 @@ namespace ApexVisIns
         public delegate void DigitalInputChangedEventHandler(object sender, DigitalInputChangedEventArgs e);
         public event DigitalInputChangedEventHandler DigitalInputChanged;
 
+        /// <summary>
+        /// 觸發 DI Changed 事件
+        /// </summary>
+        /// <param name="port"></param>
+        /// <param name="bit"></param>
+        /// <param name="value"></param>
         private void OnDigitalInputChanged(int port, byte bit, bool value)
         {
             DigitalInputChanged?.Invoke(this, new DigitalInputChangedEventArgs(port, bit, value));
@@ -595,8 +611,10 @@ namespace ApexVisIns
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            Debug.WriteLine($"{propertyName}");
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
@@ -605,6 +623,9 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// 處置物件
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -620,6 +641,7 @@ namespace ApexVisIns
 
             if (disposing)
             {
+                // Code here
                 InstantDiCtrl?.Dispose();
                 InstantDiCtrl = null;
                 InstantDoCtrl?.Dispose();
@@ -627,6 +649,9 @@ namespace ApexVisIns
 
                 debounceTask?.Dispose();
                 debounceTask = null;
+
+                debounceTimer?.Dispose();
+                debounceTimer = null;
             }
             _disposed = true;
         }
