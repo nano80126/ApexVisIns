@@ -450,20 +450,20 @@ namespace ApexVisIns.CustomProperty
     }
 
     // 確認為什麼不能兩個
-    //public class ProcedureBlock : DependencyObject
-    //{
-    //    public static readonly DependencyProperty ProcedureNameProperty = DependencyProperty.RegisterAttached(
-    //      "ProcedureName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(""));
+    public class ProcedureBlock : DependencyObject
+    {
+        public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached(
+          "BlockName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(string.Empty));
 
-    //    public static void SetConnected(DependencyObject target, string value)
-    //    {
-    //        target.SetValue(ProcedureNameProperty, value);
-    //    }
+        public static void SetBlockName(DependencyObject target, string value)
+        {
+            target.SetValue(BlockNameProperty, value);
+        }
 
-    //    public static string GetConnected(DependencyObject target)
-    //    {
-    //        return (string)target.GetValue(ProcedureNameProperty);
-    //    }
-    //}
+        public static string GetBlockName(DependencyObject target)
+        {
+            return (string)target.GetValue(BlockNameProperty);
+        }
+    }
 }
 

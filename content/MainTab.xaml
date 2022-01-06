@@ -6,6 +6,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:local="clr-namespace:ApexVisIns"
             xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
+            xmlns:control="clr-namespace:ApexVisIns.control"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
@@ -413,9 +414,15 @@
                             </Style>-->
                         </StackPanel.Resources>
 
-                        
-                        <StackPanel>
-                            <TextBlock Text="硬體初始化" HorizontalAlignment="Center"/>
+
+                        <control:ProcedureBlock BlockName="123" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}" />
+
+
+                        <control:ProcedureBlock BlockName="123" SubPackIcon="User" EnableSubPackIcon="True"
+                                                SubPackIconColor="{StaticResource ColorInfo}" />
+
+                        <StackPanel ctProperty:ProcedureBlock.BlockName="硬體初始化">
+                            <TextBlock Text="{Binding (ctProperty:ProcedureBlock.BlockName), RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel,AncestorLevel=1}}" HorizontalAlignment="Center"/>
                             <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                         </StackPanel>
 
