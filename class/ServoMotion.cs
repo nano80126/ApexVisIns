@@ -12,7 +12,7 @@ using System.IO;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Data;
-
+using System.Runtime.CompilerServices;
 
 namespace ApexVisIns
 {
@@ -857,7 +857,7 @@ namespace ApexVisIns
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

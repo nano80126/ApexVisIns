@@ -126,6 +126,7 @@ Apex 外觀瑕疵檢測
 	* 避免和 MainTab 衝突
 	
 * [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
+	* 新增鎖的邏輯
 
 ### Config Logic
 

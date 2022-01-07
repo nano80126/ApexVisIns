@@ -81,7 +81,7 @@ namespace ApexVisIns
         /// <summary>
         /// 相機裝置列表
         /// </summary>
-        //public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
+        // public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         #endregion
 
         #region EtherCAT Motion
@@ -93,11 +93,15 @@ namespace ApexVisIns
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
+        #region Major
+        public static ApexDefect ApexDefect { get; set; }
+        #endregion
+
         #region Resources
-        //public Crosshair Crosshair;         // 待刪
-        //public AssistRect AssistRect;       // 待刪
-        //public AssistPoint[] AssistPoints;  // 待刪
-        //public Indicator Indicator;         // 待刪
+        // public Crosshair Crosshair;         // 待刪
+        // public AssistRect AssistRect;       // 待刪
+        // public AssistPoint[] AssistPoints;  // 待刪
+        // public Indicator Indicator;         // 待刪
         /// <summary>
         /// 訊息通知器
         /// </summary>
@@ -205,6 +209,10 @@ namespace ApexVisIns
                 MotionEnumer.Interrupt();
                 MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
             }
+            #endregion
+
+            #region ApexDefect
+            ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
             #endregion
 
             // 載入後, focus 視窗

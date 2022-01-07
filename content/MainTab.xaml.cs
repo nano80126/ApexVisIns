@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -109,6 +110,18 @@ namespace ApexVisIns.content
             Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+
+
+            Task.Run(() =>
+            {
+                DateTime t1 = DateTime.Now;
+
+                SpinWait.SpinUntil(() => false, 3000);
+
+                TimeSpan t2 = DateTime.Now - t1;
+
+                Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
+            });
         }
 
         /// <summary>

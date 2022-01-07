@@ -15,16 +15,35 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Width" Value="64"/>
             <Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>
+            <Setter Property="Foreground" Value="{StaticResource ColorGrayTransparent}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding (local:PBHelper.HighLight), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <!--//-->
+        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}" x:Key="ProcedureBlockName">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding (local:PBHelper.HighLight), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </StackPanel.Resources>
 
-    <TextBlock Text="{Binding BlockName}" HorizontalAlignment="Center"/>
+    <TextBlock Text="{Binding BlockName}" HorizontalAlignment="Center" FontSize="16" local:PBHelper.HighLight="{Binding HighLight}" Style="{StaticResource ProcedureBlockName}"/>
 
     <Grid>
-        <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+        <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom" local:PBHelper.HighLight="{Binding HighLight}"/>
 
         <materialDesign:PackIcon Width="26" HorizontalAlignment="Center" 
                                  Kind="{Binding SubPackIcon}" Foreground="{Binding SubPackIconColor}" 
                                  Visibility="{Binding EnableSubPackIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <TextBlock FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 5" Text="{Binding Step}"/>
     </Grid>
 </StackPanel>

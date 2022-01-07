@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ApexVisIns
 {
@@ -38,7 +39,7 @@ namespace ApexVisIns
                 if (value != _onTabIndex)
                 {
                     _onTabIndex = value;
-                    OnPropertyChanged(nameof(OnTabIndex));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -86,7 +87,7 @@ namespace ApexVisIns
                 if (value != _loginFlag)
                 {
                     _loginFlag = value;
-                    OnPropertyChanged(nameof(LoginFlag));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -102,7 +103,7 @@ namespace ApexVisIns
             set
             {
                 _imgSrc = value;
-                OnPropertyChanged(nameof(ImageSource));
+                OnPropertyChanged();
             }
         }
 
@@ -117,7 +118,7 @@ namespace ApexVisIns
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
