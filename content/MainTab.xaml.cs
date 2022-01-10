@@ -121,6 +121,13 @@ namespace ApexVisIns.content
                 TimeSpan t2 = DateTime.Now - t1;
 
                 Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
+
+                for (int i = 0; i < 10; i++)
+                {
+                    SpinWait.SpinUntil(() => false, 3000);
+                    MainWindow.ApexDefect.CurrentStep++;
+                    Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+                }
             });
         }
 

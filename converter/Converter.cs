@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace ApexVisIns.Converter
 {
@@ -69,6 +70,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// Int32 equal 轉換器
     /// </summary>
+    [ValueConversion(typeof(int), typeof(bool))]
     public class EqualConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -78,6 +80,7 @@ namespace ApexVisIns.Converter
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            //return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
             throw new NotImplementedException();
         }
     }
@@ -85,6 +88,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// Int32 not equal 轉換器
     /// </summary>
+    [ValueConversion(typeof(int), typeof(bool))]
     public class NotEqualConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -101,6 +105,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     ///  數學加法 轉換器
     /// </summary>
+    [ValueConversion(typeof(double), typeof(double))]
     public class MathPlusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -117,6 +122,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 數學乘法 轉換器
     /// </summary>
+    [ValueConversion(typeof(double), typeof(double))]
     public class MathMultiplyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -133,6 +139,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 數學減法 轉換器
     /// </summary>
+    [ValueConversion(typeof(double), typeof(double))]
     public class MathMinusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -149,6 +156,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 數學除法 轉換器
     /// </summary>
+    [ValueConversion(typeof(double), typeof(double))]
     public class MathDivideConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -232,7 +240,7 @@ namespace ApexVisIns.Converter
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             string first = values[0] as string;
-            return values.Length >= 2 && values.All(value => value.ToString().Equals(first));
+            return values.Length >= 2 && values.All(value => value.ToString().Equals(first, StringComparison.Ordinal));
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -328,6 +336,9 @@ namespace ApexVisIns.Converter
             return string.Empty;
         }
     }
+
+
+
 
     /// <summary>
     /// Multiple value 轉陣列

@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MaterialDesignThemes.Wpf;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MaterialDesignThemes.Wpf;
 
 namespace ApexVisIns.control
 {
@@ -29,7 +18,7 @@ namespace ApexVisIns.control
 
         public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached("BlockName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty StepProperty = DependencyProperty.RegisterAttached("Step", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(0));
+        public static readonly DependencyProperty StepNumberProperty = DependencyProperty.RegisterAttached("StepNumber", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(0));
 
         public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
 
@@ -52,10 +41,10 @@ namespace ApexVisIns.control
         /// 步序
         /// </summary>
         [Description("步序")]
-        public int Step
+        public int StepNumber
         {
-            get => (byte)GetValue(StepProperty);
-            set => SetValue(StepProperty, value);
+            get => (int)GetValue(StepNumberProperty);
+            set => SetValue(StepNumberProperty, value);
         }
 
         [Description("是否高亮")]
@@ -101,8 +90,7 @@ namespace ApexVisIns.control
 
     public class PBHelper : DependencyObject
     {
-        public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached(
-          "HighLight", typeof(bool), typeof(PBHelper), new PropertyMetadata(true));
+        public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(PBHelper), new PropertyMetadata(true));
 
         public static void SetHighLight(DependencyObject target, bool value)
         {

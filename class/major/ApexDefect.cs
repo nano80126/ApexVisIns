@@ -6,22 +6,21 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace ApexVisIns
 {
     public class ApexDefect : INotifyPropertyChanged
     {
         // private bool _started;
-        private int _step = -1;
+        private int _currentStep = -1;
         private StatusType _status;
-        private uint _okCount;
-        private uint _ngCount;
         private DateTime _startTime;
-
 
         public ApexDefect()
         {
-            _startTime = DateTime.Now.AddHours(-36.26);
+            _startTime = DateTime.Now;
         }
 
 
@@ -29,14 +28,14 @@ namespace ApexVisIns
         /// 檢驗步驟，
         /// -1 時方塊圖全暗
         /// </summary>
-        public int Step
+        public int CurrentStep
         {
-            get => _step;
+            get => _currentStep;
             set
             {
-                if (value != _step)
+                if (value != _currentStep)
                 {
-                    _step = value;
+                    _currentStep = value;
                     OnPropertyChanged();
                 }
             }
@@ -59,13 +58,13 @@ namespace ApexVisIns
         /// OK 數量，
         /// 檢驗完成 +1 
         /// </summary>
-        public uint OK => _okCount;
+        public uint OK { get; private set; }
 
         /// <summary>
         /// NG 數量，
         /// 檢驗完成 +1
         /// </summary>
-        public uint NG => _ngCount;
+        public uint NG { get; private set; }
 
         /// <summary>
         /// 檢驗總數
@@ -80,8 +79,19 @@ namespace ApexVisIns
             get
             {
                 TimeSpan ts = DateTime.Now - _startTime;
-                return $"{ts.TotalHours:F0}:{ts.Minutes}:{ts.Seconds}";
+                return ts.TotalSeconds > 0 ? $"{ts.TotalHours:00}:{ts.Minutes:00}:{ts.Seconds:00}" : "00:00:00";
             }
+        }
+
+        public void Start()
+        {
+            _startTime = DateTime.Now;
+        }
+
+
+        public void SetStep(int step)
+        {
+            CurrentStep = step;
         }
 
         /// <summary>
@@ -89,7 +99,7 @@ namespace ApexVisIns
         /// </summary>
         public void IncreaseOK()
         {
-            _okCount++;
+            OK++;
             OnPropertyChanged(nameof(OK));
             OnPropertyChanged(nameof(TotalCount));
         }
@@ -99,7 +109,7 @@ namespace ApexVisIns
         /// </summary>
         public void ResetOK()
         {
-            _okCount = 0;
+            OK = 0;
             OnPropertyChanged(nameof(OK));
             OnPropertyChanged(nameof(TotalCount));
         }
@@ -109,7 +119,7 @@ namespace ApexVisIns
         /// </summary>
         public void IncreaseNG()
         {
-            _ngCount++;
+            NG++;
             OnPropertyChanged(nameof(NG));
             OnPropertyChanged(nameof(TotalCount));
         }
@@ -119,7 +129,7 @@ namespace ApexVisIns
         /// </summary>
         public void ResetNG()
         {
-            _ngCount++;
+            NG++;
             OnPropertyChanged(nameof(NG));
             OnPropertyChanged(nameof(TotalCount));
         }
@@ -129,12 +139,19 @@ namespace ApexVisIns
         /// </summary>
         public enum StatusType
         {
+            [Description("初始化")]
             Init = 0,       // 初始化階段
+            [Description("閒置")]
             Idle = 1,       // 閒置
+            [Description("準備")]
             Ready = 2,      // 準備完成
+            [Description("檢驗中")]
             Running = 3,    // 運轉中
+            [Description("等待")]
             Waiting = 4,    // 等待 (上下料)
+            [Description("完成")]
             Finish = 5,     // 完成
+            [Description("錯誤")]
             Error = 6       // 報警
         }
 
@@ -143,6 +160,37 @@ namespace ApexVisIns
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+
+    /// <summary>
+    /// Apex Defect Testing Status to Color
+    /// </summary>
+    [ValueConversion(typeof(ApexDefect.StatusType), typeof(SolidColorBrush))]
+    public class StatusColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is ApexDefect.StatusType))
+            {
+                throw new ArgumentException("Value is not ApexDefect Status");
+            }
+
+            ApexDefect.StatusType status = (ApexDefect.StatusType)value;
+
+            switch(status)
+            {
+
+            }
+
+            return new SolidColorBrush(Colors.Red);
+            //throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

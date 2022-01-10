@@ -15,6 +15,10 @@
             d:DesignHeight="450" d:DesignWidth="800"
             UseLayoutRounding="True"
             Orientation="Vertical">
+    <StackPanel.Resources>
+        <local:StatusColorConverter x:Key="StatusColorConverter"/>
+    </StackPanel.Resources>
+    
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region ToolBar 1 -->
         <ToolBarTray DockPanel.Dock="Left"  VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
@@ -237,23 +241,25 @@
 
                             <!-- Control Panel 1st col, 1st row, 檢驗狀態 -->
                             <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
-                                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28">
-                                    <TextBlock.Style>
+                                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"
+                                           FontWeight="SemiBold" TextAlignment="Center" Text="{Binding Status, Converter={StaticResource EnumDescriptionConverter}}"
+                                           Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}">
+                                    <!--<TextBlock.Style>
                                         <Style TargetType="{x:Type TextBlock}">
                                             <Setter Property="FontWeight" Value="SemiBold"/>
                                             <Setter Property="Text" Value="檢測狀態"/>
                                             <Setter Property="TextAlignment" Value="Center"/>
                                         </Style>
-                                    </TextBlock.Style>
+                                    </TextBlock.Style>-->
                                 </TextBlock>
                             </Border>
 
                             <!-- Control Panel 1st col, 2nd row, 開始 / 停止 -->
                             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <Button Content="開始檢測" Margin="12 0" HorizontalAlignment="Center"
+                                <Button Content="開始檢測" Margin="12 0" HorizontalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="15"
                                         Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}"  FontSize="16"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
-                                <Button Content="停止檢測" Margin="12 0" HorizontalAlignment="Center"
+                                <Button Content="停止檢測" Margin="12 0" HorizontalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="15"
                                         Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" FontSize="16"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             </StackPanel>
@@ -405,15 +411,6 @@
                 <!--<ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 8">
                     <StackPanel.Resources>
-                        <!--
-                        <Style TargetType="{x:Type StackPanel}" x:Key="BlockStackPanel">
-                            <Setter Property="VerticalAlignment" Value="Stretch"/>
-                        </Style>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
-                            <Setter Property="FontWeight" Value="SemiBold"/>
-                            <Setter Property="FontSize" Value="16"/>
-                        </Style>
-                        -->
                         <Style TargetType="materialDesign:PackIcon">
                             <Setter Property="VerticalAlignment" Value="Center"/>
                             <Setter Property="Width" Value="64"/>
@@ -421,49 +418,60 @@
                         </Style>
                     </StackPanel.Resources>
 
-                    <control:ProcedureBlock BlockName="初始化" Step="0" HighLight="{Binding Step, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
+                    <!--
+                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=-1}"/>
+                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
+                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=1}"/>
+                    -->
+
+                    <!--HighLight="{Binding Step, Converter={StaticResource EqualConverter}, ConverterParameter=0}"-->
+                    <control:ProcedureBlock BlockName="初始化" StepNumber="0" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="原點復歸" Step="1" HighLight="{Binding Step, Converter={StaticResource EqualConverter}, ConverterParameter=1}"
+                    <control:ProcedureBlock BlockName="原點復歸" StepNumber="1" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=1}"
                                             SubPackIcon="Flag" EnableSubPackIcon="True" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="選擇規格" Step="2" EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
+                    <control:ProcedureBlock BlockName="選擇規格" StepNumber="2" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=2}"
+                                            EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="啟動檢驗" Step="3" EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
+                    <control:ProcedureBlock BlockName="啟動檢驗" StepNumber="3" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=3}"
+                                            EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
                     <Border BorderBrush="{StaticResource ColorSuccessTransparent}" BorderThickness="3" CornerRadius="8" Margin="-4 -12">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4 0">
-                            <control:ProcedureBlock BlockName="等待上料" Step="4"
+                            <control:ProcedureBlock BlockName="等待上料" StepNumber="4" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=4}"
                                                         EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="工件對位" Step="5"/>
+                            <control:ProcedureBlock BlockName="工件對位" StepNumber="5" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=5}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="毛邊檢測" Step="6"/>
+                            <control:ProcedureBlock BlockName="毛邊檢測" StepNumber="6" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=6}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="外觀檢測" Step="7"/>
+                            <control:ProcedureBlock BlockName="外觀檢測" StepNumber="7" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=7}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="等待下料" Step="8" EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
+                            <control:ProcedureBlock BlockName="等待下料" StepNumber="8" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=8}"
+                                                    EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
                         </StackPanel>
                     </Border>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="完成檢驗" Step="9" EnableSubPackIcon="True" SubPackIcon="CheckBold" SubPackIconColor="{StaticResource ColorTeal}"/>
+                    <control:ProcedureBlock BlockName="完成檢驗" StepNumber="9" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=9}"
+                                            EnableSubPackIcon="True" SubPackIcon="CheckBold" SubPackIconColor="{StaticResource ColorTeal}"/>
 
                 </StackPanel>
                 <!--</ScrollViewer>-->
