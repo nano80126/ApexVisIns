@@ -532,7 +532,6 @@ namespace ApexVisIns.content
             }
         }
 
-
         /// <summary>
         /// 停止相機抓取
         /// </summary>
@@ -672,6 +671,8 @@ namespace ApexVisIns.content
             #endregion
 
             #region 比對 S/N，確認是哪台相機開啟
+            // 測試直接比對 MainWidow.BaslerCam
+
             BaslerCam baslerCam = null;
             if (serialNumber == BaslerCam1.SerialNumber)
             {
@@ -768,6 +769,9 @@ namespace ApexVisIns.content
 
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
                 // Call PropertyChanged ? Frames
+
+                string userData = e.GrabResult.StreamGrabberUserData.ToString();
+
 
                 MainWindow.Dispatcher.Invoke(() =>
                 {

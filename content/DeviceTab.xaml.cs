@@ -380,6 +380,44 @@ namespace ApexVisIns.content
                 // DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
                 // DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
                 DeviceCard.DataContext = MainWindow.CameraEnumer.DeviceConfigs[idx];
+
+                // 會有BUG
+                CameraOpen.DataContext = MainWindow.BaslerCams[idx];
+                CameraClose.DataContext = MainWindow.BaslerCams[idx];
+
+#if false
+                //Binding binding = new("IsOpen")
+                //{
+                //    Source = MainWindow.BaslerCams[idx],
+                //    Mode = BindingMode.OneWay,
+                //    Converter = new Converter.BooleanInverter(),
+                //    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                //};
+
+                //Binding binding2 = new("SerialNumber")
+                //{
+                //    Mode = BindingMode.OneWay,
+                //    Converter = new Converter.StringNotNullOrEmptyConverter()
+                //};
+
+                //MultiBinding multiBinding = new()
+                //{
+                //    Converter = new Converter.BooleanAndGate(),
+                //};
+                //multiBinding.Bindings.Add(binding);
+                //multiBinding.Bindings.Add(binding2);
+
+                //CameraOpen.SetBinding(IsEnabledProperty, multiBinding);
+
+                //CameraClose.SetBinding(IsEnabledProperty, new Binding("IsOpen")
+                //{
+                //    Source = MainWindow.BaslerCams[idx],
+                //    Mode = BindingMode.OneWay,
+                //    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                //});  
+#endif
+
+                Debug.WriteLine($"index: {idx}");
             }
         }
 
@@ -393,7 +431,8 @@ namespace ApexVisIns.content
             string path = $@"{DevicesDirectory}/device.json";
             // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
 
-            DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
+            // DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
+            DeviceConfigBase[] infos = MainWindow.CameraEnumer.DeviceConfigs.Select(item => new DeviceConfigBase()
             {
                 VendorName = item.VendorName,
                 FullName = item.FullName,

@@ -280,13 +280,16 @@
                         <Button x:Name="CameraOpen" Padding="16 0" Margin="0"
                                 HorizontalAlignment="Center"
                                 Grid.Column="0" Grid.Row="1" Click="CameraOpen_Click" Content="開啟相機"
-                                materialDesign:ButtonAssist.CornerRadius="16">
+                                materialDesign:ButtonAssist.CornerRadius="16"
+                                d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
                             <!--IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"-->
                             <!--// 條件: S/N已選擇, 相機未開啟 -->
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding Source="{StaticResource BaslerCam}" Path="IsOpen" Converter="{StaticResource BooleanInverter}" UpdateSourceTrigger="PropertyChanged"/>
-                                    <Binding Path="SerialNumber" Converter="{StaticResource StringNotNullOrEmptyConverter}"/>
+                                    <Binding Path="IsOpen" Converter="{StaticResource BooleanInverter}" UpdateSourceTrigger="PropertyChanged"/>
+                                    <!--// Relative DeviceCard Source, 確認 SerialNumber 不為空-->
+                                    <Binding Path="DataContext.SerialNumber" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}" 
+                                             Converter="{StaticResource StringNotNullOrEmptyConverter}"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
@@ -295,7 +298,8 @@
                                 HorizontalAlignment="Center"
                                 Grid.Column="0" Grid.Row="2" Click="CameraClose_Click" Content="關閉相機"
                                 materialDesign:ButtonAssist.CornerRadius="16"
-                                IsEnabled="{Binding Source={StaticResource BaslerCam}, Path=IsOpen, UpdateSourceTrigger=PropertyChanged}"/>
+                                d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
+                                IsEnabled="{Binding Path=IsOpen, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}"/>
 
                         <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->

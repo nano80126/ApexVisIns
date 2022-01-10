@@ -188,7 +188,7 @@
                 <!--//-->
                 <!--#region Config Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="False">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="True">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
@@ -199,7 +199,7 @@
                 <!--//-->
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="False">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="True">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
@@ -233,11 +233,11 @@
                 <!--#endregion-->
 
                 <!--#region For Test -->
-                <!--<Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
-                        Padding="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
-                        Content="123" Style="{StaticResource MaterialDesignToolButton}"
-                        Background="Red">
-                </Button>-->
+                    <!--<Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
+                            Padding="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
+                            Content="123" Style="{StaticResource MaterialDesignToolButton}"
+                            Background="Red">
+                    </Button>-->
                 <!--#endregion-->
                 <!--//-->
             </TabControl>
