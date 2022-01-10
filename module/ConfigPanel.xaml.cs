@@ -140,7 +140,7 @@ namespace ApexVisIns.module
             if (Directory.Exists(path))
             {
                 string[] files = Directory.GetFiles(path, "*.json", SearchOption.TopDirectoryOnly);
-                files = Array.ConvertAll(files, file => file = System.IO.Path.GetFileNameWithoutExtension(file));
+                files = Array.ConvertAll(files, file => file = Path.GetFileNameWithoutExtension(file));
 
                 foreach (string file in files)
                 {

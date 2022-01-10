@@ -115,13 +115,9 @@ namespace ApexVisIns.content
             Task.Run(() =>
             {
                 DateTime t1 = DateTime.Now;
-
                 SpinWait.SpinUntil(() => false, 3000);
-
                 TimeSpan t2 = DateTime.Now - t1;
-
                 Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
-
                 for (int i = 0; i < 10; i++)
                 {
                     SpinWait.SpinUntil(() => false, 3000);
@@ -171,7 +167,7 @@ namespace ApexVisIns.content
 
                 InitLightCtrls();
 
-                InitIOCtrl(); // 跨執行續
+                //InitIOCtrl(); // 跨執行續
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
@@ -305,6 +301,11 @@ namespace ApexVisIns.content
                             MainWindow.MsgInformer.TargetProgressValue += 5;
                         }
                     }
+
+                    // Motion 初始化旗標
+                    CameraInitialized = true;
+
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
                 }
                 else
                 {
@@ -312,10 +313,10 @@ namespace ApexVisIns.content
                 }
             }
 
-            CameraInitialized = true;
+            //CameraInitialized = true;
 
             // Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "相機初始化完成"));
-            MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+            //MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
             // MainWindow.ProgressValue += 20;
             // 更新progress value
         }
@@ -480,6 +481,11 @@ namespace ApexVisIns.content
                 });
                 //MainWindow.ProgressValue += 10; // 更新 Progress Value
                 MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
+
+                IoInitialized = true;
+
+                //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
+                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "IO 控制初始化完成");
             }
             else
             {

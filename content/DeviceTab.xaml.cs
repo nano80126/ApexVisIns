@@ -42,6 +42,15 @@ namespace ApexVisIns.content
         /// </summary>
         private string DevicesDirectory { get; } = @"./devices";
         public MainWindow MainWindow { get; set; }
+
+        /// <summary>
+        /// Cameras for DeviceTab, only useing in this tab. 
+        /// </summary>
+        private readonly List<BaslerCam> _deviceCams = new();
+        /// <summary>
+        /// Index of DeivceCam in use
+        /// </summary>
+        private int _devInUse = -1;
         #endregion
 
         public DeviceTab()
@@ -381,9 +390,27 @@ namespace ApexVisIns.content
                 // DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
                 DeviceCard.DataContext = MainWindow.CameraEnumer.DeviceConfigs[idx];
 
-                // 會有BUG
-                CameraOpen.DataContext = MainWindow.BaslerCams[idx];
-                CameraClose.DataContext = MainWindow.BaslerCams[idx];
+                // serialNumber 已經在列表中
+                if (_deviceCams.Exists(e => e.SerialNumber == serialNumber))
+                {
+                    _devInUse = _deviceCams.FindIndex(0, _deviceCams.Count, e => e.SerialNumber == serialNumber);
+                    CameraOpen.DataContext = _deviceCams[_devInUse];
+                    CameraClose.DataContext = _deviceCams[_devInUse];
+                }
+                else // 不在列表中，新增一台新物件
+                {
+                    BaslerCam deviceCam = new(serialNumber)
+                    {
+                        ConfigName = "Default",
+                        Config = new BaslerConfig("Default")
+                    };
+                    _deviceCams.Add(deviceCam);
+
+                    CameraOpen.DataContext = deviceCam;
+                    CameraClose.DataContext = deviceCam;
+
+                    _devInUse = _deviceCams.IndexOf(deviceCam);
+                }
 
 #if false
                 //Binding binding = new("IsOpen")
@@ -417,7 +444,7 @@ namespace ApexVisIns.content
                 //});  
 #endif
 
-                Debug.WriteLine($"index: {idx}");
+                Debug.WriteLine($"DevieConfig Index: {idx}, Device In Use Index: {_devInUse}");
             }
         }
 
@@ -428,6 +455,9 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
         {
+            _devInUse = 10;
+
+            return;
             string path = $@"{DevicesDirectory}/device.json";
             // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
 
@@ -483,18 +513,26 @@ namespace ApexVisIns.content
                 {
                     DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
                     string serialNumber = config.SerialNumber;
+                    BaslerCam baslerCam = _deviceCams[_devInUse];
 
                     // 優化 UX，不會卡住 UI 執行緒 (測試中)
                     string res = await Task.Run(() =>
                     {
                         try
                         {
-                            MainWindow.BaslerCam.CreateCam(serialNumber);
-                            MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
-                            MainWindow.BaslerCam.Open();
-                            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
+                            //MainWindow.BaslerCam.CreateCam(serialNumber);
+                            //MainWindow.BaslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
+                            //MainWindow.BaslerCam.Open();
+                            //MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
 
-                            Camera camera = MainWindow.BaslerCam.Camera;
+                            //Camera camera = MainWindow.BaslerCam.Camera;
+                            /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+
+                            baslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
+                            baslerCam.Open();
+                            baslerCam.PropertyChange(nameof(baslerCam.IsOpen));
+
+                            Camera camera = baslerCam.Camera;
 
                             // 讀取 camera 的 config
                             ReadConfig(camera, config);
@@ -590,8 +628,13 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void CameraClose_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.BaslerCam.Close();
-            MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
+            BaslerCam baslerCam = _deviceCams[_devInUse];
+
+            //MainWindow.BaslerCam.Close();
+            //MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
+            /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+            baslerCam.Close();
+            baslerCam.PropertyChange(nameof(baslerCam.IsOpen));
         }
 
         /// <summary>
@@ -743,7 +786,9 @@ namespace ApexVisIns.content
             string userSet = (DeviceCard.DataContext as DeviceConfig).UserSet;
 
             DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-            Camera camera = MainWindow.BaslerCam.Camera;
+            //Camera camera = MainWindow.BaslerCam.Camera;
+            Camera camera = _deviceCams[_devInUse].Camera;
+
 
             camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
@@ -763,32 +808,11 @@ namespace ApexVisIns.content
         private void SetDefaultUserSet_Click(object sender, RoutedEventArgs e)
         {
             DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-            Camera camera = MainWindow.BaslerCam.Camera;
+            //Camera camera = MainWindow.BaslerCam.Camera;
+            Camera camera = _deviceCams[_devInUse].Camera;
 
             camera.Parameters[PLGigECamera.UserSetDefaultSelector].SetValue(config.UserSet);
         }
-
-        /// <summary>
-        /// 更新 Config
-        /// Config 寫入 Camera
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void UpdateUserSet_Click(object sender, RoutedEventArgs e)
-        //{
-        //    DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-        //    Camera camera = MainWindow.BaslerCam.Camera;
-
-        //    try
-        //    {
-        //        UpdateConfig(config, camera);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // 這邊要修改 (Error 格式怪怪的)
-        //        MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.C, ex.Message, MsgInformer.Message.MessageType.Error);
-        //    }
-        //}
 
         /// <summary>
         /// 寫入 UserSet (主要儲存至相機)
@@ -798,7 +822,8 @@ namespace ApexVisIns.content
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
             DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
-            Camera camera = MainWindow.BaslerCam.Camera;
+            //Camera camera = MainWindow.BaslerCam.Camera;
+            Camera camera = _deviceCams[_devInUse].Camera;
 
             try
             {

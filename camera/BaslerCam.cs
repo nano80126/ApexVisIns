@@ -350,8 +350,10 @@ namespace ApexVisIns
     /// Basler Camera Basic setting
     /// Basler 相機基本設定
     /// </summary>
-    public class BaslerCam : CustomCam
+    public class BaslerCam : CustomCam, IDisposable
     {
+        private bool _disposed;
+
         /// <summary>
         /// 相機建構子
         /// </summary>
@@ -444,7 +446,7 @@ namespace ApexVisIns
         public override void Open()
         {
             _ = Camera == null
-                ? throw new ArgumentNullException("Camera is a null object, initialize it before calling this function")
+                ? throw new InvalidOperationException("Camera is a null object, initialize it before calling this function")
                 : Camera.Open();
 
             OnPropertyChanged(nameof(IsConnected));
@@ -459,6 +461,32 @@ namespace ApexVisIns
 
             OnPropertyChanged(nameof(IsConnected));
             OnPropertyChanged(nameof(IsOpen));
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                ConfigList.Clear();
+                ConfigList = null;
+
+                Camera.Close();
+                Camera.Dispose();
+                Camera = null;
+            }
+            _disposed = true;
         }
 
         // 手動觸發 Property Change
@@ -493,6 +521,17 @@ namespace ApexVisIns
         private double _fps;
         private double _exposureTimeAbs;
         private bool _saved;
+
+        public BaslerConfig()
+        {
+        }
+
+
+        public BaslerConfig(string name)
+        {
+            this.Name = name;
+        }
+
         /// <summary>
         /// 組態列表
         /// </summary>
