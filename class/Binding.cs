@@ -24,6 +24,9 @@ namespace ApexVisIns
 #endif
 
         private ImageSource _imgSrc;
+
+        private ImageSource[] _imgSrcArray;
+
         private int _onTabIndex = 0;
         private int _progress;
         private bool _loginFlag;
@@ -93,7 +96,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         /// <summary>
         /// 主影像 Source
         /// </summary>
@@ -106,6 +108,59 @@ namespace ApexVisIns
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// 相機影像 1
+        /// </summary>
+        public ImageSource ImageSource1
+        {
+            get => _imgSrcArray[0];
+            set
+            {
+                _imgSrcArray[0] = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 相機影像 2
+        /// </summary>
+        public ImageSource ImageSource2
+        {
+            get => _imgSrcArray[1];
+            set
+            {
+                _imgSrcArray[1] = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 相機影像 3
+        /// </summary>
+        public ImageSource ImageSource3
+        {
+            get => _imgSrcArray[2];
+            set
+            {
+                _imgSrcArray[2] = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 相機影像 4
+        /// </summary>
+        public ImageSource ImageSource4
+        {
+            get => _imgSrcArray[3];
+            set
+            {
+                _imgSrcArray[3] = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public int ProgressValue
         {

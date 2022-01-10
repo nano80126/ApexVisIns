@@ -88,6 +88,13 @@
                     <local:BaslerConfig Name="Default"/>
                 </local:BaslerCam.Config>
             </local:BaslerCam>
+            
+            <!-- 相機物件-->
+            <!--<local:BaslerCam x:Key="BaslerCams">
+                <local:BaslerCam.Config>
+                    <local:BaslerConfig Name="Default"/>
+                </local:BaslerCam.Config>
+            </local:BaslerCam>-->
             <!-- 相機陣列 -->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
                 <!-- // -->
