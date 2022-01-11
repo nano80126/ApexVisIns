@@ -58,8 +58,7 @@ namespace ApexVisIns.module
             if (DllIsValid)
             {
                 Controller = DataContext as IOController;
-                return;
-
+                return; // 初始化在MAINTAB
 
                 if (!Controller.DiCtrlCreated)
                 {

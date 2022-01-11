@@ -128,6 +128,9 @@ Apex 外觀瑕疵檢測
 * [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
 	* 新增鎖的邏輯
 
+* [ ] 新增 Interface of CustomCam
+	* [ ] 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

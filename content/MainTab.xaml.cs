@@ -111,20 +111,19 @@ namespace ApexVisIns.content
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
-
-            Task.Run(() =>
-            {
-                DateTime t1 = DateTime.Now;
-                SpinWait.SpinUntil(() => false, 3000);
-                TimeSpan t2 = DateTime.Now - t1;
-                Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
-                for (int i = 0; i < 10; i++)
-                {
-                    SpinWait.SpinUntil(() => false, 3000);
-                    MainWindow.ApexDefect.CurrentStep++;
-                    Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
-                }
-            });
+            //Task.Run(() =>
+            //{
+            //    DateTime t1 = DateTime.Now;
+            //    SpinWait.SpinUntil(() => false, 3000);
+            //    TimeSpan t2 = DateTime.Now - t1;
+            //    Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
+            //    for (int i = 0; i < 10; i++)
+            //    {
+            //        SpinWait.SpinUntil(() => false, 3000);
+            //        MainWindow.ApexDefect.CurrentStep++;
+            //        Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //    }
+            //});
         }
 
         /// <summary>
@@ -146,6 +145,11 @@ namespace ApexVisIns.content
         {
             _ = Task.Run(() =>
             {
+                // 
+                MainWindow.ApexDefect.CurrentStep = 0;
+
+                //return; 
+                
                 // 等待相機 Enumerator 搜尋完畢
                 _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
 
@@ -167,23 +171,23 @@ namespace ApexVisIns.content
 
                 InitLightCtrls();
 
-                //InitIOCtrl(); // 跨執行續
+                InitIOCtrl(); // 跨執行續
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
             });
 
             // UX Progress Bar
-            // 之後整合到 MsgInformer
-            //_ = Task.Run(() =>
-            //{
-            //    while (MainWindow.ProgressValue < 100)
-            //    {
-            //        MainWindow.ProgressValue += 2;
-
-            //        _ = SpinWait.SpinUntil(() => false, 50);
-            //    }
-            //});
+            //  之後整合到 MsgInformer
+            // _ = Task.Run(() =>
+            // {
+            //     while (MainWindow.ProgressValue < 100)
+            //     {
+            //         MainWindow.ProgressValue += 2;
+               
+            //         _ = SpinWait.SpinUntil(() => false, 50);
+            //     }
+            // });
         }
 
         /// <summary>
@@ -212,7 +216,7 @@ namespace ApexVisIns.content
 
             // 關閉 Motion Control
             // 
-            
+
         }
 
         /// <summary>
@@ -266,7 +270,8 @@ namespace ApexVisIns.content
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
                                         //BaslerCam1.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature.ToString());
+                                        Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
                                 case DeviceConfigBase.TargetFeatureType.Window:
@@ -274,7 +279,8 @@ namespace ApexVisIns.content
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
                                         //BaslerCam2.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature.ToString());
+                                        Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
                                 case DeviceConfigBase.TargetFeatureType.Surface1:
@@ -282,7 +288,8 @@ namespace ApexVisIns.content
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
                                         //BaslerCam3.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature.ToString());
+                                        Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
                                 case DeviceConfigBase.TargetFeatureType.Surface2:
@@ -290,15 +297,17 @@ namespace ApexVisIns.content
                                     {
                                         BaslerCam4 = MainWindow.BaslerCams[3];
                                         //BaslerCam4.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature.ToString());
+                                        Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
                                 default:
+                                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                     break;
                             }
                             // 更新 Progress Value
                             //MainWindow.ProgressValue += 5;
-                            MainWindow.MsgInformer.TargetProgressValue += 5;
+                            //MainWindow.MsgInformer.TargetProgressValue += 5;
                         }
                     }
 
@@ -505,6 +514,13 @@ namespace ApexVisIns.content
         }
         #endregion
 
+
+        #region 原點復歸
+
+
+
+        #endregion
+
         /// <summary>
         /// 規格選擇變更
         /// </summary>
@@ -595,7 +611,7 @@ namespace ApexVisIns.content
 
 
         #region Basler 相機事件
-        private bool Basler_Conntect(BaslerCam cam, string serialNumber, string userData)
+        private bool Basler_Conntect(BaslerCam cam, string serialNumber, object userData)
         {
             try
             {
@@ -686,27 +702,34 @@ namespace ApexVisIns.content
             #region 比對 S/N，確認是哪台相機開啟
             // 測試直接比對 MainWidow.BaslerCam
 
-            BaslerCam baslerCam = null;
-            if (serialNumber == BaslerCam1.SerialNumber)
-            {
-                baslerCam = BaslerCam1;
-            }
-            else if (serialNumber == BaslerCam2.SerialNumber)
-            {
-                baslerCam = BaslerCam2;
-            }
-            else if (serialNumber == BaslerCam3.SerialNumber)
-            {
-                baslerCam = BaslerCam3;
-            }
-            else if (serialNumber == BaslerCam4.SerialNumber)
-            {
-                baslerCam = BaslerCam4;
-            }
-            else
+            //BaslerCam baslerCam = null;
+            BaslerCam baslerCam = MainWindow.BaslerCams.First(e => e.SerialNumber == serialNumber);
+
+            if (baslerCam == null)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機 S/N 設置有誤");
             }
+
+            //if (serialNumber == BaslerCam1.SerialNumber)
+            //{
+            //    baslerCam = BaslerCam1;
+            //}
+            //else if (serialNumber == BaslerCam2.SerialNumber)
+            //{
+            //    baslerCam = BaslerCam2;
+            //}
+            //else if (serialNumber == BaslerCam3.SerialNumber)
+            //{
+            //    baslerCam = BaslerCam3;
+            //}
+            //else if (serialNumber == BaslerCam4.SerialNumber)
+            //{
+            //    baslerCam = BaslerCam4;
+            //}
+            //else
+            //{
+            //    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機 S/N 設置有誤");
+            //}
             baslerCam.ModelName = modelName;
             #endregion
 
@@ -783,20 +806,28 @@ namespace ApexVisIns.content
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
                 // Call PropertyChanged ? Frames
 
-                string userData = e.GrabResult.StreamGrabberUserData.ToString();
+                DeviceConfigBase.TargetFeatureType targetFeatureType = (DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
 
-
-                MainWindow.Dispatcher.Invoke(() =>
+                switch (targetFeatureType)
                 {
-                    MainWindow.ImageSource = mat.ToImageSource();
-                });
+                    case DeviceConfigBase.TargetFeatureType.Ear:
+                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource1 = mat.ToImageSource());
+                        break;
+                    case DeviceConfigBase.TargetFeatureType.Window:
+                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
+                        break;
+                }
 
+                // Debug.WriteLine($"{userData}");
+
+                // MainWindow.Dispatcher.Invoke(() =>
+                // {
+                //     MainWindow.ImageSource = mat.ToImageSource();
+                // });
             }
 
             // throw new NotImplementedException();
         }
-
         #endregion
-
     }
 }

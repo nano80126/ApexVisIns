@@ -25,10 +25,10 @@ namespace ApexVisIns
 
         private ImageSource _imgSrc;
 
-        private ImageSource[] _imgSrcArray;
+        private ImageSource[] _imgSrcArray = new ImageSource[4];
 
         private int _onTabIndex = 0;
-        private int _progress;
+        //private int _progress;
         private bool _loginFlag;
 
         /// <summary>
@@ -161,16 +161,6 @@ namespace ApexVisIns
             }
         }
 
-
-        public int ProgressValue
-        {
-            get => _progress;
-            set
-            {
-                _progress = value > 100 ? 100 : value;
-                OnPropertyChanged(nameof(ProgressValue));
-            }
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -554,14 +544,13 @@ namespace ApexVisIns
         private CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
         #endregion
 
-
         public int ProgressValue
         {
             get => _progress;
             set
             {
                 _progress = value > 100 ? 100 : value;
-                OnPropertyChanged(nameof(ProgressValue));
+                OnPropertyChanged();
             }
         }
         public int TargetProgressValue { get; set; }
@@ -852,7 +841,7 @@ namespace ApexVisIns
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

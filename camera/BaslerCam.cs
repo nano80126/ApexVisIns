@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Data;
@@ -15,11 +16,15 @@ namespace ApexVisIns
     /// Basler Camera Enumerator
     /// Basler 相機枚舉器
     /// </summary>
-    public class CameraEnumer : LongLifeWorker
+    public class CameraEnumer : LongLifeWorker, INotifyPropertyChanged
     {
         private readonly object _camsSourceLock = new();
-
         private readonly object _deviceConfigsLock = new();
+
+
+        private bool _deviceConfigSaved;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
 
         /// <summary>
@@ -31,6 +36,19 @@ namespace ApexVisIns
         /// JSON FILE 儲存之CONFIG
         /// </summary>
         public ObservableCollection<DeviceConfig> DeviceConfigs { get; set; } = new ObservableCollection<DeviceConfig>();
+
+        public bool DeviceCofingSaved
+        {
+            get => _deviceConfigSaved;
+            set
+            {
+                if (value != _deviceConfigSaved)
+                {
+                    _deviceConfigSaved = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         #region CamsSource 操作
         /// <summary>
@@ -259,6 +277,12 @@ namespace ApexVisIns
                 throw;
             }
         }
+
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     /// <summary>
@@ -329,6 +353,8 @@ namespace ApexVisIns
 
         public enum TargetFeatureType
         {
+            [Description("(NULL)")]
+            Null = 0,
             [Description("耳朵")]
             Ear = 1,
             [Description("窗戶")]

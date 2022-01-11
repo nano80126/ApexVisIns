@@ -282,6 +282,8 @@ namespace ApexVisIns.content
                     {
                         VendorName = info.VendorName,
                         CameraType = info.CameraType,
+                        Online = true,
+                        // TargetFeature = 0
                         // DeviceVersion = info.DeviceVersion
                     };
 
@@ -290,6 +292,8 @@ namespace ApexVisIns.content
                     deviceConfigs.Add(config);
                 }
                 deviceConfigs = null;   // 
+                // DeviceConfigSaved Flag set false
+                MainWindow.CameraEnumer.DeviceCofingSaved = false;
             }
         }
 
@@ -390,26 +394,37 @@ namespace ApexVisIns.content
                 // DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
                 DeviceCard.DataContext = MainWindow.CameraEnumer.DeviceConfigs[idx];
 
-                // serialNumber 已經在列表中
-                if (_deviceCams.Exists(e => e.SerialNumber == serialNumber))
+                if (MainWindow.CameraEnumer.DeviceConfigs[idx].Online)
                 {
-                    _devInUse = _deviceCams.FindIndex(0, _deviceCams.Count, e => e.SerialNumber == serialNumber);
-                    CameraOpen.DataContext = _deviceCams[_devInUse];
-                    CameraClose.DataContext = _deviceCams[_devInUse];
-                }
-                else // 不在列表中，新增一台新物件
-                {
-                    BaslerCam deviceCam = new(serialNumber)
+                    // serialNumber 已經在列表中
+                    if (_deviceCams.Exists(e => e.SerialNumber == serialNumber))
                     {
-                        ConfigName = "Default",
-                        Config = new BaslerConfig("Default")
-                    };
-                    _deviceCams.Add(deviceCam);
+                        _devInUse = _deviceCams.FindIndex(0, _deviceCams.Count, e => e.SerialNumber == serialNumber);
+                        CameraOpen.DataContext = _deviceCams[_devInUse];
+                        CameraClose.DataContext = _deviceCams[_devInUse];
+                        UserSetActionPanel.DataContext = _deviceCams[_devInUse];
+                    }
+                    else // 不在列表中，新增一台新物件
+                    {
+                        BaslerCam deviceCam = new()
+                        {
+                            ConfigName = "Default",
+                            Config = new BaslerConfig("Default"),
+                            SerialNumber = serialNumber
+                        };
+                        _deviceCams.Add(deviceCam);
 
-                    CameraOpen.DataContext = deviceCam;
-                    CameraClose.DataContext = deviceCam;
+                        CameraOpen.DataContext = deviceCam;
+                        CameraClose.DataContext = deviceCam;
+                        UserSetActionPanel.DataContext = deviceCam;
 
-                    _devInUse = _deviceCams.IndexOf(deviceCam);
+                        _devInUse = _deviceCams.IndexOf(deviceCam);
+                    }
+                }
+                else
+                {
+                    CameraOpen.DataContext = null;
+                    CameraClose.DataContext = null;
                 }
 
 #if false
@@ -445,7 +460,18 @@ namespace ApexVisIns.content
 #endif
 
                 Debug.WriteLine($"DevieConfig Index: {idx}, Device In Use Index: {_devInUse}");
+                //Debug.WriteLine($"{TgtSelector.SelectedItem} {TgtSelector.SelectedIndex}");
             }
+        }
+
+        /// <summary>
+        /// DeviceCard DataContext Changed 事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeviceCard_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            MainWindow.CameraEnumer.DeviceCofingSaved = false;
         }
 
         /// <summary>
@@ -455,9 +481,6 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            _devInUse = 10;
-
-            return;
             string path = $@"{DevicesDirectory}/device.json";
             // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
 
@@ -477,6 +500,7 @@ namespace ApexVisIns.content
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);
+            MainWindow.CameraEnumer.DeviceCofingSaved = true;
         }
 
         /// <summary>
@@ -528,6 +552,7 @@ namespace ApexVisIns.content
                             //Camera camera = MainWindow.BaslerCam.Camera;
                             /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
 
+                            baslerCam.CreateCam(serialNumber);
                             baslerCam.Camera.CameraOpened += Camera_CameraOpened; // 為了寫 Timeout 設定
                             baslerCam.Open();
                             baslerCam.PropertyChange(nameof(baslerCam.IsOpen));
@@ -861,8 +886,9 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void TargetFeatureCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox combobox = sender as ComboBox;
-            Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
+            //ComboBox combobox = sender as ComboBox;
+            //Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
+            MainWindow.CameraEnumer.DeviceCofingSaved = false;
         }
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

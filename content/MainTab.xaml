@@ -37,7 +37,6 @@
                 <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
 
-
                 <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
                          materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged"
@@ -51,7 +50,6 @@
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
-
 
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="啟動相機" Foreground="{StaticResource ColorSuccess}"
@@ -292,6 +290,7 @@
                                 </TextBlock>    
                             </StackPanel>
                             -->
+                            
                             <!-- Row 1, Col 1, OK / NG 數量 -->
                             <DockPanel Grid.Column= "1" Grid.Row="2" HorizontalAlignment="Stretch">
                                 <TextBlock DockPanel.Dock="Left" Margin="16 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
@@ -302,8 +301,9 @@
                                         <Binding Path="OK" StringFormat="{}OK 數量&#x000A;{0}"/>
                                     </TextBlock.Text>
                                     <!--<Run Text="OK 數量"/>
-                                    <LineBreak/>
-                                    <Run Text="{Binding OK, UpdateSourceTrigger=PropertyChanged}"/>-->
+                                        <LineBreak/>
+                                        <Run Text="{Binding OK, UpdateSourceTrigger=PropertyChanged}"/>
+                                    -->
                                 </TextBlock>
 
                                 <TextBlock DockPanel.Dock="Left" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
@@ -314,11 +314,12 @@
                                         <Binding Path="NG" StringFormat="{}NG 數量&#x000A;{0}"/>
                                     </TextBlock.Text>
                                     <!--<Run Text="NG 數量"/>
-                                    <LineBreak/>
-                                    <Run Text="10000"/>-->
+                                        <LineBreak/>
+                                        <Run Text="10000"/>-->
                                 </TextBlock>
 
-                                <!--<TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                                <!--
+                                <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
                                            FontSize="20" FontWeight="Bold" 
                                            FontFamily="Consolas" LineHeight="32" Foreground="{StaticResource ColorSecondary}"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
@@ -343,47 +344,45 @@
             <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" BorderThickness="1" BorderBrush="Black">
                 <Viewbox x:Name="Image1Viewbox">
                     <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
-                           Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor},UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                           Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor},UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                     <!--<TextBlock></TextBlock>-->
                 </Viewbox>
             </Border>
 
             <!-- Image 2 -->
             <Border Grid.Row="0" Grid.Column="2" x:Name="Image2Border" BorderThickness="1" BorderBrush="Black">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                <Viewbox x:Name="Image2Viewbox">
+                    <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                </Viewbox>
+                
+                <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <!--<Run>Camera 2</Run>
-                    <LineBreak/>
-                    <Run Text="{Binding ElementName=Image1Border, Path=ActualWidth, Mode=OneWay}"/>
-                    <Run>x</Run>
-                    <Run Text="{Binding ElementName=Image1Border, Path=ActualHeight, Mode=OneWay}"/>-->
-
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Camera 2&#x0d;&#x0a;{0} x {1}">
                             <Binding ElementName="Image2Border" Path="ActualWidth" Mode="OneWay"/>
                             <Binding ElementName="Image2Border" Path="ActualHeight" Mode="OneWay"/>
                         </MultiBinding>
                     </TextBlock.Text>
-
-                </TextBlock>
+                </TextBlock>-->
             </Border>
 
             <!-- Image 3 -->
             <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" BorderThickness="1" BorderBrush="Black">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                <Viewbox x:Name="Image3Viewbox">
+                    <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                </Viewbox>
+
+                <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <!--<Run Text="Camera 3"/>
-                    <LineBreak/>
-                    <Run Text="{Binding ElementName=Image3Border, Path=ActualWidth, Mode=OneWay}"/>
-                    <Run>x</Run>
-                    <Run Text="{Binding ElementName=Image3Border, Path=ActualHeight, Mode=OneWay}"/>-->
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Camera 3&#x0d;&#x0a;{0} x {1}">
                             <Binding ElementName="Image3Border" Path="ActualWidth" Mode="OneWay"/>
                             <Binding ElementName="Image3Border" Path="ActualHeight" Mode="OneWay"/>
                         </MultiBinding>
                     </TextBlock.Text>
-                </TextBlock>
+                </TextBlock>-->
             </Border>
 
             <!--Image 4-->

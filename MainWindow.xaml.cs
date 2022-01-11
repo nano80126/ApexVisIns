@@ -95,6 +95,9 @@ namespace ApexVisIns
 
         #region Major
         public static ApexDefect ApexDefect { get; set; }
+
+
+
         #endregion
 
         #region Resources

@@ -178,14 +178,18 @@ namespace ApexVisIns
             }
 
             ApexDefect.StatusType status = (ApexDefect.StatusType)value;
-
-            switch(status)
+            return status switch
             {
-
-            }
-
-            return new SolidColorBrush(Colors.Red);
-            //throw new NotImplementedException();
+                ApexDefect.StatusType.Init => new SolidColorBrush(Color.FromArgb(0xff, 0x21, 0x96, 0xf3)),
+                ApexDefect.StatusType.Idle => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
+                ApexDefect.StatusType.Ready => new SolidColorBrush(Colors.Black),
+                ApexDefect.StatusType.Running => new SolidColorBrush(Color.FromArgb(0xff, 0x4c, 0xaf, 0x50)),
+                ApexDefect.StatusType.Waiting => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
+                ApexDefect.StatusType.Finish => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xaf, 0x50)),
+                ApexDefect.StatusType.Error => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0x52, 0x52)),
+                _ => new SolidColorBrush(Colors.Red),
+            };
+            //return new SolidColorBrush(Colors.Red);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
