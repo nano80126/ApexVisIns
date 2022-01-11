@@ -237,6 +237,7 @@ namespace ApexVisIns
             CameraEnumer.WorkerEnd();
             LightEnumer.WorkerEnd();
 
+            ServoMotion.Dispose();
             IOController.Dispose();
         }
 

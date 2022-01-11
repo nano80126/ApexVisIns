@@ -68,7 +68,6 @@ namespace ApexVisIns
             }
         }
 
-
         public void Interrupt()
         {
             InitFlag = InitFlags.Interrupt;
@@ -168,7 +167,7 @@ namespace ApexVisIns
         //private uint DEV_Count;
 
         // private uint Result;
-        public IntPtr DeviceHandle = IntPtr.Zero;
+        private IntPtr DeviceHandle = IntPtr.Zero;
         private readonly IntPtr[] AxisHandles = new IntPtr[4];
 
         //private double _posCmd;
@@ -178,6 +177,8 @@ namespace ApexVisIns
 
         private System.Timers.Timer statusTimer;
         private int _sltAxis = -1;
+        private bool _disposed;
+
         //private bool _servoOn;
 
         // private int _sltAxisIndex;
@@ -390,6 +391,9 @@ namespace ApexVisIns
             BindingOperations.EnableCollectionSynchronization(Axes, _axisColltionLock);
         }
 
+        /// <summary>
+        /// 停用 Collection Binding
+        /// </summary>
         public void DisableCollectionBinding()
         {
             BindingOperations.DisableCollectionSynchronization(Axes);
@@ -869,7 +873,34 @@ namespace ApexVisIns
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+            //throw new NotImplementedException();
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Axes.Clear();
+                DisableCollectionBinding();
+                // homemo
+
+                if (statusTimer != null)
+                {
+                    statusTimer.Stop();
+                    statusTimer.Dispose();
+                    statusTimer = null;
+                }
+            }
+
+            _disposed = true;
         }
 
         //public void Dispose()

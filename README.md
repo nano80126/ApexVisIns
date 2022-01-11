@@ -105,6 +105,8 @@ Apex 外觀瑕疵檢測
 	* 手動登出
 
 * [ ] ProgressBar UI 會卡
+	* 待測試，若無辦法則改 Infinity
+
 * [ ] 確認Motion GetDevices 會不會讓Handle 遺失 
 	※ 要等220V
 * [ ] Motion Config 載入/儲存
@@ -115,21 +117,29 @@ Apex 外觀瑕疵檢測
 * [ ] IO Control 重複初始化
 	* 執行緒有時會衝突
 * [ ] ServoMotion 實作 Dispose
+	* 待測試
 
 * [ ] 光源新增 Tab?
 
 * [ ] 隱藏 App Toolbar
 	* 上線使用
 	* 關閉程式 = 關機
+	* 
 
 * [ ] IO Control Panel 改為按鈕建立實例
 	* 避免和 MainTab 衝突
 	
 * [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
 	* 新增鎖的邏輯
+	* 新增登出 ?
 
 * [ ] 新增 Interface of CustomCam
-	* [ ] 
+	* [ ] Wait for test
+
+* [ ] 更新 ServoMotion HomeModes
+
+* [ ] 確認OOP命名規則
+	* SltMotionAxis (ServoMotion)
 
 ### Config Logic
 

@@ -2,14 +2,32 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ApexVisIns
 {
-    public abstract class CustomCam : INotifyPropertyChanged
+    interface ICustomCam
     {
-        protected int _frames;
+        public bool IsOpen { get; }
+        public string ConfigName { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public double ExposureTime { get; set; }
+        public double FPS { get; set; }
+
+        public int Frames { get; set; }
+        public void CreateCam(string argument);
+        public void CreateCam(int argument);
+        public void Open();
+        public void Close();
+    }
+
+
+    public abstract class CustomCam : ICustomCam, INotifyPropertyChanged
+    {
+        private int _frames;
 
         // // // // // // // 
         // 相機物件 ()
@@ -50,7 +68,7 @@ namespace ApexVisIns
                 if (value != _frames)
                 {
                     _frames = value;
-                    OnPropertyChanged(nameof(Frames));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -92,25 +110,28 @@ namespace ApexVisIns
         /// </summary>
         public abstract void Close();
 
-        /// <summary>
-        /// 手動觸發 Property Changed
-        /// </summary>
-        public virtual void PropertyChange()
-        {
-            OnPropertyChanged();
-        }
+        // <summary>
+        // 手動觸發 Property Changed
+        // </summary>
+        //public virtual void PropertyChange()
+        //{
+        //    OnPropertyChanged();
+        //}
 
         /// <summary>
-        /// 手動觸發 Property Changed
+        /// 外部觸發 Property Changed
         /// </summary>
-        public virtual void PropertyChange(string propertyName)
+        public virtual void PropertyChange(string propertyName = null)
         {
             OnPropertyChanged(propertyName);
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName = null)
+        /// <summary>
+        /// 內部觸發
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

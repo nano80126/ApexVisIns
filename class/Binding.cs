@@ -25,10 +25,9 @@ namespace ApexVisIns
 
         private ImageSource _imgSrc;
 
-        private ImageSource[] _imgSrcArray = new ImageSource[4];
+        private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
 
-        private int _onTabIndex = 0;
-        //private int _progress;
+        private int _onTabIndex;
         private bool _loginFlag;
 
         /// <summary>

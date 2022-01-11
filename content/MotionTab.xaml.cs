@@ -63,7 +63,7 @@ namespace ApexVisIns.content
             InitMotionsConfigsRoot();
 
             // 若D eviceOpened，始能 Timer
-            if (MainWindow.ServoMotion.DeviceOpened == true)
+            if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SltMotionAxis != null)
             {
                 MainWindow.ServoMotion.EnableTimer(100);
             }

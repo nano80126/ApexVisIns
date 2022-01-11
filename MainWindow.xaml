@@ -1,6 +1,7 @@
 ﻿<Window x:Class="ApexVisIns.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -41,16 +42,15 @@
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
         <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
         <!--Tab-->
-        <!-- 待刪除
-            <RoutedUICommand x:Key="SwitchTab1" Text="Switch to Tab1"/>
-            <RoutedUICommand x:Key="SwitchTab2" Text="Switch to Tab2"/>
-            <RoutedUICommand x:Key="SwitchTab3" Text="Switch to Tab3"/>
-        -->
         <RoutedUICommand x:Key="SwitchTab" Text="Switch Tab"/>
         <!--Global-->
         <RoutedUICommand x:Key="GlobalTest" Text="Test global command"/>
         <!--#endregion-->
-        
+
+        <!--<sys:Boolean x:Key="LoginFlag">
+            <Binding Path="LoginFlag" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}"/>
+        </sys:Boolean>-->
+    
         <!--#region Camera -->
         <!-- Camera 1
         <local:BaslerCam x:Key="BaslerCam" Width="2040" Height="2040">
@@ -100,6 +100,7 @@
         <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/><!--D2 means 2 -->
         <KeyBinding Modifiers="Ctrl" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/><!--D3 means 3-->
         <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/><!--D4 means 4-->
+        <KeyBinding Modifiers="Ctrl" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/><!--D5 means 5-->
         <!--Config-->
         
         <!--Global-->
@@ -188,7 +189,8 @@
                 <!--//-->
                 <!--#region Config Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="True">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
+                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
@@ -199,7 +201,8 @@
                 <!--//-->
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="True">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
+                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
@@ -211,8 +214,9 @@
                 <!--#region Engineer Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}"
-                         IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"
+                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                         <!--IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"-->
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
@@ -228,6 +232,7 @@
                         <materialDesign:PackIcon Kind="Database" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
+                    <TextBlock Text="保留" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                     <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
                 </TabItem>
                 <!--#endregion-->
