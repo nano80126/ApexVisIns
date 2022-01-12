@@ -63,7 +63,7 @@ namespace ApexVisIns.content
             InitMotionsConfigsRoot();
 
             // 若D eviceOpened，始能 Timer
-            if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SltMotionAxis != null)
+            if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedMotionAxis != null)
             {
                 MainWindow.ServoMotion.EnableTimer(100);
             }
@@ -153,22 +153,6 @@ namespace ApexVisIns.content
 
 
         /// <summary>
-        /// 選擇 Device 變更
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        [Obsolete("待刪除，正常用不到")]
-        private void BoardSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox comboBox = sender as ComboBox;
-
-            if (comboBox.SelectedItem is ServoMotion.MotionDevice deviceList)
-            {
-                Debug.WriteLine($"BoardSelector_SelectionChanged {deviceList.DeviceName} {deviceList.DeviceNumber} {deviceList.NumOfSubDevice}");
-            }
-        }
-
-        /// <summary>
         /// 開啟軸卡
         /// </summary>
         /// <param name="sender"></param>
@@ -227,10 +211,10 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.GetGearRatio();
-                    MainWindow.ServoMotion.SltMotionAxis.GetJogVelParam();
-                    MainWindow.ServoMotion.SltMotionAxis.GetHomeVelParam();
-                    MainWindow.ServoMotion.SltMotionAxis.GetAxisVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.GetGearRatio();
+                    MainWindow.ServoMotion.SelectedMotionAxis.GetJogVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.GetHomeVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.GetAxisVelParam();
                 }
                 catch (Exception ex)
                 {
@@ -260,13 +244,13 @@ namespace ApexVisIns.content
             {
                 MotionAxis motionAxis = AxisSelector.SelectedItem as MotionAxis;
 
-                if (!MainWindow.ServoMotion.SltMotionAxis.ServoOn)
+                if (!MainWindow.ServoMotion.SelectedMotionAxis.ServoOn)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetServoOn();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetServoOn();
                 }
                 else
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetServoOff();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetServoOff();
                 }
             }
             catch (Exception ex)
@@ -284,7 +268,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.ResetPos();
+                MainWindow.ServoMotion.SelectedMotionAxis.ResetPos();
                 //MainWindow.ServoMotion.ResetPos();
             }
             catch (Exception ex)
@@ -302,7 +286,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.ResetError();
+                MainWindow.ServoMotion.SelectedMotionAxis.ResetError();
             }
             catch (Exception ex)
             {
@@ -341,7 +325,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetGearRatio();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetGearRatio();
                 }
                 else
                 {
@@ -366,7 +350,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetJogVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetJogVelParam();
                 }
                 else
                 {
@@ -381,11 +365,11 @@ namespace ApexVisIns.content
 
         private void JogStartPopupBox_Opened(object sender, RoutedEventArgs e)
         {
-            if (!MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            if (!MainWindow.ServoMotion.SelectedMotionAxis.JogOn)
             {
                 try
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.JogStart();
+                    MainWindow.ServoMotion.SelectedMotionAxis.JogStart();
                     MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "JOG 開始");
                 }
                 catch (Exception ex)
@@ -398,11 +382,11 @@ namespace ApexVisIns.content
 
         private void JogStartPopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.ServoMotion.SltMotionAxis.JogOn)
+            if (MainWindow.ServoMotion.SelectedMotionAxis.JogOn)
             {
                 try
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.JogStop();
+                    MainWindow.ServoMotion.SelectedMotionAxis.JogStop();
                     MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "JOG 停止");
                 }
                 catch (Exception ex)
@@ -416,7 +400,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
+                MainWindow.ServoMotion.SelectedMotionAxis.JogCtClock();
                 //MainWindow.ServoMotion.SltMotionAxis.JogClock();
             }
             catch (Exception ex)
@@ -429,7 +413,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+                MainWindow.ServoMotion.SelectedMotionAxis.JogDecAction();
                 //Debug.WriteLine("DecAction");
             }
             catch (Exception ex)
@@ -442,7 +426,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogClock();
+                MainWindow.ServoMotion.SelectedMotionAxis.JogClock();
                 //MainWindow.ServoMotion.SltMotionAxis.JogCtClock();
             }
             catch (Exception ex)
@@ -455,7 +439,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.JogDecAction();
+                MainWindow.ServoMotion.SelectedMotionAxis.JogDecAction();
             }
             catch (Exception ex)
             {
@@ -474,7 +458,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetHomeVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetHomeVelParam();
                 }
                 else
                 {
@@ -500,7 +484,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    await MainWindow.ServoMotion.SltMotionAxis.NegativeWayHomeMove();
+                    await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove();
                 }
                 else
                 {
@@ -525,7 +509,7 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.SetAxisVelParam();
+                    MainWindow.ServoMotion.SelectedMotionAxis.SetAxisVelParam();
                 }
                 else
                 {
@@ -550,8 +534,8 @@ namespace ApexVisIns.content
                 //MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
-                    MainWindow.ServoMotion.SltMotionAxis.PosMove(abs);
+                    bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
+                    MainWindow.ServoMotion.SelectedMotionAxis.PosMove(abs);
                 }
                 else
                 {
@@ -577,7 +561,7 @@ namespace ApexVisIns.content
                 //MainWindow.ServoMotion.SltMotionAxis.ChangePos();
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.ChangePos();
+                    MainWindow.ServoMotion.SelectedMotionAxis.ChangePos();
                 }
                 else
                 {
@@ -602,7 +586,7 @@ namespace ApexVisIns.content
                 //MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+                    MainWindow.ServoMotion.SelectedMotionAxis.ChangeVel();
                 }
                 else
                 {
@@ -624,7 +608,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.StopMove();
+                MainWindow.ServoMotion.SelectedMotionAxis.StopMove();
             }
             catch (InvalidOperationException ex)
             {
@@ -641,7 +625,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SltMotionAxis.StopEmg();
+                MainWindow.ServoMotion.SelectedMotionAxis.StopEmg();
             }
             catch (InvalidOperationException ex)
             {
@@ -752,7 +736,7 @@ namespace ApexVisIns.content
         [Obsolete("測試完刪除")]
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            bool abs = MainWindow.ServoMotion.SltMotionAxis.Absolute;
+            bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
             Debug.WriteLine(abs);
         }
     }

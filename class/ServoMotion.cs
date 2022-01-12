@@ -241,7 +241,7 @@ namespace ApexVisIns
                 {
                     _sltAxis = value;
                     OnPropertyChanged(nameof(SelectedAxis));
-                    OnPropertyChanged(nameof(SltMotionAxis));
+                    OnPropertyChanged(nameof(SelectedMotionAxis));
                 }
 
                 if (_sltAxis != -1)
@@ -258,7 +258,7 @@ namespace ApexVisIns
         /// <summary>
         /// 選擇軸
         /// </summary>
-        public MotionAxis SltMotionAxis => 0 <= _sltAxis && _sltAxis < Axes.Count ? Axes[_sltAxis] : null;
+        public MotionAxis SelectedMotionAxis => 0 <= _sltAxis && _sltAxis < Axes.Count ? Axes[_sltAxis] : null;
 
 #if false
         public double PosCommand
@@ -733,8 +733,8 @@ namespace ApexVisIns
                 // Get current actual position
                 Motion.mAcm_AxGetActualPosition(AxisHandles[_sltAxis], ref pos);
 
-                SltMotionAxis.PosCommand = cmd;
-                SltMotionAxis.PosActual = pos;
+                SelectedMotionAxis.PosCommand = cmd;
+                SelectedMotionAxis.PosActual = pos;
 
                 //Debug.WriteLine($"{(IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_DIR) == (uint)Ax_Motion_IO.AX_MOTION_IO_DIR}");
                 result = Motion.mAcm_AxGetMotionIO(AxisHandles[_sltAxis], ref IOStatus);
@@ -742,14 +742,14 @@ namespace ApexVisIns
                 {
                     SetMotionIOStatus(IOStatus);
                     // UpdateIO();
-                    SltMotionAxis.UpdateIO();
+                    SelectedMotionAxis.UpdateIO();
                 }
 
                 // Get Axis current state
                 Motion.mAcm_AxGetState(AxisHandles[_sltAxis], ref axState);
                 // CurrentStatus = $"{(AxisState)axState}";
-                SltMotionAxis.CurrentStatus = $"{(AxisState)axState}";
-                OnPropertyChanged(nameof(SltMotionAxis));
+                SelectedMotionAxis.CurrentStatus = $"{(AxisState)axState}";
+                OnPropertyChanged(nameof(SelectedMotionAxis));
             }
         }
 
@@ -759,13 +759,13 @@ namespace ApexVisIns
         /// <param name="IOStatus"></param>
         private void SetMotionIOStatus(uint IOStatus)
         {
-            SltMotionAxis.IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
-            SltMotionAxis.IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
-            SltMotionAxis.IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
-            SltMotionAxis.IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
-            SltMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
-            SltMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
-            SltMotionAxis.IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
+            SelectedMotionAxis.IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
+            SelectedMotionAxis.IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
+            SelectedMotionAxis.IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
+            SelectedMotionAxis.IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
+            SelectedMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            SelectedMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
+            SelectedMotionAxis.IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
         }
 
 
@@ -780,7 +780,6 @@ namespace ApexVisIns
             IO_EMG.BitOn = false;
         } 
 #endif
-
 
         /// <summary>
         /// 原點復歸模式

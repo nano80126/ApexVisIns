@@ -611,31 +611,50 @@ namespace ApexVisIns.content
 
 
         #region Basler 相機事件
+        /// <summary>
+        /// 相機連線，
+        /// 重連線功能 (default times is 3)
+        /// </summary>
+        /// <param name="cam"></param>
+        /// <param name="serialNumber"></param>
+        /// <param name="userData"></param>
+        /// <returns></returns>
         private bool Basler_Conntect(BaslerCam cam, string serialNumber, object userData)
         {
-            try
+            int retryCount = 0;
+
+            // retry 連線
+            while (!cam.IsOpen)
             {
-                // 建立相機
-                cam.CreateCam(serialNumber);
-                // 先更新 SerialNumer，CameraOpened 事件比對時須用到
-                cam.SerialNumber = serialNumber;
+                if (retryCount > 3)
+                {
+                    break;
+                }
 
-                // 綁定事件
-                cam.Camera.CameraOpened += Camera_CameraOpened;
-                cam.Camera.CameraClosing += Camera_CameraClosing;
-                cam.Camera.CameraClosed += Camera_CameraClosed;
+                try
+                {
+                    // 建立相機
+                    cam.CreateCam(serialNumber);
+                    // 先更新 SerialNumer，CameraOpened 事件比對時須用到
+                    cam.SerialNumber = serialNumber;
 
-                // 設定 UserData，ImageGrabbed 事件須用到，用來判斷是哪台相機的影像
-                cam.Camera.StreamGrabber.UserData = userData;
+                    // 綁定事件
+                    cam.Camera.CameraOpened += Camera_CameraOpened;
+                    cam.Camera.CameraClosing += Camera_CameraClosing;
+                    cam.Camera.CameraClosed += Camera_CameraClosed;
 
-                // 開啟相機
-                cam.Open();
-                cam.PropertyChange();
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-                // throw;
+                    // 設定 UserData，ImageGrabbed 事件須用到，用來判斷是哪台相機的影像
+                    cam.Camera.StreamGrabber.UserData = userData;
+
+                    // 開啟相機
+                    cam.Open();
+                    cam.PropertyChange();
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                    retryCount++;
+                }
             }
             return cam.IsOpen;
         }

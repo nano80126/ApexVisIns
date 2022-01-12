@@ -164,7 +164,8 @@
                             </materialDesign:PackIcon.Style>
                         </materialDesign:PackIcon>
                     </Button>
-                    <Button x:Name="Quitbtn" Content="{materialDesign:PackIcon Kind=WindowClose}" Margin="5 0" Click="Quitbtn_Click" Style="{StaticResource WindowButton}"/>
+                    <Button x:Name="Quitbtn" Content="{materialDesign:PackIcon Kind=WindowClose}" Margin="5 0" Click="Quitbtn_Click" Style="{StaticResource WindowButton}"
+                            IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"/>
                 </StackPanel>
             </Grid>
             <!--#endregion-->
@@ -248,27 +249,6 @@
             </TabControl>
             <!--#endregion-->
             
-            <!--#region User Account -->
-            <!--<Button x:Name="UserLogin" Grid.Row="1" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                    materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
-                    Style="{StaticResource MaterialDesignToolButton}" Click="UserLogin_Click">
-                <materialDesign:PackIcon Kind="AccountLock" Width="30" Height="26" Foreground="{StaticResource ColorWhiteTransparent}">
-                    <materialDesign:PackIcon.Style>
-                        <Style TargetType="materialDesign:PackIcon">
-                            <Style.Triggers>
-                                --><!-- Binding Admini 登入權限-->
-                                <!--<DataTrigger Binding="{}">
-                                AccountCheck
-                                ColorSuccess
-                                </DataTrigger>--><!--
-                            </Style.Triggers>
-                        </Style>    
-                    </materialDesign:PackIcon.Style>
-                </materialDesign:PackIcon>
-            </Button>-->
-            <!--#endregion-->
-
-
             <!--#region Dialog，考慮建立物件來 Binding -->
             <materialDesign:DialogHost x:Name="LoginDialog" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
                                        OverlayBackground="{DynamicResource ColorBlueGrayTranparent}"
@@ -305,29 +285,35 @@
                                 Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </DockPanel>
                 </materialDesign:DialogHost.DialogContent>
-                
-                
+
+
                 <Border ClipToBounds="True" Background="{x:Null}">
-                    <!--<Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="RUN" />-->
-                    <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Red">
+                        <!--<Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="RUN" />-->
+                        <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Blue"
                             materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                             Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
-                        <materialDesign:PackIcon Width="30" Height="26">
-                            <materialDesign:PackIcon.Style>
-                                <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource ColorWhiteTransparent}"/>
-                                    <Setter Property="Kind" Value="AccountLock"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            <Setter Property="Kind" Value="AccountCheck"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </materialDesign:PackIcon.Style>
-                        </materialDesign:PackIcon>
-                    </Button>
+                            <materialDesign:PackIcon Width="30" Height="26">
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Setter Property="Foreground" Value="{StaticResource ColorWhiteTransparent}"/>
+                                        <Setter Property="Kind" Value="AccountLock"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                <Setter Property="Kind" Value="AccountCheck"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Button>
+
+                        <Button x:Name="AppCog" Width="48" Height="48" Background="Blue">
+                            <materialDesign:PackIcon Kind="Cog"  Width="30" Height="26"/>
+                        </Button>
+                    </StackPanel>
                 </Border>
             </materialDesign:DialogHost>
             <!--#endregion-->

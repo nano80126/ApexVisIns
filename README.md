@@ -58,11 +58,11 @@ Apex 外觀瑕疵檢測
 * [x] 移除 UVC / COIL 內容 
 * [ ] 載入初始 Camera config from .json
 	* 需要建立 class for json object
-* [ ] 建立樹狀圖 (draw.io) 
+* [x] 建立樹狀圖 (draw.io) 
 	* DataContext
-* [ ] Camera Enumer Debug
+* [x] Camera Enumer Debug
 * [x] DeviceConfig 清除空儲存按鈕不能隱藏
-* [ ] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
+* [x] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
 * [x] 確認 Device Tab 和 Enginner Tab 不會衝突
 	* 
 * [x] Add custom event for DI interrupt
@@ -107,14 +107,15 @@ Apex 外觀瑕疵檢測
 * [ ] ProgressBar UI 會卡
 	* 待測試，若無辦法則改 Infinity
 
-* [ ] 確認Motion GetDevices 會不會讓Handle 遺失 
-	※ 要等220V
+* [ ] 確認 Motion GetDevices 會不會讓 Handle 遺失 
+	※ 要等 220V
 * [ ] Motion Config 載入/儲存
 * [ ] ImageSource Array
 * [x] 轉移 DeviceConfig 到物件上
 	* 方便直接比對
 * [ ] 測試 EngineerTab
 * [ ] IO Control 重複初始化
+	* DigitalIOPanel 和 MainTab.xaml
 	* 執行緒有時會衝突
 * [ ] ServoMotion 實作 Dispose
 	* 待測試
@@ -124,22 +125,28 @@ Apex 外觀瑕疵檢測
 * [ ] 隱藏 App Toolbar
 	* 上線使用
 	* 關閉程式 = 關機
-	* 
 
 * [ ] IO Control Panel 改為按鈕建立實例
 	* 避免和 MainTab 衝突
 	
 * [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
-	* 新增鎖的邏輯
 	* 新增登出 ?
 
 * [ ] 新增 Interface of CustomCam
-	* [ ] Wait for test
+	* 待測試
 
 * [ ] 更新 ServoMotion HomeModes
 
-* [ ] 確認OOP命名規則
+* [ ] 確認 OOP 命名規則
 	* SltMotionAxis (ServoMotion)
+	* 待測試
+
+* [ ] 相機連線失敗 Retry
+	* 預設三次
+	* 待測試
+
+
+
 
 ### Config Logic
 

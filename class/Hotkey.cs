@@ -44,7 +44,7 @@ namespace ApexVisIns
         }
         private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
+            e.CanExecute = !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected) && Quitbtn.IsEnabled;
         }
 
         private void QuitCommand(object sender, ExecutedRoutedEventArgs e)
