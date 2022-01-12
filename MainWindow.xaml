@@ -239,12 +239,15 @@
                 <!--#endregion-->
 
                 <!--#region For Test -->
-                    <!--<Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
+                    <!--
+                    <Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
                             Padding="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
                             Content="123" Style="{StaticResource MaterialDesignToolButton}"
                             Background="Red">
-                    </Button>-->
+                    </Button>
+                    -->
                 <!--#endregion-->
+                
                 <!--//-->
             </TabControl>
             <!--#endregion-->
@@ -288,12 +291,12 @@
 
 
                 <Border ClipToBounds="True" Background="{x:Null}">
-                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Red">
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}">
                         <!--<Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="RUN" />-->
-                        <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Blue"
-                            materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
-                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                            Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
+                        <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
                             <materialDesign:PackIcon Width="30" Height="26">
                                 <materialDesign:PackIcon.Style>
                                     <Style TargetType="materialDesign:PackIcon">
@@ -309,10 +312,29 @@
                                 </materialDesign:PackIcon.Style>
                             </materialDesign:PackIcon>
                         </Button>
-
-                        <Button x:Name="AppCog" Width="48" Height="48" Background="Blue">
-                            <materialDesign:PackIcon Kind="Cog"  Width="30" Height="26"/>
-                        </Button>
+                        <!--//-->
+                        <!--<Button x:Name="AppCog" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
+                                materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
+                                Foreground="{StaticResource ColorWhiteTransparent}"
+                                Style="{StaticResource MaterialDesignToolButton}">
+                            <materialDesign:PackIcon Kind="Cog" Width="30" Height="26"/>
+                        </Button>-->
+                        <!--//-->
+                        <materialDesign:PopupBox HorizontalAlignment="Right" PlacementMode="RightAndAlignBottomEdges" Focusable="False"
+                                                 materialDesign:RippleAssist.IsDisabled="True">
+                            <materialDesign:PopupBox.ToggleContent>
+                                <TextBlock x:Name="AppCog1" Width="48" Height="48" Margin="-1 8" Padding="0 11" 
+                                           HorizontalAlignment="Left" VerticalAlignment="Bottom" 
+                                           TextAlignment="Center" Focusable="False" Foreground="{StaticResource ColorWhiteTransparent}">
+                                    <materialDesign:PackIcon Kind="Cog" Width="30" Height="26" HorizontalAlignment="Center"/>
+                                </TextBlock>
+                            </materialDesign:PopupBox.ToggleContent>
+                            <!--//-->
+                            <StackPanel>
+                                <Button Content="More" />
+                                <Button Content="Options" />
+                            </StackPanel>
+                        </materialDesign:PopupBox>
                     </StackPanel>
                 </Border>
             </materialDesign:DialogHost>
