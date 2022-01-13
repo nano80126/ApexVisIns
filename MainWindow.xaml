@@ -329,21 +329,26 @@
                         
                         <!--//-->
                         <materialDesign:PopupBox HorizontalAlignment="Right" PlacementMode="RightAndAlignBottomEdges" Focusable="False"
-                                                 materialDesign:RippleAssist.IsDisabled="True">
+                                                 materialDesign:RippleAssist.IsDisabled="True" Padding="0 8">
                             <materialDesign:PopupBox.ToggleContent>
                                 <TextBlock x:Name="AppCog" Width="48" Height="48" Margin="-1 8" Padding="0 11" 
-                                           HorizontalAlignment="Left" VerticalAlignment="Bottom" 
+                                           HorizontalAlignment="Left" VerticalAlignment="Bottom"
                                            TextAlignment="Center" Focusable="False" Foreground="{StaticResource ColorWhiteTransparent}">
                                     <materialDesign:PackIcon Kind="Cog" Width="30" Height="26" HorizontalAlignment="Center"/>
                                 </TextBlock>
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
-                            <StackPanel Orientation="Vertical">
-                                <Button x:Name="AppFullClose" Content="關閉" Click="AppFullClose_Click"/>
-                                
-                                <!--
-                                    <Button x:Name="" Content="" Click="Button_Click" />
-                                -->
+                            <StackPanel Orientation="Vertical" MinWidth="180">
+                                <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                                        Click="AppFullClose_Click">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center"/>
+                                            <TextBlock Text="關閉程式" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
                             </StackPanel>
                         </materialDesign:PopupBox>
                     </StackPanel>
