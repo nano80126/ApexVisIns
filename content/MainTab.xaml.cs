@@ -145,13 +145,14 @@ namespace ApexVisIns.content
         {
             _ = Task.Run(() =>
             {
-                // 
+                // 變更 Step
                 MainWindow.ApexDefect.CurrentStep = 0;
 
-                //return; 
-                
+                return;
+
                 // 等待相機 Enumerator 搜尋完畢
                 _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
+
 
                 InitCamera();
 
@@ -184,7 +185,7 @@ namespace ApexVisIns.content
             //     while (MainWindow.ProgressValue < 100)
             //     {
             //         MainWindow.ProgressValue += 2;
-               
+
             //         _ = SpinWait.SpinUntil(() => false, 50);
             //     }
             // });
@@ -513,7 +514,6 @@ namespace ApexVisIns.content
             //  throw new NotImplementedException();
         }
         #endregion
-
 
         #region 原點復歸
 

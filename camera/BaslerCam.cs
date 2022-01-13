@@ -261,20 +261,29 @@ namespace ApexVisIns
                 // 確認一下功能
                 if (CamsSource.Count > cams.Count)
                 {
-                    foreach (BaslerCamInfo camInfo in CamsSource)
+                    for (int i = 0; i < CamsSource.Count; i++)
                     {
-                        if (!cams.Any(e => e[CameraInfoKey.SerialNumber] == camInfo.SerialNumber))
+                        if (!cams.Any(e => e[CameraInfoKey.SerialNumber] == CamsSource[i].SerialNumber))
                         {
-                            RemoveCamsSource(camInfo);
+                            RemoveCamsSource(CamsSource[i]);
                         }
                     }
+
+                    // foreach (BaslerCamInfo camInfo in CamsSource)
+                    // {
+                    //     if (!cams.Any(e => e[CameraInfoKey.SerialNumber] == camInfo.SerialNumber))
+                    //     {
+                    //         RemoveCamsSource(camInfo);
+                    //     }
+                    // }
                 }
 
                 InitFlag = InitFlags.Finished;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                // Debug.WriteLine(ex.Message);
             }
         }
 

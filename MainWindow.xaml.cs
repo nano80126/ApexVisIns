@@ -97,7 +97,6 @@ namespace ApexVisIns
         public static ApexDefect ApexDefect { get; set; }
 
 
-
         #endregion
 
         #region Resources
@@ -244,11 +243,31 @@ namespace ApexVisIns
         private void Window_Closed(object sender, EventArgs e)
         {
             #region 保留
-            //MsgInformer.CollectionDebinding();
-            //MsgInformer.DisposeProgressTask();
-            //CameraEnumer?.WorkerEnd();
-            //LightEnumer?.WorkerEnd(); 
+
+            // MsgInformer.CollectionDebinding();
+            // MsgInformer.DisposeProgressTask();
+            // CameraEnumer?.WorkerEnd();
+            // LightEnumer?.WorkerEnd();
+
             #endregion
+        }
+
+        /// <summary>
+        /// 程式完整關閉 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppFullClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+
+            // try
+            // {
+            // }
+            // catch (Exception ex)
+            // {
+            //     MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, ex.Message);
+            // }
         }
 
         #region Footer Message
@@ -331,7 +350,6 @@ namespace ApexVisIns
                 e.Handled = true;
             }
         }
-        #endregion
 
         private void LoginDialog_KeyUp(object sender, KeyEventArgs e)
         {
@@ -348,6 +366,9 @@ namespace ApexVisIns
                 (sender as DialogHost).IsOpen = false;
             }
         }
+        #endregion
+
+   
     }
 
     /// <summary>

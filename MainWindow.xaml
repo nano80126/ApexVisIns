@@ -96,13 +96,18 @@
         <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
         <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
         <!--Tab-->
-        <KeyBinding Modifiers="Ctrl" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/><!--D1 means 1 -->
-        <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/><!--D2 means 2 -->
-        <KeyBinding Modifiers="Ctrl" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/><!--D3 means 3-->
-        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/><!--D4 means 4-->
-        <KeyBinding Modifiers="Ctrl" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/><!--D5 means 5-->
+        <!--D1 means 1 -->
+        <KeyBinding Modifiers="Ctrl" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/>
+        <!--D2 means 2 -->
+        <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/>
+        <!--D3 means 3-->
+        <KeyBinding Modifiers="Ctrl" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/>
+        <!--D4 means 4-->
+        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/>
+        <!--D5 means 5-->
+        <KeyBinding Modifiers="Ctrl" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/>
         <!--Config-->
-        
+
         <!--Global-->
         <KeyBinding Modifiers="Ctrl" Key="G" Command="{StaticResource GlobalTest}"/>
     </Window.InputBindings>
@@ -165,6 +170,7 @@
                         </materialDesign:PackIcon>
                     </Button>
                     <Button x:Name="Quitbtn" Content="{materialDesign:PackIcon Kind=WindowClose}" Margin="5 0" Click="Quitbtn_Click" Style="{StaticResource WindowButton}"
+                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
                             IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"/>
                 </StackPanel>
             </Grid>
@@ -313,26 +319,31 @@
                             </materialDesign:PackIcon>
                         </Button>
                         <!--//-->
+                        
                         <!--<Button x:Name="AppCog" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                                 materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                 Foreground="{StaticResource ColorWhiteTransparent}"
                                 Style="{StaticResource MaterialDesignToolButton}">
                             <materialDesign:PackIcon Kind="Cog" Width="30" Height="26"/>
                         </Button>-->
+                        
                         <!--//-->
                         <materialDesign:PopupBox HorizontalAlignment="Right" PlacementMode="RightAndAlignBottomEdges" Focusable="False"
                                                  materialDesign:RippleAssist.IsDisabled="True">
                             <materialDesign:PopupBox.ToggleContent>
-                                <TextBlock x:Name="AppCog1" Width="48" Height="48" Margin="-1 8" Padding="0 11" 
+                                <TextBlock x:Name="AppCog" Width="48" Height="48" Margin="-1 8" Padding="0 11" 
                                            HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                                            TextAlignment="Center" Focusable="False" Foreground="{StaticResource ColorWhiteTransparent}">
                                     <materialDesign:PackIcon Kind="Cog" Width="30" Height="26" HorizontalAlignment="Center"/>
                                 </TextBlock>
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
-                            <StackPanel>
-                                <Button Content="More" />
-                                <Button Content="Options" />
+                            <StackPanel Orientation="Vertical">
+                                <Button x:Name="AppFullClose" Content="關閉" Click="AppFullClose_Click"/>
+                                
+                                <!--
+                                    <Button x:Name="" Content="" Click="Button_Click" />
+                                -->
                             </StackPanel>
                         </materialDesign:PopupBox>
                     </StackPanel>
@@ -530,7 +541,6 @@
                 </materialDesign:PopupBox>
                 <!--#endregion-->
 
-
                 <!--內部資料，Binding 進MsgInformer-->
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <StackPanel.Style>
@@ -551,7 +561,6 @@
                         </Style>
                     </StackPanel.Style>
 
-
                     <ProgressBar Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
                                  materialDesign:TransitionAssist.DisableTransitions="True" 
                                  HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
@@ -560,8 +569,9 @@
 
                     <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
                                Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"/>
+                    
                 </StackPanel>
-
+                
             </DockPanel>
             <!--#endregion-->
         </Grid>
