@@ -78,7 +78,8 @@
             <!-- 組態列表 -->
             <materialDesign:Card Padding="6 8" VerticalAlignment="Top" Background="AntiqueWhite" Style="{StaticResource PanelTopCard}">
                 <!-- 列表為空也不隱藏列表 -->
-                <!--<materialDesign:Card.Style>
+                <!--
+                <materialDesign:Card.Style>
                     <Style TargetType="materialDesign:Card" BasedOn="{StaticResource PanelTopCard}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=Count, Source={StaticResource DeviceConfigs}, Mode=OneWay}" Value="0">
@@ -87,7 +88,8 @@
                         </Style.Triggers>
                         <Setter Property="Visibility" Value="Visible"/>
                     </Style>
-                </materialDesign:Card.Style>-->
+                </materialDesign:Card.Style>
+                -->
 
                 <StackPanel Orientation="Vertical" Margin="2 0">
                     <ItemsControl ItemsSource="{Binding DeviceConfigs, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
@@ -133,8 +135,8 @@
                                                     </Style>
                                                 </materialDesign:PackIcon.Style>
                                             </materialDesign:PackIcon>
-
-                                            <TextBlock VerticalAlignment="Center" Margin="4 0 0 0">
+                                            <!--//-->
+                                            <TextBlock VerticalAlignment="Center" Margin="4 0 0 0" MaxWidth="200" TextTrimming="CharacterEllipsis">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0,10}, S/N: {1,8:D0}">
                                                         <Binding Path="Model" />
@@ -142,7 +144,7 @@
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
-
+                                            <!--//-->
                                             <Button Margin="8 0 0 0" Padding="0" Width="26" Height="auto"
                                                     materialDesign:ButtonAssist.CornerRadius="13" materialDesign:RippleAssist.IsDisabled="True" Content="{materialDesign:PackIcon Kind=Close}" 
                                                     Click="RadioDelButton_Click" CommandParameter="{Binding SerialNumber}">

@@ -109,8 +109,9 @@ Apex 外觀瑕疵檢測
 
 * [ ] 確認 Motion GetDevices 會不會讓 Handle 遺失 
 	※ 要等 220V
+
 * [ ] Motion Config 載入/儲存
-* [ ] ImageSource Array
+* [x] ImageSource Array
 * [x] 轉移 DeviceConfig 到物件上
 	* 方便直接比對
 * [ ] 測試 EngineerTab
@@ -139,12 +140,11 @@ Apex 外觀瑕疵檢測
 
 * [ ] 確認 OOP 命名規則
 	* SltMotionAxis (ServoMotion)
-	* 待測試
+	*待測試
 
 * [ ] 相機連線失敗 Retry
 	* 預設三次
-	* 待測試
-
+	* 測試中
 
 
 

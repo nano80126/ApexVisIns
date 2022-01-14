@@ -371,13 +371,13 @@
             <!-- Image 3 -->
             <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <!-- Grid 待移除 -->
-                <Grid>
+                <!--<Grid>-->
                     <Viewbox x:Name="Image3Viewbox">
                         <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                     </Viewbox>
 
-                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                    <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="Camera 3&#x0d;&#x0a;{0} x {1}">
@@ -385,21 +385,25 @@
                                 <Binding ElementName="Image3Border" Path="ActualHeight" Mode="OneWay"/>
                             </MultiBinding>
                         </TextBlock.Text>
-                    </TextBlock>
-                </Grid>
+                    </TextBlock>-->
+                <!--</Grid>-->
             </Border>
 
             <!--Image 4-->
             <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" BorderThickness="1" BorderBrush="Black">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"  TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                <Viewbox x:Name="Image4Viewbox">
+                    <Image x:Name="Image4" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Source="{Binding ImageSource4, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                </Viewbox>
+
+                <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"  TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Camera 4&#x0d;&#x0a;{0} x {1}">
                             <Binding ElementName="Image4Border" Path="ActualWidth" Mode="OneWay"/>
                             <Binding ElementName="Image4Border" Path="ActualHeight" Mode="OneWay"/>
                         </MultiBinding>
                     </TextBlock.Text>
-              
-                </TextBlock>
+                </TextBlock>-->
             </Border>
             <!--#endregion-->
 

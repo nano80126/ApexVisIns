@@ -148,11 +148,8 @@ namespace ApexVisIns.content
                 // 變更 Step
                 MainWindow.ApexDefect.CurrentStep = 0;
 
-                return;
-
                 // 等待相機 Enumerator 搜尋完畢
                 _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-
 
                 InitCamera();
 
@@ -214,10 +211,8 @@ namespace ApexVisIns.content
                 Light_6V.ComClose();
             }
 
-
             // 關閉 Motion Control
             // 
-
         }
 
         /// <summary>
@@ -307,8 +302,8 @@ namespace ApexVisIns.content
                                     break;
                             }
                             // 更新 Progress Value
-                            //MainWindow.ProgressValue += 5;
-                            //MainWindow.MsgInformer.TargetProgressValue += 5;
+                            // MainWindow.ProgressValue += 5;
+                            // MainWindow.MsgInformer.TargetProgressValue += 5;
                         }
                     }
 
@@ -417,9 +412,16 @@ namespace ApexVisIns.content
                         throw new Exception("24V 控制器沒有回應");
                     }
                 }
-                //MainWindow.ProgressValue += 10;     // 更新 Progress Value
                 MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
+            }
 
+
+            try
+            {
                 if (!Light_6V.IsComOpen)
                 {
                     bool res_6V = Light_6V.ComOpen("COM2", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
@@ -429,24 +431,87 @@ namespace ApexVisIns.content
                         throw new Exception("6V 控制器沒有回應");
                     }
                 }
-                //MainWindow.ProgressValue += 10;     // 更新 Progress Value
-                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
-
-                LightCtrlsInitiliazed = true;
-
-                //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
-                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
+                MainWindow.MsgInformer.ProgressValue += 10;
             }
             catch (Exception ex)
             {
-                //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"光源控制器初始化失敗: {ex.Message}"));
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
             }
-            finally
+
+
+            if (Light24V.IsComOpen && Light_6V.IsComOpen)
             {
-                // 這邊需要停止 LightEnumer
+                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
+
                 MainWindow.LightEnumer.WorkerPause();
+                LightCtrlsInitiliazed = true;
+
+
+
+
+                #region MyRegion
+                //Task.Run(() =>
+                //{
+                //    int b = 0;
+                //    while (b++ < 10000)
+                //    {
+                //        for (int i = 1; i <= Light_6V.ChannelNumber; i++)
+                //        {
+                //            try
+                //            {
+                //                if (b % 2 == 0)
+                //                {
+                //                    Light_6V.SetChannelValue(i, 160);
+                //                }
+                //                else
+                //                {
+                //                    Light_6V.SetChannelValue(i, 0);
+                //                }
+                //            }
+                //            catch (Exception ex)
+                //            {
+                //                Debug.WriteLine(ex.Message);
+                //                return;
+                //            }
+                //        }
+                //        SpinWait.SpinUntil(() => false, 33);
+                //    }
+                //}); 
+                #endregion
             }
+
+
+            //if (Light24V.IsComOpen)
+            //{
+            //    Task.Run(() =>
+            //    {
+            //        int a = 0;
+            //        while (a++ < 10000)
+            //        {
+            //            for (int i = 1; i <= Light24V.ChannelNumber; i++)
+            //            {
+            //                try
+            //                {
+            //                    if (a % 2 == 0)
+            //                    {
+            //                        Light24V.SetChannelValue(i, 160);
+            //                    }
+            //                    else
+            //                    {
+            //                        Light24V.SetChannelValue(i, 0);
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    Debug.WriteLine(ex.Message);
+            //                    return;
+            //                }
+            //            }
+            //            SpinWait.SpinUntil(() => false, 50);
+            //            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
+            //        }
+            //    });
+            //}
         }
 
         /// <summary>
@@ -515,8 +580,8 @@ namespace ApexVisIns.content
         }
         #endregion
 
-        #region 原點復歸
 
+        #region 原點復歸
 
 
         #endregion
@@ -654,6 +719,7 @@ namespace ApexVisIns.content
                 {
                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                     retryCount++;
+                    SpinWait.SpinUntil(() => false, 200);
                 }
             }
             return cam.IsOpen;
@@ -834,6 +900,12 @@ namespace ApexVisIns.content
                         break;
                     case DeviceConfigBase.TargetFeatureType.Window:
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
+                        break;
+                    case DeviceConfigBase.TargetFeatureType.Surface1:
+                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
+                        break;
+                    case DeviceConfigBase.TargetFeatureType.Surface2:
+                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                         break;
                 }
 

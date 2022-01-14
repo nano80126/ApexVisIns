@@ -67,20 +67,20 @@
         <!--輔助 Rect
         <local:AssistRect x:Key="AssistRect" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3" />-->
         <!--輔助 Points
-        <x:Array x:Key="AssistPoints" Type="local:AssistPoint">
-            <local:AssistPoint X="0" Y="0" Enable="True" Stroke="{StaticResource ColorDeepPurple}" StrokeThickness="1.0"/>
-            <local:AssistPoint X="0" Y="0" Enable="True" Stroke="{StaticResource ColorDeepPurple}" StrokeThickness="1.0"/>
-            <local:AssistPoint X="0" Y="0" Enable="False" Stroke="DarkOrange" StrokeThickness="1.25"/>
-            <local:AssistPoint X="50" Y="50" Enable="False" Stroke="DarkOrange" StrokeThickness="1.25"/>
-        </x:Array>-->
+            <x:Array x:Key="AssistPoints" Type="local:AssistPoint">
+                <local:AssistPoint X="0" Y="0" Enable="True" Stroke="{StaticResource ColorDeepPurple}" StrokeThickness="1.0"/>
+                <local:AssistPoint X="0" Y="0" Enable="True" Stroke="{StaticResource ColorDeepPurple}" StrokeThickness="1.0"/>
+                <local:AssistPoint X="0" Y="0" Enable="False" Stroke="DarkOrange" StrokeThickness="1.25"/>
+                <local:AssistPoint X="50" Y="50" Enable="False" Stroke="DarkOrange" StrokeThickness="1.25"/>
+            </x:Array>-->
         <!--輔助標示器
-        <local:Indicator x:Key="Indicator"/>-->
+            <local:Indicator x:Key="Indicator"/>-->
         <!--Footer Bar Message
-        <local:MsgInformer x:Key="MsgInformer"/>-->
+            <local:MsgInformer x:Key="MsgInformer"/>-->
         <!--#endregion-->
 
         <!--#region Module -->
-        <!--<local:Thermometer x:Key="Thermometer" Interval="100"/>-->
+            <!--<local:Thermometer x:Key="Thermometer" Interval="100"/>-->
         <!--#endregion-->
     </Window.Resources> 
     <!--//-->

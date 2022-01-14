@@ -46,7 +46,7 @@ namespace ApexVisIns
         /// </summary>
         public static BaslerCam BaslerCam { get; set; }
         /// <summary>
-        /// 相機陣列 (上限正式使用)
+        /// 相機陣列 (上線正式使用)
         /// </summary>
         public static BaslerCam[] BaslerCams { get; set; }
         /// <summary>
@@ -259,15 +259,29 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            // 相機關閉
+            foreach (BaslerCam cam in BaslerCams)
+            {
+                if (cam.IsOpen)
+                {
+                    cam.Close();
+                }
+            }
 
-            // try
-            // {
-            // }
-            // catch (Exception ex)
-            // {
-            //     MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, ex.Message);
-            // }
+            // 關閉光源
+            foreach (LightController ctrl in LightCtrls)
+            {
+                if (ctrl.IsComOpen)
+                {
+                    _ = ctrl.TryResetAllValue();
+                    ctrl.ComClose();
+                }
+            }
+
+            SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
+            SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
+
+            Close();
         }
 
         #region Footer Message

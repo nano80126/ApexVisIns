@@ -268,6 +268,7 @@ namespace ApexVisIns
                     cmd += $"{i},0,";
                 }
                 cmd = $"{cmd.TrimEnd(',')}\r\n";
+                //Debug.WriteLine($"{cmd}");
 
                 try
                 {
@@ -364,13 +365,20 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="value">目標設定值</param>
-        public void SetCannelValue(int ch, int value)
+        public void SetChannelValue(int ch, int value)
         {
             if (0 < ch && ch <= ChannelNumber)
             {
-                string cmd = $"{ch},{value}\r\n";
-                _ = Write(cmd);     // 寫入控制器
-                Channels[ch - 1].Value = value;  // 變更通道值
+                try
+                {
+                    string cmd = $"{ch},{value}\r\n";
+                    _ = Write(cmd);     // 寫入控制器
+                    Channels[ch - 1].Value = value;  // 變更通道值
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
             else
             {
@@ -379,7 +387,8 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得通道光源大小
+        /// 取得通道光源大小，
+        /// 後端使用
         /// </summary>
         /// <param name="ch">Ch1: 0, CH2: 1, ...</param>
         /// <returns></returns>
