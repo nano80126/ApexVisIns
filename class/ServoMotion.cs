@@ -1,18 +1,17 @@
-﻿using System;
+﻿using Advantech.Motion;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Timers;
-using System.Threading.Tasks;
-using Advantech.Motion;
-using System.IO;
 using System.Globalization;
-using System.Threading;
-using System.Windows.Data;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Windows.Data;
 
 namespace ApexVisIns
 {

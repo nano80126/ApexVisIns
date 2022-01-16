@@ -11,12 +11,15 @@ using System.Windows.Media;
 
 namespace ApexVisIns
 {
-    public class ApexDefect : INotifyPropertyChanged
+    public class ApexDefect : INotifyPropertyChanged, IDisposable
     {
         // private bool _started;
         private int _currentStep = -1;
         private StatusType _status;
         private DateTime _startTime;
+
+        private System.Timers.Timer _timeUpdater;
+        private bool _disposed;
 
         public ApexDefect()
         {
@@ -86,8 +89,25 @@ namespace ApexVisIns
         public void Start()
         {
             _startTime = DateTime.Now;
+            OnPropertyChanged(nameof(PassedTime));
+            _timeUpdater = new System.Timers.Timer(1000)
+            {
+                AutoReset = true,
+            };
+            _timeUpdater.Elapsed += _timeUpdater_Elapsed;
+            _timeUpdater.Start();
         }
 
+        private void _timeUpdater_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            OnPropertyChanged(nameof(PassedTime));
+        }
+
+        public void Stop()
+        {
+            _timeUpdater.Stop();
+            OnPropertyChanged(nameof(PassedTime));
+        }
 
         public void SetStep(int step)
         {
@@ -161,8 +181,37 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
 
+        public void PropertyChange(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _timeUpdater.Elapsed += _timeUpdater_Elapsed;
+                _timeUpdater.Stop();
+                _timeUpdater.Dispose();
+                _timeUpdater = null;
+            }
+
+            _disposed = true;
+        }
+    }
 
     /// <summary>
     /// Apex Defect Testing Status to Color

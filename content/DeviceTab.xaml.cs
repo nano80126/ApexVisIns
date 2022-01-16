@@ -1,24 +1,16 @@
-﻿using System;
+﻿using Basler.Pylon;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using Basler.Pylon;
-using System.Collections.Specialized;
-
 
 namespace ApexVisIns.content
 {
@@ -737,42 +729,22 @@ namespace ApexVisIns.content
         {
             try
             {
+                camera.Parameters[PLGigECamera.CenterX].SetValue(false);
+                camera.Parameters[PLGigECamera.CenterY].SetValue(false);
+
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
                 camera.Parameters[PLGigECamera.Width].SetValue(config.Width);
                 camera.Parameters[PLGigECamera.Height].SetValue(config.Height);
 
-                //bool b1 =  camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX);
+                // bool b1 =  camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX);
+                // bool b2 =  camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY);
                 camera.Parameters[PLGigECamera.OffsetX].SetValue(config.OffsetX);
-                //bool b2 =  camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY);
                 camera.Parameters[PLGigECamera.OffsetY].SetValue(config.OffsetY);
 
-                //Debug.WriteLine($"OffsetX: { camera.Parameters[PLGigECamera.OffsetX].IsWritable}");
-                //Debug.WriteLine($"OffsetY: { camera.Parameters[PLGigECamera.OffsetY].IsWritable}");
-                //Debug.WriteLine($"b1: {b1}, b2: {b2}");
-#if false
-                if (!camera.Parameters[PLGigECamera.OffsetX].TrySetValue(config.OffsetX))
-                {
-                    //Debug.WriteLine($"Offset X changed");
-                }
-                else
-                {
-                    Debug.WriteLine($"Offset X changed");
-                }
-
-
-                if (!camera.Parameters[PLGigECamera.OffsetY].TrySetValue(config.OffsetY))
-                {
-                    //Debug.WriteLine($"Offset Y changed");
-                }
-                else
-                {
-                    Debug.WriteLine($"Offset Y changed");
-                } 
-#endif
-                camera.Parameters[PLGigECamera.CenterX].SetValue(config.CenterX);   // UserSet 不會記錄
-                camera.Parameters[PLGigECamera.CenterY].SetValue(config.CenterY);   // UserSet 不會記錄
+                // camera.Parameters[PLGigECamera.CenterX].SetValue(config.CenterX);   // UserSet 不會記錄
+                // camera.Parameters[PLGigECamera.CenterY].SetValue(config.CenterY);   // UserSet 不會記錄
 
                 camera.Parameters[PLGigECamera.TriggerSelector].SetValue(config.TriggerSelector);
                 camera.Parameters[PLGigECamera.TriggerMode].SetValue(config.TriggerMode);

@@ -62,8 +62,8 @@
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="DeinitBtn_Click"/>
 
-
-                <Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
+                <!--測試用-->
+                <!--<Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>-->
 
             </ToolBar>
         </ToolBarTray>
@@ -80,12 +80,6 @@
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Padding" Value="0 2"/>
                     </Style>
-
-                    <!--
-                    <Style TargetType="DockPanel" x:Key="IconPanel">
-                        <Setter Property="Width"
-                    </Style>
-                    -->
 
                     <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
                         <Setter Property="FlowDirection" Value="LeftToRight"/>
@@ -107,6 +101,14 @@
                                 <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
                             </DataTrigger>
                         </Style.Triggers>
+                    </Style>
+
+                    <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.IsGrabbing), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                <Setter Property="Kind" Value="Video"/>
+                            </DataTrigger>
+                        </Style.Triggers>    
                     </Style>
                 </ToolBar.Resources>
 
@@ -172,8 +174,9 @@
 
                         <Canvas ToolTip="Camera 4">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding [3].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [3].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [3].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -256,10 +259,10 @@
                             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Button Content="開始檢測" Margin="12 0" HorizontalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="15"
                                         Foreground="{StaticResource ColorSuccess}" BorderBrush="{StaticResource ColorSuccess}"  FontSize="16"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartInspect_Click"/>
                                 <Button Content="停止檢測" Margin="12 0" HorizontalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="15"
                                         Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}" FontSize="16"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopInspect_Click"/>
                             </StackPanel>
 
                             <!-- Control Panel 1st col, 3rd row, 經過時間 -->

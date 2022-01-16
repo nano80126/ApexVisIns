@@ -482,8 +482,12 @@ namespace ApexVisIns.CustomProperty
 {
     public class StatusHelper : DependencyObject
     {
-        public static readonly DependencyProperty ConnectedProperty = DependencyProperty.RegisterAttached(
-          "Connected", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+        public static readonly DependencyProperty ConnectedProperty =
+            DependencyProperty.RegisterAttached("Connected", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+
+
+        public static readonly DependencyProperty GrabbingProperty =
+            DependencyProperty.RegisterAttached("IsGrabbing", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
         public static void SetConnected(DependencyObject target, bool value)
         {
@@ -493,6 +497,16 @@ namespace ApexVisIns.CustomProperty
         public static bool GetConnected(DependencyObject target)
         {
             return (bool)target.GetValue(ConnectedProperty);
+        }
+
+        public static void SetIsGrabbing(DependencyObject target, bool value)
+        {
+            target.SetValue(GrabbingProperty, value);
+        }
+
+        public static bool GetIsGrabbing(DependencyObject target)
+        {
+            return (bool)target.GetValue(GrabbingProperty);
         }
     }
 

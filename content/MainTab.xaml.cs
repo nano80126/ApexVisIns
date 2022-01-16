@@ -1,24 +1,15 @@
-﻿using System;
+﻿using Basler.Pylon;
+using OpenCvSharp;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Basler.Pylon;
-using OpenCvSharp;
 
 namespace ApexVisIns.content
 {
@@ -135,6 +126,7 @@ namespace ApexVisIns.content
         {
             Debug.WriteLine("Main Tab Unload");
         }
+
         #endregion
 
         #region 初始化
@@ -235,12 +227,11 @@ namespace ApexVisIns.content
 
             if (!File.Exists(path))
             {
-                //MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, "相機設定檔不存在");
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
             }
             else
             {
-                using StreamReader reader = new StreamReader(path);
+                using StreamReader reader = new(path);
                 string jsonStr = reader.ReadToEnd();
 
                 if (jsonStr != string.Empty)
@@ -265,8 +256,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[0].IsConnected)
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
-                                        //BaslerCam1.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
+                                        _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -274,8 +264,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[1].IsConnected)
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
-                                        //BaslerCam2.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
+                                        _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -283,8 +272,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[2].IsConnected)
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
-                                        //BaslerCam3.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
+                                        _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -292,8 +280,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[3].IsConnected)
                                     {
                                         BaslerCam4 = MainWindow.BaslerCams[3];
-                                        //BaslerCam4.SerialNumber = device.SerialNumber;
-                                        Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
+                                        _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -301,9 +288,6 @@ namespace ApexVisIns.content
                                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                     break;
                             }
-                            // 更新 Progress Value
-                            // MainWindow.ProgressValue += 5;
-                            // MainWindow.MsgInformer.TargetProgressValue += 5;
                         }
                     }
 
@@ -318,10 +302,10 @@ namespace ApexVisIns.content
                 }
             }
 
-            //CameraInitialized = true;
+            // CameraInitialized = true;
 
             // Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "相機初始化完成"));
-            //MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+            // MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
             // MainWindow.ProgressValue += 20;
             // 更新progress value
         }
@@ -419,7 +403,6 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
             }
 
-
             try
             {
                 if (!Light_6V.IsComOpen)
@@ -431,11 +414,11 @@ namespace ApexVisIns.content
                         throw new Exception("6V 控制器沒有回應");
                     }
                 }
-                MainWindow.MsgInformer.ProgressValue += 10;
+                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
             }
 
 
@@ -445,9 +428,6 @@ namespace ApexVisIns.content
 
                 MainWindow.LightEnumer.WorkerPause();
                 LightCtrlsInitiliazed = true;
-
-
-
 
                 #region MyRegion
                 //Task.Run(() =>
@@ -920,5 +900,22 @@ namespace ApexVisIns.content
             // throw new NotImplementedException();
         }
         #endregion
+
+        private void StartInspect_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. ApexDefect Timer Start
+            // 2. 啟動相機
+
+            MainWindow.ApexDefect.Start();
+            
+        }
+
+        private void StopInspect_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. ApexDefect Timer Stop
+            // 2. 啟動相機
+
+            MainWindow.ApexDefect.Stop();
+        }
     }
 }

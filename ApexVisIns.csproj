@@ -64,8 +64,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="content\MainTab\" />
-  </ItemGroup>
-
 </Project>
