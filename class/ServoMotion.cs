@@ -103,12 +103,20 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 作業迴圈
+        /// 作業迴圈，
+        /// 待優化？
         /// </summary>
         public override void DoWork()
         {
             try
             {
+                if (MotionDevices.Count > 0)
+                {
+                    WorkerPause();
+                    return;
+                }
+
+                // 此函數會導致 handle 遺失
                 int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref DEV_Count);
 
                 if (result != (int)ErrorCode.SUCCESS)
@@ -762,11 +770,11 @@ namespace ApexVisIns
             SelectedMotionAxis.IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
             SelectedMotionAxis.IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
             SelectedMotionAxis.IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
-            SelectedMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            // SVON Bit & ServoOn Flag
+            SelectedMotionAxis.IO_SVON.BitOn = SelectedMotionAxis.ServoOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
             SelectedMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
             SelectedMotionAxis.IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
         }
-
 
 #if false
         private void ResetMotionIOStatus()
@@ -1607,7 +1615,8 @@ namespace ApexVisIns
             IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
             IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
             IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
-            IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            IO_SVON.BitOn = ServoOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            //ServoOn = IO_SVON.BitOn;
             IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
         }
 
@@ -2233,7 +2242,6 @@ namespace ApexVisIns
                 throw new InvalidOperationException($"伺服馬達緊急停止失敗: Code[0x{result:X}]");
             }
         }
-
 
         /// <summary>
         /// 軸 IO 狀態

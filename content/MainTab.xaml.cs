@@ -20,6 +20,8 @@ namespace ApexVisIns.content
     {
         #region Resources
 
+
+
         #endregion
 
         #region Variables
@@ -98,7 +100,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Initializer();
+            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -126,7 +128,6 @@ namespace ApexVisIns.content
         {
             Debug.WriteLine("Main Tab Unload");
         }
-
         #endregion
 
         #region 初始化
@@ -643,7 +644,7 @@ namespace ApexVisIns.content
 
             Debug.WriteLine(MainWindow.ServoMotion.MaxAxisCount);
 
-            //Deinitializer();
+            // Deinitializer();
 
 
             Debug.WriteLine("-------------------Basler Camera Object Comparison-------------------------");
@@ -653,7 +654,6 @@ namespace ApexVisIns.content
             Debug.WriteLine(BaslerCam3?.Equals(MainWindow.BaslerCams[2]));
             Debug.WriteLine(BaslerCam4?.Equals(MainWindow.BaslerCams[3]));
         }
-
 
         #region Basler 相機事件
         /// <summary>
@@ -907,7 +907,7 @@ namespace ApexVisIns.content
             // 2. 啟動相機
 
             MainWindow.ApexDefect.Start();
-            
+
         }
 
         private void StopInspect_Click(object sender, RoutedEventArgs e)

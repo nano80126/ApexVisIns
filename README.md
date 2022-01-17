@@ -125,6 +125,7 @@ Apex 外觀瑕疵檢測
 
 * [ ] 隱藏 App Toolbar
 	* 上線使用
+	* 隱藏 Close Button
 	* 關閉程式 = 關機
 
 * [ ] IO Control Panel 改為按鈕建立實例
