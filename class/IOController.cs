@@ -367,7 +367,7 @@ namespace ApexVisIns
 
             if (debounceTimer == null)
             {
-                debounceTimer = new System.Timers.Timer(125)
+                debounceTimer = new System.Timers.Timer(50)
                 {
                     AutoReset = false,
                 };
