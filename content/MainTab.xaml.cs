@@ -100,7 +100,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Initializer();
+            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -560,7 +560,6 @@ namespace ApexVisIns.content
             //  throw new NotImplementedException();
         }
         #endregion
-
 
         #region 原點復歸
 

@@ -67,6 +67,8 @@
             <!--#region Convertor -->
             <cvt:BooleanInverter x:Key="BooleanInverter"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
+            <cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility"/>
+            <cvt:BooleanAndToVisibilityInverse x:Key="BooleanAndToVisibilityInverse"/>
             <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
@@ -153,8 +155,8 @@
             <!--#endregion-->
 
             <!--#region IO Control Resources -->
-            <!--<local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
-            <local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
+            <local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
+            <!--<local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
             <!--#endregion-->
 
             <!--#region Major -->

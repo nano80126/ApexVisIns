@@ -15,6 +15,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 布林 反向 轉換器
     /// </summary>
+    [ValueConversion(typeof(bool), typeof(bool))]
     public class BooleanInverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -32,9 +33,10 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 布林 AND 轉換器
     /// </summary>
+    [ValueConversion(typeof(bool[]), typeof(bool))]
     public class BooleanAndGate : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             return values.All(value =>
             {
@@ -43,6 +45,40 @@ namespace ApexVisIns.Converter
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [ValueConversion(typeof(bool[]), typeof(Visibility))]
+    public class BooleanAndToVisibility : BooleanAndGate
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            //bool b = values.All(value =>
+            //{
+            //    return value != DependencyProperty.UnsetValue && (bool)value;
+            //});
+            return (bool)base.Convert(values, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
+            //return b ? Visibility.Visible : (object)Visibility.Collapsed;
+        }
+
+        public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [ValueConversion(typeof(bool[]), typeof(Visibility))]
+    public class BooleanAndToVisibilityInverse : BooleanAndToVisibility
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            //return ((Visibility)base.Convert(values, targetType, parameter, culture)) == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+            return (Visibility)base.Convert(values, targetType, parameter, culture) == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

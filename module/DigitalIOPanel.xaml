@@ -24,66 +24,84 @@
         <!--//-->
         <Separator DockPanel.Dock="Top" Margin="0 8"/>
         <!-- Digital Input Panel -->
-        <StackPanel x:Name="DiPanel" Orientation="Vertical" DockPanel.Dock="Top" >
-            <StackPanel.Resources>
-                <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
-                    <Setter Property="Width" Value="20"/>
-                    <Setter Property="Height" Value="20"/>
-                    <Setter Property="Margin" Value="7 4"/>
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                    <Setter Property="Stroke" Value="{StaticResource ColorYellow}"/>
-                    <Setter Property="StrokeThickness" Value="1"/>
+        
+        <!--<TextBlock DockPanel.Dock="Top" MinHeight="20" MinWidth="200" Background="Red" Margin="0 12 0 0 ">
+            <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibility}" Mode="OneWay" StringFormat="{}{0}">
+                    <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>-->
 
-                    <Setter Property="Fill" Value="{StaticResource ColorSecondary}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                            <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Resources>
-            <!--//-->
-            <!--<TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+        <StackPanel DockPanel.Dock="Top">
+            <StackPanel.Visibility>
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibility}" Mode="OneWay">
+                    <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                </MultiBinding>
+            </StackPanel.Visibility>
+            
+            <StackPanel x:Name="DiPanel" Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style x:Key="DiSignal" TargetType="{x:Type Ellipse}">
+                        <Setter Property="Width" Value="20"/>
+                        <Setter Property="Height" Value="20"/>
+                        <Setter Property="Margin" Value="7 4"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Stroke" Value="{StaticResource ColorYellow}"/>
+                        <Setter Property="StrokeThickness" Value="1"/>
+
+                        <Setter Property="Fill" Value="{StaticResource ColorSecondary}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+                <!--//-->
+                <!--<TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
-            <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
-                <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+                <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
+                    <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
 
-                <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                    <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
                            TextAlignment="Center" Width="20" Height="20" Text="7"/>
 
-                <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                    <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
                            TextAlignment="Center" Width="20" Height="20" Text="0"/>
-            </DockPanel>
-            <!--//-->
-            <!-- #region Di Items -->
-            <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                </DockPanel>
+                <!--//-->
+                <!-- #region Di Items -->
+                <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Ellipse Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--#endregion-->
-            <!--<DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 8">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Ellipse Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DiSignal}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--#endregion-->
+                <!--<DockPanel HorizontalAlignment="Stretch" Margin="0 8 0 8">
                 <CheckBox x:Name="InterruptToggle" DockPanel.Dock="Left" Margin="4 0 0 0" Cursor="Hand" 
                           IsChecked="{Binding Path=InterruptEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                           Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked" CommandParameter="0">
@@ -96,89 +114,89 @@
                 
                 <TextBlock DockPanel.Dock="Right" Text="Count: " Margin="0 0 8 0" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
             </DockPanel>-->
-            <!--//-->
-            <!--<TextBlock HorizontalAlignment="Right"></TextBlock>-->
-            <StackPanel Margin="0 8 0 0">
-                <ItemsControl ItemsSource="{Binding Interrupts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                <!--//-->
+                <!--<TextBlock HorizontalAlignment="Right"></TextBlock>-->
+                <StackPanel Margin="0 8 0 0">
+                    <ItemsControl ItemsSource="{Binding Interrupts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Stretch" Margin="0 0 0 8"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="4 8 0 0" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="135" 
+                                      IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding Channel, Mode=OneWay}"
+                                      Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
+                                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Channel, StringFormat={}CH{0} 啟用中斷}"/>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
+                     HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
+                     Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Separator Margin="0 8"/>
+            <!-- Digital Output Panel -->
+            <StackPanel x:Name="DoPanel" Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style x:Key="DoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
+                        <Setter Property="Width" Value="20"/>
+                        <Setter Property="Height" Value="20"/>
+                        <Setter Property="Margin" Value="7 4"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="BorderBrush" Value="WhiteSmoke"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+
+                        <Setter Property="Background" Value="{StaticResource ColorInfo}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource ColorBlueGray}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+                <!--//-->
+                <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
+                    <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+
+                    <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                           TextAlignment="Center" Width="20" Height="20" Text="7"/>
+
+                    <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                           TextAlignment="Center" Width="20" Height="20" Text="0"/>
+                </DockPanel>
+                <!--//-->
+                <!--#region Do Items -->
+                <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel HorizontalAlignment="Stretch" Margin="0 0 0 8"/>
+                            <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <CheckBox Margin="4 8 0 0" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="135" 
-                                      IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CommandParameter="{Binding Channel, Mode=OneWay}"
-                                      Checked="InterruptToggle_Checked" Unchecked="InterruptToggle_Unchecked">
-                                <TextBlock FontSize="16" FontWeight="SemiBold" Text="{Binding Channel, StringFormat={}CH{0} 啟用中斷}"/>
-                            </CheckBox>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
-                     HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
-                     Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-            </StackPanel>
-        </StackPanel>
-
-        <Separator DockPanel.Dock="Top" Margin="0 8"/>
-        <!-- Digital Output Panel -->
-        <StackPanel x:Name="DoPanel" Orientation="Vertical" DockPanel.Dock="Top">
-            <StackPanel.Resources>
-                <Style x:Key="DoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
-                    <Setter Property="Width" Value="20"/>
-                    <Setter Property="Height" Value="20"/>
-                    <Setter Property="Margin" Value="7 4"/>
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="BorderBrush" Value="WhiteSmoke"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-
-                    <Setter Property="Background" Value="{StaticResource ColorInfo}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                            <Setter Property="Background" Value="{StaticResource ColorBlueGray}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Resources>
-            <!--//-->            
-            <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
-                <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
-                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
-
-                <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
-                           TextAlignment="Center" Width="20" Height="20" Text="7"/>
-
-                <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
-                           TextAlignment="Center" Width="20" Height="20" Text="0"/>
-            </DockPanel>
-            <!--//-->
-            <!--#region Do Items -->
-            <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <!--<StackPanel Orientation="Vertical">-->
-                        <!--<TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
-                        <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8" 
+                            <!--<StackPanel Orientation="Vertical">-->
+                            <!--<TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
+                            <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8" 
                                       Tag="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <!--<Button Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DoButton}"
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!--<Button Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DoButton}"
                                                 CommandParameter="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 Width="50"
                                                 Click="DoSetButton_Click" >
@@ -189,56 +207,90 @@
                                                 </MultiBinding>
                                             </Button.Content>
                                         </Button>-->
-                                    <!-- // -->
-                                    <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
-                                        <Button Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DoButton}"
+                                        <!-- // -->
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+                                            <Button Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DoButton}"
                                                 Click="DoSetButton_Click">
-                                            <Button.CommandParameter>
-                                                <MultiBinding Converter="{StaticResource CombineValueConvert}">
-                                                    <Binding Path="Tag" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}"/>
-                                                    <!-- 必須加上(), 否則無法取得正確的資料 -->
-                                                    <Binding Path="(ItemsControl.AlternationIndex)" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
-                                                </MultiBinding>
-                                            </Button.CommandParameter>
-                                        </Button>
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource CombineValueConvert}">
+                                                        <Binding Path="Tag" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}"/>
+                                                        <!-- 必須加上(), 否則無法取得正確的資料 -->
+                                                        <Binding Path="(ItemsControl.AlternationIndex)" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                            </Button>
 
-                                        <!--
+                                            <!--
                                             <TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}}"/>
                                             <TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
                                         -->
-                                    </StackPanel>
-                                    <!-- // -->
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <!--</StackPanel>-->
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--#endregion-->
-        </StackPanel>
-        <!--//-->
-        <Separator DockPanel.Dock="Top" Margin="0 8"/>
-        <!--//-->
-        <StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Click="DiRead_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
-            <Button Click="DoRead_Click" HorizontalAlignment="Left" Content="DO 回讀" Style="{StaticResource MaterialDesignFlatButton}"/>
-            <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                        </StackPanel>
+                                        <!-- // -->
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <!--</StackPanel>-->
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--#endregion-->
+            </StackPanel>
+            <!--//-->
+            <Separator Margin="0 8"/>
+            <!--//-->
+            <StackPanel DockPanel.Dock="Top" Margin="0 0 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Click="DiRead_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Click="DoRead_Click" HorizontalAlignment="Left" Content="DO 回讀" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>
+            </StackPanel>
         </StackPanel>
 
+        <Button DockPanel.Dock="Top" Click="InitializeIO_Click" Content="初始化" BorderThickness="0" 
+                materialDesign:ButtonAssist.CornerRadius="15"
+                Style="{StaticResource MaterialDesignOutlinedButton}">
+            <Button.Visibility>
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverse}" Mode="OneWay">
+                    <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                </MultiBinding>
+            </Button.Visibility>
+        </Button>
+
+        <!--<TextBlock DockPanel.Dock="Top" Background="Red">
+            <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibility}" Mode="OneWay" StringFormat="{}{0}">
+                    <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <TextBlock DockPanel.Dock="Top" Background="Red">
+            <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverse}" Mode="OneWay" StringFormat="{}{0}">
+                    <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                    <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>-->
+
         <!--#region 測試用，待刪除 -->
-        <!--<StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+        
+        <!--
+        <StackPanel DockPanel.Dock="Top" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button HorizontalAlignment="Left" Content="啟動中斷器" Style="{StaticResource MaterialDesignFlatButton}" Click="SwitchInterrupt_Click"/>
-        </StackPanel>-->
-        <!--#endregion-->
-        <!--//-->
-        <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>
+        </StackPanel>
         -->
+        <!--#endregion-->
+        
+        <!--//-->
+        <!--<Separator DockPanel.Dock="Top" Margin="0 8"/>-->
         <!--//-->
         <!--
         <StackPanel DockPanel.Dock="Bottom" Margin="0 8 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Click="DiWrite_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
             <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
-        </StackPanel>-->
+        </StackPanel>
+        -->
     </DockPanel>
 </materialDesign:Card>

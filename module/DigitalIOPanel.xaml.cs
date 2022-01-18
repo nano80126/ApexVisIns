@@ -55,10 +55,37 @@ namespace ApexVisIns.module
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
             DllIsValid = IOController.CheckDllVersion();    // 確認驅動安裝
+            return;
+#if false // Use button to initialize
             if (DllIsValid)
             {
                 Controller = DataContext as IOController;
-                return; // 初始化在MAINTAB
+                ////return; // 初始化在MAINTAB
+
+                if (!Controller.DiCtrlCreated)
+                {
+                    Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+                    Controller.InitializeDiCtrl();
+                }
+
+                if (!Controller.DoCtrlCreated)
+                {
+                    Controller.InitializeDoCtrl();
+                }
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+            } 
+#endif
+        }
+
+        private void InitializeIOModule()
+        {
+            if (DllIsValid)
+            {
+                Controller = DataContext as IOController;
+                ////return; // 初始化在MAINTAB
 
                 if (!Controller.DiCtrlCreated)
                 {
@@ -186,5 +213,10 @@ namespace ApexVisIns.module
             #endregion
         }
         #endregion
+
+        private void InitializeIO_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeIOModule();
+        }
     }
 }

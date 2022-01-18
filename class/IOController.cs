@@ -32,6 +32,8 @@ namespace ApexVisIns
         private System.Timers.Timer debounceTimer;
 
         private bool _disposed;
+        private bool _diCtrlCreated;
+        private bool _doCtrlCreated;
         #endregion
 
         /// <summary>
@@ -263,12 +265,34 @@ namespace ApexVisIns
         /// <summary>
         /// DI Controll 是否建立
         /// </summary>
-        public bool DiCtrlCreated { get; private set; }
+        public bool DiCtrlCreated
+        {
+            get => _diCtrlCreated;
+            private set
+            {
+                if (value != _diCtrlCreated)
+                {
+                    _diCtrlCreated = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// DO Controll 是否建立
         /// </summary>
-        public bool DoCtrlCreated { get; private set; }
+        public bool DoCtrlCreated
+        {
+            get => _doCtrlCreated;
+            private set
+            {
+                if (value != _doCtrlCreated)
+                {
+                    _doCtrlCreated = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// Interrupt Channel Object
@@ -613,8 +637,6 @@ namespace ApexVisIns
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            Debug.WriteLine($"{propertyName}");
-
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
