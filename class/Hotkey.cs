@@ -29,10 +29,22 @@ namespace ApexVisIns
             // DeviceTab is focused
             e.CanExecute = OnTabIndex == 1;
         }
+
+        private void MotionTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // MotionTab is focused
+            e.CanExecute = OnTabIndex == 2;
+        }
+
+        private void DatabaseTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = OnTabIndex == 3;
+        }
+
         private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // EngineerTab is focused
-            e.CanExecute = OnTabIndex == 3;
+            e.CanExecute = OnTabIndex == 4;
         }
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -59,44 +71,49 @@ namespace ApexVisIns
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // Grabber 不為啟動狀態 // CamSelector 有選擇相機
-            switch (OnTabIndex)
+            //switch (OnTabIndex)
+            //{
+            //    case 3:
+            //        e.CanExecute = EngineerTab.CamConnect.IsEnabled;
+            //        break;
+            //    default:
+            //        break;
+            //}
+            e.CanExecute = OnTabIndex switch
             {
-                case 3:
-                    e.CanExecute = EngineerTab.CamConnect.IsEnabled;
-                    break;
-                default:
-                    break;
-            }
+                4 => EngineerTab.CamConnect.IsEnabled,
+                _ => false
+            };
             //e.CanExecute = CamConnect.IsEnabled;
         }
         private void OpenDeviceCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            switch (OnTabIndex)
-            {
-                case 3: // Engineer Tab
-                    if ((bool)EngineerTab.CamConnect.IsChecked)
-                    {
-                        EngineerTab.CamConnect.IsChecked = false;
-                    }
-                    else
-                    {
-                        EngineerTab.CamConnect.IsChecked = true;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            // if ((bool)CamConnect.IsChecked)
-            // {
-            //     CamConnect.IsChecked = false;   // This will raise uncheck event
-            //     //CamConnect.IsChecked = Basler_Disconnect();
-            // }
-            // else
-            // {
-            //     CamConnect.IsChecked = true;    // This will raise check event
-            //     //BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
-            //     //CamConnect.IsChecked = Basler_Connect(info.SerialNumber);
-            // }
+            EngineerTab.CamConnect.IsChecked = (bool)EngineerTab.CamConnect.IsChecked ? false : true;
+
+            //if ((bool)EngineerTab.CamConnect.IsChecked)
+            //{
+            //    EngineerTab.CamConnect.IsChecked = false;
+            //}
+            //else
+            //{
+            //    EngineerTab.CamConnect.IsChecked = true;
+            //}
+
+            //switch (OnTabIndex)
+            //{
+            //    case 3: // Engineer Tab
+            //        if ((bool)EngineerTab.CamConnect.IsChecked)
+            //        {
+            //            EngineerTab.CamConnect.IsChecked = false;
+            //        }
+            //        else
+            //        {
+            //            EngineerTab.CamConnect.IsChecked = true;
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
         
         [Obsolete("不須另外啟動")]
@@ -113,79 +130,75 @@ namespace ApexVisIns
         //}
         private void SingleShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            switch (OnTabIndex)
+            e.CanExecute = OnTabIndex switch
             {
-                case 3:
-                    e.CanExecute = EngineerTab.SingleShot.IsEnabled;
-                    break;
-                default:
-                    e.CanExecute = false;
-                    break;
-            }
+                4 => EngineerTab.SingleShot.IsEnabled,
+                _ => false,
+            };
         }
-        
+
         private void SingleShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            switch (OnTabIndex)
-            {
-                case 3:
-                    EngineerTab.SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    break;
-                default:
-                    break;
-            }
+            EngineerTab.SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //switch (OnTabIndex)
+            //{
+            //    case 3:
+            //        EngineerTab.SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //        break;
+            //    default:
+            //        break;
+            //}
             //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
         
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            switch (OnTabIndex)
+            e.CanExecute = OnTabIndex switch
             {
-                case 3:
-                    e.CanExecute = EngineerTab.ContinouseShot.IsEnabled;
-                    break;
-                default:
-                    e.CanExecute = false;
-                    break;
-            }
+                4 => EngineerTab.ContinouseShot.IsEnabled,
+                _ => false,
+            };
             //e.CanExecute = ContinouseShot.IsEnabled;
         }
-        
+
         private void ContinousShotCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            switch (OnTabIndex)
-            {
-                case 3:
-                    EngineerTab.ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                    break;
-                default:
-                    break;
-            }
+            EngineerTab.ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //switch (OnTabIndex)
+            //{
+            //    case 3:
+            //        EngineerTab.ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //        break;
+            //    default:
+            //        break;
+            //}
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-        
+
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
-            switch (OnTabIndex)
-            {
-                case 3: // 工程師Tab
-                    EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
-                    break;
-                default:
-                    break;
-            }
+            EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
+            //switch (OnTabIndex)
+            //{
+            //    case 3: // 工程師Tab
+            //        EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
        
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            switch (OnTabIndex)
-            {
-                case 3: // 工程師Tab
-                    EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
-                    break;
-                default:
-                    break;
-            }
+            EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
+            //switch (OnTabIndex)
+            //{
+            //    case 3: // 工程師Tab
+            //        EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
         /// <summary>
         /// Switch to Tab 1

@@ -218,19 +218,6 @@
                 </TabItem>
                 <!--#endregion-->
                 <!--//-->
-                <!--#region Engineer Tab -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}"
-                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
-                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
-                         <!--IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"-->
-                    <TabItem.Header>
-                        <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
-                    </TabItem.Header>
-                    <!-- // -->
-                    <content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />
-                </TabItem>
-                <!--#endregion-->
 
                 <!--#region Test Lazy Loading -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
@@ -242,6 +229,20 @@
                     <!-- // -->
                     <TextBlock Text="保留" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                     <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
+                </TabItem>
+                <!--#endregion-->
+
+                <!--#region Engineer Tab -->
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <!--IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"-->
+                    <TabItem.Header>
+                        <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
+                    </TabItem.Header>
+                    <!-- // -->
+                    <content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />
                 </TabItem>
                 <!--#endregion-->
 
@@ -340,11 +341,11 @@
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
                             <StackPanel Orientation="Vertical" MinWidth="180">
-                                <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand"
-                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
+                                <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
                                         Click="AppFullClose_Click">
                                     <Button.Content>
-                                        <StackPanel Orientation="Horizontal">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center"/>
                                             <TextBlock Text="關閉程式" VerticalAlignment="Center" />
                                         </StackPanel>

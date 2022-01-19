@@ -103,10 +103,11 @@
                         </Style.Triggers>
                     </Style>
 
-                    <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus">
+                    <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus" BasedOn="{StaticResource HWStatus}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding (ctProperty:StatusHelper.IsGrabbing), RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                <Setter Property="Kind" Value="Video"/>
+                                <Setter Property="Kind" Value="CameraImage"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
                             </DataTrigger>
                         </Style.Triggers>    
                     </Style>
@@ -156,25 +157,28 @@
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="Camera 1">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 2">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 3">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding [2].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [2].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [2].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
 
                         <Canvas ToolTip="Camera 4">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
                                                      ctProperty:StatusHelper.Connected="{Binding [3].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                                      ctProperty:StatusHelper.IsGrabbing="{Binding [3].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>

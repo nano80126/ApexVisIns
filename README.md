@@ -128,24 +128,27 @@ Apex 外觀瑕疵檢測
 	* 隱藏 Close Button
 	* 關閉程式 = 關機
 
-* [ ] IO Control Panel 改為按鈕建立實例
+* [x] IO Control Panel 改為按鈕建立實例
 	* 避免和 MainTab 衝突
 	
 * [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
 	* 新增登出 ?
 
-* [ ] 新增 Interface of CustomCam
+* [x] 新增 Interface of CustomCam
 	* 待測試
 
 * [ ] 更新 ServoMotion HomeModes
 
 * [ ] 確認 OOP 命名規則
 	* SltMotionAxis (ServoMotion)
-	*待測試
+	* 待測試
 
 * [ ] 相機連線失敗 Retry
 	* 預設三次
 	* 測試中
+	* 有機率連線失敗
+
+* [ ] Test Hotkey
 
 
 
