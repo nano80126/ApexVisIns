@@ -87,6 +87,7 @@ namespace ApexVisIns.content
         private ServoMotion ServoMotion;
         #endregion
 
+
         public MainTab()
         {
             InitializeComponent();
@@ -104,19 +105,26 @@ namespace ApexVisIns.content
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
-            //Task.Run(() =>
-            //{
-            //    DateTime t1 = DateTime.Now;
-            //    SpinWait.SpinUntil(() => false, 3000);
-            //    TimeSpan t2 = DateTime.Now - t1;
-            //    Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
-            //    for (int i = 0; i < 10; i++)
-            //    {
-            //        SpinWait.SpinUntil(() => false, 3000);
-            //        MainWindow.ApexDefect.CurrentStep++;
-            //        Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
-            //    }
-            //});
+            // Task.Run(() =>
+            // {
+            //     DateTime t1 = DateTime.Now;
+            //     SpinWait.SpinUntil(() => false, 3000);
+            //     TimeSpan t2 = DateTime.Now - t1;
+            //     Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
+            //     for (int i = 0; i < 10; i++)
+            //     {
+            //         SpinWait.SpinUntil(() => false, 3000);
+            //         MainWindow.ApexDefect.CurrentStep++;
+            //         Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //     }
+            // });
+
+            // Parallel.For(0, 5, i =>
+            // {
+            //     Debug.WriteLine($"Task: {Task.CurrentId}");
+            //     SpinWait.SpinUntil(() => false, 1000);
+            //     Debug.WriteLine($"Thread: {Thread.CurrentThread.ManagedThreadId}");
+            // });
         }
 
         /// <summary>
