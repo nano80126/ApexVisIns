@@ -14,25 +14,40 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <Grid>
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <!--900 - 120-->
+                <Setter Property="Height" Value="780"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                        <!--1080 - 120-->
+                        <Setter Property="Height" Value="960"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <!--Separator-->
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <!--#region 1st Col -->
         <StackPanel Grid.Column="0" Width="300" Background="{x:Null}">
-            <StackPanel.Style>
+            <!--<StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
-                    <!--900 - 120-->
+                    --><!--900 - 120--><!--
                     <Setter Property="Height" Value="780"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}, Mode=OneWay}" Value="Maximized">
-                            <!--1080 - 120-->
+                            --><!--1080 - 120--><!--
                             <Setter Property="Height" Value="960"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </StackPanel.Style>-->
 
             <!--Linen-->
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
@@ -205,8 +220,14 @@
         </StackPanel>
         <!--#endregion-->
 
+        <!-- Separator -->
+        <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+
         <!--#region 2nd Col -->
-        <Border Grid.Column="1" BorderBrush="{StaticResource ColorGray}" BorderThickness="1 0 0 0" Background="{x:Null}">
+        <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
+            <!--<Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 0 0 0" Background="{x:Null}">-->
             <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}"
                                  DataContextChanged="DeviceCard_DataContextChanged">
@@ -397,7 +418,7 @@
                                   SelectionChanged="TargetFeatureCombobox_SelectionChanged"
                                   SelectedItem="{Binding TargetFeature, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
                                   MinWidth="135">
-                                <!--materialDesign:TextFieldAssist.PrefixText=""-->
+                            <!--materialDesign:TextFieldAssist.PrefixText=""-->
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
@@ -471,7 +492,7 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        
+
                         <!--#region UserSet Actions -->
                         <StackPanel x:Name="UserSetActionPanel" Orientation="Horizontal" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
                             <!--讀取 UserSet-->
@@ -491,7 +512,7 @@
                                     IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                     Click="WriteUserSet_Click"/>
                             <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
-                            
+
                         </StackPanel>
                         <!--#endregion-->
 
@@ -663,7 +684,8 @@
 
                 </DockPanel>
             </materialDesign:Card>
-        </Border>
+            <!--</Border>-->
+        </StackPanel>
         <!--#endregion-->
     </Grid>
 </StackPanel>

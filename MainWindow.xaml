@@ -227,7 +227,7 @@
                         <materialDesign:PackIcon Kind="Database" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <TextBlock Text="保留" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                    <content:DatabaseTab x:Name="DatabaseTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                     <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
                 </TabItem>
                 <!--#endregion-->

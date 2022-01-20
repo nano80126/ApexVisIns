@@ -484,8 +484,8 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove();
-                    //await MainWindow.ServoMotion.SelectedMotionAxis.PositiveWayHomeMove();
+                    //await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove();
+                    await MainWindow.ServoMotion.SelectedMotionAxis.PositiveWayHomeMove();
                 }
                 else
                 {

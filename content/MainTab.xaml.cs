@@ -134,7 +134,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Main Tab Unload");
+            //Debug.WriteLine("Main Tab Unload");
         }
         #endregion
 

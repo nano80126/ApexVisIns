@@ -1,0 +1,40 @@
+﻿<StackPanel x:Class="ApexVisIns.content.DatabaseTab"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:app="clr-namespace:ApexVisIns"
+            xmlns:local="clr-namespace:ApexVisIns.content"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            mc:Ignorable="d" 
+            d:DesignHeight="450" d:DesignWidth="800"
+            UseLayoutRounding="True"
+            Orientation="Vertical">
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <!--900 - 120-->
+                <Setter Property="Height" Value="780"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                        <!--1080 - 120-->
+                        <Setter Property="Height" Value="960"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Width="300" Background="{StaticResource ColorSuccessTransparent}">
+            <TextBlock Text="保留" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Background="{StaticResource ColorInfo}"></StackPanel>
+
+    </Grid>
+</StackPanel>

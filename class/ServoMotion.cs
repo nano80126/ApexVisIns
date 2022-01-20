@@ -2075,6 +2075,7 @@ namespace ApexVisIns
             {
                 uint result = await Task.Run(() =>
                 {
+                    // 改mode9 or mode10
                     uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);    // 1 => 先往負方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
                     {
@@ -2147,6 +2148,7 @@ namespace ApexVisIns
             {
                 uint result = await Task.Run(() =>
                 {
+                    // 改mode9 or mode10
                     uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);    // 0 => 先往正方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
                     {
