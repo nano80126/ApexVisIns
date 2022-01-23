@@ -174,6 +174,12 @@ namespace ApexVisIns.content
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
+
+                // 等待 1 分鐘
+                _ = SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 60 * 1000);
+                MainWindow.CameraEnumer.WorkerPause();
+                MainWindow.LightEnumer.WorkerPause();
+                MainWindow.MotionEnumer.WorkerPause();
             });
 
             // UX Progress Bar
@@ -513,17 +519,15 @@ namespace ApexVisIns.content
                 return;
             }
 
-            // 確認驅動安裝
-            bool IO_DllIsValid = IOController.CheckDllVersion();
-
-            if (IO_DllIsValid)
+            // 確認驅動安裝 // bool IO_DllIsValid = IOController.CheckDllVersion();
+            if (IOController.CheckDllVersion())
             {
                 IOController = MainWindow.IOController;
 
                 // IOContoller 內部沒有Dispacher
                 Dispatcher.Invoke(() =>
                 {
-                    // 初始化 DI
+                    // 初始化 DI Control
                     if (!IOController.DiCtrlCreated)
                     {
                         IOController.DigitalInputChanged += Controller_DigitalInputChanged;
@@ -534,10 +538,10 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
 
 
-                // IOContoller 內部沒有Dispacher
+                // IOContoller 內部沒有 Dispacher
                 Dispatcher.Invoke(() =>
                 {
-                    // 初始化 DO
+                    // 初始化 DO Control
                     if (!IOController.DoCtrlCreated)
                     {
                         IOController.InitializeDoCtrl();

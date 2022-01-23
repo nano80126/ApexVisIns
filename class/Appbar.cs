@@ -11,14 +11,17 @@ namespace ApexVisIns
     {
         private void TitleGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount >= 2)
+            if (DebugMode)
             {
-                Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                //Maxbtn.RaiseEvent
-            }
-            else
-            {
-                DragMove();
+                if (e.ClickCount >= 2)
+                {
+                    Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    //Maxbtn.RaiseEvent
+                }
+                else
+                {
+                    DragMove();
+                }
             }
         }
 

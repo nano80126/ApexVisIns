@@ -19,7 +19,7 @@ namespace ApexVisIns
     {
         private readonly object _ColleciotnLock = new();
 
-        private DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
+        private readonly DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
         private uint DEV_Count;
 
         public ObservableCollection<ServoMotion.MotionDevice> MotionDevices { get; } = new();
@@ -49,7 +49,6 @@ namespace ApexVisIns
             }
             return true;
         }
-
 
         private void DevicesAdd(ServoMotion.MotionDevice device)
         {
@@ -112,7 +111,7 @@ namespace ApexVisIns
             {
                 if (MotionDevices.Count > 0)
                 {
-                    WorkerPause();
+                    // WorkerPause();
                     return;
                 }
 
@@ -170,7 +169,7 @@ namespace ApexVisIns
     public class ServoMotion : INotifyPropertyChanged, IDisposable
     {
         #region Variables
-        //private DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
+        private readonly DEV_LIST[] DEV_LISTs = new DEV_LIST[10];
         //private uint DEV_Count;
 
         // private uint Result;
@@ -186,11 +185,8 @@ namespace ApexVisIns
         private int _sltAxis = -1;
         private bool _disposed;
 
-        //private bool _servoOn;
-
-        // private int _sltAxisIndex;
-
-        //private readonly object _deviceColltionLock = new();
+    
+        private readonly object _deviceColltionLock = new();
         private readonly object _axisColltionLock = new();
         #endregion
 
@@ -220,8 +216,10 @@ namespace ApexVisIns
         /// </summary>
         public ushort[] SlaveIDArray { get; private set; } = new ushort[4];
 
-        //public ObservableCollection<DeviceList> BoardList { get; } = new ObservableCollection<DeviceList>();
-
+        /// <summary>
+        /// 軸卡 Devices 列表
+        /// </summary>
+        public ObservableCollection<MotionDevice> MotionDevices { get; } = new();
         //public int BoardCount => BoardList.Count;
 
         /// <summary>
@@ -267,96 +265,6 @@ namespace ApexVisIns
         /// </summary>
         public MotionAxis SelectedMotionAxis => 0 <= _sltAxis && _sltAxis < Axes.Count ? Axes[_sltAxis] : null;
 
-#if false
-        public double PosCommand
-        {
-            get => _posCmd;
-            set
-            {
-                if (value != _posCmd)
-                {
-                    _posCmd = value;
-                    OnPropertyChanged(nameof(PosCommand));
-                }
-            }
-        }
-
-        public double PosActual
-        {
-            get => _posAct;
-            set
-            {
-                if (value != _posAct)
-                {
-                    _posAct = value;
-                    OnPropertyChanged(nameof(PosActual));
-                }
-            }
-        } 
-#endif
-
-
-#if false
-        /// <summary>
-        /// 伺服 Ready
-        /// </summary>
-        public AxisSignal IO_SRDY { get; set; } = new AxisSignal("SRDY");
-
-        /// <summary>
-        /// 伺服警報
-        /// </summary>
-        public AxisSignal IO_ALM { get; set; } = new AxisSignal("ALM");
-
-        /// <summary>
-        /// Positive Limit Flag
-        /// </summary>
-        public AxisSignal IO_LMTP { get; set; } = new AxisSignal("LMT+");
-
-        /// <summary>
-        /// Native Limit Flag
-        /// </summary>
-        public AxisSignal IO_LMTN { get; set; } = new AxisSignal("LMT-");
-
-        /// <summary>
-        /// Servo On Flag
-        /// </summary>
-        public AxisSignal IO_SVON { get; set; } = new AxisSignal("SVON");
-
-        /// <summary>
-        /// Servo Emergency Flag
-        /// </summary>
-        public AxisSignal IO_EMG { get; set; } = new AxisSignal("EMG");
-#endif
-
-
-#if false
-        public void UpdateIO()
-        {
-            OnPropertyChanged(nameof(IO_SRDY));
-            OnPropertyChanged(nameof(IO_ALM));
-            OnPropertyChanged(nameof(IO_LMTP));
-            OnPropertyChanged(nameof(IO_LMTN));
-            OnPropertyChanged(nameof(IO_SVON));
-            OnPropertyChanged(nameof(IO_EMG));
-        } 
-#endif
-
-        ///// <summary>
-        ///// 當前軸狀態
-        ///// </summary>
-        //public string CurrentStatus
-        //{
-        //    get => !string.IsNullOrEmpty(_currentStatus) ? _currentStatus?.Remove(0, 7) : string.Empty;
-        //    set
-        //    {
-        //        if (value != _currentStatus)
-        //        {
-        //            _currentStatus = value;
-        //            OnPropertyChanged(nameof(CurrentStatus));
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// 最大軸數
         /// </summary>
@@ -394,7 +302,7 @@ namespace ApexVisIns
         /// </summary>
         public void EnableCollectionBinding()
         {
-            //BindingOperations.EnableCollectionSynchronization(BoardList, _deviceColltionLock);
+            BindingOperations.EnableCollectionSynchronization(MotionDevices, _deviceColltionLock);
             BindingOperations.EnableCollectionSynchronization(Axes, _axisColltionLock);
         }
 
@@ -403,36 +311,40 @@ namespace ApexVisIns
         /// </summary>
         public void DisableCollectionBinding()
         {
+            BindingOperations.DisableCollectionSynchronization(MotionDevices);
             BindingOperations.DisableCollectionSynchronization(Axes);
         }
 
-
-#if false
         /// <summary>
-        /// 
+        /// 列出可用的 Devices (Motion Cards)
         /// </summary>
-        /// <returns></returns>
-        public uint GetAvailableDevices()
+        public void ListAvailableDevices()
         {
-            int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref DEV_Count);
-
-            if (result != (int)ErrorCode.SUCCESS)
+            if (!_deviceOpened)
             {
-                throw new Exception($"列舉 EtherCAT Card 失敗: Code[0x{result:X}]");
-            }
+                uint devCount = 0;
+                int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref devCount);
 
-            lock (_deviceColltionLock)
-            {
-                BoardList.Clear();
-                for (int i = 0; i < DEV_Count; i++)
+                if (result != (int)ErrorCode.SUCCESS)
                 {
-                    BoardList.Add(new DeviceList(DEV_LISTs[i]));
+                    throw new Exception($"取得 EtherCAT Cards 失敗: Code[0x{result:X}]");
+                }
+
+                lock (_deviceColltionLock)
+                {
+                    MotionDevices.Clear();
+                    for (int i = 0; i < devCount; i++)
+                    {
+
+                        MotionDevices.Add(new MotionDevice(DEV_LISTs[i]));
+                    }
                 }
             }
-
-            return DEV_Count;
-        } 
-#endif
+            else
+            {
+                throw new InvalidOperationException($"軸卡已開啟的情況下禁止此操作");
+            }
+        }
 
         /// <summary>
         /// 開啟 Board

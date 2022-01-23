@@ -28,9 +28,11 @@
         </Grid.Style>
 
         <Grid.ColumnDefinitions>
+            <!--1st-->
             <ColumnDefinition Width="auto"/>
             <!--Separator-->
             <ColumnDefinition Width="auto"/>
+            <!--2nd-->
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
@@ -227,7 +229,6 @@
 
         <!--#region 2nd Col -->
         <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
-            <!--<Border Grid.Column="2" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 0 0 0" Background="{x:Null}">-->
             <materialDesign:Card x:Name="DeviceCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:DeviceConfig}"
                                  DataContextChanged="DeviceCard_DataContextChanged">
@@ -684,7 +685,6 @@
 
                 </DockPanel>
             </materialDesign:Card>
-            <!--</Border>-->
         </StackPanel>
         <!--#endregion-->
     </Grid>

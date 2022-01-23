@@ -214,12 +214,14 @@ namespace ApexVisIns
             #endregion
 
             #region ApexDefect
+            // Main Tab 使用
             ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
             #endregion
 
             // 載入後, focus 視窗
-
             _ = Focus();
+
+            WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
         }
 
         /// <summary>

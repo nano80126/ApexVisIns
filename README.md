@@ -138,6 +138,7 @@ Apex 外觀瑕疵檢測
 	* 待測試
 
 * [ ] 更新 ServoMotion HomeModes
+	* 多測試幾次
 
 * [ ] 確認 OOP 命名規則
 	* SltMotionAxis (ServoMotion)
@@ -151,6 +152,11 @@ Apex 外觀瑕疵檢測
 * [ ] Test Hotkey
 	* Engineer Tab
 
+* [ ] 確認 ProgressBar 可以 100%
+
+* [ ]初始化 Motion
+	* 確認 MotionEnumer 是否使用
+	* 確認 ServoMotion.ListAvailableDevices() 觸發時機 (必須避免重複觸發)
 
 ### Config Logic
 

@@ -27,14 +27,19 @@
         </Grid.Style>
         <!--//-->
         <Grid.ColumnDefinitions>
+            <!--1st-->
             <ColumnDefinition Width="auto"/>
             <!--Separator-->
             <ColumnDefinition Width="auto"/>
+            <!--2nd-->
             <ColumnDefinition Width="1*"/>
             <!--Separator-->
             <ColumnDefinition Width="auto"/>
+            <!--3rd-->
             <ColumnDefinition Width="1*"/>
+            <!--Separator-->
             <ColumnDefinition Width="auto"/>
+            <!--4th-->
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <!--//-->
@@ -483,7 +488,7 @@
                             <materialDesign:PopupBox.ToggleContent>
                                 <Border BorderBrush="{StaticResource ColorSuccess}" BorderThickness="2" CornerRadius="15" Width="240" Margin="0 4 0 0" Focusable="False">
                                     <TextBlock Text="開始 JOG" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 8" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource ColorSuccess}"/>
+                                               Foreground="{StaticResource ColorSuccess}"/>
                                 </Border>
                                 <!--
                                         <StackPanel Orientation="Horizontal">
