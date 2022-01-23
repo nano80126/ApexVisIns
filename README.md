@@ -152,6 +152,10 @@ Apex 外觀瑕疵檢測
 * [ ] Test Hotkey
 	* Engineer Tab
 
+* [ ] MotionTab 有些 Button 需要綁定 servo on
+
+* [ ] 原點復歸若在原點上不會觸發重置位置
+
 * [ ] 確認 ProgressBar 可以 100%
 
 * [ ]初始化 Motion

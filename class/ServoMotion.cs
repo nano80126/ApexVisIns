@@ -443,15 +443,18 @@ namespace ApexVisIns
 
                 if (HomeModes.Count == 0)
                 {
-                    foreach (Advantech.Motion.HomeMode mode in Enum.GetValues(typeof(Advantech.Motion.HomeMode)))
-                    {
-                        HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
-                    }
+                    HomeModes.Add(new HomeMode("Positive Direction", 0));
+                    HomeModes.Add(new HomeMode("Negative Direction", 1));
 
-                    foreach (Cia402HomeMode mode in Enum.GetValues(typeof(Cia402HomeMode)))
-                    {
-                        HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
-                    }
+                    //foreach (Advantech.Motion.HomeMode mode in Enum.GetValues(typeof(Advantech.Motion.HomeMode)))
+                    //{
+                    //    HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
+                    //}
+
+                    //foreach (Cia402HomeMode mode in Enum.GetValues(typeof(Cia402HomeMode)))
+                    //{
+                    //    HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
+                    //}
                 }
 
                 // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
@@ -1981,34 +1984,24 @@ namespace ApexVisIns
         /// <summary>
         /// 往負方向找 HOME
         /// </summary>
-        public async Task NegativeWayHomeMove()
+        public async Task NegativeWayHomeMove(bool setPosZero = false)
         {
             if (CurrentStatus == "READY")
             {
                 uint result = await Task.Run(() =>
                 {
-                    // 改mode9 or mode10
-                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);    // 1 => 先往負方向找 HOME
+                    // MODE9，往負方向找HOME， 過ORG 後停在 EZ
+                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 1);    // 1 => 先往負方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
                     {
                         return result;
                     }
 
+                    // 等待一次 Timer Tick
+                    SpinWait.SpinUntil(() => false, 150);
                     /// 等待碰到 ORG 或 LMTN
                     SpinWait.SpinUntil(() => IO_ORG.BitOn || IO_LMTN.BitOn);
-                    if (IO_ORG.BitOn)
-                    {
-                        //result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);
-                        //if (result != (uint)ErrorCode.SUCCESS)
-                        //{
-                        //    return result;
-                        //}
-                        //// 等待碰到 ORG
-                        //SpinWait.SpinUntil(() => IO_ORG.BitOn);
-
-                        return result;
-                    }
-                    else
+                    if (IO_LMTN.BitOn)
                     {
                         // 重置錯誤
                         result = Motion.mAcm_AxResetError(AxisHandle);
@@ -2017,27 +2010,38 @@ namespace ApexVisIns
                             return result;
                         }
 
-                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);
+                        // 啟動復歸
+                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 1);     // 1 => 負方向
                         if (result != (uint)ErrorCode.SUCCESS)
                         {
                             return result;
                         }
 
                         // 等待碰到 ORG && 軸狀態為READY
-                        SpinWait.SpinUntil(() => IO_ORG.BitOn && CurrentStatus == "READY");
-                        // 等待 //SpinWait.SpinUntil(() => CurrentStatus == "READY");
-
-                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 1);
-                        if (result != (uint)ErrorCode.SUCCESS)
-                        {
-                            return result;
-                        }
-
-                        // 等待碰到 ORG
                         SpinWait.SpinUntil(() => IO_ORG.BitOn);
                     }
 
                     return result;
+                }).ContinueWith(t =>
+                {
+                    if (t.Result == (uint)ErrorCode.SUCCESS)
+                    {
+                        uint result = (uint)ErrorCode.SUCCESS;
+                        if (setPosZero)
+                        {  
+                            SpinWait.SpinUntil(() => CurrentStatus == "READY");
+                            double cmdPos = 0;
+                            result = Motion.mAcm_AxSetCmdPosition(AxisHandle, cmdPos);
+
+                            // 可有可無
+                            // if (result != (uint)ErrorCode.SUCCESS)
+                            // {
+                            //     return result;
+                            // }
+                        }
+                        return result;
+                    }
+                    return t.Result;
                 });
 
                 if (result != (uint)ErrorCode.SUCCESS)
@@ -2054,34 +2058,24 @@ namespace ApexVisIns
         /// <summary>
         /// 往正方向找 HOME
         /// </summary>
-        public async Task PositiveWayHomeMove()
+        public async Task PositiveWayHomeMove(bool setPosZero = false)
         {
             if (CurrentStatus == "READY")
             {
                 uint result = await Task.Run(() =>
                 {
-                    // 改mode9 or mode10
-                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);    // 0 => 先往正方向找 HOME
+                    // MODE9，往正方向找HOME， 過ORG 後停在 EZ
+                    uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 0);    // 0 => 先往正方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
                     {
                         return result;
                     }
 
+                    // 等待一次 Timer Tick
+                    SpinWait.SpinUntil(() => false, 150);
                     // 等待碰到 ORG 或 LMTP
                     SpinWait.SpinUntil(() => IO_ORG.BitOn || IO_LMTP.BitOn);
-                    if (IO_ORG.BitOn)
-                    {
-                        //result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);
-                        //if (result != (uint)ErrorCode.SUCCESS)
-                        //{
-                        //    return result;
-                        //}
-                        //// 等待碰到 ORG
-                        //SpinWait.SpinUntil(() => IO_ORG.BitOn);
-
-                        return result;
-                    }
-                    else
+                    if (IO_LMTP.BitOn)
                     {
                         // 重置錯誤
                         result = Motion.mAcm_AxResetError(AxisHandle);
@@ -2090,26 +2084,37 @@ namespace ApexVisIns
                             return result;
                         }
 
-                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);
+                        // 啟動復歸
+                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 0);
                         if (result != (uint)ErrorCode.SUCCESS)
                         {
                             return result;
                         }
                         // 等待碰到 ORG && 軸狀態為READY
-                        SpinWait.SpinUntil(() => IO_ORG.BitOn && CurrentStatus == "READY");
-                        // 等待 SpinWait.SpinUntil(() => CurrentStatus == "READY");
-
-                        result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE7_AbsSearch, 0);
-                        if (result != (uint)ErrorCode.SUCCESS)
-                        {
-                            return result;
-                        }
-
-                        // 等待碰到 ORG
                         SpinWait.SpinUntil(() => IO_ORG.BitOn);
                     }
 
                     return result;
+                }).ContinueWith(t =>
+                {
+                    if (t.Result == (uint)ErrorCode.SUCCESS)
+                    {
+                        uint result = (uint)ErrorCode.SUCCESS;
+                        if (setPosZero)
+                        {
+                            SpinWait.SpinUntil(() => CurrentStatus == "READY");
+                            double cmdPos = 0;
+                            result = Motion.mAcm_AxSetCmdPosition(AxisHandle, cmdPos);
+
+                            // 可有可無
+                            // if (result != (uint)ErrorCode.SUCCESS)
+                            // {
+                            //     return result;
+                            // }
+                        }
+                        return result;
+                    }
+                    return t.Result;
                 });
 
                 if (result != (uint)ErrorCode.SUCCESS)

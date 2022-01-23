@@ -19,6 +19,7 @@ using System.Timers;
 using System.Text.Json;
 using System.IO;
 using Microsoft.Win32;
+using System.Threading;
 
 namespace ApexVisIns.content
 {
@@ -319,7 +320,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GearRationSetBtn_Click(object sender, RoutedEventArgs e)
+        private void GearRatioSetBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -484,8 +485,25 @@ namespace ApexVisIns.content
             {
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    //await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove();
-                    await MainWindow.ServoMotion.SelectedMotionAxis.PositiveWayHomeMove();
+                    //await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove(true);
+                    if (homeMode is ServoMotion.HomeMode)
+                    {
+                        switch (homeMode.ModeCode)
+                        {
+                            case 0:
+                                await MainWindow.ServoMotion.SelectedMotionAxis.PositiveWayHomeMove(true);
+                                break;
+                            case 1:
+                                await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove(true);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"原點復歸模式未選擇");
+                    }
                 }
                 else
                 {
