@@ -685,7 +685,7 @@ namespace ApexVisIns.content
                             axis.LoadFromVelParam(item);
 
                             // 先不要寫入
-#if false
+#if true
                             axis.SetGearRatio();
                             axis.SetJogVelParam();
                             axis.SetHomeVelParam();

@@ -484,12 +484,14 @@ namespace ApexVisIns.CustomProperty
 {
     public class StatusHelper : DependencyObject
     {
-        public static readonly DependencyProperty ConnectedProperty =
-            DependencyProperty.RegisterAttached("Connected", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+        public static readonly DependencyProperty ConnectedProperty = DependencyProperty.RegisterAttached("Connected", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
 
-        public static readonly DependencyProperty GrabbingProperty =
-            DependencyProperty.RegisterAttached("IsGrabbing", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+        public static readonly DependencyProperty GrabbingProperty = DependencyProperty.RegisterAttached("IsGrabbing", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+
+
+        public static readonly DependencyProperty AlarmProperty = DependencyProperty.RegisterAttached("Alarm", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+
 
         public static void SetConnected(DependencyObject target, bool value)
         {
@@ -510,9 +512,20 @@ namespace ApexVisIns.CustomProperty
         {
             return (bool)target.GetValue(GrabbingProperty);
         }
+
+        public static void SetAlarm(DependencyObject target, bool value)
+        {
+            target.SetValue(AlarmProperty, value);
+        }
+
+        public static bool GetAlarm(DependencyObject target)
+        {
+            return (bool)target.GetValue(AlarmProperty);
+        }
     }
 
-    // 確認為什麼不能兩個
+
+
     public class ProcedureBlock : DependencyObject
     {
         public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached(

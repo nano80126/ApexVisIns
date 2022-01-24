@@ -20,9 +20,8 @@ namespace ApexVisIns.content
     {
         #region Resources
 
-
-
         #endregion
+
 
         #region Variables
         /// <summary>
@@ -50,6 +49,7 @@ namespace ApexVisIns.content
         /// </summary>
         private bool IoInitialized { get; set; }
         #endregion
+
 
         #region Local Object (方便 CALL)
         /// <summary>

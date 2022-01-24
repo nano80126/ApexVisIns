@@ -111,6 +111,15 @@
                             </DataTrigger>
                         </Style.Triggers>    
                     </Style>
+
+                    <Style TargetType="materialDesign:PackIcon" x:Key="MotionStatus" BasedOn="{StaticResource HWStatus}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Alarm), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                <Setter Property="Kind" Value="AlertCircle"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
                 </ToolBar.Resources>
 
                 <!--#region Light Contorller Connection Status Bar -->
@@ -138,14 +147,16 @@
                         <!-- X 軸驅動 -->
                         <Canvas ToolTip="X 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="AxisXRotateClockwise" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
-                                                     ctProperty:StatusHelper.Connected="{Binding Axes[0].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource MotionStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding Axes[0].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.Alarm="{Binding Axes[0].IO_ALM.BitOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                         <!-- A 軸驅動 -->
                         <Canvas ToolTip="A 軸驅動器" Background="Transparent">
                             <materialDesign:PackIcon Kind="RotateLeft" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding Axes[1].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                            <materialDesign:PackIcon Style="{StaticResource MotionStatus}" 
+                                                     ctProperty:StatusHelper.Connected="{Binding Axes[1].IsAxisOpen, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.Alarm="{Binding Axes[1].IO_ALM.BitOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
                         <!--//-->
                     </StackPanel>

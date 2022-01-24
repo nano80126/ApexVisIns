@@ -29,7 +29,7 @@ namespace ApexVisIns
 
         /// <summary>
         /// 檢驗步驟，
-        /// -1 時方塊圖全暗
+        /// -1 時方塊圖全暗 (-1 為程式剛啟動之預設狀態)
         /// </summary>
         public int CurrentStep
         {
@@ -44,6 +44,9 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 目前狀態
+        /// </summary>
         public StatusType Status
         {
             get => _status;
@@ -56,6 +59,31 @@ namespace ApexVisIns
                 }
             }
         }
+
+        /// <summary>
+        /// 硬體準備完成旗標
+        /// </summary>
+        public bool HardwarePrepared { get; set; }
+
+        /// <summary>
+        /// 原點復歸中 Flag
+        /// </summary>
+        public bool ZeroReturning { get; set; }
+
+        /// <summary>
+        /// 原點復歸完成 Flag
+        /// </summary>
+        public bool ZeroReturned { get; set; }
+
+        /// <summary>
+        /// 變更規格中 Flag
+        /// </summary>
+        public bool SpecChanging { get; set; }
+
+        /// <summary>
+        /// 變更規格完成 Flag
+        /// </summary>
+        public bool SpecChanged { get; set; }
 
         /// <summary>
         /// OK 數量，
