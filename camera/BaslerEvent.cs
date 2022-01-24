@@ -279,13 +279,13 @@ namespace ApexVisIns
             BaslerCam.OffsetY = (int)cam.Parameters[PLGigECamera.OffsetY].GetValue();
 
             // 設定解析度, 嘗試設定為目標解析度, 失敗則設為最大值
-            if (!cam.Parameters[PLGigECamera.Width].TrySetValue(CAM_WIDTH))
+            if (!cam.Parameters[PLGigECamera.Width].TrySetValue(CAMWIDTH))
             {
                 cam.Parameters[PLGigECamera.Width].SetToMaximum();  // must set to other value small than 2040 
             }
             BaslerCam.Width = (int)cam.Parameters[PLGigECamera.Width].GetValue();
 
-            if (!cam.Parameters[PLGigECamera.Height].TrySetValue(CAM_HEIGHT))
+            if (!cam.Parameters[PLGigECamera.Height].TrySetValue(CAMHEIGHT))
             {
                 cam.Parameters[PLGigECamera.Height].SetToMaximum(); // must set to other value small than 2040
             }

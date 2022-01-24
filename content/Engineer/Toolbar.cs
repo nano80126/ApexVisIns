@@ -218,17 +218,18 @@ namespace ApexVisIns.content
             Cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
 
             // CAM_WIDTH 待變更
-            if (!camera.Parameters[PLGigECamera.Width].TrySetValue(MainWindow.CAM_WIDTH))
-            {
-                camera.Parameters[PLGigECamera.Width].SetToMaximum();  // must set to other value small than 2040 
-            }
+            //if (!camera.Parameters[PLGigECamera.Width].TrySetValue(MainWindow.CAMWIDTH))
+            //if (!camera.Parameters[PLGigECamera.Width].TrySetValue(MainWindow.CustomCameraParam.WIDTH))
+            //{
+            camera.Parameters[PLGigECamera.Width].SetToMaximum();  // 設為最大 WIDTH
+            //}
             Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
             // CAM_HEIGHT 待變更
-            if (!camera.Parameters[PLGigECamera.Height].TrySetValue(MainWindow.CAM_HEIGHT))
-            {
-                camera.Parameters[PLGigECamera.Height].SetToMaximum(); // must set to other value small than 2040
-            }
+            //if (!camera.Parameters[PLGigECamera.Height].TrySetValue(MainWindow.CustomCameraParam.HEIGHT))
+            //{
+            camera.Parameters[PLGigECamera.Height].SetToMaximum(); // 設為最大 HEIGHT
+            //}
             Cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
 
             // 取得最大 OFFSET
@@ -240,13 +241,13 @@ namespace ApexVisIns.content
 
             // FPS 設定
             camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(true); // 鎖定 FPS (不需要太快張數)
-            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(12);      // 設定 FPS
+            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(MainWindow.CustomCameraParam.FPS);      // 設定 FPS
             Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
 
             // 曝光時間設定
             camera.Parameters[PLGigECamera.ExposureMode].SetValue(PLGigECamera.ExposureMode.Timed);    // 曝光模式 Timed
             camera.Parameters[PLGigECamera.ExposureAuto].SetValue(PLGigECamera.ExposureAuto.Off);      // 關閉自動曝光
-            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(10000);   // 10000 is default exposure time of acA2040
+            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(MainWindow.CustomCameraParam.EXPOSURE);   // 10000 is default exposure time of acA2040
 
             Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 

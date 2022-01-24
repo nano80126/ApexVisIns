@@ -686,7 +686,8 @@ namespace ApexVisIns
             SelectedMotionAxis.IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
             SelectedMotionAxis.IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
             // SVON Bit & ServoOn Flag
-            SelectedMotionAxis.IO_SVON.BitOn = SelectedMotionAxis.ServoOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            //SelectedMotionAxis.IO_SVON.BitOn = SelectedMotionAxis.ServoOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+            SelectedMotionAxis.IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
             SelectedMotionAxis.IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
             SelectedMotionAxis.IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
         }
@@ -1304,6 +1305,7 @@ namespace ApexVisIns
         /// <summary>
         /// Servo Oo Flag
         /// </summary>
+        [Obsolete("待確認是否使用")]
         public bool ServoOn
         {
             get => _servoOn;
@@ -1489,49 +1491,17 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 讀取軸資訊
-        /// </summary>
-        [Obsolete]
-        public void GetAxisInfo()
-        {
-            double cmd = 0;
-            double pos = 0;
-            ushort axState = 0;
-            uint result;
-            uint IOStatus = 0;
-
-            // Get current command position
-            Motion.mAcm_AxGetCmdPosition(AxisHandle, ref cmd);
-            // Get current actual position
-            Motion.mAcm_AxGetActualPosition(AxisHandle, ref pos);
-
-            PosCommand = cmd;
-            PosActual = pos;
-
-            result = Motion.mAcm_AxGetMotionIO(AxisHandle, ref IOStatus);
-            if (result == (uint)ErrorCode.SUCCESS)
-            {
-                SetMotionIOStatus(IOStatus);
-                // UpdateIO(); // 更新 IO (trigger property)
-            }
-
-            // Get Axis current state
-            Motion.mAcm_AxGetState(AxisHandle, ref axState);
-            CurrentStatus = $"{(AxisState)axState}";
-        }
-
-        /// <summary>
         /// 更新 Servo IO Status
         /// </summary>
         /// <param name="IOStatus"></param>
+        [Obsolete("待測試")]
         private void SetMotionIOStatus(uint IOStatus)
         {
             IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
             IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
             IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
             IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
-            IO_SVON.BitOn = ServoOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
-            //ServoOn = IO_SVON.BitOn;
+            IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
             IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
         }
 
@@ -1557,7 +1527,8 @@ namespace ApexVisIns
         public void SetServoOn()
         {
             uint result;
-            if (!ServoOn)
+            //if (!ServoOn)
+            if (!IO_SVON.BitOn)
             {
                 // Servo On augu 2 => 1
                 result = Motion.mAcm_AxSetSvOn(AxisHandle, 1);
@@ -1566,7 +1537,8 @@ namespace ApexVisIns
                 {
                     throw new Exception($"{AxisIndex}-Axis Servo On 失敗: Code[0x{result:X}]");
                 }
-                ServoOn = true;
+                //ServoOn = true;
+                IO_SVON.BitOn = true;
             }
         }
 
@@ -1576,7 +1548,7 @@ namespace ApexVisIns
         public void SetServoOff()
         {
             uint result;
-            if (ServoOn)
+            if (IO_SVON.BitOn)
             {
                 // Servo Off augu 2 => 0
                 result = Motion.mAcm_AxSetSvOn(AxisHandle, 0);
@@ -1585,7 +1557,8 @@ namespace ApexVisIns
                 {
                     throw new Exception($"{AxisIndex}-Axis Servo Off 失敗: Code[0x{result:X}]");
                 }
-                ServoOn = false;
+                //ServoOn = false;
+                IO_SVON.BitOn = false;
             }
         }
 
@@ -1596,8 +1569,9 @@ namespace ApexVisIns
         {
             double cmdPos = 0;
             // 先確認 Servo On
-            if (ServoOn)
-            {
+            //if (ServoOn)
+            if (IO_SVON.BitOn)
+                {
                 uint result = Motion.mAcm_AxSetCmdPosition(AxisHandle, cmdPos);
 
                 if (result != (uint)ErrorCode.SUCCESS)

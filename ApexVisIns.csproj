@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
   </ItemGroup>
 

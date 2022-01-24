@@ -245,7 +245,7 @@ namespace ApexVisIns.content
             {
                 MotionAxis motionAxis = AxisSelector.SelectedItem as MotionAxis;
 
-                if (!MainWindow.ServoMotion.SelectedMotionAxis.ServoOn)
+                if (!MainWindow.ServoMotion.SelectedMotionAxis.IO_SVON.BitOn)
                 {
                     MainWindow.ServoMotion.SelectedMotionAxis.SetServoOn();
                 }
