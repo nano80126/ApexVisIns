@@ -381,11 +381,10 @@ namespace ApexVisIns.content
                             {
                                 axis.SetServoOn();
                             }
+                            ServoMotion.EnableAllTimer(100);
+
                             // X 軸回原點
                             _ = ServoMotion.Axes[0].PositiveWayHomeMove(true);
-
-
-                            
                         }
                         //Debug.WriteLine($"{ServoMotion.DeviceOpened} {ServoMotion.SelectedAxis}");
                     }
@@ -599,7 +598,6 @@ namespace ApexVisIns.content
             //  throw new NotImplementedException();
         }
         #endregion
-
 
         #region 原點復歸
 

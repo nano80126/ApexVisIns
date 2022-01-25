@@ -684,7 +684,11 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void AllAxisTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException() 
+            for (int i = 0; i < Axes.Count; i++)
+            {
+                GetMotionIO(i);
+            }
         }
 
         /// <summary>
@@ -696,7 +700,34 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得 Motion Information
+        /// 取得 Motion IO 狀態
+        /// </summary>
+        /// <param name="axis"></param>
+        public void GetMotionIO(int axis)
+        {
+            uint IOStatus = 0;
+            uint result = Motion.mAcm_AxGetMotionIO(AxisHandles[axis], ref IOStatus);
+            if (result == (uint)ErrorCode.SUCCESS)
+            {
+                Axes[axis].IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
+                Axes[axis].IO_ALM.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ALM) == (uint)Ax_Motion_IO.AX_MOTION_IO_ALM;
+                Axes[axis].IO_LMTP.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTP;
+                Axes[axis].IO_LMTN.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN) == (uint)Ax_Motion_IO.AX_MOTION_IO_LMTN;
+                Axes[axis].IO_SVON.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_SVON) == (uint)Ax_Motion_IO.AX_MOTION_IO_SVON;
+                Axes[axis].IO_EMG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_EMG) == (uint)Ax_Motion_IO.AX_MOTION_IO_EMG;
+                Axes[axis].IO_ORG.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_ORG) == (uint)Ax_Motion_IO.AX_MOTION_IO_ORG;
+                Axes[axis].PropertyChange("IO_SRDY");
+                Axes[axis].PropertyChange("IO_ALM");
+                Axes[axis].PropertyChange("IO_LMTP");
+                Axes[axis].PropertyChange("IO_LMTN");
+                Axes[axis].PropertyChange("IO_EMG");
+                Axes[axis].PropertyChange("IO_ORG");
+            }
+        }
+
+        /// <summary>
+        /// 取得 Motion Information，
+        /// MotionTab 使用
         /// </summary>
         public void GetMotionInfo()
         {

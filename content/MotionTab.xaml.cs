@@ -50,28 +50,6 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region 確認驅動安裝 => 移動到 MotionEnumer 處理
-            // DllIsValid = ServoMotion.CheckDllVersion();
-            // if (DllIsValid)
-            // {
-            //     GetAvaiDevs();
-            // }
-            // else
-            // {
-            //     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
-            // }
-            if (ServoMotion.CheckDllVersion())
-            {
-                if (!MainWindow.ServoMotion.DeviceOpened)
-                {
-                    MainWindow.ServoMotion.ListAvailableDevices();
-                }
-            }
-            else
-            {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
-            }
-            #endregion
             InitMotionsConfigsRoot();
 
             // 若D eviceOpened，始能 Timer
@@ -143,9 +121,6 @@ namespace ApexVisIns.content
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
-        /// <summary>
-        /// 取得可用之 Device (EtherCAT卡)
-        /// </summary>
         //public void GetAvaiDevs()
         //{
         //    // Board Count == 0 時才尋找
@@ -163,6 +138,25 @@ namespace ApexVisIns.content
         //    }
         //}
 
+        /// <summary>
+        /// 重載入 EtherCAT Card
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReloadMotionDevicesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (ServoMotion.CheckDllVersion())
+            {
+                if (!MainWindow.ServoMotion.DeviceOpened)
+                {
+                    MainWindow.ServoMotion.ListAvailableDevices();
+                }
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
+            }
+        }
 
         /// <summary>
         /// 開啟軸卡
@@ -770,5 +764,12 @@ namespace ApexVisIns.content
             bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
             Debug.WriteLine(abs);
         }
+
+        private void PackIcon_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine($"123");
+        }
+
+      
     }
 }

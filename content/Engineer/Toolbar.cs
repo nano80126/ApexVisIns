@@ -241,13 +241,13 @@ namespace ApexVisIns.content
 
             // FPS 設定
             camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(true); // 鎖定 FPS (不需要太快張數)
-            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(MainWindow.CustomCameraParam.FPS);      // 設定 FPS
+            camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(MainWindow.CAMFPS);      // 設定 FPS
             Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
 
             // 曝光時間設定
             camera.Parameters[PLGigECamera.ExposureMode].SetValue(PLGigECamera.ExposureMode.Timed);    // 曝光模式 Timed
             camera.Parameters[PLGigECamera.ExposureAuto].SetValue(PLGigECamera.ExposureAuto.Off);      // 關閉自動曝光
-            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(MainWindow.CustomCameraParam.EXPOSURE);   // 10000 is default exposure time of acA2040
+            camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(MainWindow.CAMEXPOSURE);   // 10000 is default exposure time of acA2040
 
             Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 

@@ -372,10 +372,18 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // 若已登入，不做任何反應
-            if (LoginFlag)
+            if (DebugMode)
             {
+                LoginFlag = true;
                 e.Handled = true;
+            }
+            else
+            {
+                // 若已登入，不做任何反應
+                if (LoginFlag)
+                {
+                    e.Handled = true;
+                }
             }
         }
 

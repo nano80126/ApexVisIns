@@ -167,6 +167,9 @@ Apex 外觀瑕疵檢測
 
 * [ ] ServoMotion.Axes.Clear() 時會導致 Binding 產生 Error
 
+* [ ] 測試原點復歸中是否可以進行其他操作
+
+* [ ] MotionTab 尋找軸卡改為手動觸發
 
 ### Config Logic
 
