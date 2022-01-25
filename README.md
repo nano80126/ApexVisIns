@@ -158,12 +158,15 @@ Apex 外觀瑕疵檢測
 
 * [ ] 確認 ProgressBar 可以 100%
 
-* [ ]初始化 Motion
+* [ ] 初始化 Motion
 	* 確認 MotionEnumer 是否使用
 	* 確認 ServoMotion.ListAvailableDevices() 觸發時機 (必須避免重複觸發)
 
 * [ ] Motion Status Pack Icon
 	* ALM 時顯示驚嘆號 (exclamation)
+
+* [ ] ServoMotion.Axes.Clear() 時會導致 Binding 產生 Error
+
 
 ### Config Logic
 

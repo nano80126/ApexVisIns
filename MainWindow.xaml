@@ -268,7 +268,8 @@
             <materialDesign:DialogHost x:Name="LoginDialog" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
                                        OverlayBackground="{DynamicResource ColorBlueGrayTranparent}"
                                        KeyUp="LoginDialog_KeyUp"
-                                       DialogTheme="Dark" DialogClosing="DialogHost_DialogClosing">
+                                       DialogTheme="Dark" 
+                                       DialogOpened="DialogHost_DialogOpened" DialogClosing="DialogHost_DialogClosing">
                 <!--// Dialog 內容, 登入方法、邏輯需要再確認 -->
                 <materialDesign:DialogHost.DialogContent>
                     <DockPanel MinWidth="320" Margin="16" MouseDown="Panels_MouseDown" Background="Transparent">
@@ -276,10 +277,10 @@
                         <Separator DockPanel.Dock="Top" Margin="0 12"/>
 
                         <!--#region 密碼 & Hint -->
-                        <PasswordBox x:Name="password" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password" 
+                        <PasswordBox x:Name="LoginPassword" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password" 
                                      Padding="4 3" FontWeight="Bold" Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
 
-                        <TextBlock x:Name="passwordHint" DockPanel.Dock="Top" Height="12" HorizontalAlignment="Center" FontWeight="SemiBold" Padding="8 0" Margin="0" FontSize="12" Foreground="{StaticResource ColorErrorTransparent}"/>
+                        <TextBlock x:Name="LoginPasswordHint" DockPanel.Dock="Top" Height="12" HorizontalAlignment="Center" FontWeight="SemiBold" Padding="8 0" Margin="0" FontSize="12" Foreground="{StaticResource ColorErrorTransparent}"/>
                         <!--#endregion-->
 
                         <Button x:Name="LoginBtn" DockPanel.Dock="Left" Margin="8 0 8 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="OK" 

@@ -15,6 +15,8 @@ using System.Windows.Data;
 
 namespace ApexVisIns
 {
+
+    [Obsolete("因 PCI Card不會常常插拔，故不太需要 Work 來處理")]
     public class MotionEnumer : LongLifeWorker
     {
         private readonly object _ColleciotnLock = new();
@@ -165,7 +167,6 @@ namespace ApexVisIns
         }
     }
 
-
     public class ServoMotion : INotifyPropertyChanged, IDisposable
     {
         #region Variables
@@ -181,11 +182,11 @@ namespace ApexVisIns
         //private string _currentStatus;
         private bool _deviceOpened;
 
-        private System.Timers.Timer statusTimer;
+        private System.Timers.Timer _statusTimer;
+        private System.Timers.Timer _allAxisTimer;
         private int _sltAxis = -1;
         private bool _disposed;
 
-    
         private readonly object _deviceColltionLock = new();
         private readonly object _axisColltionLock = new();
         #endregion
@@ -209,7 +210,12 @@ namespace ApexVisIns
         /// <summary>
         /// Status Timer 啟用旗標
         /// </summary>
-        public bool StatusTimerOn => statusTimer.Enabled;
+        public bool StatusTimerOn => _statusTimer.Enabled;
+
+        /// <summary>
+        /// 全軸 Status Timer
+        /// </summary>
+        public bool AllAxisTimerOn => _allAxisTimer.Enabled;
 
         /// <summary>
         /// 從站 ID 陣列
@@ -335,7 +341,6 @@ namespace ApexVisIns
                     MotionDevices.Clear();
                     for (int i = 0; i < devCount; i++)
                     {
-
                         MotionDevices.Add(new MotionDevice(DEV_LISTs[i]));
                     }
                 }
@@ -354,6 +359,7 @@ namespace ApexVisIns
             uint result;
             int retry = 0;          // 重試次數
             uint AxesCount = 0;     // 裝置軸數 
+
             // uint DiChCount = 0;     // 裝置DI數，用不到
 
             // ushort ringNo = 0;      // 
@@ -381,6 +387,7 @@ namespace ApexVisIns
                     }
                 } while (rescanFlag);
 
+
                 // Get axis number of this device // 讀取最大軸數
                 result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DevAxesCount, ref AxesCount);
                 if (result != (int)ErrorCode.SUCCESS)
@@ -389,18 +396,26 @@ namespace ApexVisIns
                 }
                 MaxAxisCount = AxesCount;
 
-                Axes.Clear();
-                for (int i = 0; i < MaxAxisCount; i++)
+                lock (_axisColltionLock)
                 {
-                    //result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
-
-                    Axes.Add(new MotionAxis(DeviceHandle, i));
-                    result = Axes[i].AxisOpen(out AxisHandles[i]);
-
-                    if (result != (int)ErrorCode.SUCCESS)
+                    Axes.Clear();
+                    for (int i = 0; i < MaxAxisCount; i++)
                     {
-                        throw new Exception($"開啟軸失敗: Code[0x{result:X}]");
+                        // result = Motion.mAcm_AxOpen(DeviceHandle, (ushort)i, ref AxisHandles[i]);
+                        Axes.Add(new MotionAxis(DeviceHandle, i));
+                        result = Axes[i].AxisOpen(out AxisHandles[i]);
+
+                        if (result != (int)ErrorCode.SUCCESS)
+                        {
+                            throw new Exception($"開啟軸失敗: Code[0x{result:X}]");
+                        }
                     }
+                }
+
+                // 重置所有軸 Error
+                foreach (MotionAxis axis in Axes)
+                {
+                    axis.ResetError();
                 }
 
                 #region 可略過，不知道能幹嘛
@@ -428,7 +443,7 @@ namespace ApexVisIns
                         {
                             Axes[slvIndex].SlaveNumber = info.SlaveID;
                             slvIndex++;
-                            Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}");
+                            // Debug.WriteLine($"{info.SlaveID} {info.Name} {info.RevisionNo}");
                         }
                         j++;
                     }
@@ -446,6 +461,7 @@ namespace ApexVisIns
                     HomeModes.Add(new HomeMode("Positive Direction", 0));
                     HomeModes.Add(new HomeMode("Negative Direction", 1));
 
+#if false
                     //foreach (Advantech.Motion.HomeMode mode in Enum.GetValues(typeof(Advantech.Motion.HomeMode)))
                     //{
                     //    HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
@@ -454,22 +470,25 @@ namespace ApexVisIns
                     //foreach (Cia402HomeMode mode in Enum.GetValues(typeof(Cia402HomeMode)))
                     //{
                     //    HomeModes.Add(new HomeMode(mode.ToString(), (uint)mode));
-                    //}
+                    //}  
+#endif
                 }
 
+#if false
                 // Get Di maximum number of this channel // 目前不知道要做啥    // 大概沒用
-                //result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
-                //if (result != (uint)ErrorCode.SUCCESS)
-                //{
-                //    throw new Exception($"讀取屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
-                //}
+                // result = Motion.mAcm_GetU32Property(DeviceHandle, (uint)PropertyID.FT_DaqDiMaxChan, ref DiChCount);
+                // if (result != (uint)ErrorCode.SUCCESS)
+                // {
+                //     throw new Exception($"讀取屬性 FT_DaqDiMaxChan 失敗: Code[0x{result:X}]");
+                // }
 
                 //// 這要幹麻? 
                 //for (int i = 0; i < DiChCount; i++)
                 //{
                 //    Debug.WriteLine($"{i}");
                 //}
-                //Debug.WriteLine(DiChCount);
+                //Debug.WriteLine(DiChCount);  
+#endif
 
                 // 
                 DeviceOpened = true;    // 裝置開啟旗標
@@ -601,20 +620,20 @@ namespace ApexVisIns
         /// <param name="interval"></param>
         public void EnableTimer(int interval)
         {
-            if (statusTimer == null)
+            if (_statusTimer == null)
             {
-                statusTimer = new System.Timers.Timer(interval)
+                _statusTimer = new System.Timers.Timer(interval)
                 {
                     AutoReset = true
                 };
 
-                statusTimer.Elapsed += StatusTimer_Elapsed;
-                statusTimer.Start();
+                _statusTimer.Elapsed += StatusTimer_Elapsed;
+                _statusTimer.Start();
             }
             else
             {
-                statusTimer.Interval = interval;
-                statusTimer.Start();
+                _statusTimer.Interval = interval;
+                _statusTimer.Start();
             }
         }
 
@@ -625,7 +644,6 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             GetMotionInfo();
         }
 
@@ -634,7 +652,47 @@ namespace ApexVisIns
         /// </summary>
         public void DisableTimer()
         {
-            statusTimer?.Stop();
+            _statusTimer?.Stop();
+        }
+
+        /// <summary>
+        /// 啟用全軸 Timer
+        /// </summary>
+        public void EnableAllTimer(int interval)
+        {
+            if (_allAxisTimer == null)
+            {
+                _allAxisTimer = new System.Timers.Timer(interval)
+                {
+                    AutoReset = true
+                };
+
+                _allAxisTimer.Elapsed += AllAxisTimer_Elapsed;
+                _allAxisTimer.Start();
+            }
+            else
+            {
+                _allAxisTimer.Interval = interval;
+                _allAxisTimer.Start();
+            }
+        }
+
+        /// <summary>
+        /// All Timer Tick Event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AllAxisTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 停用全軸 Timer
+        /// </summary>
+        public void DisableAllTimer()
+        {
+            _allAxisTimer?.Stop();
         }
 
         /// <summary>
@@ -813,11 +871,11 @@ namespace ApexVisIns
                 DisableCollectionBinding();
                 // homemo
 
-                if (statusTimer != null)
+                if (_statusTimer != null)
                 {
-                    statusTimer.Stop();
-                    statusTimer.Dispose();
-                    statusTimer = null;
+                    _statusTimer.Stop();
+                    _statusTimer.Dispose();
+                    _statusTimer = null;
                 }
             }
 
@@ -1613,7 +1671,7 @@ namespace ApexVisIns
         public void ResetError()
         {
             uint result = Motion.mAcm_AxResetError(AxisHandle);
-
+            //Debug.WriteLine($"{AxisHandle} {result}");
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"重置錯誤失敗: Code[0x{result:X}]");
@@ -2028,7 +2086,7 @@ namespace ApexVisIns
                     {
                         uint result = (uint)ErrorCode.SUCCESS;
                         if (setPosZero)
-                        {  
+                        {
                             SpinWait.SpinUntil(() => CurrentStatus == "READY");
                             double cmdPos = 0;
                             result = Motion.mAcm_AxSetCmdPosition(AxisHandle, cmdPos);

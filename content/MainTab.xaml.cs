@@ -87,7 +87,6 @@ namespace ApexVisIns.content
         private ServoMotion ServoMotion;
         #endregion
 
-
         public MainTab()
         {
             InitializeComponent();
@@ -101,7 +100,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //Initializer();
+            //Initializer();            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -150,25 +149,30 @@ namespace ApexVisIns.content
                 MainWindow.ApexDefect.CurrentStep = 0;
 
                 // 等待相機 Enumerator 搜尋完畢
-                _ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-
-                InitCamera();
+                if (SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
+                {
+                    //_ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
+                    InitCamera();
+                }
 
                 // 等待 Motion Device 搜尋完畢
-                _ = SpinWait.SpinUntil(() =>
-                    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished ||
-                    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Interrupt, 3000
-                );
+                //_ = SpinWait.SpinUntil(() =>
+                //    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished ||
+                //    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Interrupt, 3000
+                //);
 
-                if (MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished)
+                if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000))
                 {
+                    //_ = SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000);
                     InitMotion();
                 }
 
                 // 等待 Com Port 搜尋完畢
-                _ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-
-                InitLightCtrls();
+                if (SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
+                {
+                    //_ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
+                    InitLightCtrls();
+                }
 
                 InitIOCtrl(); // 跨執行續
 
@@ -179,7 +183,7 @@ namespace ApexVisIns.content
                 _ = SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 60 * 1000);
                 MainWindow.CameraEnumer.WorkerPause();
                 MainWindow.LightEnumer.WorkerPause();
-                MainWindow.MotionEnumer.WorkerPause();
+                //MainWindow.MotionEnumer.WorkerPause();
             });
 
             // UX Progress Bar
@@ -206,12 +210,22 @@ namespace ApexVisIns.content
             BaslerCam3?.Close();
             BaslerCam4?.Close();
 
+            // 關閉軸卡
+            if (ServoMotion != null && ServoMotion.DeviceOpened)
+            {
+                ServoMotion.SetAllServoOff();
+                ServoMotion.DisableTimer();
+                ServoMotion.CloseDevice();
+            }
+
+            // 關閉 24V 光源
             if (Light24V != null && Light24V.IsComOpen)
             {
                 _ = Light24V.TryResetAllValue();
                 Light24V.ComClose();
             }
 
+            // 關閉 6V 光源
             if (Light_6V != null && Light_6V.IsComOpen)
             {
                 _ = Light_6V.TryResetAllValue();
@@ -339,28 +353,41 @@ namespace ApexVisIns.content
             // 3. 取得 Motor Configs
             // 4. Device Open
             // 5. Axis Open
-            // 6. 寫入 Config
+            // 6. 載入 Config
 
             ServoMotion = MainWindow.ServoMotion;
 
+            //Debug.WriteLine($"{ServoMotion.Axes.Count}");
+            //Debug.WriteLine($"{ServoMotion.DeviceOpened}");
+            //Debug.WriteLine($"{ServoMotion.MotionDevices[0].DeviceName} {ServoMotion.MotionDevices[0].DeviceNumber}");
+            // return;
+
             try
             {
-                if (MainWindow.MotionEnumer.Count() > 0)
+                //if (MainWindow.MotionEnumer.Count() > 0)
+                if (ServoMotion.MotionDevices.Count > 0)
                 {
-                    uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
+                    //uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
+                    uint deviceNumber = MainWindow.ServoMotion.MotionDevices[0].DeviceNumber;
 
                     if (!ServoMotion.DeviceOpened)
                     {
-                        // ServoMotion.OpenDevice(deviceNumber);
+                        // 開啟軸卡，重置
+                        ServoMotion.OpenDevice(deviceNumber);
 
-                        // try
-                        // {
+                        if (ServoMotion.DeviceOpened)
+                        {
+                            foreach (MotionAxis axis in ServoMotion.Axes)
+                            {
+                                axis.SetServoOn();
+                            }
+                            // X 軸回原點
+                            _ = ServoMotion.Axes[0].PositiveWayHomeMove(true);
 
-                        // }
-                        // catch (Exception)
-                        // {
-                        //     throw;
-                        // }
+
+                            
+                        }
+                        //Debug.WriteLine($"{ServoMotion.DeviceOpened} {ServoMotion.SelectedAxis}");
                     }
 
                     // 更新 Progress Value
@@ -383,7 +410,7 @@ namespace ApexVisIns.content
             finally
             {
                 // 這邊需要暫停 Enumer
-                MainWindow.MotionEnumer.WorkerPause();
+                //MainWindow.MotionEnumer.WorkerPause();
             }
         }
 
@@ -573,8 +600,8 @@ namespace ApexVisIns.content
         }
         #endregion
 
-        #region 原點復歸
 
+        #region 原點復歸
 
         #endregion
 

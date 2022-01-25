@@ -96,7 +96,6 @@ namespace ApexVisIns
         #region Major
         public static ApexDefect ApexDefect { get; set; }
 
-
         #endregion
 
         #region Resources
@@ -198,19 +197,20 @@ namespace ApexVisIns
 
             #region EtherCAT Motion
             // Resource 一樣尋找
-            MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
+            //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+            ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
 
-            if (MotionEnumer.CheckDllVersion())
-            {
-                MotionEnumer?.WorkerStart();
-                ServoMotion.EnableCollectionBinding();
-            }
-            else
-            {
-                MotionEnumer.Interrupt();
-                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
-            }
+            //if (MotionEnumer.CheckDllVersion())
+            //{
+            //    MotionEnumer?.WorkerStart();
+            //    ServoMotion.EnableCollectionBinding();
+            //}
+            //else
+            //{
+            //    MotionEnumer.Interrupt();
+            //    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
+            //}
             #endregion
 
             #region ApexDefect
@@ -270,6 +270,12 @@ namespace ApexVisIns
                 }
             }
 
+            // Motion 關閉
+            if (ServoMotion.DeviceOpened)
+            {
+                ServoMotion.CloseDevice();
+            }
+
             // 關閉光源
             foreach (LightController ctrl in LightCtrls)
             {
@@ -281,6 +287,7 @@ namespace ApexVisIns
             }
 
             SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
+            SpinWait.SpinUntil(() => !ServoMotion.DeviceOpened, 3000);
             SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
             Close();
@@ -330,27 +337,32 @@ namespace ApexVisIns
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                if (password.Password == Password)
+                if (LoginPassword.Password == Password)
                 {
                     LoginFlag = true;
-                    passwordHint.Text = string.Empty;
-                    passwordHint.Visibility = Visibility.Hidden;
+                    LoginPasswordHint.Text = string.Empty;
+                    LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
                 }
                 else
                 {
-                    passwordHint.Text = "密碼錯誤";
-                    passwordHint.Visibility = Visibility.Visible;
+                    LoginPasswordHint.Text = "密碼錯誤";
+                    LoginPasswordHint.Visibility = Visibility.Visible;
                     e.Handled = true;
                 }
             }
         }
 
+        private void DialogHost_DialogOpened(object sender, DialogOpenedEventArgs eventArgs)
+        {
+            // LoginPassword.Focus();
+        }
+
         private void DialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
         {
-            password.Password = string.Empty;
-            passwordHint.Text = string.Empty;
-            passwordHint.Visibility = Visibility.Hidden;
+            LoginPassword.Password = string.Empty;
+            LoginPasswordHint.Text = string.Empty;
+            LoginPasswordHint.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -382,9 +394,8 @@ namespace ApexVisIns
                 (sender as DialogHost).IsOpen = false;
             }
         }
-        #endregion
 
-   
+        #endregion
     }
 
     /// <summary>

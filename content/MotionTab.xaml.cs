@@ -51,15 +51,26 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 確認驅動安裝 => 移動到 MotionEnumer 處理
-            //DllIsValid = ServoMotion.CheckDllVersion();
-            //if (DllIsValid)
-            //{
-            //    //GetAvaiDevs();
-            //}
-            //else
-            //{
-            //    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
-            //}
+            // DllIsValid = ServoMotion.CheckDllVersion();
+            // if (DllIsValid)
+            // {
+            //     GetAvaiDevs();
+            // }
+            // else
+            // {
+            //     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
+            // }
+            if (ServoMotion.CheckDllVersion())
+            {
+                if (!MainWindow.ServoMotion.DeviceOpened)
+                {
+                    MainWindow.ServoMotion.ListAvailableDevices();
+                }
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
+            }
             #endregion
             InitMotionsConfigsRoot();
 
@@ -497,6 +508,7 @@ namespace ApexVisIns.content
                                 await MainWindow.ServoMotion.SelectedMotionAxis.NegativeWayHomeMove(true);
                                 break;
                             default:
+
                                 break;
                         }
                     }
