@@ -171,6 +171,10 @@ Apex 外觀瑕疵檢測
 
 * [ ] MotionTab 尋找軸卡改為手動觸發
 
+* [ ] 原點復歸前確認 IO
+
+* [ ] Motion 斷線後不會刷新IO
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

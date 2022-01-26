@@ -277,6 +277,9 @@ namespace ApexVisIns.content
 
             // 變更 Zoom Ratio
             ZoomRatio = 100;
+            
+            // 暫停 Camera Enumerator
+            MainWindow.CameraEnumer.WorkerPause();
         }
 
         private void Camera_CameraClosing(object sender, EventArgs e)
@@ -303,6 +306,9 @@ namespace ApexVisIns.content
             Cam.PropertyChange();
 
             MainWindow.ImageSource = null;
+
+            // 啟動 Camera Enumerator
+            MainWindow.CameraEnumer.WorkerPause();
         }
         #endregion
 

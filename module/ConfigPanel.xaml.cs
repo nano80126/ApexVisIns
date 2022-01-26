@@ -256,15 +256,15 @@ namespace ApexVisIns.module
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
-                // 嘗試寫入 Width
-                //if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
+                // 嘗試寫入 Width // 
+                // if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
                 if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Cam.Config.Width))
                 {
                     camera.Parameters[PLGigECamera.Width].SetToMaximum();
                 }
                 Cam.Config.Width = Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
-                // 嘗試寫入 Height
+                // 嘗試寫入 Height // 
                 if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Cam.Config.Height))
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();

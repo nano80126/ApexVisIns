@@ -151,6 +151,10 @@ namespace ApexVisIns.content
                 {
                     MainWindow.ServoMotion.ListAvailableDevices();
                 }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "Device 開啟時不允許此操作");
+                }
             }
             else
             {
@@ -695,9 +699,13 @@ namespace ApexVisIns.content
                             axis.SetGearRatio();
                             axis.SetJogVelParam();
                             axis.SetHomeVelParam();
-                            axis.SetAxisVelParam(); 
+                            axis.SetAxisVelParam();
 #endif
                         }
+                    }
+                    else
+                    {
+                        MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"Motion 設定為空");
                     }
                 }
                 catch (Exception ex)
@@ -770,6 +778,5 @@ namespace ApexVisIns.content
             Debug.WriteLine($"123");
         }
 
-      
     }
 }

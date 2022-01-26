@@ -27,20 +27,14 @@
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
-                <!--
-                    <Canvas VerticalAlignment="Center" Style="{StaticResource ComplexPackIcon}" Background="White">
+                <!--<Canvas VerticalAlignment="Center" Style="{StaticResource ComplexPackIcon}" Background="White">
                         <materialDesign:PackIcon Kind="VideoOutline" Width="26" Height="24" />
                         <materialDesign:PackIcon Kind="Check" Canvas.Right="0" Canvas.Bottom="0" />
-                    </Canvas>
-                -->
+                    </Canvas>-->
 
-                <!--
-                    <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>
-                -->
+                <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
                 
-                <!--
-                    <TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>
-                -->
+                <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
 
                 <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"

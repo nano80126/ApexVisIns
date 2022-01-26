@@ -310,6 +310,7 @@ namespace ApexVisIns
         {
             BindingOperations.EnableCollectionSynchronization(MotionDevices, _deviceColltionLock);
             BindingOperations.EnableCollectionSynchronization(Axes, _axisColltionLock);
+            //Axes.CollectionChanged += Axes_CollectionChanged;
         }
 
         /// <summary>
@@ -319,6 +320,16 @@ namespace ApexVisIns
         {
             BindingOperations.DisableCollectionSynchronization(MotionDevices);
             BindingOperations.DisableCollectionSynchronization(Axes);
+            //Axes.CollectionChanged -= Axes_CollectionChanged;
+        }
+
+
+        private void Axes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            // {
+            //     return;
+            // }
         }
 
         /// <summary>
@@ -687,6 +698,8 @@ namespace ApexVisIns
             //throw new NotImplementedException() 
             for (int i = 0; i < Axes.Count; i++)
             {
+                //Debug.WriteLine($"Axis-{i}");
+                GetMotionState(i);
                 GetMotionIO(i);
             }
         }
@@ -699,6 +712,18 @@ namespace ApexVisIns
             _allAxisTimer?.Stop();
         }
 
+        public void GetMotionState(int axis)
+        {
+            ushort axState = 0;
+            uint result = Motion.mAcm_AxGetState(AxisHandles[axis], ref axState);
+
+            if (result == (uint)ErrorCode.SUCCESS)
+            {
+                Axes[axis].CurrentStatus = $"{(AxisState)axState}";
+                Axes[axis].PropertyChange("CurrentStatus");
+            }
+        }
+
         /// <summary>
         /// 取得 Motion IO 狀態
         /// </summary>
@@ -707,6 +732,8 @@ namespace ApexVisIns
         {
             uint IOStatus = 0;
             uint result = Motion.mAcm_AxGetMotionIO(AxisHandles[axis], ref IOStatus);
+            //Debug.WriteLine($"{result:X} {IOStatus}");
+
             if (result == (uint)ErrorCode.SUCCESS)
             {
                 Axes[axis].IO_SRDY.BitOn = (IOStatus & (uint)Ax_Motion_IO.AX_MOTION_IO_RDY) == (uint)Ax_Motion_IO.AX_MOTION_IO_RDY;
@@ -2123,6 +2150,8 @@ namespace ApexVisIns
         /// </summary>
         public async Task PositiveWayHomeMove(bool setPosZero = false)
         {
+            Debug.WriteLine($"Status: {CurrentStatus}");
+
             if (CurrentStatus == "READY")
             {
                 uint result = await Task.Run(() =>

@@ -200,6 +200,7 @@ namespace ApexVisIns
             //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
+            ServoMotion.ListAvailableDevices();
 
             //if (MotionEnumer.CheckDllVersion())
             //{
@@ -273,6 +274,8 @@ namespace ApexVisIns
             // Motion 關閉
             if (ServoMotion.DeviceOpened)
             {
+                ServoMotion.SetAllServoOff();
+                ServoMotion.DisableAllTimer();
                 ServoMotion.CloseDevice();
             }
 

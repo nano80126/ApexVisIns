@@ -22,7 +22,6 @@ namespace ApexVisIns.content
 
         #endregion
 
-
         #region Variables
         /// <summary>
         /// 主視窗物件
@@ -48,8 +47,12 @@ namespace ApexVisIns.content
         /// IO 卡初始化 Flag
         /// </summary>
         private bool IoInitialized { get; set; }
-        #endregion
 
+        /// <summary>
+        /// 初始化工作 CancellationTokenSource
+        /// </summary>
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        #endregion
 
         #region Local Object (方便 CALL)
         /// <summary>
@@ -100,30 +103,9 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //Initializer();            //Initializer();
+            Initializer();            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
-
-            // Task.Run(() =>
-            // {
-            //     DateTime t1 = DateTime.Now;
-            //     SpinWait.SpinUntil(() => false, 3000);
-            //     TimeSpan t2 = DateTime.Now - t1;
-            //     Debug.WriteLine($"{t1:HH:mm:ss.fff} {t2.ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture)}");
-            //     for (int i = 0; i < 10; i++)
-            //     {
-            //         SpinWait.SpinUntil(() => false, 3000);
-            //         MainWindow.ApexDefect.CurrentStep++;
-            //         Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
-            //     }
-            // });
-
-            // Parallel.For(0, 5, i =>
-            // {
-            //     Debug.WriteLine($"Task: {Task.CurrentId}");
-            //     SpinWait.SpinUntil(() => false, 1000);
-            //     Debug.WriteLine($"Thread: {Thread.CurrentThread.ManagedThreadId}");
-            // });
         }
 
         /// <summary>
@@ -145,46 +127,108 @@ namespace ApexVisIns.content
         {
             _ = Task.Run(() =>
             {
-                // 變更 Step
+                // 硬體初始化
                 MainWindow.ApexDefect.CurrentStep = 0;
+                Debug.WriteLine($"Step = 0 {DateTime.Now:mm:ss.fff}");
 
                 // 等待相機 Enumerator 搜尋完畢
-                if (SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
+                if (SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
                 {
                     //_ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
                     InitCamera();
                 }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "相機 Enumerator 啟動失敗");
+                }
 
-                // 等待 Motion Device 搜尋完畢
-                //_ = SpinWait.SpinUntil(() =>
-                //    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Finished ||
-                //    MainWindow.MotionEnumer.InitFlag == LongLifeWorker.InitFlags.Interrupt, 3000
-                //);
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
 
-                if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000))
+                if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 1000))
                 {
                     //_ = SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000);
                     InitMotion();
                 }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "找不到伺服控制軸卡");
+                }
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
 
                 // 等待 Com Port 搜尋完畢
-                if (SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
+                if (SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
                 {
                     //_ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
                     InitLightCtrls();
                 }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "光源控制 Enumerator 啟動失敗");
+                }
 
-                InitIOCtrl(); // 跨執行續
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
+
+                InitIOCtrl();
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
 
                 // 等待 1 分鐘
-                _ = SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 60 * 1000);
+                //_ = SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 60 * 1000);
+
+
+                // 暫停 Worker 
                 MainWindow.CameraEnumer.WorkerPause();
                 MainWindow.LightEnumer.WorkerPause();
-                //MainWindow.MotionEnumer.WorkerPause();
-            });
+
+                Debug.WriteLine($"Step = 0 end {DateTime.Now:mm:ss.fff}");
+            }, _cancellationTokenSource.Token).ContinueWith(t =>
+            {
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
+
+                Debug.WriteLine($"Step = 1 {DateTime.Now:mm:ss.fff}");
+                // 原點復歸
+                MainWindow.ApexDefect.CurrentStep = 1;
+
+                MotionReturnZero().Wait();
+
+                Debug.WriteLine($"Step = 1 end {DateTime.Now:mm:ss.fff}");
+            }, _cancellationTokenSource.Token).ContinueWith(t =>
+            {
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    MainWindow.ApexDefect.CurrentStep = -1;
+                    return;
+                }
+
+                Debug.WriteLine($"Step = 2 {DateTime.Now:mm:ss.fff}");
+
+                // 規格選擇
+                MainWindow.ApexDefect.CurrentStep = 2;
+            }, _cancellationTokenSource.Token);
 
             // UX Progress Bar
             //  之後整合到 MsgInformer
@@ -214,7 +258,7 @@ namespace ApexVisIns.content
             if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
                 ServoMotion.SetAllServoOff();
-                ServoMotion.DisableTimer();
+                ServoMotion.DisableAllTimer();
                 ServoMotion.CloseDevice();
             }
 
@@ -357,36 +401,60 @@ namespace ApexVisIns.content
 
             ServoMotion = MainWindow.ServoMotion;
 
-            //Debug.WriteLine($"{ServoMotion.Axes.Count}");
-            //Debug.WriteLine($"{ServoMotion.DeviceOpened}");
-            //Debug.WriteLine($"{ServoMotion.MotionDevices[0].DeviceName} {ServoMotion.MotionDevices[0].DeviceNumber}");
-            // return;
-
             try
             {
-                //if (MainWindow.MotionEnumer.Count() > 0)
                 if (ServoMotion.MotionDevices.Count > 0)
                 {
-                    //uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
+                    // uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
                     uint deviceNumber = MainWindow.ServoMotion.MotionDevices[0].DeviceNumber;
 
                     if (!ServoMotion.DeviceOpened)
                     {
                         // 開啟軸卡，重置
                         ServoMotion.OpenDevice(deviceNumber);
-
+                        // 確認軸卡開啟
                         if (ServoMotion.DeviceOpened)
                         {
+                            // 全軸 Servo On
                             foreach (MotionAxis axis in ServoMotion.Axes)
                             {
                                 axis.SetServoOn();
                             }
-                            ServoMotion.EnableAllTimer(100);
 
-                            // X 軸回原點
-                            _ = ServoMotion.Axes[0].PositiveWayHomeMove(true);
+                            #region 載入 Config
+                            string motionPath = $@"{Environment.CurrentDirectory}\motions\motion.json";
+
+                            using StreamReader reader = File.OpenText(motionPath);
+                            string jsonStr = reader.ReadToEnd();
+
+                            if (jsonStr != string.Empty)
+                            {
+                                MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
+
+                                foreach (MotionVelParam item in velParams)
+                                {
+                                    MotionAxis axis = MainWindow.ServoMotion.Axes.First(axis => axis.SlaveNumber == item.SlaveNumber);
+                                    axis.LoadFromVelParam(item);
+                                    // 寫入參數
+                                    axis.SetGearRatio();
+                                    axis.SetJogVelParam();
+                                    axis.SetHomeVelParam();
+                                    axis.SetAxisVelParam();
+                                }
+                            }
+                            else
+                            {
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"Motion 設定為空");
+                            }
+                            #endregion
+
+                            // ServoMotion
+                            ServoMotion.EnableAllTimer(100);
                         }
-                        //Debug.WriteLine($"{ServoMotion.DeviceOpened} {ServoMotion.SelectedAxis}");
+                        else
+                        {
+                            throw new Exception($"軸卡開啟失敗");
+                        }
                     }
 
                     // 更新 Progress Value
@@ -406,10 +474,34 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"MOTION 控制初始化失敗: {ex.Message}");
             }
-            finally
+            // finally
+            // {
+            //     // 這邊需要暫停 Enumer
+            //     // MainWindow.MotionEnumer.WorkerPause();
+            // }
+        }
+
+        /// <summary>
+        /// 馬達原點復歸
+        /// </summary>
+        private async Task MotionReturnZero()
+        {
+            if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
             {
-                // 這邊需要暫停 Enumer
-                //MainWindow.MotionEnumer.WorkerPause();
+                // 確認 IO (光電開關)
+
+                MainWindow.ApexDefect.ZeroReturned = false;
+                MainWindow.ApexDefect.ZeroReturning = true;
+
+
+                await ServoMotion.Axes[0].PositiveWayHomeMove(true);
+
+                MainWindow.ApexDefect.ZeroReturning = false;
+                MainWindow.ApexDefect.ZeroReturned = true;
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許啟動原點復歸");
             }
         }
 
@@ -624,7 +716,13 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void DeinitBtn_Click(object sender, RoutedEventArgs e)
         {
+            // 終止 初始化 過程
+            _cancellationTokenSource.Cancel();
+            // 反初始化
             Deinitializer();
+            // 啟動 Enumerator
+            MainWindow.CameraEnumer.WorkerResume();
+            MainWindow.LightEnumer.WorkerResume();
         }
 
         /// <summary>

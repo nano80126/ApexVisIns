@@ -106,7 +106,9 @@
                                 materialDesign:ButtonAssist.CornerRadius="13"
                                 Foreground="{StaticResource ColorInfo}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
+                                IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanInverter}}"
                                 Click="ReloadMotionDevicesBtn_Click">
+                            
                             <materialDesign:PackIcon Kind="Sync" Width="24" Height="24"/>
                         </Button>
                         <!--//-->
@@ -192,7 +194,7 @@
                                     </Setter>
                                     <!--//-->
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedMotionAxis.ServoOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
+                                        <DataTrigger Binding="{Binding SelectedMotionAxis.IO_SVON.BitOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="True">
                                             <Setter Property="Content">
                                                 <Setter.Value>
                                                     <TextBlock Text="Servo Off" Foreground="{StaticResource ColorInfo}"/>
@@ -305,7 +307,7 @@
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
-                                    <Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="IO_SVON.BitOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
                         </Button>
@@ -502,7 +504,7 @@
                         <materialDesign:PopupBox x:Name="JogStartPopupBox" Grid.Row="3" Grid.ColumnSpan="4" Focusable="False"
                                                      HorizontalAlignment="Center" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True"
                                                      Padding="0" Opened="JogStartPopupBox_Opened" Closed="JogStartPopupBox_Closed" PlacementMode="BottomAndAlignCentres"
-                                                     IsEnabled="{Binding ServoOn, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}">
+                                                     IsEnabled="{Binding IO_SVON.BitOn, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}">
                             <materialDesign:PopupBox.ToggleContent>
                                 <Border BorderBrush="{StaticResource ColorSuccess}" BorderThickness="2" CornerRadius="15" Width="240" Margin="0 4 0 0" Focusable="False">
                                     <TextBlock Text="開始 JOG" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 8" FontWeight="SemiBold"
