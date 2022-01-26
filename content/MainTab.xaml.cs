@@ -103,9 +103,24 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Initializer();            //Initializer();
+            //Initializer();            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+
+            //Task.Run(() =>
+            //{
+            //    try
+            //    {
+            //        //Dispatcher.Invoke(() =>
+            //        //{
+            //            throw new Exception("測試錯誤");
+            //        //});
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Debug.WriteLine(ex.Message);
+            //    }
+            //});
         }
 
         /// <summary>
@@ -127,6 +142,8 @@ namespace ApexVisIns.content
         {
             _ = Task.Run(() =>
             {
+                // 硬體初始化
+                // 硬體初始化
                 // 硬體初始化
                 MainWindow.ApexDefect.CurrentStep = 0;
                 Debug.WriteLine($"Step = 0 {DateTime.Now:mm:ss.fff}");
@@ -155,7 +172,7 @@ namespace ApexVisIns.content
                 }
                 else
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "找不到伺服控制軸卡");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "找不到 Motion 軸卡");
                 }
 
                 if (_cancellationTokenSource.IsCancellationRequested)
@@ -208,9 +225,11 @@ namespace ApexVisIns.content
                     MainWindow.ApexDefect.CurrentStep = -1;
                     return;
                 }
+                // 原點復歸
+                // 原點復歸
+                // 原點復歸
 
                 Debug.WriteLine($"Step = 1 {DateTime.Now:mm:ss.fff}");
-                // 原點復歸
                 MainWindow.ApexDefect.CurrentStep = 1;
 
                 MotionReturnZero().Wait();
@@ -223,10 +242,12 @@ namespace ApexVisIns.content
                     MainWindow.ApexDefect.CurrentStep = -1;
                     return;
                 }
+                // 規格選擇
+                // 規格選擇
+                // 規格選擇
 
                 Debug.WriteLine($"Step = 2 {DateTime.Now:mm:ss.fff}");
 
-                // 規格選擇
                 MainWindow.ApexDefect.CurrentStep = 2;
             }, _cancellationTokenSource.Token);
 
@@ -486,22 +507,24 @@ namespace ApexVisIns.content
         /// </summary>
         private async Task MotionReturnZero()
         {
-            if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
+            if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
-                // 確認 IO (光電開關)
+                if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
+                {
+                    // 確認 IO (光電開關)
 
-                MainWindow.ApexDefect.ZeroReturned = false;
-                MainWindow.ApexDefect.ZeroReturning = true;
+                    MainWindow.ApexDefect.ZeroReturned = false;
+                    MainWindow.ApexDefect.ZeroReturning = true;
 
+                    await ServoMotion.Axes[0].PositiveWayHomeMove(true);
 
-                await ServoMotion.Axes[0].PositiveWayHomeMove(true);
-
-                MainWindow.ApexDefect.ZeroReturning = false;
-                MainWindow.ApexDefect.ZeroReturned = true;
-            }
-            else
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許啟動原點復歸");
+                    MainWindow.ApexDefect.ZeroReturning = false;
+                    MainWindow.ApexDefect.ZeroReturned = true;
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許啟動原點復歸");
+                }
             }
         }
 
@@ -637,45 +660,53 @@ namespace ApexVisIns.content
                 return;
             }
 
-            // 確認驅動安裝 // bool IO_DllIsValid = IOController.CheckDllVersion();
-            if (IOController.CheckDllVersion())
-            {
-                IOController = MainWindow.IOController;
+            IOController = MainWindow.IOController;
 
-                // IOContoller 內部沒有Dispacher
-                Dispatcher.Invoke(() =>
+            try
+            {
+                // 確認驅動安裝 // bool IO_DllIsValid = IOController.CheckDllVersion();
+                if (IOController.CheckDllVersion())
                 {
+                    // IOContoller 內部沒有Dispacher
+                    //Dispatcher.Invoke(() =>
+                    //{
                     // 初始化 DI Control
                     if (!IOController.DiCtrlCreated)
                     {
                         IOController.DigitalInputChanged += Controller_DigitalInputChanged;
                         IOController.InitializeDiCtrl();
                     }
-                });
-                //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
+                    //});
+                    //MainWindow.ProgressValue += 10; // 更新 Progress Value
+                    MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
 
 
-                // IOContoller 內部沒有 Dispacher
-                Dispatcher.Invoke(() =>
-                {
+                    // IOContoller 內部沒有 Dispacher
+                    //Dispatcher.Invoke(() =>
+                    //{
                     // 初始化 DO Control
                     if (!IOController.DoCtrlCreated)
                     {
                         IOController.InitializeDoCtrl();
                     }
-                });
-                //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
+                    //});
+                    //MainWindow.ProgressValue += 10; // 更新 Progress Value
+                    MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
 
-                IoInitialized = true;
+                    IoInitialized = true;
 
-                //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
-                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "IO 控制初始化完成");
+                    //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "IO 控制初始化完成");
+                }
+                else
+                {
+                    throw new DllNotFoundException("IO 驅動未安裝或版本不符");
+                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"IO 控制初始化失敗: {ex.Message}");
             }
         }
 

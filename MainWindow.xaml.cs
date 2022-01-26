@@ -52,6 +52,7 @@ namespace ApexVisIns
         /// <summary>
         /// 已儲存的相機組態
         /// </summary>
+        [Obsolete("已轉移至CameraEnumer，待測試")]
         public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         #endregion
 
@@ -187,14 +188,6 @@ namespace ApexVisIns
             LightCtrls = FindResource(nameof(LightCtrls)) as LightController[];
             #endregion
 
-            #region IO Controller
-            IOController = FindResource(nameof(IOController)) as IOController;
-            #endregion
-
-            #region Device Configs
-            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
-            #endregion
-
             #region EtherCAT Motion
             // Resource 一樣尋找
             //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
@@ -213,6 +206,17 @@ namespace ApexVisIns
             //    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
             //}
             #endregion
+
+            #region IO Controller
+            IOController = FindResource(nameof(IOController)) as IOController;
+            IOController.EnableCollectionBinding();
+            #endregion
+
+            #region Device Configs
+            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
+            #endregion
+
+        
 
             #region ApexDefect
             // Main Tab 使用

@@ -169,11 +169,19 @@ Apex 外觀瑕疵檢測
 
 * [ ] 測試原點復歸中是否可以進行其他操作
 
-* [ ] MotionTab 尋找軸卡改為手動觸發
+* [ ] MotionTab 尋找軸卡改為按鈕觸發
 
 * [ ] 原點復歸前確認 IO
 
-* [ ] Motion 斷線後不會刷新IO
+* [ ] Motion 斷線後不會刷新 IO
+	* Bug 待處理
+
+* [ ] 確認 IO Panel DO 寫入按鈕功能
+
+* [ ] 整理初始化流程 methods
+	* try... catch
+	* MsgInformer Error Type
+	* SpinWait Flag
 
 ### Config Logic
 

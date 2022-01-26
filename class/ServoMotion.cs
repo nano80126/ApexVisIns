@@ -940,12 +940,6 @@ namespace ApexVisIns
 
             _disposed = true;
         }
-
-        //public void Dispose()
-        //{
-        //    statusTimer.Dispose();
-        //    //throw new NotImplementedException();
-        //}
     }
 
 

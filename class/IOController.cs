@@ -26,14 +26,27 @@ namespace ApexVisIns
         private bool _interruptEnabled;
         private int _interruptCount;
 
-        [Obsolete]
-        private Task debounceTask;
+        //[Obsolete]
+        //private Task debounceTask;
 
         private System.Timers.Timer debounceTimer;
 
         private bool _disposed;
         private bool _diCtrlCreated;
         private bool _doCtrlCreated;
+
+        /// <summary>
+        /// DI 集合鎖
+        /// </summary>
+        private readonly object _diCollLock = new();
+        /// <summary>
+        /// DO 集合鎖
+        /// </summary>
+        private readonly object _doCollLock = new();
+        /// <summary>
+        /// 中斷器集合
+        /// </summary>
+        private readonly object _intCollLock = new();
         #endregion
 
         /// <summary>
@@ -155,6 +168,11 @@ namespace ApexVisIns
         /// </summary>
         public ObservableCollection<ObservableCollection<bool>> DoArrayColl { get; set; } = new ObservableCollection<ObservableCollection<bool>>();
 
+        /// <summary>
+        /// 可啟用 Interrupt 之通道
+        /// </summary>
+        public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
+
 
         /// <summary>
         /// 確認 DLL 已安裝且版本符合
@@ -184,6 +202,28 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 啟用 Collecion Binding，
+        /// 必須為主執行緒呼叫
+        /// </summary>
+        public void EnableCollectionBinding()
+        {
+            BindingOperations.EnableCollectionSynchronization(DiArrayColl, _diCollLock);
+            BindingOperations.EnableCollectionSynchronization(DoArrayColl, _doCollLock);
+            BindingOperations.EnableCollectionSynchronization(Interrupts, _intCollLock);
+        }
+
+        /// <summary>
+        /// 停用 Collection Binding，
+        /// 必須為主執行緒呼叫
+        /// </summary>
+        public void DisableCollectionBinding()
+        {
+            BindingOperations.DisableCollectionSynchronization(DiArrayColl);
+            BindingOperations.DisableCollectionSynchronization(DoArrayColl);
+            BindingOperations.DisableCollectionSynchronization(Interrupts);
+        }
+
+        /// <summary>
         /// 初始化 DI Control
         /// </summary>
         /// <param name="ports">啟用之 Port 數</param>
@@ -199,33 +239,43 @@ namespace ApexVisIns
                     };
                     DiCtrlCreated = true;
                 }
-                catch (DllNotFoundException dll)
+                catch (DllNotFoundException)
                 {
-                    throw new DllNotFoundException(dll.Message);
+                    throw;
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
 
-                
-                // 新增 Collection, 全部拉低(等待讀取)
-                DiArrayColl.Clear();
-                for (int i = 0; i < InstantDiCtrl.PortCount && i < EnabledDiPorts; i++)
-                {
-                    //ObservableCollection<bool> subCollection = new ObservableCollection<bool>() { false, false, false, false, false, false, false, false };
-                    DiArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
-                }
 
-                Interrupts.Clear();
-                foreach (DiintChannel item in InstantDiCtrl.DiintChannels)
+                lock (_diCollLock)
                 {
-                    // 判斷 Ch 號, 小於啟用 Port 數 * 8 個 Ch
-                    if (item.Channel < EnabledDiPorts * 8)
+                    // 新增 Collection, 全部拉低(等待讀取)
+                    DiArrayColl.Clear();
+                    for (int i = 0; i < InstantDiCtrl.PortCount && i < EnabledDiPorts; i++)
                     {
-                        Interrupts.Add(new InterruptChannel(item.Channel));
+                        //ObservableCollection<bool> subCollection = new ObservableCollection<bool>() { false, false, false, false, false, false, false, false };
+                        DiArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
+                    }
+                }
+
+                lock (_intCollLock)
+                {
+                    Interrupts.Clear();
+                    foreach (DiintChannel item in InstantDiCtrl.DiintChannels)
+                    {
+                        // 判斷 Ch 號, 小於啟用 Port 數 * 8 個 Ch
+                        if (item.Channel < EnabledDiPorts * 8)
+                        {
+                            Interrupts.Add(new InterruptChannel(item.Channel));
+                        }
                     }
                 }
             }
             else
             {
-                throw new ArgumentNullException("Set description before initialization.");
+                throw new ArgumentNullException("Device desciption 未設定");
             }
         }
 
@@ -245,15 +295,23 @@ namespace ApexVisIns
                     };
                     DoCtrlCreated = true;
                 }
-                catch (DllNotFoundException dll)
+                catch (DllNotFoundException)
                 {
-                    throw new DllNotFoundException(dll.Message);
+                    throw;
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
 
-                // 新增 Collection, 全部拉低
-                for (int i = 0; i < InstantDoCtrl.PortCount && i < EnabledDoPorts; i++)
+                lock (_doCollLock)
                 {
-                    DoArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
+                    DoArrayColl.Clear();
+                    // 新增 Collection, 全部拉低
+                    for (int i = 0; i < InstantDoCtrl.PortCount && i < EnabledDoPorts; i++)
+                    {
+                        DoArrayColl.Add(new ObservableCollection<bool>() { false, false, false, false, false, false, false, false });
+                    }
                 }
             }
             else
@@ -308,11 +366,7 @@ namespace ApexVisIns
 
             public bool Enabled { get; set; }
         }
-
-        /// <summary>
-        /// 可啟用 Interrupt 之通道
-        /// </summary>
-        public ObservableCollection<InterruptChannel> Interrupts { get; private set; } = new ObservableCollection<InterruptChannel>();
+    
 
         /// <summary>
         /// 設定中斷器，設定過後必須重設 SnapStart()
@@ -654,7 +708,7 @@ namespace ApexVisIns
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -663,14 +717,16 @@ namespace ApexVisIns
 
             if (disposing)
             {
+                DisableCollectionBinding();
+
                 // Code here
                 InstantDiCtrl?.Dispose();
                 InstantDiCtrl = null;
                 InstantDoCtrl?.Dispose();
                 InstantDoCtrl = null;
 
-                debounceTask?.Dispose();
-                debounceTask = null;
+                //debounceTask?.Dispose();
+                //debounceTask = null;
 
                 debounceTimer?.Dispose();
                 debounceTimer = null;
