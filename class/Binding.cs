@@ -770,6 +770,10 @@ namespace ApexVisIns
                 /// </summary>
                 CAMERA,
                 /// <summary>
+                /// DLL Exception 
+                /// </summary>
+                DLL,
+                /// <summary>
                 /// General Exception
                 /// </summary>
                 EX,

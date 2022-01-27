@@ -434,61 +434,68 @@
                             <Setter Property="Width" Value="64"/>
                             <Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>
                         </Style>
+
+                        <!--<Style TargetType="control:ProcedureBlock">
+                        </Style>-->
                     </StackPanel.Resources>
 
                     <!--
-                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=-1}"/>
-                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
-                    <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=1}"/>
+                        <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=-1}"/>
+                        <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
+                        <TextBlock Text="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=1}"/>
                     -->
 
+
                     <!--HighLight="{Binding Step, Converter={StaticResource EqualConverter}, ConverterParameter=0}"-->
-                    <control:ProcedureBlock BlockName="初始化" StepNumber="0" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=0}"/>
+                    <control:ProcedureBlock BlockName="初始化" StepNumber="0" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
+                                            Error="{Binding StepError, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="原點復歸" StepNumber="1" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=1}"
+                    <control:ProcedureBlock BlockName="原點復歸" StepNumber="1" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
+                                            Error="{Binding StepError, UpdateSourceTrigger=PropertyChanged}"
                                             SubPackIcon="Flag" EnableSubPackIcon="True" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="選擇規格" StepNumber="2" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=2}"
+                    <control:ProcedureBlock BlockName="選擇規格" StepNumber="2" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
+                                            Error="{Binding StepError, UpdateSourceTrigger=PropertyChanged}"
                                             EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="啟動檢驗" StepNumber="3" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=3}"
+                    <control:ProcedureBlock BlockName="啟動檢驗" StepNumber="3" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
                                             EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
                     <Border BorderBrush="{StaticResource ColorSuccessTransparent}" BorderThickness="3" CornerRadius="8" Margin="-4 -12">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4 0">
-                            <control:ProcedureBlock BlockName="等待上料" StepNumber="4" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=4}"
+                            <control:ProcedureBlock BlockName="等待上料" StepNumber="4" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
                                                         EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="工件對位" StepNumber="5" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=5}"/>
+                            <control:ProcedureBlock BlockName="工件對位" StepNumber="5" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="毛邊檢測" StepNumber="6" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=6}"/>
+                            <control:ProcedureBlock BlockName="毛邊檢測" StepNumber="6" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="外觀檢測" StepNumber="7" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=7}"/>
+                            <control:ProcedureBlock BlockName="外觀檢測" StepNumber="7" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                            <control:ProcedureBlock BlockName="等待下料" StepNumber="8" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=8}"
+                            <control:ProcedureBlock BlockName="等待下料" StepNumber="8" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
                                                     EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
                         </StackPanel>
                     </Border>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
-                    <control:ProcedureBlock BlockName="完成檢驗" StepNumber="9" HighLight="{Binding CurrentStep, Converter={StaticResource EqualConverter}, ConverterParameter=9}"
+                    <control:ProcedureBlock BlockName="完成檢驗" StepNumber="9" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
                                             EnableSubPackIcon="True" SubPackIcon="CheckBold" SubPackIconColor="{StaticResource ColorTeal}"/>
 
                 </StackPanel>

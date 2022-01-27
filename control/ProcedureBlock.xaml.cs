@@ -18,12 +18,18 @@ namespace ApexVisIns.control
 
         public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached("BlockName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty StepNumberProperty = DependencyProperty.RegisterAttached("StepNumber", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(0));
+        public static readonly DependencyProperty CurrentStepProperty = DependencyProperty.RegisterAttached("CurrentStep", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
 
-        public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+        public static readonly DependencyProperty StepNumberProperty = DependencyProperty.RegisterAttached("StepNumber", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
+
+        //public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+
+        public static readonly DependencyProperty ErrorProperty = DependencyProperty.RegisterAttached("Error", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
 
         public static readonly DependencyProperty EnableSubPackIconProperty = DependencyProperty.RegisterAttached("EnableSubPackIcon", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+
         public static readonly DependencyProperty SubPackIconProperty = DependencyProperty.RegisterAttached("SubPackIcon", typeof(PackIconKind), typeof(ProcedureBlock), new PropertyMetadata(PackIconKind.Abacus));
+
         public static readonly DependencyProperty SubPackIconColorProperty = DependencyProperty.RegisterAttached("SubPackIconColor", typeof(SolidColorBrush), typeof(ProcedureBlock), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
 
 
@@ -37,6 +43,13 @@ namespace ApexVisIns.control
             set => SetValue(BlockNameProperty, value);
         }
 
+        [Description("當前布序")]
+        public int CurrentStep
+        {
+            get => (int)GetValue(CurrentStepProperty);
+            set => SetValue(CurrentStepProperty, value);
+        }
+
         /// <summary>
         /// 步序
         /// </summary>
@@ -47,14 +60,24 @@ namespace ApexVisIns.control
             set => SetValue(StepNumberProperty, value);
         }
 
-        [Description("是否高亮")]
+        //[Description("是否高亮")]
+        ///// <summary>
+        ///// 是否HighLight
+        ///// </summary>
+        //public bool HighLight
+        //{
+        //    get => (bool)GetValue(HighLightProperty);
+        //    set => SetValue(HighLightProperty, value);
+        //}
+
+        [Description("是否錯誤")]
         /// <summary>
-        /// 是否HighLight
+        /// 是否 Error
         /// </summary>
-        public bool HighLight
+        public bool Error
         {
-            get => (bool)GetValue(HighLightProperty);
-            set => SetValue(HighLightProperty, value);
+            get => (bool)GetValue(ErrorProperty);
+            set => SetValue(ErrorProperty, value);
         }
 
         /// <summary>
@@ -80,7 +103,7 @@ namespace ApexVisIns.control
         /// <summary>
         /// 副 icon
         /// </summary>
-        [Description(" 副 ICON")]
+        [Description(" 副 ICON 顏色")]
         public SolidColorBrush SubPackIconColor
         {
             get => (SolidColorBrush)GetValue(SubPackIconColorProperty);
@@ -90,7 +113,9 @@ namespace ApexVisIns.control
 
     public class PBHelper : DependencyObject
     {
-        public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(PBHelper), new PropertyMetadata(true));
+        public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(PBHelper), new PropertyMetadata(false));
+
+        public static readonly DependencyProperty ErrorProperty = DependencyProperty.RegisterAttached("Error", typeof(bool), typeof(PBHelper), new PropertyMetadata(false));
 
         public static void SetHighLight(DependencyObject target, bool value)
         {
@@ -100,6 +125,16 @@ namespace ApexVisIns.control
         public static bool GetHighLight(DependencyObject target)
         {
             return (bool)target.GetValue(HighLightProperty);
+        }
+
+        public static void SetError(DependencyObject target, bool value)
+        {
+            target.SetValue(ErrorProperty, value);
+        }
+
+        public static bool GetError(DependencyObject target)
+        {
+            return (bool)target.GetValue(ErrorProperty);
         }
     }
 }

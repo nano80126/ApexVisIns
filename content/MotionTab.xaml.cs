@@ -173,10 +173,10 @@ namespace ApexVisIns.content
             {
                 if (!MainWindow.ServoMotion.DeviceOpened)
                 {
+                    // 開啟裝置
                     MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.MotionDevice).DeviceNumber);
-                    // // // 
-                    // MainWindow.ServoMotion.EnableTimer(100);
-                    // Debug.WriteLine($"Opened: {MainWindow.ServoMotion.DeviceOpened}");
+                    // 重置各軸錯誤
+                    MainWindow.ServoMotion.ResetAllError();
                 }
                 else
                 {

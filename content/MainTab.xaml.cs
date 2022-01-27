@@ -22,6 +22,7 @@ namespace ApexVisIns.content
 
         #endregion
 
+
         #region Variables
         /// <summary>
         /// 主視窗物件
@@ -53,6 +54,7 @@ namespace ApexVisIns.content
         /// </summary>
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         #endregion
+
 
         #region Local Object (方便 CALL)
         /// <summary>
@@ -103,7 +105,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //Initializer();            //Initializer();
+            Initializer();            //Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -140,13 +142,10 @@ namespace ApexVisIns.content
         /// </summary>
         private void Initializer()
         {
-            _ = Task.Run(() =>
+            _ = Task<int>.Run(() =>
             {
-                // 硬體初始化
-                // 硬體初始化
-                // 硬體初始化
-                MainWindow.ApexDefect.CurrentStep = 0;
-                Debug.WriteLine($"Step = 0 {DateTime.Now:mm:ss.fff}");
+                // 硬體初始化 // 硬體初始化 // 硬體初始化
+                MainWindow.ApexDefect.CurrentStep = 0;  // 步序 : 硬體初始化
 
                 // 等待相機 Enumerator 搜尋完畢
                 if (SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
@@ -162,23 +161,25 @@ namespace ApexVisIns.content
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
 
-                if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 1000))
+                //if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 1000))
+                if (ServoMotion.CheckDllVersion())
                 {
                     //_ = SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000);
                     InitMotion();
                 }
                 else
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "找不到 Motion 軸卡");
+                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "MOTION 控制驅動未安裝或版本不符");
                 }
 
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
 
                 // 等待 Com Port 搜尋完畢
@@ -195,7 +196,7 @@ namespace ApexVisIns.content
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
 
                 InitIOCtrl();
@@ -203,65 +204,71 @@ namespace ApexVisIns.content
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
 
                 // _ = SpinWait.SpinUntil(() => false, 1500);
                 // MainWindow.MsgInformer.TargetProgressValue = 200;
 
-                // 等待 1 分鐘
-                //_ = SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 60 * 1000);
-
+                // 等待 5 秒
+                if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5 * 1000))
+                {
+                    // 硬體初始化失敗
+                    MainWindow.ApexDefect.StepError = true;
+                    return 1;   // 
+                }
 
                 // 暫停 Worker 
                 MainWindow.CameraEnumer.WorkerPause();
                 MainWindow.LightEnumer.WorkerPause();
 
-                Debug.WriteLine($"Step = 0 end {DateTime.Now:mm:ss.fff}");
-            }, _cancellationTokenSource.Token).ContinueWith(t =>
+                return 0;
+            }, _cancellationTokenSource.Token).ContinueWith<int>(t =>
             {
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
-                // 原點復歸
-                // 原點復歸
-                // 原點復歸
 
-                Debug.WriteLine($"Step = 1 {DateTime.Now:mm:ss.fff}");
-                MainWindow.ApexDefect.CurrentStep = 1;
+                if (t.Result == 0)
+                {
+                    // 原點復歸 // 原點復歸 // 原點復歸
+                    MainWindow.ApexDefect.CurrentStep = 1;  // 步序 : 原點復歸 
 
-                MotionReturnZero().Wait();
+                    MotionReturnZero().Wait();
 
-                Debug.WriteLine($"Step = 1 end {DateTime.Now:mm:ss.fff}");
-            }, _cancellationTokenSource.Token).ContinueWith(t =>
+                    if (!MainWindow.ApexDefect.ZeroReturned)
+                    {
+                        MainWindow.ApexDefect.StepError = true;
+                        return 2;
+                    }
+                    return 0;
+                }
+                else
+                {
+                    return t.Result;
+                }
+            }, _cancellationTokenSource.Token).ContinueWith<int>(t =>
             {
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     MainWindow.ApexDefect.CurrentStep = -1;
-                    return;
+                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
                 }
-                // 規格選擇
-                // 規格選擇
-                // 規格選擇
 
-                Debug.WriteLine($"Step = 2 {DateTime.Now:mm:ss.fff}");
-
-                MainWindow.ApexDefect.CurrentStep = 2;
+                if (t.Result == 0)
+                {
+                    // 規格選擇 // 規格選擇 // 規格選擇
+                    // 原點復歸成功 // 進入人員操作
+                    MainWindow.ApexDefect.CurrentStep = 2;  // 步序 : 規格選擇 
+                    return 0;
+                }
+                else
+                {
+                    return t.Result;
+                }
             }, _cancellationTokenSource.Token);
-
-            // UX Progress Bar
-            //  之後整合到 MsgInformer
-            // _ = Task.Run(() =>
-            // {
-            //     while (MainWindow.ProgressValue < 100)
-            //     {
-            //         MainWindow.ProgressValue += 2;
-
-            //         _ = SpinWait.SpinUntil(() => false, 50);
-            //     }
-            // });
         }
 
         /// <summary>
@@ -296,9 +303,6 @@ namespace ApexVisIns.content
                 _ = Light_6V.TryResetAllValue();
                 Light_6V.ComClose();
             }
-
-            // 關閉 Motion Control
-            // 
         }
 
         /// <summary>
@@ -522,6 +526,7 @@ namespace ApexVisIns.content
 
             try
             {
+                ServoMotion.ListAvailableDevices();
                 if (ServoMotion.MotionDevices.Count > 0)
                 {
                     // uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
@@ -534,11 +539,20 @@ namespace ApexVisIns.content
                         // 確認軸卡開啟
                         if (ServoMotion.DeviceOpened)
                         {
+                            // 啟動 Timer 
+                            ServoMotion.EnableAllTimer(100);
+
+                            // 重置全部軸錯誤
+                            ServoMotion.ResetAllError();
+
+                            // 全部軸 Servo ON
+                            ServoMotion.SetAllServoOn();
+
                             // 全軸 Servo On
-                            foreach (MotionAxis axis in ServoMotion.Axes)
-                            {
-                                axis.SetServoOn();
-                            }
+                            // foreach (MotionAxis axis in ServoMotion.Axes)
+                            // {
+                            //     axis.SetServoOn();
+                            // }
 
                             #region 載入 Config
                             string motionPath = $@"{Environment.CurrentDirectory}\motions\motion.json";
@@ -552,23 +566,23 @@ namespace ApexVisIns.content
 
                                 foreach (MotionVelParam item in velParams)
                                 {
-                                    MotionAxis axis = MainWindow.ServoMotion.Axes.First(axis => axis.SlaveNumber == item.SlaveNumber);
-                                    axis.LoadFromVelParam(item);
-                                    // 寫入參數
-                                    axis.SetGearRatio();
-                                    axis.SetJogVelParam();
-                                    axis.SetHomeVelParam();
-                                    axis.SetAxisVelParam();
+                                    MotionAxis axis = MainWindow.ServoMotion.Axes.FirstOrDefault(axis => axis.SlaveNumber == item.SlaveNumber);
+                                    if (axis != null)
+                                    {
+                                        axis.LoadFromVelParam(item);
+                                        // 寫入參數
+                                        axis.SetGearRatio();
+                                        axis.SetJogVelParam();
+                                        axis.SetHomeVelParam();
+                                        axis.SetAxisVelParam();
+                                    }
                                 }
                             }
                             else
                             {
-                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"Motion 設定為空");
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"Motion 設定檔為空");
                             }
                             #endregion
-
-                            // ServoMotion
-                            ServoMotion.EnableAllTimer(100);
                         }
                         else
                         {
@@ -577,7 +591,7 @@ namespace ApexVisIns.content
                     }
 
                     // 更新 Progress Value
-                    MainWindow.MsgInformer.ProgressValue += 20;
+                    MainWindow.MsgInformer.TargetProgressValue += 20;
 
                     // Motion 初始化旗標
                     MotionInitialized = true;
@@ -650,7 +664,7 @@ namespace ApexVisIns.content
                         throw new Exception("24V 控制器沒有回應");
                     }
                 }
-                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
+                MainWindow.MsgInformer.TargetProgressValue += 10;     // 更新 Progress Value
             }
             catch (Exception ex)
             {
@@ -668,7 +682,7 @@ namespace ApexVisIns.content
                         throw new Exception("6V 控制器沒有回應");
                     }
                 }
-                MainWindow.MsgInformer.ProgressValue += 10;     // 更新 Progress Value
+                MainWindow.MsgInformer.TargetProgressValue += 10;     // 更新 Progress Value
             }
             catch (Exception ex)
             {
@@ -776,7 +790,7 @@ namespace ApexVisIns.content
                     }
                     //});
                     //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                    MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
+                    MainWindow.MsgInformer.TargetProgressValue += 10; // 更新 Progress Value
 
 
                     // IOContoller 內部沒有 Dispacher
@@ -789,7 +803,7 @@ namespace ApexVisIns.content
                     }
                     //});
                     //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                    MainWindow.MsgInformer.ProgressValue += 10; // 更新 Progress Value
+                    MainWindow.MsgInformer.TargetProgressValue += 10; // 更新 Progress Value
 
                     IoInitialized = true;
 

@@ -85,62 +85,6 @@ namespace ApexVisIns.content
             // }
         }
 
-        /// <summary>
-        /// MainWindow.CamsSource Collection 變更事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CamsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            // Collection Changed 有三個動作
-            // 1. 新增 => MainWindow.DeviceConfigs Config.Online 設為 True
-            // 2. 移除 => MainWindow.DeviceConfigs Config.Online 設為 Off
-            // 3. 清空 => MainWindow.DeviceConfigs Online 全部設為 Off
-
-            List<BaslerCamInfo> list;
-            switch (e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:  // Add();
-                    // 取得已連線相機 List
-                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
-               
-                    // 循環比較，標記已連線之相機
-                    foreach (DeviceConfig device in MainWindow.DeviceConfigs)
-                    {
-                        if (list.Any(item => item.SerialNumber == device.SerialNumber))
-                        {
-                            Dispatcher.Invoke(() => device.Online = true);
-                            break; // 測試是否有新增複數的可能
-                        }
-                    }
-
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:   // Remove();
-                    // 取得已連線相機 LIst
-                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
-
-                    // 循環比較，標記已斷線之相機
-                    foreach (DeviceConfig cfg in MainWindow.DeviceConfigs)
-                    {
-                        if (!list.Any(info => info.SerialNumber == cfg.SerialNumber))
-                        {
-                            Dispatcher.Invoke(() => cfg.Online = false);
-                            break;
-                        }
-                    }
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:    // Clear();
-                    // 全部設為 Offline
-                    Dispatcher.Invoke(() =>
-                    {
-                        foreach (DeviceConfig config in MainWindow.DeviceConfigs)
-                        {
-                            config.Online = false;
-                        }
-                    });
-                    break;
-            }
-        }
 
         /// <summary>
         /// 載入 device.json
@@ -505,11 +449,11 @@ namespace ApexVisIns.content
             Button button = sender as Button;
             string serialNumber = button.CommandParameter as string;
 
-            foreach (DeviceConfig config in MainWindow.DeviceConfigs)
+            foreach (DeviceConfig config in MainWindow.CameraEnumer.DeviceConfigs)
             {
                 if (config.SerialNumber == serialNumber)
                 {
-                    MainWindow.DeviceConfigs.Remove(config);
+                    MainWindow.CameraEnumer.DeviceConfigs.Remove(config);
                     break;
                 }
             }
