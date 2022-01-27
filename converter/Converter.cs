@@ -288,7 +288,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 數字陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class NumberCompareConverter : IMultiValueConverter
+    public class NumberEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

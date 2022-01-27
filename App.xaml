@@ -75,7 +75,7 @@
             <cvt:EqualConverter x:Key="EqualConverter"/>
             <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
-            <cvt:NumberCompareConverter x:Key="NumberCompareConverter"/>
+            <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <!--<cvt:GetIndexConvertor x:Key="GetIndexConvertor"/>-->

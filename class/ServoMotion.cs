@@ -223,7 +223,8 @@ namespace ApexVisIns
         public ushort[] SlaveIDArray { get; private set; } = new ushort[4];
 
         /// <summary>
-        /// 軸卡 Devices 列表
+        /// 軸卡 Devices 列表，
+        /// 呼叫 ListAvailableDevices 更新
         /// </summary>
         public ObservableCollection<MotionDevice> MotionDevices { get; } = new();
         //public int BoardCount => BoardList.Count;
@@ -297,7 +298,6 @@ namespace ApexVisIns
             }
             else
             {
-                //throw new DllNotFoundException("Motion 控制驅動未安裝");
                 return false;
             }
             return true;
@@ -323,42 +323,50 @@ namespace ApexVisIns
             //Axes.CollectionChanged -= Axes_CollectionChanged;
         }
 
-
-        private void Axes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            // if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            // {
-            //     return;
-            // }
-        }
+        //private void Axes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        //{
+        //    // if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+        //    // {
+        //    //     return;
+        //    // }
+        //}
 
         /// <summary>
         /// 列出可用的 Devices (Motion Cards)
         /// </summary>
-        public void ListAvailableDevices()
+        public void ListAvailableDevices(bool checkDll = false)
         {
-            if (!_deviceOpened)
+            bool dllValid = checkDll ? CheckDllVersion() : true;
+
+            if (dllValid)
             {
-                uint devCount = 0;
-                int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref devCount);
-
-                if (result != (int)ErrorCode.SUCCESS)
+                if (!_deviceOpened)
                 {
-                    throw new Exception($"取得 EtherCAT Cards 失敗: Code[0x{result:X}]");
-                }
+                    uint devCount = 0;
+                    int result = Motion.mAcm_GetAvailableDevs(DEV_LISTs, 10, ref devCount);
 
-                lock (_deviceColltionLock)
-                {
-                    MotionDevices.Clear();
-                    for (int i = 0; i < devCount; i++)
+                    if (result != (int)ErrorCode.SUCCESS)
                     {
-                        MotionDevices.Add(new MotionDevice(DEV_LISTs[i]));
+                        throw new Exception($"取得 EtherCAT Cards 失敗: Code[0x{result:X}]");
                     }
+
+                    lock (_deviceColltionLock)
+                    {
+                        MotionDevices.Clear();
+                        for (int i = 0; i < devCount; i++)
+                        {
+                            MotionDevices.Add(new MotionDevice(DEV_LISTs[i]));
+                        }
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Device 開啟時不允許此操作");
                 }
             }
             else
             {
-                throw new InvalidOperationException($"軸卡已開啟的情況下禁止此操作");
+                throw new DllNotFoundException("MOTION 控制驅動未安裝或版本不符");
             }
         }
 
@@ -423,11 +431,11 @@ namespace ApexVisIns
                     }
                 }
 
-                // 重置所有軸 Error
-                foreach (MotionAxis axis in Axes)
-                {
-                    axis.ResetError();
-                }
+                // 重置所有軸 Error // 另外開 Method
+                //foreach (MotionAxis axis in Axes)
+                //{
+                //    axis.ResetError();
+                //}
 
                 #region 可略過，不知道能幹嘛
                 // result = Motion.mAcm_DevGetMasInfo(DeviceHandle, ref ringNo, slaveIPArr, ref slaveCount);
@@ -518,19 +526,21 @@ namespace ApexVisIns
 
             if (DeviceOpened)
             {
+                Debug.WriteLine($"1:{DateTime.Now:mm:ss.fff}");
                 // Get the axis's current state
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
+                    Debug.WriteLine($"2:{DateTime.Now:mm:ss.fff}");
                     // 讀取軸狀態
-                    Motion.mAcm_AxGetState(AxisHandles[i], ref AxisState[i]);
+                    _ = Motion.mAcm_AxGetState(AxisHandles[i], ref AxisState[i]);
 
                     if (AxisState[i] == (uint)Advantech.Motion.AxisState.STA_AX_ERROR_STOP)
                     {
                         // 若軸狀態為Error，重置軸狀態
-                        Motion.mAcm_AxResetError(AxisHandles[i]);
+                        _ = Motion.mAcm_AxResetError(AxisHandles[i]);
                     }
                     // 命令軸減速至停止
-                    Motion.mAcm_AxStopDec(AxisHandles[i]);
+                    _ = Motion.mAcm_AxStopDec(AxisHandles[i]);
                 }
 
                 // Close Axes
@@ -562,20 +572,6 @@ namespace ApexVisIns
                 return;
             }
 
-            #region 待刪除
-            //for (int i = 0; i < MaxAxisCount; i++)
-            //{
-            //    // Servo On augu 2 => 1
-            //    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 1);
-
-            //    if (result != (uint)ErrorCode.SUCCESS)
-            //    {
-            //        throw new Exception($"{i}-Axis Servo On 失敗: Code[0x{result:X}]");
-            //    }
-            //}
-            //SltMotionAxis.ServoOn = true; 
-            #endregion
-
             try
             {
                 for (int i = 0; i < Axes.Count; i++)
@@ -599,19 +595,6 @@ namespace ApexVisIns
                 return;
             }
 
-            //for (int i = 0; i < MaxAxisCount; i++)
-            //{
-            //    Debug.WriteLine($"Axis: {i} {AxisHandles[i]}");
-
-            //    // Servo Off augu 2 => 0
-            //    result = Motion.mAcm_AxSetSvOn(AxisHandles[i], 0);
-
-            //    if (result != (uint)ErrorCode.SUCCESS)
-            //    {
-            //        throw new Exception($"{i}-Axis Servo Off 失敗: Code[0x{result:X}]");
-            //    }
-            //}
-
             try
             {
                 for (int i = 0; i < Axes.Count; i++)
@@ -621,6 +604,30 @@ namespace ApexVisIns
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 重置全部軸錯誤
+        /// </summary>
+        public void ResetAllError()
+        {
+            if (!DeviceOpened)
+            {
+                return;
+            }
+
+            try
+            {
+                for (int i = 0; i < Axes.Count; i++)
+                {
+                    Axes[i].ResetError();
+                }
+            }
+            catch (Exception)
+            {
+
                 throw;
             }
         }
@@ -1405,9 +1412,11 @@ namespace ApexVisIns
 
             if (result == (uint)ErrorCode.SUCCESS)
             {
+                // 重置所有IO
+                IO_SRDY.BitOn = IO_SVON.BitOn = IO_LMTP.BitOn = IO_LMTN.BitOn = IO_ALM.BitOn = IO_ORG.BitOn = false;
+                UpdateIO();
                 IsAxisOpen = false;
                 handle = AxisHandle;
-                //throw new Exception($"{AxisIndex}-Axis 關閉失敗: Code[0x{result:X}]");
             }
             return result;
         }

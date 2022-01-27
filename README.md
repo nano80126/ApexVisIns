@@ -183,6 +183,10 @@ Apex 外觀瑕疵檢測
 	* MsgInformer Error Type
 	* SpinWait Flag
 
+* [ ] 初始化改 Task with token
+
+* [ ] Motion Reset Error 若即停按下則會 delay 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

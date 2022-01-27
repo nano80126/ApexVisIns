@@ -15,6 +15,7 @@ namespace ApexVisIns
     {
         // private bool _started;
         private int _currentStep = -1;
+        private bool _stepError;
         private StatusType _status;
         private DateTime _startTime;
 
@@ -25,7 +26,6 @@ namespace ApexVisIns
         {
             _startTime = DateTime.Now;
         }
-
 
         /// <summary>
         /// 檢驗步驟，
@@ -39,6 +39,19 @@ namespace ApexVisIns
                 if (value != _currentStep)
                 {
                     _currentStep = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool StepError
+        {
+            get => _stepError;
+            set
+            {
+                if (value != _stepError)
+                {
+                    _stepError = value;
                     OnPropertyChanged();
                 }
             }
@@ -122,11 +135,11 @@ namespace ApexVisIns
             {
                 AutoReset = true,
             };
-            _timeUpdater.Elapsed += _timeUpdater_Elapsed;
+            _timeUpdater.Elapsed += TimeUpdater_Elapsed;
             _timeUpdater.Start();
         }
 
-        private void _timeUpdater_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void TimeUpdater_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             OnPropertyChanged(nameof(PassedTime));
         }
@@ -231,7 +244,7 @@ namespace ApexVisIns
 
             if (disposing)
             {
-                _timeUpdater.Elapsed += _timeUpdater_Elapsed;
+                _timeUpdater.Elapsed += TimeUpdater_Elapsed;
                 _timeUpdater.Stop();
                 _timeUpdater.Dispose();
                 _timeUpdater = null;
@@ -240,6 +253,8 @@ namespace ApexVisIns
             _disposed = true;
         }
     }
+
+
 
     /// <summary>
     /// Apex Defect Testing Status to Color

@@ -49,11 +49,6 @@ namespace ApexVisIns
         /// 相機陣列 (上線正式使用)
         /// </summary>
         public static BaslerCam[] BaslerCams { get; set; }
-        /// <summary>
-        /// 已儲存的相機組態
-        /// </summary>
-        [Obsolete("已轉移至CameraEnumer，待測試")]
-        public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
         #endregion
 
         #region Light Controller
@@ -193,32 +188,28 @@ namespace ApexVisIns
             //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
-            ServoMotion.ListAvailableDevices();
+            //ServoMotion.ListAvailableDevices(true);
 
-            //if (MotionEnumer.CheckDllVersion())
+            //if (ServoMotion.CheckDllVersion())
             //{
-            //    MotionEnumer?.WorkerStart();
-            //    ServoMotion.EnableCollectionBinding();
+            //    ServoMotion.ListAvailableDevices();
             //}
             //else
             //{
-            //    MotionEnumer.Interrupt();
             //    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
             //}
             #endregion
 
             #region IO Controller
             IOController = FindResource(nameof(IOController)) as IOController;
-            IOController.EnableCollectionBinding();
+            IOController.EnableCollectionBinding(); // 啟用 Collection Binding，避免跨執行緒錯誤
             #endregion
 
             #region Device Configs
-            DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
+            //DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 
-        
-
-            #region ApexDefect
+            #region ApexDefect 上線檢驗用
             // Main Tab 使用
             ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
             #endregion
