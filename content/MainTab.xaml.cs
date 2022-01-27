@@ -268,7 +268,7 @@ namespace ApexVisIns.content
         /// 反初始化，
         /// 相機斷線、ComPort關閉
         /// </summary>
-        private void Deinitializer()
+        private void CloseHardware()
         {
             BaslerCam1?.Close();
             BaslerCam2?.Close();
@@ -307,10 +307,7 @@ namespace ApexVisIns.content
         /// </summary>
         private void InitCamera()
         {
-            if (CameraInitialized)
-            {
-                return;
-            }
+            if (CameraInitialized) { return; }
 
             // 1. 載入 DeviceConfigs
             // 2. 確認每個 Camera 的Target
@@ -402,6 +399,107 @@ namespace ApexVisIns.content
             // MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
             // MainWindow.ProgressValue += 20;
             // 更新progress value
+        }
+
+        private void InitCamera(CancellationToken ct)
+        {
+            if (CameraInitialized) { return; }
+
+            if (ct.IsCancellationRequested)
+            {
+                ct.ThrowIfCancellationRequested();
+            }
+
+            // 1. 載入 json // 2. 確認每個 Camera 之 Target // 3. 開啟相機 // 4. 載入 UserSet
+
+            string path = @"./devices/device.json";
+
+            if (File.Exists(path))
+            {
+                using StreamReader reader = new(path);
+                string jsonStr = reader.ReadToEnd();
+
+                if (jsonStr != string.Empty)
+                {
+                    // 組態反序列化
+                    DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+
+                    // 已連線之 Camera
+                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                    // 排序 Devices 
+                    Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
+
+                    foreach (DeviceConfigBase device in devices)
+                    {
+                        // 確認 Device 為在線上之 Camera
+                        if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
+                        {
+                            switch (device.TargetFeature)
+                            {
+                                case DeviceConfigBase.TargetFeatureType.Ear:
+                                    if (!MainWindow.BaslerCams[0].IsConnected)
+                                    {
+                                        BaslerCam1 = MainWindow.BaslerCams[0];
+                                        _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Window:
+                                    if (!MainWindow.BaslerCams[1].IsConnected)
+                                    {
+                                        BaslerCam2 = MainWindow.BaslerCams[1];
+                                        _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Surface1:
+                                    if (!MainWindow.BaslerCams[2].IsConnected)
+                                    {
+                                        BaslerCam3 = MainWindow.BaslerCams[2];
+                                        _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Surface2:
+                                    if (!MainWindow.BaslerCams[3].IsConnected)
+                                    {
+                                        BaslerCam4 = MainWindow.BaslerCams[3];
+                                        _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
+                                        MainWindow.MsgInformer.TargetProgressValue += 5;
+                                    }
+                                    break;
+                                case DeviceConfigBase.TargetFeatureType.Null:
+                                default:
+                                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
+                                    break;
+                            }
+                        }
+                    }
+
+
+                    // 設置初始化完成旗標
+                    CameraInitialized = true;
+
+                    // 確認所有相機已連線
+                    if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
+                    {
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+                    }
+                    else
+                    {
+                        MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機未完全初始化");
+                    }
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+                }
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
+            }
         }
 
         /// <summary>
@@ -750,7 +848,7 @@ namespace ApexVisIns.content
             // 終止 初始化 過程
             _cancellationTokenSource.Cancel();
             // 反初始化
-            Deinitializer();
+            CloseHardware();
             // 啟動 Enumerator
             MainWindow.CameraEnumer.WorkerResume();
             MainWindow.LightEnumer.WorkerResume();

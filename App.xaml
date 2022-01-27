@@ -103,7 +103,7 @@
             </local:BaslerCam>-->
             <!-- 相機陣列 -->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
-                <!-- // -->
+                <!-- // ConfigName 為 EnginnerTab 使用 -->
                 <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
