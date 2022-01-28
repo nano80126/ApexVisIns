@@ -131,13 +131,13 @@ Apex 外觀瑕疵檢測
 * [x] IO Control Panel 改為按鈕建立實例
 	* 避免和 MainTab 衝突
 	
-* [ ] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
+* [x] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
 	* 新增登出 ?
 
 * [x] 新增 Interface of CustomCam
 	* 待測試
 
-* [ ] 更新 ServoMotion HomeModes
+* [x] 更新 ServoMotion HomeModes
 	* 多測試幾次
 
 * [ ] 確認 OOP 命名規則
@@ -149,7 +149,7 @@ Apex 外觀瑕疵檢測
 	* 測試中
 	* 有機率連線失敗
 
-* [ ] Test Hotkey
+* [x] Test Hotkey
 	* Engineer Tab
 
 * [ ] ~MotionTab 有些 Button 需要綁定 servo on~
@@ -159,15 +159,17 @@ Apex 外觀瑕疵檢測
 * [ ] 確認 ProgressBar 可以 100%
 
 * [ ] 初始化 Motion
-	* 確認 MotionEnumer 是否使用
+	* 確認 MotionEnumer 是否使用 => 可移除
 	* 確認 ServoMotion.ListAvailableDevices() 觸發時機 (必須避免重複觸發)
 
 * [ ] Motion Status Pack Icon
 	* ALM 時顯示驚嘆號 (exclamation)
 
 * [ ] ServoMotion.Axes.Clear() 時會導致 Binding 產生 Error
+	* 設置BindingOperation
 
-* [ ] 測試原點復歸中是否可以進行其他操作
+* [x] 測試原點復歸中是否可以進行其他操作
+	* Ans: 會發出警報
 
 * [ ] MotionTab 尋找軸卡改為按鈕觸發
 
@@ -177,6 +179,7 @@ Apex 外觀瑕疵檢測
 	* Bug 待處理
 
 * [ ] 確認 IO Panel DO 寫入按鈕功能
+	* 原則上可移除
 
 * [ ] 整理初始化流程 methods
 	* try... catch
@@ -185,7 +188,11 @@ Apex 外觀瑕疵檢測
 
 * [ ] 初始化改 Task with token
 
-* [ ] Motion Reset Error 若即停按下則會 delay 
+* [ ] Motion Reset Error 若即停開關按下則會 delay 
+	* 重置錯誤失敗會導致 Delay
+
+* [ ] 新增 IO panel 彈出視窗
+	* 即時更新
 
 ### Config Logic
 

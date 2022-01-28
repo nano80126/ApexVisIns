@@ -156,6 +156,7 @@ namespace ApexVisIns
     public class LightController : INotifyPropertyChanged
     {
         private int _channelNumber;
+        private SerialPort _serialPort;
         //private int _channelOn;
 
         public LightController()
@@ -185,12 +186,12 @@ namespace ApexVisIns
             //}
         }
 
-        public SerialPort SerialPort { get; set; }
+        public string ComPort { get; set; }
 
         /// <summary>
         /// ComPort 是否開啟
         /// </summary>
-        public bool IsComOpen => SerialPort != null && SerialPort.IsOpen;
+        public bool IsComOpen => _serialPort != null && _serialPort.IsOpen;
 
         /// <summary>
         /// 光源通道數
@@ -218,12 +219,14 @@ namespace ApexVisIns
         /// 開啟 COM
         /// </summary>
         /// <param name="com"></param>
-        public void ComOpen(string com)
+        public bool ComOpen(string com)
         {
-            SerialPort = new SerialPort(com, 9600, Parity.None, 8, StopBits.One);
-            SerialPort.Open();
-            Ping();
+            ComPort = com;
+            _serialPort = new SerialPort(ComPort, 9600, Parity.None, 8, StopBits.One);
+            _serialPort.Open();
+            bool success = Ping();
             OnPropertyChanged(nameof(IsComOpen));
+            return success;
         }
 
         /// <summary>
@@ -237,8 +240,9 @@ namespace ApexVisIns
         /// <returns>Serial Port 連線狀態</returns>
         public bool ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
         {
-            SerialPort = new SerialPort(com, baudRate, parity, dataBits, stopBits);
-            SerialPort.Open();
+            ComPort = com;
+            _serialPort = new SerialPort(com, baudRate, parity, dataBits, stopBits);
+            _serialPort.Open();
             bool success = Ping();
             OnPropertyChanged(nameof(IsComOpen));
             return success;
@@ -252,7 +256,7 @@ namespace ApexVisIns
         {
             if (IsComOpen)
             {
-                SerialPort.Close();
+                _serialPort.Close();
                 OnPropertyChanged(nameof(IsComOpen));
             }
             return false;
@@ -260,7 +264,7 @@ namespace ApexVisIns
 
         private bool Ping()
         {
-            if (SerialPort.IsOpen)
+            if (_serialPort.IsOpen)
             {
                 string cmd = string.Empty;
                 for (int i = 0; i < ChannelNumber; i++)
@@ -278,7 +282,7 @@ namespace ApexVisIns
                 catch (TimeoutException)
                 {
                     // Timeout 則直接關閉 Port
-                    SerialPort.Close();
+                    _serialPort.Close();
                     //throw;
                     return false;
                 }
@@ -413,10 +417,10 @@ namespace ApexVisIns
         {
             try
             {
-                SerialPort.ReadTimeout = timeout;
-                SerialPort.Write(str);
+                _serialPort.ReadTimeout = timeout;
+                _serialPort.Write(str);
 
-                string ret = SerialPort.ReadLine();
+                string ret = _serialPort.ReadLine();
                 return ret;
             }
             catch (TimeoutException)

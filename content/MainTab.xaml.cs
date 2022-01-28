@@ -751,6 +751,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 光源控制初始化
         /// </summary>
+        [Obsolete("待轉移至新方法")]
         private void InitLightCtrls()
         {
             if (LightCtrlsInitiliazed)
@@ -883,6 +884,7 @@ namespace ApexVisIns.content
                 ct.ThrowIfCancellationRequested();
             }
 
+            #region 舊
             Light24V = MainWindow.LightCtrls[0];
             Light_6V = MainWindow.LightCtrls[1];
 
@@ -904,7 +906,6 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
             }
 
-
             try
             {
                 if (!Light_6V.IsComOpen)
@@ -922,20 +923,52 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
             }
+            #endregion
+
+            try
+            {
+                for (int i = 0; i < MainWindow.LightCtrls.Length; i++)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            Light24V = MainWindow.LightCtrls[i];
+                            break;
+                        case 1:
+                            Light_6V = MainWindow.LightCtrls[i];
+                            break;
+                        default:
+                            break;
+                    }
+
+                    MainWindow.LightCtrls[i].ComOpen($"COM{i + 1}", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                }
+
+                if (MainWindow.LightCtrls.All(ctrl => ctrl.IsComOpen))
+                {
+                    LightCtrlsInitiliazed = true;
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
+                }
+                else
+                {
+                    throw new Exception("光源控制未完全初始化");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
+            }
 
 
+            #region 舊
             if (Light24V.IsComOpen && Light_6V.IsComOpen)
             {
                 MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
 
                 LightCtrlsInitiliazed = true;
-
-                #region 測試用區域
-
-                #endregion
-            }
+            } 
+            #endregion
         }
-
 
         /// <summary>
         /// IO 控制器初始化
@@ -1150,8 +1183,10 @@ namespace ApexVisIns.content
                 catch (Exception ex)
                 {
                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                    // 重試次數++
                     retryCount++;
-                    SpinWait.SpinUntil(() => false, 200);
+                    // 等待 200 ms
+                    _ = SpinWait.SpinUntil(() => false, 200);
                 }
             }
             return cam.IsOpen;
