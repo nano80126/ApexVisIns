@@ -249,17 +249,26 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 開啟 COM
+        /// </summary>
+        public void ComOpen(int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        {
+            _serialPort = new SerialPort(ComPort, baudRate, parity, dataBits, stopBits);
+            _serialPort.Open();
+            OnPropertyChanged(nameof(IsComOpen));
+        }
+
+        /// <summary>
         /// 關閉 COM
         /// </summary>
         /// <returns>Serial Port 連線狀態</returns>
-        public bool ComClose()
+        public void ComClose()
         {
             if (IsComOpen)
             {
                 _serialPort.Close();
                 OnPropertyChanged(nameof(IsComOpen));
             }
-            return false;
         }
 
         private bool Ping()
@@ -362,7 +371,6 @@ namespace ApexVisIns
             return "光源控制器 ComPort未開啟";
         }
 
-
         /// <summary>
         /// 設定通道光源大小,
         /// 後端使用
@@ -433,6 +441,264 @@ namespace ApexVisIns
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class LightSerial : CustomSerial
+    {
+        #region Varibles
+        private int _channelNumber;
+        private bool _disposed;
+        #endregion
+
+        public LightSerial()
+        {
+
+        }
+
+        public LightSerial(int chs)
+        {
+            ChannelNumber = chs;
+            Channels.Clear();
+            for (int i = 0; i < ChannelNumber; i++)
+            {
+                Channels.Add(new LightChannel($"Ch{i + 1}", 0));
+            }
+        }
+
+        /// <summary>
+        /// 光源通道數
+        /// </summary>
+        public int ChannelNumber
+        {
+            get => _channelNumber;
+            set
+            {
+                _channelNumber = value;
+                Channels.Clear();
+                for (int i = 0; i < _channelNumber; i++)
+                {
+                    Channels.Add(new LightChannel($"Chi{i + 1}", 0));
+                }
+            }
+        }
+
+
+        public ObservableCollection<LightChannel> Channels { get; set; } = new ObservableCollection<LightChannel>();
+
+        /// <summary>
+        /// 開啟 COM，
+        /// 預設 9600, N, 8, 1
+        /// </summary>
+        /// <param name="com">COM PORT 名稱</param>
+        public override void ComOpen(string com)
+        {
+            base.ComOpen(com);
+        }
+
+        /// <summary>
+        /// 開啟 COM
+        /// </summary>
+        /// <param name="com">COM PORT 名稱</param>
+        /// <param name="baudRate"></param>
+        /// <param name="parity"></param>
+        /// <param name="dataBits"></param>
+        /// <param name="stopBits"></param>
+        public override void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        {
+            base.ComOpen(com, baudRate, parity, dataBits, stopBits);
+        }
+
+        /// <summary>
+        /// 開啟 COM
+        /// </summary>
+        /// <param name="com">COM PORT 名稱</param>
+        /// <param name="baudRate"></param>
+        /// <param name="parity"></param>
+        /// <param name="dataBits"></param>
+        /// <param name="stopBits"></param>
+        public override void ComOpen(int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        {
+            base.ComOpen(baudRate, parity, dataBits, stopBits);
+        }
+
+        public override void ComClose()
+        {
+            base.ComClose();
+        }
+
+        public override void Write(string str)
+        {
+            try
+            {
+                _serialPort.Write(str);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public override string ReadLine()
+        {
+            try
+            {
+                return _serialPort.ReadLine();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public bool Test(out string result)
+        {
+            result = string.Empty;
+            if (IsComOpen)
+            {
+                try
+                {
+                    Write("\r\n");
+                    _ = ReadLine();
+                    return true;
+                }
+                catch (TimeoutException T)
+                {
+                    result = $"控制器沒有回應 {T.Message}";
+                    return false;
+                }
+            }
+            else
+            {
+                result = "SerialPort 未開啟";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 重置所有通道
+        /// </summary>
+        public void ResetAllChannel()
+        {
+            if (IsComOpen)
+            {
+                string cmd = string.Empty;
+                for (int i = 1; i < ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd += $"{ChannelNumber},0";
+
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    foreach (LightChannel ch in Channels)
+                    {
+                        ch.Value = 0;
+                    }
+                }
+                catch (TimeoutException T)
+                {
+                    throw new Exception($"重置光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"重置光源設置失敗: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("SerialPort 未開啟");
+            }
+        }
+
+        /// <summary>
+        /// 嘗試重置所有通道
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns>若成功回傳 true, 否則 false</returns>
+        public bool TryResetAllChannel(out string result)
+        {
+            if (IsComOpen)
+            {
+                result = string.Empty;
+                string cmd = string.Empty;
+                for (int i = 1; i < ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd += $"{ChannelNumber},0";
+
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    foreach (LightChannel ch in Channels)
+                    {
+                        ch.Value = 0;
+                    }
+                    return true;
+                }
+                catch (TimeoutException T)
+                {
+                    result = $"重置光源設置失敗: {T.Message}";
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    result = $"重置光源設置失敗: {ex.Message}";
+                    return false;
+                }
+            }
+            else
+            {
+                result = "SerialPort 未開啟";
+                return false;
+            }
+        }
+
+        public void SetChannelValue(int ch, int value)
+        {
+            if (0 < ch && ch <= ChannelNumber)
+            {
+                string cmd = $"{ch},{value}\r\n";
+                Write(cmd);
+                _ = ReadLine();
+                Channels[ch - 1].Value = value;
+            }
+            else
+            {
+                throw new ArgumentException("指定的通道不存在");
+            }
+        }
+
+        public int GetChannelValue(int ch)
+        {
+            if (0 < ch && ch <= ChannelNumber)
+            {
+                return Channels[ch - 1].Value;
+            }
+            else
+            {
+                throw new ArgumentException("指定的通道不存在");
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed) { return; }
+
+            if (disposing)
+            {
+                if (_serialPort.IsOpen)
+                {
+                    _serialPort.Close();
+                    _serialPort.Dispose();
+                    _serialPort = null;
+                }
+            }
+            _disposed = true;
         }
     }
 }

@@ -136,20 +136,4 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
-    public class TestCustomCam : CustomCam
-    {
-        public override void CreateCam(string name)
-        {
-            throw new NotImplementedException();
-        }
-        public override void Open()
-        {
-            throw new NotImplementedException();
-        }
-        public override void Close()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

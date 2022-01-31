@@ -66,7 +66,13 @@ namespace ApexVisIns
         /// <summary>
         /// 光源控制器陣列
         /// </summary>
+        [Obsolete("待轉移")]
         public static LightController[] LightCtrls { get; set; }
+
+        /// <summary>
+        /// 光源控制器
+        /// </summary>
+        public static LightSerial[] LightCtrls2 { get; set; }
         #endregion
 
         #region I/O Controller
@@ -181,6 +187,8 @@ namespace ApexVisIns
             LightController = FindResource(nameof(LightController)) as LightController;
 #endif
             LightCtrls = FindResource(nameof(LightCtrls)) as LightController[];
+
+            LightCtrls2 = FindResource(nameof(LightCtrls2)) as LightSerial[];
             #endregion
 
             #region EtherCAT Motion

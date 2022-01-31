@@ -64,11 +64,20 @@ namespace ApexVisIns.content
         /// <summary>
         /// 24V 光源控制器
         /// </summary>
-        private LightController Light24V;
+        private LightSerial Light24V;
         /// <summary>
         /// 6V 光源控制器
         /// </summary>
-        private LightController Light_6V;
+        private LightSerial Light_6V;
+
+        ///// <summary>
+        ///// 24V 光源控制器
+        ///// </summary>
+        //private LightSerial LIght24V;
+        ///// <summary>
+        ///// 6V 光源控制器
+        ///// </summary>
+        //private LightSerial LIght_6V;
 
         /// <summary>
         /// 相機 1
@@ -186,7 +195,7 @@ namespace ApexVisIns.content
                 if (SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
                 {
                     //_ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-                    InitLightCtrls();
+                    //InitLightCtrls();
                 }
                 else
                 {
@@ -293,14 +302,16 @@ namespace ApexVisIns.content
             // 關閉 24V 光源
             if (Light24V != null && Light24V.IsComOpen)
             {
-                _ = Light24V.TryResetAllValue();
+                //_ = Light24V.TryResetAllValue();
+                _ = Light24V.TryResetAllChannel(out _);
                 Light24V.ComClose();
             }
 
             // 關閉 6V 光源
             if (Light_6V != null && Light_6V.IsComOpen)
             {
-                _ = Light_6V.TryResetAllValue();
+                //_ = Light_6V.TryResetAllValue();
+                _ = Light_6V.TryResetAllChannel(out _);
                 Light_6V.ComClose();
             }
         }
@@ -748,6 +759,7 @@ namespace ApexVisIns.content
             }
         }
 
+#if false
         /// <summary>
         /// 光源控制初始化
         /// </summary>
@@ -798,78 +810,17 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
             }
 
-
             if (Light24V.IsComOpen && Light_6V.IsComOpen)
             {
                 MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
 
                 MainWindow.LightEnumer.WorkerPause();
                 LightCtrlsInitiliazed = true;
-
-                #region MyRegion
-                //Task.Run(() =>
-                //{
-                //    int b = 0;
-                //    while (b++ < 10000)
-                //    {
-                //        for (int i = 1; i <= Light_6V.ChannelNumber; i++)
-                //        {
-                //            try
-                //            {
-                //                if (b % 2 == 0)
-                //                {
-                //                    Light_6V.SetChannelValue(i, 160);
-                //                }
-                //                else
-                //                {
-                //                    Light_6V.SetChannelValue(i, 0);
-                //                }
-                //            }
-                //            catch (Exception ex)
-                //            {
-                //                Debug.WriteLine(ex.Message);
-                //                return;
-                //            }
-                //        }
-                //        SpinWait.SpinUntil(() => false, 33);
-                //    }
-                //}); 
-                #endregion
             }
-
-
-            //if (Light24V.IsComOpen)
-            //{
-            //    Task.Run(() =>
-            //    {
-            //        int a = 0;
-            //        while (a++ < 10000)
-            //        {
-            //            for (int i = 1; i <= Light24V.ChannelNumber; i++)
-            //            {
-            //                try
-            //                {
-            //                    if (a % 2 == 0)
-            //                    {
-            //                        Light24V.SetChannelValue(i, 160);
-            //                    }
-            //                    else
-            //                    {
-            //                        Light24V.SetChannelValue(i, 0);
-            //                    }
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    Debug.WriteLine(ex.Message);
-            //                    return;
-            //                }
-            //            }
-            //            SpinWait.SpinUntil(() => false, 50);
-            //            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}");
-            //        }
-            //    });
-            //}
         }
+
+#endif
+
 
         /// <summary>
         /// 光源控制初始化
@@ -884,95 +835,75 @@ namespace ApexVisIns.content
                 ct.ThrowIfCancellationRequested();
             }
 
-            #region 舊
-            Light24V = MainWindow.LightCtrls[0];
-            Light_6V = MainWindow.LightCtrls[1];
-
             try
             {
-                if (!Light24V.IsComOpen)
+                string result = string.Empty;
+                foreach (LightSerial ctrl in MainWindow.LightCtrls2)
                 {
-                    bool res24V = Light24V.ComOpen("COM1", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-
-                    if (!res24V)
+                    switch (ctrl.ComPort)
                     {
-                        throw new Exception("24V 控制沒有回應");
-                    }
-                    MainWindow.MsgInformer.TargetProgressValue += 10;
-                }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
-            }
-
-            try
-            {
-                if (!Light_6V.IsComOpen)
-                {
-                    bool res_6V = Light_6V.ComOpen("COM2", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-
-                    if (!res_6V)
-                    {
-                        throw new Exception("6V 控制沒有回應");
-                    }
-                    MainWindow.MsgInformer.TargetProgressValue += 10;
-                }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
-            }
-            #endregion
-
-            try
-            {
-                for (int i = 0; i < MainWindow.LightCtrls.Length; i++)
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            Light24V = MainWindow.LightCtrls[i];
+                        case "COM1":
+                            Light24V = ctrl;
+                            Light24V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                            if (!Light24V.Test(out result))
+                            {
+                                // 關閉 COM
+                                Light24V.ComClose();
+                                // 拋出異常
+                                throw new Exception(result);
+                            }
+                            else
+                            {
+                                // 重置所有通道
+                                Light24V.ResetAllChannel();
+                                // 更新 Progress bar
+                                MainWindow.MsgInformer.TargetProgressValue += 10;
+                            }
                             break;
-                        case 1:
-                            Light_6V = MainWindow.LightCtrls[i];
-                            break;
-                        default:
+                        case "COM2":
+                            Light_6V = ctrl;
+                            Light_6V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                            if (!Light_6V.Test(out result))
+                            {
+                                // 關閉 COM
+                                Light_6V.ComClose();
+                                // 拋出異常
+                                throw new Exception(result);
+                            }
+                            else
+                            {
+                                // 重置所有通道
+                                Light_6V.ResetAllChannel();
+                                // 更新 Progress bar
+                                MainWindow.MsgInformer.TargetProgressValue += 10;
+                            }
                             break;
                     }
-
-                    MainWindow.LightCtrls[i].ComOpen($"COM{i + 1}", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
                 }
 
-                if (MainWindow.LightCtrls.All(ctrl => ctrl.IsComOpen))
+                // 設置初始化完成旗標
+                LightCtrlsInitiliazed = true;
+
+                // 確認所有控制器已開啟
+                if (MainWindow.LightCtrls2.All(ctrl => ctrl.IsComOpen))
                 {
-                    LightCtrlsInitiliazed = true;
                     MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
                 }
                 else
                 {
-                    throw new Exception("光源控制未完全初始化");
+                    throw new NotImplementedException("此區塊不應該到達");
                 }
             }
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
             }
-
-
-            #region 舊
-            if (Light24V.IsComOpen && Light_6V.IsComOpen)
-            {
-                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
-
-                LightCtrlsInitiliazed = true;
-            } 
-            #endregion
         }
 
         /// <summary>
         /// IO 控制器初始化
         /// </summary>
+        [Obsolete("待轉移至新方法")]
         private void InitIOCtrl()
         {
             if (IoInitialized)
@@ -1031,6 +962,22 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// IO 控制器初始化
+        /// </summary>
+        /// <param name="ct"></param>
+        private void InitIOCtrl(CancellationToken ct)
+        {
+            if (IoInitialized) { return; }
+
+            if (ct.IsCancellationRequested)
+            {
+                ct.ThrowIfCancellationRequested();
+            }
+
+
+        }
+
+        /// <summary>
         /// 中斷事件
         /// </summary>
         /// <param name="sender"></param>
@@ -1042,9 +989,12 @@ namespace ApexVisIns.content
         }
         #endregion
 
+
         #region 原點復歸
 
+
         #endregion
+
 
         /// <summary>
         /// 規格選擇變更

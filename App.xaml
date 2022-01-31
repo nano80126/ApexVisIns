@@ -149,8 +149,13 @@
             <!--<local:LightController x:Key="LightController2" ChannelNumber="2"/>-->
             <!--光源控制器陣列-->
             <x:Array x:Key="LightCtrls" Type="local:LightController">
-                <local:LightController ChannelNumber="4"/>
-                <local:LightController ChannelNumber="2"/>
+                <local:LightController ComPort="COM1" ChannelNumber="4"/>
+                <local:LightController ComPort="COM2" ChannelNumber="2"/>
+            </x:Array>
+            <!--光源控制器陣列-->
+            <x:Array x:Key="LightCtrls2" Type="local:LightSerial">
+                <local:LightSerial ComPort="COM1" ChannelNumber="4"/>
+                <local:LightSerial ComPort="COM2" ChannelNumber="2"/>
             </x:Array>
             <!--#endregion-->
 

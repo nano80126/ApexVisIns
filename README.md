@@ -194,6 +194,8 @@ Apex 外觀瑕疵檢測
 * [ ] 新增 IO panel 彈出視窗
 	* 即時更新
 
+* [ ] 光源控制器待轉移
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
