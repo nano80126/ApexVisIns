@@ -114,7 +114,8 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Initializer();            //Initializer();
+            //Initializer();            //Initializer();
+            Initializer2();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -281,6 +282,95 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 初始化工作
+        /// </summary>
+        private void Initializer2()
+        {
+            try
+            {
+                CancellationToken token = _cancellationTokenSource.Token;
+                // 步序 : 硬體初始化
+                MainWindow.ApexDefect.CurrentStep = 0;
+                // 同步初始化硬體
+                _ = Task.WhenAll(
+                    InitCamera(token),
+                    InitMotion(token),
+                    InitLightCtrls(token),
+                    InitIOCtrl(token)).ContinueWith(t =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            MainWindow.ApexDefect.CurrentStep = -1;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        // 等待 Progress 100%
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5000))
+                        {
+                            // 硬體初始化失敗
+                            MainWindow.ApexDefect.StepError = true;
+                            // Error Code
+                            return 1;
+                        }
+
+                        MainWindow.CameraEnumer.WorkerPause();
+                        MainWindow.LightEnumer.WorkerPause();
+
+                        return 0;
+                    }, token).ContinueWith(t =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            MainWindow.ApexDefect.CurrentStep = -1;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        if (t.Result == 0)
+                        {
+                            // 步序 : 原點復歸
+                            MainWindow.ApexDefect.CurrentStep = 1;
+                            // 執行原點復歸
+                            MotionReturnZero().Wait();
+
+                            if (!MainWindow.ApexDefect.ZeroReturned)
+                            {
+                                // 硬體初始化失敗
+                                MainWindow.ApexDefect.StepError = true;
+                                // Error Code
+                                return 2;
+                            }
+                            return 0;
+                        }
+                        else { return t.Result; }
+                    }, token).ContinueWith<int>(t =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            MainWindow.ApexDefect.CurrentStep = -1;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        if (t.Result == 0)
+                        {
+                            // 規格選擇 // 規格選擇 // 規格選擇
+                            MainWindow.ApexDefect.CurrentStep = 2;
+                            return 0;
+                        }
+                        else { return t.Result; }
+                    });
+            }
+            catch (OperationCanceledException cancel)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程被終止: {cancel.Message}");
+                //throw;
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// 反初始化，
         /// 相機斷線、ComPort關閉
         /// </summary>
@@ -420,114 +510,117 @@ namespace ApexVisIns.content
         /// 相機初始化
         /// </summary>
         /// <param name="ct">CancellationToken</param>s
-        private void InitCamera(CancellationToken ct)
+        private Task InitCamera(CancellationToken ct)
         {
-            if (CameraInitialized) { return; }
-
-            if (ct.IsCancellationRequested)
+            return Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-            }
+                if (CameraInitialized) { return; }
 
-            // 1. 載入 json // 2. 確認每個 Camera 之 Target // 3. 開啟相機 // 4. 載入 UserSet
-
-            try
-            {
-                string path = @"./devices/device.json";
-
-                if (File.Exists(path))
+                if (ct.IsCancellationRequested)
                 {
-                    using StreamReader reader = new(path);
-                    string jsonStr = reader.ReadToEnd();
+                    ct.ThrowIfCancellationRequested();
+                }
 
-                    if (jsonStr != string.Empty)
+                // 1. 載入 json // 2. 確認每個 Camera 之 Target // 3. 開啟相機 // 4. 載入 UserSet
+
+                try
+                {
+                    string path = @"./devices/device.json";
+
+                    if (File.Exists(path))
                     {
-                        // 組態反序列化
-                        DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+                        using StreamReader reader = new(path);
+                        string jsonStr = reader.ReadToEnd();
 
-                        // 已連線之 Camera
-                        List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                        // 排序 Devices 
-                        Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
-
-                        foreach (DeviceConfigBase device in devices)
+                        if (jsonStr != string.Empty)
                         {
-                            // 確認 Device 為在線上之 Camera
-                            if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
+                            // 組態反序列化
+                            DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+
+                            // 已連線之 Camera
+                            List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                            // 排序 Devices 
+                            Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
+
+                            foreach (DeviceConfigBase device in devices)
                             {
-                                switch (device.TargetFeature)
+                                // 確認 Device 為在線上之 Camera
+                                if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                                 {
-                                    case DeviceConfigBase.TargetFeatureType.Ear:
-                                        if (!MainWindow.BaslerCams[0].IsConnected)
-                                        {
-                                            BaslerCam1 = MainWindow.BaslerCams[0];
-                                            _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
-                                            MainWindow.MsgInformer.TargetProgressValue += 5;
-                                        }
-                                        break;
-                                    case DeviceConfigBase.TargetFeatureType.Window:
-                                        if (!MainWindow.BaslerCams[1].IsConnected)
-                                        {
-                                            BaslerCam2 = MainWindow.BaslerCams[1];
-                                            _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
-                                            MainWindow.MsgInformer.TargetProgressValue += 5;
-                                        }
-                                        break;
-                                    case DeviceConfigBase.TargetFeatureType.Surface1:
-                                        if (!MainWindow.BaslerCams[2].IsConnected)
-                                        {
-                                            BaslerCam3 = MainWindow.BaslerCams[2];
-                                            _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
-                                            MainWindow.MsgInformer.TargetProgressValue += 5;
-                                        }
-                                        break;
-                                    case DeviceConfigBase.TargetFeatureType.Surface2:
-                                        if (!MainWindow.BaslerCams[3].IsConnected)
-                                        {
-                                            BaslerCam4 = MainWindow.BaslerCams[3];
-                                            _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
-                                            MainWindow.MsgInformer.TargetProgressValue += 5;
-                                        }
-                                        break;
-                                    case DeviceConfigBase.TargetFeatureType.Null:
-                                    default:
-                                        MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
-                                        break;
+                                    switch (device.TargetFeature)
+                                    {
+                                        case DeviceConfigBase.TargetFeatureType.Ear:
+                                            if (!MainWindow.BaslerCams[0].IsConnected)
+                                            {
+                                                BaslerCam1 = MainWindow.BaslerCams[0];
+                                                _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
+                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                            }
+                                            break;
+                                        case DeviceConfigBase.TargetFeatureType.Window:
+                                            if (!MainWindow.BaslerCams[1].IsConnected)
+                                            {
+                                                BaslerCam2 = MainWindow.BaslerCams[1];
+                                                _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
+                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                            }
+                                            break;
+                                        case DeviceConfigBase.TargetFeatureType.Surface1:
+                                            if (!MainWindow.BaslerCams[2].IsConnected)
+                                            {
+                                                BaslerCam3 = MainWindow.BaslerCams[2];
+                                                _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
+                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                            }
+                                            break;
+                                        case DeviceConfigBase.TargetFeatureType.Surface2:
+                                            if (!MainWindow.BaslerCams[3].IsConnected)
+                                            {
+                                                BaslerCam4 = MainWindow.BaslerCams[3];
+                                                _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
+                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                            }
+                                            break;
+                                        case DeviceConfigBase.TargetFeatureType.Null:
+                                        default:
+                                            MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
+                                            break;
+                                    }
                                 }
                             }
-                        }
 
-                        // 設置初始化完成旗標
-                        CameraInitialized = true;
+                            // 設置初始化完成旗標
+                            CameraInitialized = true;
 
-                        // 確認所有相機已連線
-                        if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
-                        {
-                            MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+                            // 確認所有相機已連線
+                            if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
+                            {
+                                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+                            }
+                            else
+                            {
+                                //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機未完全初始化");
+                                throw new Exception("相機未完全初始化");
+                            }
                         }
                         else
                         {
-                            //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機未完全初始化");
-                            throw new Exception("相機未完全初始化");
+                            //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+                            throw new Exception("相機設定檔為空");
                         }
                     }
                     else
                     {
-                        //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
-                        throw new Exception("相機設定檔為空");
+                        throw new Exception("相機設定檔不存在");
+                        //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new Exception("相機設定檔不存在");
-                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, $"相機初始化失敗: {ex.Message}");
                 }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, $"相機初始化失敗: {ex.Message}");
-            }
+            }, ct);
         }
 
         /// <summary>
@@ -638,99 +731,103 @@ namespace ApexVisIns.content
         /// 運動控制初始化
         /// </summary>
         /// <param name="ct">CancellationToken</param>
-        private void InitMotion(CancellationToken ct)
+        private Task InitMotion(CancellationToken ct)
         {
-            if (MotionInitialized) { return; }
-
-            if (ct.IsCancellationRequested)
+            return Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-            }
+                if (MotionInitialized) { return; }
 
-            // 1. 列出 Device // 2. 開啟 Device // 3. 重置錯誤 // 4. 全部軸 Servo On // 5. 載入 Configs
-
-            ServoMotion = MainWindow.ServoMotion;
-
-            try
-            {
-                ServoMotion.ListAvailableDevices();
-                // 確認 Device 存在
-                if (ServoMotion.MotionDevices.Count > 0)
+                if (ct.IsCancellationRequested)
                 {
-                    // 開啟第一張 Device
-                    uint deviceNumber = MainWindow.ServoMotion.MotionDevices[0].DeviceNumber;
+                    ct.ThrowIfCancellationRequested();
+                }
 
-                    if (!ServoMotion.DeviceOpened)
+                // 1. 列出 Device // 2. 開啟 Device // 3. 重置錯誤 // 4. 全部軸 Servo On // 5. 載入 Configs
+
+                ServoMotion = MainWindow.ServoMotion;
+
+                try
+                {
+                    // 確認驅動安裝且列出所有 Devices
+                    ServoMotion.ListAvailableDevices(true);
+                    // 確認 Device 存在
+                    if (ServoMotion.MotionDevices.Count > 0)
                     {
-                        // 開啟軸卡
-                        ServoMotion.OpenDevice(deviceNumber);
+                        // 開啟第一張 Device
+                        uint deviceNumber = MainWindow.ServoMotion.MotionDevices[0].DeviceNumber;
 
-                        // 確認軸卡開啟
-                        if (ServoMotion.DeviceOpened)
+                        if (!ServoMotion.DeviceOpened)
                         {
-                            // 啟動 Timer 
-                            ServoMotion.EnableAllTimer(100);
+                            // 開啟軸卡
+                            ServoMotion.OpenDevice(deviceNumber);
 
-                            // 重置全部軸錯誤
-                            ServoMotion.ResetAllError();
-
-                            // 全部軸 Servo ON
-                            ServoMotion.SetAllServoOn();
-
-                            #region 載入 Config
-                            string motionPath = $@"{Environment.CurrentDirectory}\motions\motion.json";
-
-                            using StreamReader reader = File.OpenText(motionPath);
-                            string jsonStr = reader.ReadToEnd();
-
-                            if (jsonStr != string.Empty)
+                            // 確認軸卡開啟
+                            if (ServoMotion.DeviceOpened)
                             {
-                                MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
+                                // 啟動 Timer 
+                                ServoMotion.EnableAllTimer(100);
 
-                                foreach (MotionVelParam item in velParams)
+                                // 重置全部軸錯誤
+                                ServoMotion.ResetAllError();
+
+                                // 全部軸 Servo ON
+                                ServoMotion.SetAllServoOn();
+
+                                #region 載入 Config
+                                string motionPath = $@"{Environment.CurrentDirectory}\motions\motion.json";
+
+                                using StreamReader reader = File.OpenText(motionPath);
+                                string jsonStr = reader.ReadToEnd();
+
+                                if (jsonStr != string.Empty)
                                 {
-                                    MotionAxis axis = MainWindow.ServoMotion.Axes.FirstOrDefault(axis => axis.SlaveNumber == item.SlaveNumber);
-                                    if (axis != null)
+                                    MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
+
+                                    foreach (MotionVelParam item in velParams)
                                     {
-                                        axis.LoadFromVelParam(item);
-                                        // 寫入參數
-                                        axis.SetGearRatio();
-                                        axis.SetJogVelParam();
-                                        axis.SetHomeVelParam();
-                                        axis.SetAxisVelParam();
+                                        MotionAxis axis = MainWindow.ServoMotion.Axes.FirstOrDefault(axis => axis.SlaveNumber == item.SlaveNumber);
+                                        if (axis != null)
+                                        {
+                                            axis.LoadFromVelParam(item);
+                                            // 寫入參數
+                                            axis.SetGearRatio();
+                                            axis.SetJogVelParam();
+                                            axis.SetHomeVelParam();
+                                            axis.SetAxisVelParam();
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    throw new Exception("馬達設定檔為空");
+                                }
+                                #endregion
                             }
                             else
                             {
-                                throw new Exception("馬達設定檔為空");
+                                throw new Exception("軸卡開啟失敗");
                             }
-                            #endregion
-                        }
-                        else
-                        {
-                            throw new Exception("軸卡開啟失敗");
-                        }
-                    } // End of OpenDevice
+                        } // End of OpenDevice
 
-                    // 更新 Progress Value
-                    MainWindow.MsgInformer.TargetProgressValue += 20;
+                        // 更新 Progress Value
+                        MainWindow.MsgInformer.TargetProgressValue += 20;
 
-                    // 設置 Motion 初始化完成旗標
-                    MotionInitialized = true;
+                        // 設置 Motion 初始化完成旗標
+                        MotionInitialized = true;
 
-                    // 更新 Informer 
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "運動控制初始化完成");
+                        // 更新 Informer 
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "運動控制初始化完成");
+                    }
+                    else
+                    {
+                        throw new Exception("找不到控制軸卡");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new Exception("找不到控制軸卡");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"運動控制初始化失敗: {ex.Message}");
                 }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"運動控制初始化失敗: {ex.Message}");
-            }
+            }, ct);
         }
 
         /// <summary>
@@ -826,78 +923,81 @@ namespace ApexVisIns.content
         /// 光源控制初始化
         /// </summary>
         /// <param name="ct">CancellationToken</param>
-        private void InitLightCtrls(CancellationToken ct)
+        private Task InitLightCtrls(CancellationToken ct)
         {
-            if (LightCtrlsInitiliazed) { return; }
-
-            if (ct.IsCancellationRequested)
+            return Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-            }
+                if (LightCtrlsInitiliazed) { return; }
 
-            try
-            {
-                string result = string.Empty;
-                foreach (LightSerial ctrl in MainWindow.LightCtrls2)
+                if (ct.IsCancellationRequested)
                 {
-                    switch (ctrl.ComPort)
+                    ct.ThrowIfCancellationRequested();
+                }
+
+                try
+                {
+                    string result = string.Empty;
+                    foreach (LightSerial ctrl in MainWindow.LightCtrls2)
                     {
-                        case "COM1":
-                            Light24V = ctrl;
-                            Light24V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-                            if (!Light24V.Test(out result))
-                            {
-                                // 關閉 COM
-                                Light24V.ComClose();
-                                // 拋出異常
-                                throw new Exception(result);
-                            }
-                            else
-                            {
-                                // 重置所有通道
-                                Light24V.ResetAllChannel();
-                                // 更新 Progress bar
-                                MainWindow.MsgInformer.TargetProgressValue += 10;
-                            }
-                            break;
-                        case "COM2":
-                            Light_6V = ctrl;
-                            Light_6V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-                            if (!Light_6V.Test(out result))
-                            {
-                                // 關閉 COM
-                                Light_6V.ComClose();
-                                // 拋出異常
-                                throw new Exception(result);
-                            }
-                            else
-                            {
-                                // 重置所有通道
-                                Light_6V.ResetAllChannel();
-                                // 更新 Progress bar
-                                MainWindow.MsgInformer.TargetProgressValue += 10;
-                            }
-                            break;
+                        switch (ctrl.ComPort)
+                        {
+                            case "COM1":
+                                Light24V = ctrl;
+                                Light24V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                                if (!Light24V.Test(out result))
+                                {
+                                    // 關閉 COM
+                                    Light24V.ComClose();
+                                    // 拋出異常
+                                    throw new Exception(result);
+                                }
+                                else
+                                {
+                                    // 重置所有通道
+                                    Light24V.ResetAllChannel();
+                                    // 更新 Progress bar
+                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                }
+                                break;
+                            case "COM2":
+                                Light_6V = ctrl;
+                                Light_6V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                                if (!Light_6V.Test(out result))
+                                {
+                                    // 關閉 COM
+                                    Light_6V.ComClose();
+                                    // 拋出異常
+                                    throw new Exception(result);
+                                }
+                                else
+                                {
+                                    // 重置所有通道
+                                    Light_6V.ResetAllChannel();
+                                    // 更新 Progress bar
+                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                }
+                                break;
+                        }
+                    }
+
+                    // 設置初始化完成旗標
+                    LightCtrlsInitiliazed = true;
+
+                    // 確認所有控制器已開啟
+                    if (MainWindow.LightCtrls2.All(ctrl => ctrl.IsComOpen))
+                    {
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("此區塊不應該到達");
                     }
                 }
-
-                // 設置初始化完成旗標
-                LightCtrlsInitiliazed = true;
-
-                // 確認所有控制器已開啟
-                if (MainWindow.LightCtrls2.All(ctrl => ctrl.IsComOpen))
+                catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
                 }
-                else
-                {
-                    throw new NotImplementedException("此區塊不應該到達");
-                }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
-            }
+            }, ct);
         }
 
         /// <summary>
@@ -947,7 +1047,7 @@ namespace ApexVisIns.content
                     IoInitialized = true;
 
                     //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "IO 控制初始化完成");
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
                 }
                 else
                 {
@@ -965,16 +1065,49 @@ namespace ApexVisIns.content
         /// IO 控制器初始化
         /// </summary>
         /// <param name="ct"></param>
-        private void InitIOCtrl(CancellationToken ct)
+        private Task InitIOCtrl(CancellationToken ct)
         {
-            if (IoInitialized) { return; }
-
-            if (ct.IsCancellationRequested)
+            return Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-            }
+                if (IoInitialized) { return; }
+
+                if (ct.IsCancellationRequested)
+                {
+                    ct.ThrowIfCancellationRequested();
+                }
+
+                IOController = MainWindow.IOController;
+
+                try
+                {
+                    // 確認 IO 驅動
+
+                    if (!IOController.DiCtrlCreated)
+                    {
+                        IOController.DigitalInputChanged += Controller_DigitalInputChanged;
+                        IOController.InitializeDiCtrl();
+
+                        MainWindow.MsgInformer.TargetProgressValue += 10;
+                    }
 
 
+                    if (!IOController.DoCtrlCreated)
+                    {
+                        IOController.InitializeDoCtrl();
+
+                        MainWindow.MsgInformer.TargetProgressValue += 10;
+                    }
+
+                    IoInitialized = true;
+
+
+                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"IO 控制初始化失敗: {ex.Message}");
+                }
+            }, ct);
         }
 
         /// <summary>
