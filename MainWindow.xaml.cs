@@ -40,6 +40,7 @@ namespace ApexVisIns
         // public Thermometer Thermometer;
         #endregion
 
+
         #region Cameras
         /// <summary>
         ///相機物件 (工程師頁面使用)
@@ -77,6 +78,8 @@ namespace ApexVisIns
 
         #region I/O Controller
         public static IOController IOController { get; set; }
+
+        public IOWindow IOWindow { get; set; }
         #endregion
 
         #region Devices
@@ -226,6 +229,25 @@ namespace ApexVisIns
             _ = Focus();
 
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
+
+
+            IOWindow = new IOWindow();
+            IOWindow?.Show();
+
+
+            Task.Run(() =>
+            {
+                SpinWait.SpinUntil(() => false, 5000);
+                for (int i = 0; i < 100; i++)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        IOController.WriteDOBit(0, 1, i % 2 == 1);
+                    });
+                    SpinWait.SpinUntil(() => false, 500);
+                }
+            });
+
         }
 
         /// <summary>
@@ -244,6 +266,8 @@ namespace ApexVisIns
 
             ServoMotion.Dispose();
             IOController.Dispose();
+
+            IOWindow.Close();
         }
 
         private void Window_Closed(object sender, EventArgs e)

@@ -86,25 +86,33 @@ namespace ApexVisIns.module
 
         private void InitializeIOModule()
         {
-            if (DllIsValid)
+            try
             {
-                Controller = DataContext as IOController;
-                ////return; // 初始化在MAINTAB
-
-                if (!Controller.DiCtrlCreated)
+                if (DllIsValid)
                 {
-                    Controller.DigitalInputChanged += Controller_DigitalInputChanged;
-                    Controller.InitializeDiCtrl();
+                    Controller = DataContext as IOController;
+                    ////return; // 初始化在MAINTAB
+
+                    if (!Controller.DiCtrlCreated)
+                    {
+                        Controller.DigitalInputChanged += Controller_DigitalInputChanged;
+                        Controller.InitializeDiCtrl();
+                    }
+
+                    if (!Controller.DoCtrlCreated)
+                    {
+                        Controller.InitializeDoCtrl();
+                    }
                 }
-
-                if (!Controller.DoCtrlCreated)
+                else
                 {
-                    Controller.InitializeDoCtrl();
+                    //MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+                    throw new DllNotFoundException("IO 控制驅動未安裝或版本不符");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"IO 控制初始化失敗: {ex.Message}");
             }
         }
 

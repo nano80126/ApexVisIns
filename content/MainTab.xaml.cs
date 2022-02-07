@@ -368,6 +368,9 @@ namespace ApexVisIns.content
             }
             catch (OperationCanceledException cancel)
             {
+                // 手動終止初始化  // 設置 Current Step = 1
+                MainWindow.ApexDefect.CurrentStep = -1;
+                // 新增 Message
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程被終止: {cancel.Message}");
             }
             catch (Exception ex)

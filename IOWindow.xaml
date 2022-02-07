@@ -1,0 +1,34 @@
+﻿<Window x:Class="ApexVisIns.IOWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:ApexVisIns.module"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        
+        xmlns:local="clr-namespace:ApexVisIns"
+        mc:Ignorable="d"
+        
+        TextElement.Foreground="{StaticResource MaterialDesignLightForeground}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        FontFamily="{StaticResource MaterialDesignFont}"
+        Background="{StaticResource MaterialDesignPaper}"
+       
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        WindowState="Normal"
+        WindowStyle="None"
+        WindowStartupLocation="Manual"
+        Left="200"
+        Top="20"
+        ShowInTaskbar="False"
+        Topmost="True"
+        
+        Title="" Height="800" Width="320">
+    <StackPanel Orientation="Vertical" Width="300">
+        <uc:DigitalIOPanel Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>
+    </StackPanel>
+</Window>
