@@ -150,6 +150,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 建立初始化工作者
         /// </summary>
+        [Obsolete("待移除")]
         private void Initializer()
         {
             _ = Task<int>.Run(() =>
@@ -284,7 +285,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 初始化工作
         /// </summary>
-        private void Initializer2()
+        private async void Initializer2()
         {
             try
             {
@@ -292,7 +293,7 @@ namespace ApexVisIns.content
                 // 步序 : 硬體初始化
                 MainWindow.ApexDefect.CurrentStep = 0;
                 // 同步初始化硬體
-                _ = Task.WhenAll(
+                await Task.WhenAll(
                     InitCamera(token),
                     InitMotion(token),
                     InitLightCtrls(token),
@@ -357,12 +358,17 @@ namespace ApexVisIns.content
                             return 0;
                         }
                         else { return t.Result; }
-                    });
+                    }, token).ContinueWith(t =>
+                    {
+                        if (t.Result != 0)
+                        {
+                            MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
+                        }
+                    }, token);
             }
             catch (OperationCanceledException cancel)
             {
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程被終止: {cancel.Message}");
-                //throw;
             }
             catch (Exception ex)
             {
@@ -555,7 +561,7 @@ namespace ApexVisIns.content
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
                                                 _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
-                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                                MainWindow.MsgInformer.TargetProgressValue += 10;
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Window:
@@ -563,7 +569,7 @@ namespace ApexVisIns.content
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
                                                 _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
-                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                                MainWindow.MsgInformer.TargetProgressValue += 10;
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Surface1:
@@ -571,7 +577,7 @@ namespace ApexVisIns.content
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
                                                 _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
-                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                                MainWindow.MsgInformer.TargetProgressValue += 10;
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Surface2:
@@ -579,7 +585,7 @@ namespace ApexVisIns.content
                                             {
                                                 BaslerCam4 = MainWindow.BaslerCams[3];
                                                 _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
-                                                MainWindow.MsgInformer.TargetProgressValue += 5;
+                                                MainWindow.MsgInformer.TargetProgressValue += 10;
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Null:
@@ -764,6 +770,11 @@ namespace ApexVisIns.content
                             // 確認軸卡開啟
                             if (ServoMotion.DeviceOpened)
                             {
+                                if (ServoMotion.MaxAxisCount < 2)
+                                {
+                                    throw new Exception("連接軸數量錯誤");
+                                }
+
                                 // 啟動 Timer 
                                 ServoMotion.EnableAllTimer(100);
 
@@ -794,6 +805,8 @@ namespace ApexVisIns.content
                                             axis.SetJogVelParam();
                                             axis.SetHomeVelParam();
                                             axis.SetAxisVelParam();
+                                            // 更新 Progress Value
+                                            MainWindow.MsgInformer.TargetProgressValue += 10;
                                         }
                                     }
                                 }
@@ -807,16 +820,20 @@ namespace ApexVisIns.content
                             {
                                 throw new Exception("軸卡開啟失敗");
                             }
-                        } // End of OpenDevice
-
-                        // 更新 Progress Value
-                        MainWindow.MsgInformer.TargetProgressValue += 20;
+                        }   // End of OpenDevice
 
                         // 設置 Motion 初始化完成旗標
                         MotionInitialized = true;
 
-                        // 更新 Informer 
-                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "運動控制初始化完成");
+                        // 確認所有軸已開啟
+                        if (MainWindow.ServoMotion.Axes.All(axis => axis.IsAxisOpen))
+                        {
+                            MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "運動控制初始化完成");
+                        }
+                        else
+                        {
+                            throw new Exception("此區塊不應該到達");
+                        }
                     }
                     else
                     {
@@ -918,7 +935,6 @@ namespace ApexVisIns.content
 
 #endif
 
-
         /// <summary>
         /// 光源控制初始化
         /// </summary>
@@ -949,7 +965,7 @@ namespace ApexVisIns.content
                                     // 關閉 COM
                                     Light24V.ComClose();
                                     // 拋出異常
-                                    throw new Exception(result);
+                                    throw new Exception($"24V {result}");
                                 }
                                 else
                                 {
@@ -967,7 +983,7 @@ namespace ApexVisIns.content
                                     // 關閉 COM
                                     Light_6V.ComClose();
                                     // 拋出異常
-                                    throw new Exception(result);
+                                    throw new Exception($"6V {result}");
                                 }
                                 else
                                 {
@@ -1081,27 +1097,31 @@ namespace ApexVisIns.content
                 try
                 {
                     // 確認 IO 驅動
-
-                    if (!IOController.DiCtrlCreated)
+                    if (IOController.CheckDllVersion())
                     {
-                        IOController.DigitalInputChanged += Controller_DigitalInputChanged;
-                        IOController.InitializeDiCtrl();
+                        if (!IOController.DiCtrlCreated)
+                        {
+                            IOController.DigitalInputChanged += Controller_DigitalInputChanged;
+                            IOController.InitializeDiCtrl();
 
-                        MainWindow.MsgInformer.TargetProgressValue += 10;
+                            MainWindow.MsgInformer.TargetProgressValue += 10;
+                        }
+
+                        if (!IOController.DoCtrlCreated)
+                        {
+                            IOController.InitializeDoCtrl();
+
+                            MainWindow.MsgInformer.TargetProgressValue += 10;
+                        }
+
+                        IoInitialized = true;
+
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
                     }
-
-
-                    if (!IOController.DoCtrlCreated)
+                    else
                     {
-                        IOController.InitializeDoCtrl();
-
-                        MainWindow.MsgInformer.TargetProgressValue += 10;
+                        throw new DllNotFoundException("IO 控制驅動未安裝或版本不符");
                     }
-
-                    IoInitialized = true;
-
-
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
                 }
                 catch (Exception ex)
                 {
@@ -1122,12 +1142,9 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region 原點復歸
 
-
         #endregion
-
 
         /// <summary>
         /// 規格選擇變更

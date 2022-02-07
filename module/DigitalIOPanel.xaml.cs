@@ -55,7 +55,11 @@ namespace ApexVisIns.module
         private void Card_Loaded(object sender, RoutedEventArgs e)
         {
             DllIsValid = IOController.CheckDllVersion();    // 確認驅動安裝
-            return;
+
+            if (DataContext != null)
+            {
+                Controller = DataContext as IOController;
+            }
 #if false // Use button to initialize
             if (DllIsValid)
             {
