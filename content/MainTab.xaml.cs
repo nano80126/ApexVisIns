@@ -1220,27 +1220,12 @@ namespace ApexVisIns.content
         [Obsolete("確認硬體連線狀態")]
         private void CheckHwStatus_Click(object sender, RoutedEventArgs e)
         {
-            foreach (BaslerCam cam in MainWindow.BaslerCams)
-            {
-                Debug.WriteLine(cam.IsConnected);
-            }
-
-            foreach (LightController light in MainWindow.LightCtrls)
-            {
-                Debug.WriteLine(light.IsComOpen);
-            }
-
-            Debug.WriteLine(MainWindow.ServoMotion.MaxAxisCount);
-
-            // Deinitializer();
+            MainWindow.IOWindow.Close();
+            MainWindow.IOWindow = null;
 
 
-            Debug.WriteLine("-------------------Basler Camera Object Comparison-------------------------");
-
-            Debug.WriteLine(BaslerCam1?.Equals(MainWindow.BaslerCams[0]));
-            Debug.WriteLine(BaslerCam2?.Equals(MainWindow.BaslerCams[1]));
-            Debug.WriteLine(BaslerCam3?.Equals(MainWindow.BaslerCams[2]));
-            Debug.WriteLine(BaslerCam4?.Equals(MainWindow.BaslerCams[3]));
+            MainWindow.IOWindow = new IOWindow();
+            MainWindow.IOWindow.Show();
         }
 
         #region Basler 相機事件

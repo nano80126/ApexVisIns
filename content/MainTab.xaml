@@ -62,8 +62,9 @@
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="DeinitBtn_Click"/>
 
+
                 <!--測試用-->
-                <!--<Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>-->
+                <Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>
 
             </ToolBar>
         </ToolBarTray>

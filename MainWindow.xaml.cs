@@ -230,24 +230,24 @@ namespace ApexVisIns
 
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
-
-            IOWindow = new IOWindow();
+            IOWindow = new IOWindow()
+            {
+                Owner = this
+            };
             IOWindow?.Show();
 
-
-            Task.Run(() =>
-            {
-                SpinWait.SpinUntil(() => false, 5000);
-                for (int i = 0; i < 100; i++)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        IOController.WriteDOBit(0, 1, i % 2 == 1);
-                    });
-                    SpinWait.SpinUntil(() => false, 500);
-                }
-            });
-
+            //Task.Run(() =>
+            //{
+            //    SpinWait.SpinUntil(() => false, 5000);
+            //    for (int i = 0; i < 100; i++)
+            //    {
+            //        Dispatcher.Invoke(() =>
+            //        {
+            //            IOController.WriteDOBit(0, 1, i % 2 == 1);
+            //        });
+            //        SpinWait.SpinUntil(() => false, 500);
+            //    }
+            //});
         }
 
         /// <summary>
@@ -270,15 +270,18 @@ namespace ApexVisIns
             IOWindow.Close();
         }
 
+        /// <summary>
+        /// 主視窗關閉
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closed(object sender, EventArgs e)
         {
             #region 保留
-
             // MsgInformer.CollectionDebinding();
             // MsgInformer.DisposeProgressTask();
             // CameraEnumer?.WorkerEnd();
             // LightEnumer?.WorkerEnd();
-
             #endregion
         }
 
