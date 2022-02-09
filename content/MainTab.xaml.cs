@@ -101,6 +101,7 @@ namespace ApexVisIns.content
         private ServoMotion ServoMotion;
         #endregion
 
+
         public MainTab()
         {
             InitializeComponent();
@@ -114,7 +115,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //Initializer();            //Initializer();
+            // Initializer();
             Initializer2();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
@@ -316,6 +317,9 @@ namespace ApexVisIns.content
 
                         MainWindow.CameraEnumer.WorkerPause();
                         MainWindow.LightEnumer.WorkerPause();
+                        
+                        // 硬體準備完成旗標
+                        MainWindow.ApexDefect.HardwarePrepared = true;
 
                         return 0;
                     }, token).ContinueWith(t =>
@@ -368,13 +372,14 @@ namespace ApexVisIns.content
             }
             catch (OperationCanceledException cancel)
             {
-                // 手動終止初始化  // 設置 Current Step = 1
+                // 手動終止初始化 // 設置 Current Step = 1
                 MainWindow.ApexDefect.CurrentStep = -1;
                 // 新增 Message
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程被終止: {cancel.Message}");
             }
             catch (Exception ex)
             {
+                // 新增 Message
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: {ex.Message}");
             }
         }
@@ -996,6 +1001,8 @@ namespace ApexVisIns.content
                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                 }
                                 break;
+                            default:
+                                break;
                         }
                     }
 
@@ -1146,8 +1153,24 @@ namespace ApexVisIns.content
         #endregion
 
         #region 原點復歸
+        private void ZeroReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(async () =>
+            {
+                if (ServoMotion.Axes[0].CurrentStatus == "READY")
+                {
+                    MainWindow.ApexDefect.ZeroReturned = false;
+                    MainWindow.ApexDefect.ZeroReturning = true;
 
+                    await MainWindow.ServoMotion.Axes[0].PositiveWayHomeMove(true);
+
+                    MainWindow.ApexDefect.ZeroReturning = false;
+                    MainWindow.ApexDefect.ZeroReturned = true;
+                }
+            });
+        }
         #endregion
+
 
         /// <summary>
         /// 規格選擇變更
@@ -1492,5 +1515,6 @@ namespace ApexVisIns.content
 
             MainWindow.ApexDefect.Stop();
         }
+
     }
 }

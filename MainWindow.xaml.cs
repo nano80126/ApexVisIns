@@ -267,7 +267,7 @@ namespace ApexVisIns
             ServoMotion.Dispose();
             IOController.Dispose();
 
-            IOWindow.Close();
+            IOWindow?.Close();
         }
 
         /// <summary>

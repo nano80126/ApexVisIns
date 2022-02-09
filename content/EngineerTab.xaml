@@ -10,7 +10,7 @@
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
-            d:DesignHeight="450" d:DesignWidth="800"
+            d:DesignHeight="900" d:DesignWidth="1600"
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>

@@ -453,7 +453,6 @@ namespace ApexVisIns
 
         public LightSerial()
         {
-
         }
 
         public LightSerial(int chs)
@@ -587,7 +586,7 @@ namespace ApexVisIns
                 {
                     cmd += $"{i},0,";
                 }
-                cmd += $"{ChannelNumber},0";
+                cmd += $"{ChannelNumber},0\r\n";
 
                 try
                 {
@@ -628,7 +627,7 @@ namespace ApexVisIns
                 {
                     cmd += $"{i},0,";
                 }
-                cmd += $"{ChannelNumber},0";
+                cmd += $"{ChannelNumber},0\r\n";
 
                 try
                 {

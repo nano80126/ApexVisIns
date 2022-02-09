@@ -12,7 +12,7 @@
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
-            d:DesignHeight="450" d:DesignWidth="800"
+            d:DesignHeight="900" d:DesignWidth="1600"
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
@@ -30,34 +30,40 @@
                 <!--<Canvas VerticalAlignment="Center" Style="{StaticResource ComplexPackIcon}" Background="White">
                         <materialDesign:PackIcon Kind="VideoOutline" Width="26" Height="24" />
                         <materialDesign:PackIcon Kind="Check" Canvas.Right="0" Canvas.Bottom="0" />
-                    </Canvas>
-                -->
+                    </Canvas>-->
 
                 <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
                 
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="原點復歸" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignToolButton}" 
+                        IsEnabled="{Binding HardwarePrepared, Source={StaticResource ApexDefect}, UpdateSourceTrigger=PropertyChanged}"
+                        Click="ZeroReturnButton_Click"/>
 
-                <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
+
+                <ListBox Margin="12 0 0 0" Style="{StaticResource MaterialDesignToolToggleListBox}" Background="Transparent" Foreground="{StaticResource ColorPurple}"
                          materialDesign:ListBoxItemAssist.ShowSelection="True" materialDesign:ShadowAssist.ShadowDepth="Depth0"
-                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged"
-                         IsEnabled="False">
-                    <!--<ListBox.IsEnabled>
-                        1. 確認 Servo Motion 連線狀態
-                        2. 確認 是否有原點復歸
-                    </ListBox.IsEnabled>-->
+                         materialDesign:ListBoxAssist.IsToggle="False"  Cursor="Hand" SelectionChanged="SpecSelector_SelectionChanged">
+                    <ListBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                            <Binding Source="{StaticResource ServoMotion}" Path="Axes[0].IsAxisOpen"/>
+                            <Binding Source="{StaticResource ApexDefect}" Path="ZeroReturned"/>
+                        </MultiBinding>
+                        <!--1. 確認 Servo Motion 連線狀態-->
+                        <!--2. 確認 是否有原點復歸-->
+                    </ListBox.IsEnabled>
 
                     <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
 
+                <Separator />
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="啟動相機" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StartCameraGrab_Click"/>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止相機" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopCameraGrab_Click"/>
-
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="DeinitBtn_Click"/>
@@ -130,13 +136,13 @@
                         <Canvas ToolTip="24V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls2}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
                         <!--// 6V Light Controller -->
                         <Canvas ToolTip="6V 光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls2}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -434,7 +440,7 @@
                         <Style TargetType="materialDesign:PackIcon">
                             <Setter Property="VerticalAlignment" Value="Center"/>
                             <Setter Property="Width" Value="64"/>
-                            <Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>
+                            <!--<Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>-->
                         </Style>
 
                         <!--<Style TargetType="control:ProcedureBlock">

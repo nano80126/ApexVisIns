@@ -21,6 +21,9 @@ namespace ApexVisIns
 
         private System.Timers.Timer _timeUpdater;
         private bool _disposed;
+        private bool _zeroReturning;
+        private bool _zeroReturned;
+        private bool _hardwarePrepared;
 
         public ApexDefect()
         {
@@ -76,17 +79,50 @@ namespace ApexVisIns
         /// <summary>
         /// 硬體準備完成旗標
         /// </summary>
-        public bool HardwarePrepared { get; set; }
+        public bool HardwarePrepared
+        {
+            get => _hardwarePrepared;
+            set
+            {
+                if (value != _hardwarePrepared)
+                {
+                    _hardwarePrepared = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 原點復歸中 Flag
         /// </summary>
-        public bool ZeroReturning { get; set; }
+        public bool ZeroReturning
+        {
+            get => _zeroReturning;
+            set
+            {
+                if (value != _zeroReturning)
+                {
+                    _zeroReturning = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 原點復歸完成 Flag
         /// </summary>
-        public bool ZeroReturned { get; set; }
+        public bool ZeroReturned
+        {
+            get => _zeroReturned;
+            set
+            {
+                if (value != _zeroReturned)
+                {
+                    _zeroReturned = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 變更規格中 Flag
