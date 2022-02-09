@@ -63,16 +63,18 @@
                 <!--//-->
                 <!--<TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 8 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                        HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
-                <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="4 0" UseLayoutRounding="True">
                     <TextBlock x:Name="InputTitle" Text="INPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
-                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+                               HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+                    
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                               TextAlignment="Center" Width="20" Height="20" Text="7"/>
 
-                    <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
-                           TextAlignment="Center" Width="20" Height="20" Text="7"/>
-
-                    <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
-                           TextAlignment="Center" Width="20" Height="20" Text="0"/>
-                </DockPanel>
+                        <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                               TextAlignment="Center" Width="20" Height="20" Text="0"/>
+                    </DockPanel>
+                </StackPanel>
                 <!--//-->
                 <!-- #region Di Items -->
                 <ItemsControl ItemsSource="{Binding DiArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
@@ -135,10 +137,17 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBox Margin="0 0 4 0" Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
-                     HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
-                     Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                    <DockPanel Margin="4 0">
+                        <Button DockPanel.Dock="Left" VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Height="24" Width="24" Padding="0" ToolTip="讀取 DI">
+                            <materialDesign:PackIcon Kind="Refresh" Height="20" Width="20"/>
+                        </Button>
+
+                        <TextBox Cursor="Arrow" IsReadOnly="True" Padding="0 3" MinWidth="120" TextAlignment="Center" 
+                             HorizontalAlignment="Right" materialDesign:TextFieldAssist.PrefixText=" Count"
+                             Focusable="False" Text="{Binding InterruptCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                    </DockPanel>
                 </StackPanel>
             </StackPanel>
 
@@ -151,7 +160,7 @@
                         <Setter Property="Height" Value="20"/>
                         <Setter Property="Margin" Value="7 4"/>
                         <Setter Property="Padding" Value="0"/>
-                        <Setter Property="BorderBrush" Value="WhiteSmoke"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource ColorBlueGray}"/>
                         <Setter Property="BorderThickness" Value="1"/>
 
                         <Setter Property="Background" Value="{StaticResource ColorInfo}"/>
@@ -163,22 +172,31 @@
                     </Style>
                 </StackPanel.Resources>
                 <!--//-->
-                <DockPanel HorizontalAlignment="Stretch" Margin="4 0">
-                    <TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
-                       HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="4 0" UseLayoutRounding="True">
+                    <!--<TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
+                               HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
 
-                    <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
+                    <Button Margin="0 0 0 4" Padding="0" Height="16" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolButton}" Click="LockDOButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Lock"/>
+                            <TextBlock Text="OUTPUT" Margin="4 0 0 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Left"
                            TextAlignment="Center" Width="20" Height="20" Text="7"/>
 
-                    <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
+                        <TextBlock DockPanel.Dock="Right"  Margin="7 0" Padding="0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
                            TextAlignment="Center" Width="20" Height="20" Text="0"/>
-                </DockPanel>
+                    </DockPanel>
+                </StackPanel>
                 <!--//-->
                 <!--#region Do Items -->
                 <ItemsControl ItemsSource="{Binding DoArrayColl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="2">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Background="{StaticResource ColorSecondaryTransparent}" HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
+                            <StackPanel HorizontalAlignment="Center" FlowDirection="RightToLeft" Margin="0 4 0 0"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
@@ -236,9 +254,9 @@
                 <!--#endregion-->
             </StackPanel>
             <!--//-->
-            <Separator Margin="0 8"/>
+            <!--<Separator Margin="0 8"/>-->
             <!--//-->
-            <StackPanel DockPanel.Dock="Top" Margin="0 0 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel DockPanel.Dock="Top" Margin="0 0 0 0" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
                 <Button Click="DiRead_Click" HorizontalAlignment="Left" Content="DI 讀取" Style="{StaticResource MaterialDesignFlatButton}"/>
                 <Button Click="DoRead_Click" HorizontalAlignment="Left" Content="DO 回讀" Style="{StaticResource MaterialDesignFlatButton}"/>
                 <Button Click="DoWrite_Click" HorizontalAlignment="Left" Content="DO 寫入" Style="{StaticResource MaterialDesignFlatButton}"/>

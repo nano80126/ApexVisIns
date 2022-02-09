@@ -1295,6 +1295,8 @@ namespace ApexVisIns
 
         private bool _jogOn;
         private bool _isAxisOpen;
+        private bool _zeroReturning;
+        private bool _zeroReturned;
 
         /// <summary>
         /// xaml 用建構子
@@ -1334,7 +1336,7 @@ namespace ApexVisIns
         /// <summary>
         /// 軸名稱
         /// </summary>
-        public string AxisName { get => $"{AxisIndex}-Axis"; }
+        public string AxisName => $"{AxisIndex}-Axis";
 
         // public uint SlaveNumber { get; set; }
 
@@ -1377,6 +1379,54 @@ namespace ApexVisIns
                 {
                     _isAxisOpen = value;
                     OnPropertyChanged(nameof(IsAxisOpen));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Jog On Flag
+        /// </summary>
+        public bool JogOn
+        {
+            get => _jogOn;
+            private set
+            {
+                if (value != _jogOn)
+                {
+                    _jogOn = value;
+                    OnPropertyChanged(nameof(JogOn));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 原點復歸中
+        /// </summary>
+        public bool ZeroReturning
+        {
+            get => _zeroReturning;
+            private set
+            {
+                if (value != _zeroReturning)
+                {
+                    _zeroReturning = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 原點復歸完成
+        /// </summary>
+        public bool ZeroReturned
+        {
+            get => _zeroReturned;
+            private set
+            {
+                if (value != _zeroReturned)
+                {
+                    _zeroReturned = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1434,22 +1484,6 @@ namespace ApexVisIns
                 {
                     _servoOn = value;
                     OnPropertyChanged(nameof(ServoOn));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Jog On Flag
-        /// </summary>
-        public bool JogOn
-        {
-            get => _jogOn;
-            private set
-            {
-                if (value != _jogOn)
-                {
-                    _jogOn = value;
-                    OnPropertyChanged(nameof(JogOn));
                 }
             }
         }
@@ -2083,6 +2117,9 @@ namespace ApexVisIns
             {
                 uint result = await Task.Run(() =>
                 {
+                    ZeroReturning = true;
+                    ZeroReturned = false;
+
                     // MODE9，往負方向找HOME， 過ORG 後停在 EZ
                     uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 1);    // 1 => 先往負方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
@@ -2137,9 +2174,16 @@ namespace ApexVisIns
                     return t.Result;
                 });
 
+
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
+                    ZeroReturning = false;
                     throw new Exception($"原點復歸過程中發生錯誤: Code[0x{result:X}]");
+                }
+                else
+                {
+                    ZeroReturning = false;
+                    ZeroReturned = true;
                 }
             }
             else
@@ -2159,6 +2203,9 @@ namespace ApexVisIns
             {
                 uint result = await Task.Run(() =>
                 {
+                    ZeroReturned = false;
+                    ZeroReturning = true;
+
                     // MODE9，往正方向找HOME， 過ORG 後停在 EZ
                     uint result = Motion.mAcm_AxMoveHome(AxisHandle, (uint)HomeMode.MODE9_AbsSearch_Ref, 0);    // 0 => 先往正方向找 HOME
                     if (result != (uint)ErrorCode.SUCCESS)
@@ -2214,7 +2261,13 @@ namespace ApexVisIns
 
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
+                    ZeroReturning = false;
                     throw new Exception($"原點復歸過程中發生錯誤: Code[0x{result:X}]");
+                }
+                else
+                {
+                    ZeroReturning = false;
+                    ZeroReturned = true;
                 }
             }
             else

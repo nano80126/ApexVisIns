@@ -34,6 +34,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <!--//-->
@@ -46,18 +47,28 @@
             </Grid>
             <!--//-->
             <uc:DigitalIOPanel Grid.Row="1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>
+
+            <!--分隔線-->
+            <Separator Grid.Row="2" Background="{StaticResource ColorGray}"/>
+
             <!--//-->
-            <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="8 12">
-                <Button Content="RESET" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignFlatLightBgButton}" 
+            <DockPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="8 12">
+                <Button DockPanel.Dock="Top" Content="RESET" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignFlatLightBgButton}" 
+                        VerticalAlignment="Top"
                         Background="{StaticResource ColorBlueGray}" Foreground="{StaticResource ColorWhite}" BorderThickness="0" 
                         Focusable="False"
                         materialDesign:ButtonAssist.CornerRadius="8" Click="ResetButton_Click"/>
-            
-                <Button Content="EMG" Margin="0 12 0 0" Height="120" Style="{StaticResource MaterialDesignFlatLightBgButton}" 
+
+                <!--<Button DockPanel.Dock="Top" Content="1" Width="80"/>
+                <Button DockPanel.Dock="Top" Content="1" Width="80"/>
+                <Button DockPanel.Dock="Top" Content="1" Width="80"/>-->
+
+                <Button DockPanel.Dock="Bottom" Content="EMG" Margin="0 12 0 0" Height="120" Style="{StaticResource MaterialDesignFlatLightBgButton}" 
+                        VerticalAlignment="Bottom"
                         Background="{StaticResource ColorError}" Foreground="{StaticResource ColorWhite}" BorderThickness="0"
                         Focusable="False"
                         materialDesign:ButtonAssist.CornerRadius="16" Click="EmgButton_Click"/>
-            </StackPanel>
+            </DockPanel>
         </Grid>
     </Border>
 </Window>

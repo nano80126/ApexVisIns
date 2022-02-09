@@ -230,5 +230,10 @@ namespace ApexVisIns.module
         {
             InitializeIOModule();
         }
+
+        private void LockDOButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

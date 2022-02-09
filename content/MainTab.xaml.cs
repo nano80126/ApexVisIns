@@ -55,7 +55,6 @@ namespace ApexVisIns.content
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         #endregion
 
-
         #region Local Object (方便 CALL)
         /// <summary>
         /// IO 控制器
@@ -100,7 +99,6 @@ namespace ApexVisIns.content
         /// </summary>
         private ServoMotion ServoMotion;
         #endregion
-
 
         public MainTab()
         {
@@ -347,7 +345,7 @@ namespace ApexVisIns.content
                             return 0;
                         }
                         else { return t.Result; }
-                    }, token).ContinueWith<int>(t =>
+                    }, token).ContinueWith(t =>
                     {
                         if (token.IsCancellationRequested)
                         {
@@ -418,6 +416,9 @@ namespace ApexVisIns.content
                 _ = Light_6V.TryResetAllChannel(out _);
                 Light_6V.ComClose();
             }
+
+            // 重製 Step
+            MainWindow.ApexDefect.CurrentStep = -1;
         }
 
         /// <summary>
@@ -866,13 +867,13 @@ namespace ApexVisIns.content
                 {
                     // 確認 IO (光電開關)
 
-                    MainWindow.ApexDefect.ZeroReturned = false;
-                    MainWindow.ApexDefect.ZeroReturning = true;
+                    //MainWindow.ApexDefect.ZeroReturned = false;
+                    //MainWindow.ApexDefect.ZeroReturning = true;
 
                     await ServoMotion.Axes[0].PositiveWayHomeMove(true);
 
-                    MainWindow.ApexDefect.ZeroReturning = false;
-                    MainWindow.ApexDefect.ZeroReturned = true;
+                    //MainWindow.ApexDefect.ZeroReturning = false;
+                    //MainWindow.ApexDefect.ZeroReturned = true;
                 }
                 else
                 {
@@ -961,7 +962,7 @@ namespace ApexVisIns.content
                 try
                 {
                     string result = string.Empty;
-                    foreach (LightSerial ctrl in MainWindow.LightCtrls2)
+                    foreach (LightSerial ctrl in MainWindow.LightCtrls)
                     {
                         switch (ctrl.ComPort)
                         {
@@ -1010,7 +1011,7 @@ namespace ApexVisIns.content
                     LightCtrlsInitiliazed = true;
 
                     // 確認所有控制器已開啟
-                    if (MainWindow.LightCtrls2.All(ctrl => ctrl.IsComOpen))
+                    if (MainWindow.LightCtrls.All(ctrl => ctrl.IsComOpen))
                     {
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
                     }

@@ -68,12 +68,12 @@ namespace ApexVisIns
         /// 光源控制器陣列
         /// </summary>
         [Obsolete("待轉移")]
-        public static LightController[] LightCtrls { get; set; }
+        public static LightController[] LightCtrls_old { get; set; }
 
         /// <summary>
         /// 光源控制器
         /// </summary>
-        public static LightSerial[] LightCtrls2 { get; set; }
+        public static LightSerial[] LightCtrls { get; set; }
         #endregion
 
         #region I/O Controller
@@ -189,9 +189,9 @@ namespace ApexVisIns
 #if DEBUG
             LightController = FindResource(nameof(LightController)) as LightController;
 #endif
-            LightCtrls = FindResource(nameof(LightCtrls)) as LightController[];
+            //LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[];
 
-            LightCtrls2 = FindResource(nameof(LightCtrls2)) as LightSerial[];
+            LightCtrls = FindResource(nameof(LightCtrls)) as LightSerial[];
             #endregion
 
             #region EtherCAT Motion
@@ -292,7 +292,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
-            // 相機關閉
+            // 關閉所有相機
             foreach (BaslerCam cam in BaslerCams)
             {
                 if (cam.IsOpen)
@@ -301,7 +301,7 @@ namespace ApexVisIns
                 }
             }
 
-            // Motion 關閉
+            // Servo Off & 關閉 Motion 控制 
             if (ServoMotion.DeviceOpened)
             {
                 ServoMotion.SetAllServoOff();
@@ -309,19 +309,21 @@ namespace ApexVisIns
                 ServoMotion.CloseDevice();
             }
 
-            // 關閉光源
-            foreach (LightController ctrl in LightCtrls)
+            // 重製 & 關閉所有光源
+            //foreach (LightController ctrl in LightCtrls_old)
+            foreach (LightSerial ctrl in LightCtrls)
             {
                 if (ctrl.IsComOpen)
                 {
-                    _ = ctrl.TryResetAllValue();
+                    _ = ctrl.TryResetAllChannel(out _);
                     ctrl.ComClose();
                 }
             }
 
-            SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
-            SpinWait.SpinUntil(() => !ServoMotion.DeviceOpened, 3000);
-            SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
+            _ = SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
+            _ = SpinWait.SpinUntil(() => !ServoMotion.DeviceOpened, 3000);
+            //SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
+            _ = SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
             Close();
         }
