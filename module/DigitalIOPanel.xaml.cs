@@ -84,6 +84,11 @@ namespace ApexVisIns.module
 #endif
         }
 
+        private void InitializeIO_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeIOModule();
+        }
+
         private void InitializeIOModule()
         {
             try
@@ -186,18 +191,54 @@ namespace ApexVisIns.module
         }
 
         /// <summary>
-        /// Di 變更
+        /// 讀取 DI
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DoSetButton_Click(object sender, RoutedEventArgs e)
+        private void ReadDIButton_Click(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;
-            byte[] objs = button.CommandParameter as byte[];
-            // 當前值: (bool)button.Tag
-            // 目標 Port: objs[0] 
-            // 目標 Bit: objs[1]
-            _ = Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
+            for (int i = 0; i < Controller.DiPortCount; i++)
+            {
+                ErrorCode err = Controller.ReadDI(i);
+                Debug.WriteLine($"ErrorCode: {err}");
+            }
+        }
+
+        /// <summary>
+        /// 鎖定 DO
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LockDOButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Controller.DOLocked)
+            {
+                Controller.UnlockDO();
+            }
+            else
+            {
+                Controller.LockDO();
+            }
+
+            Debug.WriteLine(Controller.DOLocked);
+        }
+
+        /// <summary>
+        /// DO 變更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DOSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Controller.DOLocked)
+            {
+                Button button = sender as Button;
+                byte[] objs = button.CommandParameter as byte[];
+                // 當前值: (bool)button.Tag
+                // 目標 Port: objs[0] 
+                // 目標 Bit: objs[1]
+                _ = Controller.WriteDOBit(objs[0], objs[1], !(bool)button.Tag);
+            }
         }
 
         #region 測試用 控制項，只有 DI 讀取要用到
@@ -226,14 +267,5 @@ namespace ApexVisIns.module
         }
         #endregion
 
-        private void InitializeIO_Click(object sender, RoutedEventArgs e)
-        {
-            InitializeIOModule();
-        }
-
-        private void LockDOButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

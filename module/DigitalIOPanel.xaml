@@ -139,7 +139,7 @@
 
                     <DockPanel Margin="4 0">
                         <Button DockPanel.Dock="Left" VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Height="24" Width="24" Padding="0" ToolTip="讀取 DI">
+                                Height="24" Width="24" Padding="0" ToolTip="讀取 DI" Click="ReadDIButton_Click">
                             <materialDesign:PackIcon Kind="Refresh" Height="20" Width="20"/>
                         </Button>
 
@@ -176,9 +176,22 @@
                     <!--<TextBlock x:Name="OutPutTitle" Text="OUTPUT" Margin="0 0 0 4" DockPanel.Dock="Top" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}"
                                HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
 
-                    <Button Margin="0 0 0 4" Padding="0" Height="16" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolButton}" Click="LockDOButton_Click">
+                    <Button Margin="0 0 0 4" Padding="0" Height="16" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolButton}" 
+                            materialDesign:RippleAssist.IsDisabled="True"
+                            Click="LockDOButton_Click">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Lock"/>
+                            <materialDesign:PackIcon>
+                                <materialDesign:PackIcon.Style>
+                                    <Style TargetType="materialDesign:PackIcon">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DOLocked}" Value="True">
+                                                <Setter Property="Kind" Value="Lock"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Kind" Value="UnlockedVariant"/>
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
                             <TextBlock Text="OUTPUT" Margin="4 0 0 0" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ColorDeepPurple}" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>
                         </StackPanel>
                     </Button>
@@ -204,7 +217,7 @@
                         <DataTemplate>
                             <!--<StackPanel Orientation="Vertical">-->
                             <!--<TextBlock Width="20" Height="20" TextAlignment="Center" Text="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
-                            <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8" 
+                            <ItemsControl ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AlternationCount="8"
                                       Tag="{Binding Path=(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -226,9 +239,9 @@
                                             </Button.Content>
                                         </Button>-->
                                         <!-- // -->
-                                        <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Vertical" IsEnabled="{Binding DOLocked, Source={StaticResource IOController}, Converter={StaticResource BooleanInverter}}">
                                             <Button Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}" Style="{StaticResource DoButton}"
-                                                Click="DoSetButton_Click">
+                                                Click="DOSetButton_Click">
                                                 <Button.CommandParameter>
                                                     <MultiBinding Converter="{StaticResource CombineValueConvert}">
                                                         <Binding Path="Tag" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ItemsControl, AncestorLevel=1}"/>

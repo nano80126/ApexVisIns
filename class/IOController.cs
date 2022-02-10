@@ -34,6 +34,7 @@ namespace ApexVisIns
         private bool _disposed;
         private bool _diCtrlCreated;
         private bool _doCtrlCreated;
+        private bool _doLocked;
 
         /// <summary>
         /// DI 集合鎖
@@ -353,6 +354,14 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 鎖定 DO，避免手動操作
+        /// </summary>
+        public bool DOLocked
+        {
+            get => _doLocked;
+        }
+
+        /// <summary>
         /// Interrupt Channel Object
         /// </summary>
         public class InterruptChannel
@@ -621,6 +630,18 @@ namespace ApexVisIns
             return err;
         }
 
+        public void LockDO()
+        {
+            _doLocked = true;
+            OnPropertyChanged(nameof(DOLocked));
+        }
+
+        public void UnlockDO()
+        {
+            _doLocked = false;
+            OnPropertyChanged(nameof(DOLocked));
+        }
+
         /// <summary>
         /// DO 寫入
         /// </summary>
@@ -634,15 +655,22 @@ namespace ApexVisIns
                 throw new ArgumentOutOfRangeException("Invalid port number or out of range");
             }
 
-            ErrorCode err = InstantDoCtrl.Write(port, value);
-            if (err == ErrorCode.Success)
+            if (!_doLocked)
             {
-                for (int i = 0; i < DoArrayColl[port].Count; i++)
+                ErrorCode err = InstantDoCtrl.Write(port, value);
+                if (err == ErrorCode.Success)
                 {
-                    DoArrayColl[port][i] = ((value >> (i % 8)) & 0b01) == 0b01;
+                    for (int i = 0; i < DoArrayColl[port].Count; i++)
+                    {
+                        DoArrayColl[port][i] = ((value >> (i % 8)) & 0b01) == 0b01;
+                    }
                 }
+                return err;
             }
-            return err;
+            else
+            {
+                throw new InvalidOperationException("DO 鎖定中");
+            }
         }
 
         /// <summary>
@@ -662,13 +690,20 @@ namespace ApexVisIns
                 throw new ArgumentOutOfRangeException("Invalid bit value, argument bit must be set from 0 to 8");
             }
 
-            ErrorCode err = InstantDoCtrl.WriteBit(port, bit, Convert.ToByte(value));
-            if (err == ErrorCode.Success)
+            if (!_doLocked)
             {
-                DoArrayColl[port][bit] = value;
+
+                ErrorCode err = InstantDoCtrl.WriteBit(port, bit, Convert.ToByte(value));
+                if (err == ErrorCode.Success)
+                {
+                    DoArrayColl[port][bit] = value;
+                }
+                return err;
             }
-            //Debug.WriteLine($"{port} {bit} {value}");
-            return err;
+            else
+            {
+                throw new InvalidOperationException("DO 鎖定中");
+            }
         }
 
         // public event DIChangedEventHandler DIChangedEventHandler;
