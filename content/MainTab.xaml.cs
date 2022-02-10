@@ -335,7 +335,8 @@ namespace ApexVisIns.content
                             // 執行原點復歸
                             MotionReturnZero().Wait();
 
-                            if (!MainWindow.ApexDefect.ZeroReturned)
+                            if (!ServoMotion.Axes[0].ZeroReturned)
+                            //if (!MainWindow.ApexDefect.ZeroReturned)
                             {
                                 // 硬體初始化失敗
                                 MainWindow.ApexDefect.StepError = true;
@@ -560,9 +561,14 @@ namespace ApexVisIns.content
 
                             foreach (DeviceConfigBase device in devices)
                             {
+                                Debug.WriteLine($"{device.IP} {device.FullName}");
+                                
                                 // 確認 Device 為在線上之 Camera
                                 if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                                 {
+                                    Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
+
+
                                     switch (device.TargetFeature)
                                     {
                                         case DeviceConfigBase.TargetFeatureType.Ear:

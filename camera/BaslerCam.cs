@@ -364,10 +364,10 @@ namespace ApexVisIns
         {
             [Description("(NULL)")]
             Null = 0,
-            [Description("耳朵")]
-            Ear = 1,
             [Description("窗戶")]
-            Window = 2,
+            Window = 1,
+            [Description("耳朵")]
+            Ear = 2,
             [Description("表面 1")]
             Surface1 = 3,
             [Description("表面 2")]
