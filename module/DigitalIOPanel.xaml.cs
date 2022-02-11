@@ -197,7 +197,7 @@ namespace ApexVisIns.module
         /// <param name="e"></param>
         private void ReadDIButton_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < Controller.DiPortCount; i++)
+            for (int i = 0; i < Controller.DiArrayColl.Count; i++)
             {
                 ErrorCode err = Controller.ReadDI(i);
                 Debug.WriteLine($"ErrorCode: {err}");

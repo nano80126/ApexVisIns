@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,9 +20,12 @@ namespace ApexVisIns
     /// <summary>
     /// IO_Window.xaml 的互動邏輯
     /// </summary>
-    public partial class IOWindow : Window
+    public partial class IOWindow : Window, INotifyPropertyChanged
     {
-        private MainWindow _mainWindow;
+        public MainWindow MainWindow { get; set; }
+
+
+        public bool LoginFlag => MainWindow != null ? MainWindow.LoginFlag : false;
 
 
         public IOWindow()
@@ -28,12 +33,13 @@ namespace ApexVisIns
             InitializeComponent();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _mainWindow = Owner as MainWindow;
+            MainWindow = Owner as MainWindow;
 
-
-
+            Debug.WriteLine($"Login Flag {MainWindow.LoginFlag}");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -49,11 +55,11 @@ namespace ApexVisIns
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             // 重置按鈕
-            
+
             // 1. 重置錯誤
             // 2. 重新 Servo On
             // 3. 
-            
+
             MainWindow.ServoMotion.ResetAllError();
 
 
@@ -64,6 +70,17 @@ namespace ApexVisIns
             // 即停按鈕 (軟體)
 
 
+        }
+
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void PropertyChange(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

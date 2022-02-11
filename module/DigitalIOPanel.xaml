@@ -177,7 +177,8 @@
                                HorizontalAlignment="Right" Style="{StaticResource MaterialDesignSubtitle2TextBlock}"/>-->
 
                     <Button Margin="0 0 0 4" Padding="0" Height="16" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignToolButton}" 
-                            materialDesign:RippleAssist.IsDisabled="True"
+                            materialDesign:RippleAssist.IsDisabled="True" 
+                            IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                             Click="LockDOButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon>
