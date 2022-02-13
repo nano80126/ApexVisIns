@@ -23,6 +23,7 @@ using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
+using System.Windows.Media.Animation;
 
 namespace ApexVisIns
 {
@@ -559,6 +560,37 @@ namespace ApexVisIns
             }
         }
         #endregion
+    }
+
+
+    public static class ProgressBarExtension
+    {
+        public static void SetPercent(this ProgressBar progressBar, double percentage, TimeSpan timeSpan)
+        {
+            //DoubleAnimationUsingKeyFrames animationUsingKeyFrames = new DoubleAnimationUsingKeyFrames()
+            //{
+            //};
+            DoubleAnimation animation = new DoubleAnimation(percentage, timeSpan,FillBehavior.HoldEnd);
+            //progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
+
+            Storyboard.SetTarget(animation, progressBar);
+            Storyboard.SetTargetProperty(animation, new PropertyPath(ProgressBar.ValueProperty));
+            Storyboard sb = new();
+            sb.Children.Add(animation);
+            sb.Begin();
+        }
+
+        public static void SetPercent(this TextBlock textBlock, double percentage, TimeSpan timeSpan)
+        {
+            DoubleAnimation animation = new DoubleAnimation(percentage, timeSpan, FillBehavior.HoldEnd);
+            //progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
+
+            Storyboard.SetTarget(animation, textBlock);
+            Storyboard.SetTargetProperty(animation, new PropertyPath(TextBlock.TextProperty));
+            Storyboard sb = new();
+            sb.Children.Add(animation);
+            sb.Begin();
+        }
     }
 }
 

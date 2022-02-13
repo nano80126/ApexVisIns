@@ -114,7 +114,7 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            Initializer2();
+            // Initializer2();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -132,6 +132,9 @@ namespace ApexVisIns.content
             //        Debug.WriteLine(ex.Message);
             //    }
             //});
+
+            MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
+            //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }
 
         /// <summary>

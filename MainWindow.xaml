@@ -589,9 +589,7 @@
                     <!--Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"-->
 
                     <TextBlock x:Name="MainProgressText" Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
-                               Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"/>
-                    <!--Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"-->
-                    
+                               Text="{Binding Value, ElementName=MainProgress, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0:0} %}"/>
                 </StackPanel>
                 
             </DockPanel>
