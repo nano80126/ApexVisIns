@@ -34,7 +34,7 @@ namespace ApexVisIns
         private bool _disposed;
         private bool _diCtrlCreated;
         private bool _doCtrlCreated;
-        private bool _doLocked;
+        private bool _doLocked = true;
 
         /// <summary>
         /// DI 集合鎖
@@ -449,7 +449,7 @@ namespace ApexVisIns
             // lock (this)
             // {
             InterruptCount++;
-            Debug.WriteLine($"{DateTime.Now:HH:mm:ss:fff}");
+            //Debug.WriteLine($"{DateTime.Now:HH:mm:ss:fff}");
             // return;
 
             if (debounceTimer == null)

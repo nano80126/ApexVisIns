@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=System"
         xmlns:local="clr-namespace:ApexVisIns"
         xmlns:uc="clr-namespace:ApexVisIns.module"
         xmlns:content="clr-namespace:ApexVisIns.content"
@@ -45,6 +46,12 @@
         <RoutedUICommand x:Key="SwitchTab" Text="Switch Tab"/>
         <!--Global-->
         <RoutedUICommand x:Key="GlobalTest" Text="Test global command"/>
+        <!--#endregion-->
+
+
+        <!--#region BackgroundWorker -->
+        <componentModel:BackgroundWorker x:Name="Worker" x:Key="Worker" WorkerReportsProgress="True"
+                                         WorkerSupportsCancellation="True"/>
         <!--#endregion-->
 
         <!--<sys:Boolean x:Key="LoginFlag">
@@ -573,14 +580,17 @@
                         </Style>
                     </StackPanel.Style>
 
-                    <ProgressBar Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
+                    <ProgressBar x:Name="MainProgress" Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
                                  materialDesign:TransitionAssist.DisableTransitions="True" 
                                  HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
                                  Minimum="0" Maximum="100" Width="250" 
-                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"/>
+                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"
+                                 />
+                    <!--Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"-->
 
-                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
+                    <TextBlock x:Name="MainProgressText" Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
                                Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"/>
+                    <!--Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0} %}"-->
                     
                 </StackPanel>
                 

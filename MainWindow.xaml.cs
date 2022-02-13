@@ -22,7 +22,7 @@ using System.IO.Ports;
 using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes;
 using System.Windows.Controls.Primitives;
-
+using System.ComponentModel;
 
 namespace ApexVisIns
 {
@@ -79,7 +79,9 @@ namespace ApexVisIns
         #region I/O Controller
         public static IOController IOController { get; set; }
 
-        public IOWindow IOWindow { get; set; }
+        public  IOWindow IOWindow { get; set; }
+
+        public Thread IOThread { get; set; }
         #endregion
 
         #region Devices
@@ -168,8 +170,10 @@ namespace ApexVisIns
             // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
 
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
-            MsgInformer.EnableProgressBar();
+            //MsgInformer.BackgroundWorker = FindResource("Worker") as BackgroundWorker;
             MsgInformer.EnableCollectionBinding();
+            MsgInformer.EnableProgressBar();
+
             #endregion
 
             #region Cameras
@@ -189,26 +193,15 @@ namespace ApexVisIns
 #if DEBUG
             LightController = FindResource(nameof(LightController)) as LightController;
 #endif
-            //LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[];
-
+            //LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[]; // depricated
             LightCtrls = FindResource(nameof(LightCtrls)) as LightSerial[];
             #endregion
 
             #region EtherCAT Motion
-            // Resource 一樣尋找
             //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
             //ServoMotion.ListAvailableDevices(true);
-
-            //if (ServoMotion.CheckDllVersion())
-            //{
-            //    ServoMotion.ListAvailableDevices();
-            //}
-            //else
-            //{
-            //    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制驅動未安裝或版本不符");
-            //}
             #endregion
 
             #region IO Controller
@@ -228,26 +221,22 @@ namespace ApexVisIns
             // 載入後, focus 視窗
             _ = Focus();
 
+            // 若不為 DebugMode，設為全螢幕
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
-            IOWindow = new IOWindow()
-            {
-                Owner = this
-            };
-            IOWindow?.Show();
 
-            //Task.Run(() =>
-            //{
-            //    SpinWait.SpinUntil(() => false, 5000);
-            //    for (int i = 0; i < 100; i++)
-            //    {
-            //        Dispatcher.Invoke(() =>
-            //        {
-            //            IOController.WriteDOBit(0, 1, i % 2 == 1);
-            //        });
-            //        SpinWait.SpinUntil(() => false, 500);
-            //    }
-            //});
+            // BackgroundWorker.RunWorkerAsync();
+            // MsgInformer.BackgroundWorker.RunWorkerAsync();
+            // MsgInformer.BackgroundWorker.DoWork += Worker_DoWork;
+            //MsgInformer.BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged; ;
+            //MsgInformer.BackgroundWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+        }
+
+        private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            MainProgress.Value = e.ProgressPercentage;
+            MainProgressText.Text = $"{e.ProgressPercentage} %";
+            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -267,7 +256,36 @@ namespace ApexVisIns
             ServoMotion.Dispose();
             IOController.Dispose();
 
-            IOWindow?.Close();
+
+            //Debug.WriteLine(IOWindow.Dispatcher.Thread.ManagedThreadId);
+            if (IOWindow != null)
+            {
+                //IOWindow.Dispatcher.Invoke(() => IOWindow.Close());
+                IOWindow.Close();
+            }
+        }
+
+        /// <summary>
+        /// 開啟 IO Window
+        /// </summary>
+        public void CreateIOWindow()
+        {
+            //IOThread = new(() =>
+            //{
+                IOWindow = new IOWindow(this);
+                IOWindow?.Show();
+            //    IOWindow.Closed += (sender2, e2) => IOWindow.Dispatcher.InvokeShutdown();
+
+            //    System.Windows.Threading.Dispatcher.Run();
+            //});
+            //IOThread.SetApartmentState(ApartmentState.STA);
+            //IOThread.Start();
+        }
+
+        public void OpenIOWindow()
+        {
+            //IOThread.SetApartmentState(ApartmentState.STA);
+            //IOThread.Start();
         }
 
         /// <summary>
@@ -375,6 +393,7 @@ namespace ApexVisIns
                 if (LoginPassword.Password == Password)
                 {
                     LoginFlag = true;
+                    IOWindow.PropertyChange(nameof(LoginFlag));
                     LoginPasswordHint.Text = string.Empty;
                     LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
@@ -410,6 +429,7 @@ namespace ApexVisIns
             if (DebugMode)
             {
                 LoginFlag = true;
+                IOWindow.PropertyChange(nameof(LoginFlag));
                 e.Handled = true;
             }
             else
@@ -439,6 +459,18 @@ namespace ApexVisIns
         }
 
         #endregion
+
+        #region BackgroundWorker
+        private void Worker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, "Caneceled");
+            }
+            MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "Success");
+        }
+        #endregion
+
     }
 
     /// <summary>

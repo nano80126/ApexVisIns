@@ -114,7 +114,7 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            // Initializer2();
+            Initializer2();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -304,6 +304,11 @@ namespace ApexVisIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
+                        MainWindow.Dispatcher.BeginInvoke((ThreadStart)delegate
+                        {
+                            MainWindow.CreateIOWindow();
+                        });
+
                         // 等待 Progress 100%
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5000))
                         {
@@ -315,7 +320,9 @@ namespace ApexVisIns.content
 
                         MainWindow.CameraEnumer.WorkerPause();
                         MainWindow.LightEnumer.WorkerPause();
-                        
+
+                        //MainWindow.CreateIOWindow();
+
                         // 硬體準備完成旗標
                         MainWindow.ApexDefect.HardwarePrepared = true;
 
@@ -1129,6 +1136,18 @@ namespace ApexVisIns.content
                             IOController.DigitalInputChanged += Controller_DigitalInputChanged;
                             IOController.InitializeDiCtrl();
 
+                            #region CH0 啟用中斷 (即停)
+                            //Dispatcher.Invoke(() =>
+                            //{
+                            //    _ = IOController.DisableInterrupt();
+                            //    if (IOController.SetInterruptChannel(0, Automation.BDaq.ActiveSignal.FallingEdge) == Automation.BDaq.ErrorCode.Success)
+                            //    {
+                            //        IOController.Interrupts.First(e => e.Channel == 0).Enabled = true;
+                            //    }
+                            //    _ = IOController.EnableInterrut();
+                            //});
+                            #endregion
+
                             MainWindow.MsgInformer.TargetProgressValue += 10;
                         }
 
@@ -1162,7 +1181,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Controller_DigitalInputChanged(object sender, IOController.DigitalInputChangedEventArgs e)
         {
-            Debug.WriteLine($"{e.Port} {e.Bit} {e.Data}");
+            Debug.WriteLine($"Port{e.Port}, Bit{e.Bit} : {e.Data}");
             //  throw new NotImplementedException();
         }
         #endregion
@@ -1183,7 +1202,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         /// <summary>
         /// 規格選擇變更
         /// </summary>
@@ -1193,7 +1211,6 @@ namespace ApexVisIns.content
         {
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
-
             MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
         }
 
@@ -1255,13 +1272,32 @@ namespace ApexVisIns.content
         [Obsolete("確認硬體連線狀態")]
         private void CheckHwStatus_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.IOWindow.Close();
-            MainWindow.IOWindow = null;
+            //MainWindow.IOWindow.Close();
+            //MainWindow.IOWindow = null;
 
-
-            MainWindow.IOWindow = new IOWindow();
-            MainWindow.IOWindow.Show();
+            //MainWindow.IOWindow = new IOWindow(this);
+            //MainWindow.IOWindow.Show();
         }
+
+        #region 啟動檢驗
+        private void StartInspect_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. ApexDefect Timer Start
+            // 2. 啟動相機
+
+            MainWindow.ApexDefect.Start();
+
+        }
+
+        private void StopInspect_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. ApexDefect Timer Stop
+            // 2. 啟動相機
+
+            MainWindow.ApexDefect.Stop();
+        }
+        #endregion
+
 
         #region Basler 相機事件
         /// <summary>
@@ -1510,23 +1546,5 @@ namespace ApexVisIns.content
             // throw new NotImplementedException();
         }
         #endregion
-
-        private void StartInspect_Click(object sender, RoutedEventArgs e)
-        {
-            // 1. ApexDefect Timer Start
-            // 2. 啟動相機
-
-            MainWindow.ApexDefect.Start();
-
-        }
-
-        private void StopInspect_Click(object sender, RoutedEventArgs e)
-        {
-            // 1. ApexDefect Timer Stop
-            // 2. 啟動相機
-
-            MainWindow.ApexDefect.Stop();
-        }
-
     }
 }

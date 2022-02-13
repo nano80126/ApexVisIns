@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,26 +26,22 @@ namespace ApexVisIns
         public MainWindow MainWindow { get; set; }
 
 
-        public bool LoginFlag => MainWindow != null ? MainWindow.LoginFlag : false;
+        public bool LoginFlag => MainWindow != null && MainWindow.LoginFlag;
 
-
-        public IOWindow()
+        public IOWindow(MainWindow mw)
         {
             InitializeComponent();
+            MainWindow = mw;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            MainWindow = Owner as MainWindow;
-
-            Debug.WriteLine($"Login Flag {MainWindow.LoginFlag}");
+            //MainWindow = Owner as MainWindow;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-
         }
 
         private void TitleGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -73,6 +70,8 @@ namespace ApexVisIns
         }
 
 
+        #region PropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -81,6 +80,7 @@ namespace ApexVisIns
         public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
     }
 }

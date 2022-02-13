@@ -412,7 +412,6 @@ namespace ApexVisIns
         private bool _enable;
         #endregion
 
-
         /// <summary>
         /// Point X
         /// </summary>
@@ -506,7 +505,7 @@ namespace ApexVisIns
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="offset"></param>
-        public void AssignPoint(double x, double y, OpenCvSharp.Point offset)
+        public void AssignPoint(double x, double y, Point offset)
         {
             _x = x + offset.X;
             _y = y + offset.Y;
@@ -524,7 +523,6 @@ namespace ApexVisIns
 
     public class MsgInformer : INotifyPropertyChanged
     {
-
         #region LockObject
         /// <summary>
         /// Info Collection Lock
@@ -553,7 +551,7 @@ namespace ApexVisIns
             }
         }
         public int TargetProgressValue { get; set; }
-
+        public BackgroundWorker BackgroundWorker { get; set; }
 
         public void EnableProgressBar()
         {
@@ -565,26 +563,57 @@ namespace ApexVisIns
                     {
                         ProgressValue += 2;
                     }
-
                     _ = SpinWait.SpinUntil(() => false, 50);
                 }
             });
+
+            // BackgroundWorker.DoWork += BackgroundWorker_DoWork;
+            // BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
+            // BackgroundWorker.RunWorkerAsync();
         }
+
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // TargetProgressValue = 90;
+            // int value = ProgressValue;
+            while (ProgressValue < 100 && !BackgroundWorker.CancellationPending)
+            {
+                if (ProgressValue < TargetProgressValue)
+                {
+                    //ProgressValue += 2;
+                    BackgroundWorker.ReportProgress(ProgressValue);
+                }
+                _ = SpinWait.SpinUntil(() => false, 50);
+            }
+
+            if (BackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        //private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        //{
+        //    ProgressValue = e.ProgressPercentage;
+        //}
 
         public void DisposeProgressTask()
         {
+            //if (!BackgroundWorker.CancellationPending)
             if (!CancellationTokenSource.IsCancellationRequested)
             {
+                //BackgroundWorker.CancelAsync();
                 CancellationTokenSource.Cancel();
             }
 
+            //if (BackgroundWorker != null)
             if (progressTask != null)
             {
                 progressTask.Wait();
                 progressTask.Dispose();
+                //BackgroundWorker.Dispose();
             }
         }
-
 
         public void EnableCollectionBinding()
         {

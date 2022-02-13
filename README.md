@@ -107,7 +107,7 @@ Apex 外觀瑕疵檢測
 * [ ] ProgressBar UI 會卡
 	* 待測試，若無辦法則改 Infinity
 
-* [ ] 確認 Motion GetDevices 會不會讓 Handle 遺失 
+* [x] 確認 Motion GetDevices 會不會讓 Handle 遺失 
 	※ 要等 220V
 
 * [ ] Motion Config 載入/儲存
@@ -140,7 +140,7 @@ Apex 外觀瑕疵檢測
 * [x] 更新 ServoMotion HomeModes
 	* 多測試幾次
 
-* [ ] 確認 OOP 命名規則
+* [x] 確認 OOP 命名規則
 	* SltMotionAxis (ServoMotion)
 	* 待測試
 
@@ -156,13 +156,13 @@ Apex 外觀瑕疵檢測
 
 * [ ] 原點復歸若在原點上不會觸發重置位置
 
-* [ ] 確認 ProgressBar 可以 100%
+* [x] 確認 ProgressBar 可以 100%
 
-* [ ] 初始化 Motion
+* [x] 初始化 Motion
 	* 確認 MotionEnumer 是否使用 => 可移除
 	* 確認 ServoMotion.ListAvailableDevices() 觸發時機 (必須避免重複觸發)
 
-* [ ] Motion Status Pack Icon
+* [x] Motion Status Pack Icon
 	* ALM 時顯示驚嘆號 (exclamation)
 
 * [ ] ServoMotion.Axes.Clear() 時會導致 Binding 產生 Error
@@ -171,22 +171,16 @@ Apex 外觀瑕疵檢測
 * [x] 測試原點復歸中是否可以進行其他操作
 	* Ans: 會發出警報
 
-* [ ] MotionTab 尋找軸卡改為按鈕觸發
+* [x] MotionTab 尋找軸卡改為按鈕觸發
 
 * [ ] 原點復歸前確認 IO
 
-* [ ] Motion 斷線後不會刷新 IO
-	* Bug 待處理
-
-* [ ] 確認 IO Panel DO 寫入按鈕功能
-	* 原則上可移除
-
-* [ ] 整理初始化流程 methods
+* [x] 整理初始化流程 methods
 	* try... catch
 	* MsgInformer Error Type
 	* SpinWait Flag
 
-* [ ] 初始化改 Task with token
+* [x] 初始化改 Task with token
 
 * [ ] Motion Reset Error 若即停開關按下則會 delay 
 	* 重置錯誤失敗會導致 Delay
@@ -194,7 +188,7 @@ Apex 外觀瑕疵檢測
 * [ ] 新增 IO panel 彈出視窗
 	* 即時更新
 
-* [ ] 光源控制器待轉移
+* [x] 光源控制器待轉移
 
 ### Config Logic
 

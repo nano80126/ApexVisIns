@@ -130,7 +130,7 @@ namespace ApexVisIns.module
         {
             ErrorCode err;
             CheckBox checkBox = sender as CheckBox;
-            int channel = Convert.ToInt32(checkBox.CommandParameter);
+            int channel = Convert.ToInt32(checkBox.CommandParameter, CultureInfo.CurrentCulture);
 
             _ = Controller.DisableInterrupt();
             err = Controller.SetInterruptChannel(channel, ActiveSignal.RisingEdge);
