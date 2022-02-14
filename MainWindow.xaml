@@ -571,7 +571,7 @@
                                         <BeginStoryboard>
                                             <Storyboard>
                                                 <!--// 淡出，時間 3 秒-->
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:2"/>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:1.5"/>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
@@ -583,13 +583,39 @@
                     <ProgressBar x:Name="MainProgress" Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
                                  materialDesign:TransitionAssist.DisableTransitions="True" 
                                  HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
-                                 Minimum="0" Maximum="100" Width="250" 
-                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"
-                                 />
+                                 Minimum="0" Maximum="100" Width="250"/>
                     <!--Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0}"-->
 
+
+                    <!--<ProgressBar x:Name="MainProgress" Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
+                                 materialDesign:TransitionAssist.DisableTransitions="True" 
+                                 HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
+                                 Minimum="0" Maximum="100" Width="250" 
+                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, NotifyOnTargetUpdated=True}">
+                        <ProgressBar.Style>
+                            <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Value" BeginTime="0:0:0" Duration="0:0:2" From="0" To="50">
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>-->
+
+                    
                     <TextBlock x:Name="MainProgressText" Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
                                Text="{Binding Value, ElementName=MainProgress, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0:0} %}"/>
+
+
+                    <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="{Binding TargetProgressValue, UpdateSourceTrigger=PropertyChanged}"/>
+
                 </StackPanel>
                 
             </DockPanel>

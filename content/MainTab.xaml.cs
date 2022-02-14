@@ -114,26 +114,12 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            // Initializer2();
+            // Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
-            //Task.Run(() =>
-            //{
-            //    try
-            //    {
-            //        //Dispatcher.Invoke(() =>
-            //        //{
-            //            throw new Exception("測試錯誤");
-            //        //});
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Debug.WriteLine(ex.Message);
-            //    }
-            //});
 
-            MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
+            //MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
             //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }
 
@@ -153,7 +139,7 @@ namespace ApexVisIns.content
         /// 建立初始化工作者
         /// </summary>
         [Obsolete("待移除")]
-        private void Initializer()
+        private void _Initializer()
         {
             _ = Task<int>.Run(() =>
             {
@@ -287,7 +273,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 初始化工作
         /// </summary>
-        private async void Initializer2()
+        private async void Initializer()
         {
             try
             {
@@ -307,13 +293,10 @@ namespace ApexVisIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        MainWindow.Dispatcher.BeginInvoke((ThreadStart)delegate
-                        {
-                            MainWindow.CreateIOWindow();
-                        });
+                        //MainWindow.Dispatcher.Invoke(() => MainWindow.CreateIOWindow());
 
                         // 等待 Progress 100%
-                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5000))
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5 * 1000))
                         {
                             // 硬體初始化失敗
                             MainWindow.ApexDefect.StepError = true;
@@ -346,7 +329,7 @@ namespace ApexVisIns.content
                             MotionReturnZero().Wait();
 
                             if (!ServoMotion.Axes[0].ZeroReturned)
-                            //if (!MainWindow.ApexDefect.ZeroReturned)
+                            // if (!MainWindow.ApexDefect.ZeroReturned)
                             {
                                 // 硬體初始化失敗
                                 MainWindow.ApexDefect.StepError = true;
@@ -548,7 +531,6 @@ namespace ApexVisIns.content
                 }
 
                 // 1. 載入 json // 2. 確認每個 Camera 之 Target // 3. 開啟相機 // 4. 載入 UserSet
-
                 try
                 {
                     string path = @"./devices/device.json";
@@ -563,6 +545,9 @@ namespace ApexVisIns.content
                             // 組態反序列化
                             DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
 
+                            // 等待相機列舉
+                            if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException("相機列舉器逾時"); }
+
                             // 已連線之 Camera
                             List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
 
@@ -571,13 +556,12 @@ namespace ApexVisIns.content
 
                             foreach (DeviceConfigBase device in devices)
                             {
-                                Debug.WriteLine($"{device.IP} {device.FullName}");
+                                Debug.WriteLine($"{cams.Count} {device.IP} {device.FullName} {device.SerialNumber}");
 
                                 // 確認 Device 為在線上之 Camera
                                 if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                                 {
                                     Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
-
 
                                     switch (device.TargetFeature)
                                     {
@@ -985,6 +969,8 @@ namespace ApexVisIns.content
 
                 try
                 {
+                    if (!SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException("COM Port列舉器逾時"); }
+
                     string result = string.Empty;
                     foreach (LightSerial ctrl in MainWindow.LightCtrls)
                     {
@@ -1194,8 +1180,8 @@ namespace ApexVisIns.content
         {
             Task.Run(async () =>
             {
-                Debug.WriteLine($"{ServoMotion.Axes[0].CurrentStatus}");
-                Debug.WriteLine($"{ServoMotion.Axes[1].CurrentStatus}");
+                Debug.WriteLine($"ServoMotion.Axes[0].CurrentStatus {ServoMotion.Axes[0].CurrentStatus}");
+                Debug.WriteLine($"ServoMotion.Axes[1].CurrentStatus {ServoMotion.Axes[1].CurrentStatus}");
 
                 if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 {
@@ -1385,6 +1371,8 @@ namespace ApexVisIns.content
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
                 }
+
+                Debug.WriteLine(cam.IsGrabbing);
             }
             catch (TimeoutException T)
             {
@@ -1494,17 +1482,16 @@ namespace ApexVisIns.content
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
         {
             Debug.WriteLine("Grabber Started");
-
             string userData = (sender as IStreamGrabber).UserData.ToString();
             Debug.WriteLine(userData);      // userData equal TargetFeature
 
+            // MainWindow.BaslerCams.First(cam)
             // Call PropertyChanged ? IsGrabbing
         }
 
         private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
         {
             Debug.WriteLine("Grabber Stoped");
-
             // Call PropertyChanged ? IsGrabbing
         }
 
@@ -1536,7 +1523,7 @@ namespace ApexVisIns.content
                     case DeviceConfigBase.TargetFeatureType.Surface2:
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                         break;
-                }
+                } 
 
                 // Debug.WriteLine($"{userData}");
 

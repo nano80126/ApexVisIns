@@ -415,7 +415,7 @@
             </Border>
 
             <!--Image 4-->
-            <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" BorderThickness="1" BorderBrush="Black">
+            <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <Viewbox x:Name="Image4Viewbox">
                     <Image x:Name="Image4" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource4, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>

@@ -28,6 +28,12 @@ namespace ApexVisIns
 
         public bool LoginFlag => MainWindow != null && MainWindow.LoginFlag;
 
+        public IOWindow()
+        {
+            InitializeComponent();
+            MainWindow = this.Owner as MainWindow;
+        }
+
         public IOWindow(MainWindow mw)
         {
             InitializeComponent();
@@ -58,8 +64,6 @@ namespace ApexVisIns
             // 3. 
 
             MainWindow.ServoMotion.ResetAllError();
-
-
         }
 
         private void EmgButton_Click(object sender, RoutedEventArgs e)

@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace ApexVisIns
 {
@@ -512,7 +513,6 @@ namespace ApexVisIns
             OnPropertyChanged();
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName = null)
@@ -536,82 +536,92 @@ namespace ApexVisIns
 
         #region Varibles
         private int _progress;
+        private int _targetProgressValue;
 
         private Task progressTask;
         private CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
+        /// <summary>
+        /// AnimationList
+        /// </summary>
+        private readonly List<Action> ProgressAnimation = new();
         #endregion
 
+       
+        /// <summary>
+        /// 當前 Progress Value
+        /// </summary>
         public int ProgressValue
         {
             get => _progress;
             set
             {
-                _progress = value > 100 ? 100 : value;
+                if (value != _progress)
+                {
+                    _progress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        /// <summary>
+        /// 目標 Progress Value
+        /// </summary>
+        public int TargetProgressValue
+        {
+            get => _targetProgressValue;
+            set
+            {
+                if (value > _targetProgressValue)
+                {
+                    // 1 % = 100 ms
+                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 50);
+                    ProgressAnimation.Add(() =>
+                    {
+                        OnProgressValueChanged(_progress, value, timeSpan);
+                        _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, timeSpan);
+                        // 等待動畫結束後更新
+                        ProgressValue = value;
+                    });
+                }
+                // 即時更新
+                _targetProgressValue = value;
                 OnPropertyChanged();
             }
         }
-        public int TargetProgressValue { get; set; }
-        public BackgroundWorker BackgroundWorker { get; set; }
 
+        /// <summary>
+        /// 啟用 ProgressBar
+        /// </summary>
         public void EnableProgressBar()
         {
             progressTask = Task.Run(() =>
             {
                 while (ProgressValue < 100 && !CancellationTokenSource.IsCancellationRequested)
                 {
-                    if (ProgressValue < TargetProgressValue)
+                    if (ProgressAnimation.Count > 0)
                     {
-                        ProgressValue += 2;
+                        ProgressAnimation[0]();
+                        ProgressAnimation.RemoveAt(0);
                     }
                     _ = SpinWait.SpinUntil(() => false, 50);
                 }
             });
-
-            // BackgroundWorker.DoWork += BackgroundWorker_DoWork;
-            // BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
-            // BackgroundWorker.RunWorkerAsync();
         }
 
-        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // TargetProgressValue = 90;
-            // int value = ProgressValue;
-            while (ProgressValue < 100 && !BackgroundWorker.CancellationPending)
-            {
-                if (ProgressValue < TargetProgressValue)
-                {
-                    //ProgressValue += 2;
-                    BackgroundWorker.ReportProgress(ProgressValue);
-                }
-                _ = SpinWait.SpinUntil(() => false, 50);
-            }
-
-            if (BackgroundWorker.CancellationPending)
-            {
-                e.Cancel = true;
-            }
-        }
-
-        //private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        //{
-        //    ProgressValue = e.ProgressPercentage;
-        //}
-
+        /// <summary>
+        /// 取消 ProgressBar
+        /// </summary>
         public void DisposeProgressTask()
         {
-            //if (!BackgroundWorker.CancellationPending)
             if (!CancellationTokenSource.IsCancellationRequested)
             {
-                //BackgroundWorker.CancelAsync();
                 CancellationTokenSource.Cancel();
             }
 
-            //if (BackgroundWorker != null)
             if (progressTask != null)
             {
                 progressTask.Wait();
                 progressTask.Dispose();
-                //BackgroundWorker.Dispose();
+                ProgressAnimation.Clear();
             }
         }
 
@@ -760,14 +770,14 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(NewInfo));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ResetInfoCount()
         {
             NewInfo = 0;
             OnPropertyChanged(nameof(NewInfo));
         }
-
-        // public ObservableCollection<Message> MessageSource { get; set; } = new ObservableCollection<Message>();
-
 
         /// <summary>
         /// Stack Source of Message
@@ -850,7 +860,6 @@ namespace ApexVisIns
             public MsgCode Code { get; set; }
             public string Description { get; set; }
             public MessageType MsgType { get; set; }
-
             public SolidColorBrush MsgColor
             {
                 get
@@ -872,11 +881,47 @@ namespace ApexVisIns
             }
         }
 
+        #region ProgressValueChanged
+        /// <summary>
+        /// 進度表 ChangedEventHandler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public delegate void ProgressValueChangedEventHandler(object sender, ProgressValueChangedEventArgs e);
+        /// <summary>
+        /// 進度表 ChangedEvent
+        /// </summary>
+        public event ProgressValueChangedEventHandler ProgressValueChanged;
+
+        private void OnProgressValueChanged(int oldValue, int newValue, TimeSpan duration)
+        {
+            ProgressValueChanged?.Invoke(this, new ProgressValueChangedEventArgs(oldValue, newValue, duration));
+        }
+
+        public class ProgressValueChangedEventArgs : EventArgs
+        {
+            public ProgressValueChangedEventArgs(int a, int b, TimeSpan duration)
+            {
+                OldValue = a;
+                NewValue = b;
+                Duration = duration;
+            }
+
+            public int OldValue { get; }
+
+            public int NewValue { get; }
+
+            public TimeSpan Duration { get; }
+        } 
+        #endregion
+
+        #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
     }
 
     /// <summary>

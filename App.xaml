@@ -158,8 +158,8 @@
             <!--#endregion-->
 
             <!--#region IO Control Resources -->
-            <local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
-            <!--<local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
+            <!--<local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
+            <local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
             <!--#endregion-->
 
             <!--#region Major -->

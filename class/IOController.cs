@@ -375,7 +375,6 @@ namespace ApexVisIns
 
             public bool Enabled { get; set; }
         }
-    
 
         /// <summary>
         /// 設定中斷器，設定過後必須重設 SnapStart()
@@ -410,7 +409,6 @@ namespace ApexVisIns
 
         public DiintChannel[] InterruptEnabledChannel => InstantDiCtrl.DiintChannels.Where(e => e.Enabled).ToArray();
 
-       
         //private void InstantDiCtrl_Interrupt(object sender, DiSnapEventArgs e)
         //{
         //    // 觸發條件: 上升邊緣、下降邊緣、雙邊緣
@@ -437,7 +435,6 @@ namespace ApexVisIns
         //    //    });
         //    //}
         //}
-
 
         /// <summary>
         /// 中斷事件

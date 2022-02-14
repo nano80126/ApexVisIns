@@ -190,6 +190,9 @@ Apex 外觀瑕疵檢測
 
 * [x] 光源控制器待轉移
 
+
+* [ ] Initializer 需要等待 Enumer
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

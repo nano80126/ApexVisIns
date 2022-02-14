@@ -32,21 +32,18 @@ namespace ApexVisIns
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
-        #region Long life worker
+        #region Cameras
         /// <summary>
         /// Camera 列舉器
         /// 綁在 MainWindow
         /// </summary>
-        public CameraEnumer CameraEnumer;
-        // public Thermometer Thermometer;
-        #endregion
+        public CameraEnumer CameraEnumer { get; set; }
 
-
-        #region Cameras
         /// <summary>
         ///相機物件 (工程師頁面使用)
         /// </summary>
         public static BaslerCam BaslerCam { get; set; }
+
         /// <summary>
         /// 相機陣列 (上線正式使用)
         /// </summary>
@@ -82,6 +79,8 @@ namespace ApexVisIns
 
         public  IOWindow IOWindow { get; set; }
 
+
+        [Obsolete("待確認")]
         public Thread IOThread { get; set; }
         #endregion
 
@@ -171,10 +170,10 @@ namespace ApexVisIns
             // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
 
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
-            //MsgInformer.BackgroundWorker = FindResource("Worker") as BackgroundWorker;
             MsgInformer.EnableCollectionBinding();
+            // 綁定 ProgressBar Value Changed 事件
+            MsgInformer.ProgressValueChanged += MsgInformer_ProgressValueChanged;
             MsgInformer.EnableProgressBar();
-
             #endregion
 
             #region Cameras
@@ -225,19 +224,16 @@ namespace ApexVisIns
             // 若不為 DebugMode，設為全螢幕
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
+            //SpinWait.SpinUntil(() => false, 1000);
+
+            // CreateIOWindow();
+            // Debug.WriteLine(Dispatcher.Thread.ManagedThreadId);
 
             // BackgroundWorker.RunWorkerAsync();
             // MsgInformer.BackgroundWorker.RunWorkerAsync();
             // MsgInformer.BackgroundWorker.DoWork += Worker_DoWork;
-            //MsgInformer.BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged; ;
-            //MsgInformer.BackgroundWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-        }
-
-        private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            MainProgress.Value = e.ProgressPercentage;
-            MainProgressText.Text = $"{e.ProgressPercentage} %";
-            //throw new NotImplementedException();
+            // MsgInformer.BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged; ;
+            // MsgInformer.BackgroundWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
 
         /// <summary>
@@ -257,11 +253,8 @@ namespace ApexVisIns
             ServoMotion.Dispose();
             IOController.Dispose();
 
-
-            //Debug.WriteLine(IOWindow.Dispatcher.Thread.ManagedThreadId);
             if (IOWindow != null)
             {
-                //IOWindow.Dispatcher.Invoke(() => IOWindow.Close());
                 IOWindow.Close();
             }
         }
@@ -273,10 +266,9 @@ namespace ApexVisIns
         {
             //IOThread = new(() =>
             //{
-                IOWindow = new IOWindow(this);
-                IOWindow?.Show();
+            IOWindow = new IOWindow(this);
+            IOWindow?.Show();
             //    IOWindow.Closed += (sender2, e2) => IOWindow.Dispatcher.InvokeShutdown();
-
             //    System.Windows.Threading.Dispatcher.Run();
             //});
             //IOThread.SetApartmentState(ApartmentState.STA);
@@ -296,12 +288,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closed(object sender, EventArgs e)
         {
-            #region 保留
-            // MsgInformer.CollectionDebinding();
-            // MsgInformer.DisposeProgressTask();
-            // CameraEnumer?.WorkerEnd();
-            // LightEnumer?.WorkerEnd();
-            #endregion
+         
         }
 
         /// <summary>
@@ -347,7 +334,7 @@ namespace ApexVisIns
             Close();
         }
 
-        #region Footer Message
+        #region Footer Progress & Message
         private void ErrPopupBox_Opened(object sender, RoutedEventArgs e)
         {
             MsgInformer.ResetErrorCount();
@@ -372,6 +359,16 @@ namespace ApexVisIns
         {
             Keyboard.ClearFocus();
             _ = TitleGrid.Focus();
+        }
+
+        /// <summary>
+        /// 進度表更新 (動畫)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MsgInformer_ProgressValueChanged(object sender, MsgInformer.ProgressValueChangedEventArgs e)
+        {
+            Dispatcher.Invoke(() => MainProgress.SetPercent(e.OldValue, e.NewValue, e.Duration));
         }
         #endregion
 
@@ -430,7 +427,7 @@ namespace ApexVisIns
             if (DebugMode)
             {
                 LoginFlag = true;
-                IOWindow.PropertyChange(nameof(LoginFlag));
+                if (IOWindow != null) { IOWindow.PropertyChange(nameof(LoginFlag)); }
                 e.Handled = true;
             }
             else
@@ -565,31 +562,17 @@ namespace ApexVisIns
 
     public static class ProgressBarExtension
     {
-        public static void SetPercent(this ProgressBar progressBar, double percentage, TimeSpan timeSpan)
+        public static void SetPercent(this ProgressBar progressBar, double toValue, TimeSpan timeSpan)
         {
-            //DoubleAnimationUsingKeyFrames animationUsingKeyFrames = new DoubleAnimationUsingKeyFrames()
-            //{
-            //};
-            DoubleAnimation animation = new DoubleAnimation(percentage, timeSpan,FillBehavior.HoldEnd);
-            //progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
-
-            Storyboard.SetTarget(animation, progressBar);
-            Storyboard.SetTargetProperty(animation, new PropertyPath(ProgressBar.ValueProperty));
-            Storyboard sb = new();
-            sb.Children.Add(animation);
-            sb.Begin();
+            DoubleAnimation animation = new DoubleAnimation(toValue, timeSpan, FillBehavior.HoldEnd);
+            progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
         }
 
-        public static void SetPercent(this TextBlock textBlock, double percentage, TimeSpan timeSpan)
-        {
-            DoubleAnimation animation = new DoubleAnimation(percentage, timeSpan, FillBehavior.HoldEnd);
-            //progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
 
-            Storyboard.SetTarget(animation, textBlock);
-            Storyboard.SetTargetProperty(animation, new PropertyPath(TextBlock.TextProperty));
-            Storyboard sb = new();
-            sb.Children.Add(animation);
-            sb.Begin();
+        public static void SetPercent(this ProgressBar progressBar, double fromValue, double toValue, TimeSpan timeSpan)
+        {
+            DoubleAnimation animation = new DoubleAnimation(fromValue, toValue, timeSpan, FillBehavior.HoldEnd);
+            progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
         }
     }
 }

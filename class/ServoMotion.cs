@@ -526,11 +526,9 @@ namespace ApexVisIns
 
             if (DeviceOpened)
             {
-                Debug.WriteLine($"1:{DateTime.Now:mm:ss.fff}");
                 // Get the axis's current state
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
-                    Debug.WriteLine($"2:{DateTime.Now:mm:ss.fff}");
                     // 讀取軸狀態
                     _ = Motion.mAcm_AxGetState(AxisHandles[i], ref AxisState[i]);
 
@@ -2197,8 +2195,6 @@ namespace ApexVisIns
         /// </summary>
         public async Task PositiveWayHomeMove(bool setPosZero = false)
         {
-            Debug.WriteLine($"Status: {CurrentStatus}");
-
             if (CurrentStatus == "READY")
             {
                 uint result = await Task.Run(() =>
