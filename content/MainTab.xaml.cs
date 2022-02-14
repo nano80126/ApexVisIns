@@ -1371,8 +1371,6 @@ namespace ApexVisIns.content
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
                 }
-
-                Debug.WriteLine(cam.IsGrabbing);
             }
             catch (TimeoutException T)
             {
@@ -1485,14 +1483,20 @@ namespace ApexVisIns.content
             string userData = (sender as IStreamGrabber).UserData.ToString();
             Debug.WriteLine(userData);      // userData equal TargetFeature
 
-            // MainWindow.BaslerCams.First(cam)
             // Call PropertyChanged ? IsGrabbing
+            BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
         }
 
         private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
         {
             Debug.WriteLine("Grabber Stoped");
             // Call PropertyChanged ? IsGrabbing
+            string userData = (sender as IStreamGrabber).UserData.ToString();
+            Debug.WriteLine(userData);
+
+            BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
         }
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
