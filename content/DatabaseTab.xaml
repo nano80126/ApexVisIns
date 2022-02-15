@@ -30,11 +30,52 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Width="300" Background="{StaticResource ColorSuccessTransparent}">
-            <TextBlock Text="保留" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Stretch" Background="{StaticResource ColorTeal}">
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Red">
+                <materialDesign:Card.Resources>
+                    <!--#region Calender Style -->
+                    <Style x:Key="CustomCalendarDayButton" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
+                        <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="#B2F39B" />
+                        <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
+                    </Style>
+                    <Style x:Key="CustomCalendarButton" TargetType="CalendarButton" BasedOn="{StaticResource MaterialDesignCalendarButton}">
+                        <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="#B2F39B" />
+                        <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
+                    </Style>
+                    <!--#endregion-->
+                </materialDesign:Card.Resources>
+
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="CalenderHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="CalendarOutline" Width="30" Height="26"/>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="軸選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"></TextBlock>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+
+                    <Calendar Background="Transparent" Foreground="White" Margin="0 0"
+                          materialDesign:CalendarAssist.IsHeaderVisible="False"
+                          materialDesign:CalendarAssist.HeaderBackground="#A2E9FF" 
+                          materialDesign:CalendarAssist.HeaderForeground="Black" 
+                          CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}" 
+                          CalendarButtonStyle="{StaticResource CustomCalendarButton}" />
+
+
+                </DockPanel>
+
+            </materialDesign:Card>
+            
+            
+            
+            
+            
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Background="{StaticResource ColorInfo}"></StackPanel>
+        <StackPanel Grid.Column="1" Background="{StaticResource ColorInfo}">
+            <StackPanel Background="{StaticResource ColorErrorTransparent}" HorizontalAlignment="Stretch" Height="300"/>
+
+        </StackPanel>
 
     </Grid>
 </StackPanel>
