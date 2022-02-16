@@ -31,51 +31,114 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Stretch" Background="{StaticResource ColorTeal}">
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Red">
-                <materialDesign:Card.Resources>
-                    <!--#region Calender Style -->
-                    <Style x:Key="CustomCalendarDayButton" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
-                        <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="#B2F39B" />
-                        <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
-                    </Style>
-                    <Style x:Key="CustomCalendarButton" TargetType="CalendarButton" BasedOn="{StaticResource MaterialDesignCalendarButton}">
-                        <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="#B2F39B" />
-                        <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
-                    </Style>
-                    <!--#endregion-->
-                </materialDesign:Card.Resources>
-
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel.Resources>
+                        <!--#region Calender Style -->
+                        <Style x:Key="CustomCalendarDayButton" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
+                            <Setter Property="FontSize" Value="16"/>
+                            <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="{StaticResource ColorSuccess}" />
+                            <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
+                        </Style>
+                        <!--//-->
+                        <Style x:Key="CustomCalendarButton" TargetType="CalendarButton" BasedOn="{StaticResource MaterialDesignCalendarButton}">
+                            <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="{StaticResource ColorSuccess}" />
+                            <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
+                        </Style>
+                        <!--#endregion-->
+                        <Style x:Key="CustomTimerPicker" TargetType="materialDesign:TimePicker" BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Setter Property="Is24Hours" Value="True"/>
+                            <Setter Property="IsHeaderVisible" Value="False"/>
+                            <Setter Property="Padding" Value="10 3"/>
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                        <!--//-->
+                        <Style x:Key="TimePickComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                            <Setter Property="Margin" Value="0 8"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        </Style>
+                    </DockPanel.Resources>
+                    
+                    
                     <DockPanel x:Name="CalenderHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="CalendarOutline" Width="30" Height="26"/>
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="軸選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"></TextBlock>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="日期時間選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                     </DockPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
+                    <Calendar Background="Transparent" Foreground="{StaticResource ColorSecondary}" FontSize="20"
+                              Margin="0 0"
+                              DockPanel.Dock="Top"
+                              materialDesign:CalendarAssist.IsHeaderVisible="False"
+                              CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}" 
+                              CalendarButtonStyle="{StaticResource CustomCalendarButton}" />
 
-                    <Calendar Background="Transparent" Foreground="White" Margin="0 0"
-                          materialDesign:CalendarAssist.IsHeaderVisible="False"
-                          materialDesign:CalendarAssist.HeaderBackground="#A2E9FF" 
-                          materialDesign:CalendarAssist.HeaderForeground="Black" 
-                          CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}" 
-                          CalendarButtonStyle="{StaticResource CustomCalendarButton}" />
+                    <!--<TextBox DockPanel.Dock="Top" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                    <TextBox DockPanel.Dock="Top" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>-->
+
+                    <!--<DatePicker Width="140" materialDesign:HintAssist.Hint="Pick Date" Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+                    <DatePicker Width="140" materialDesign:HintAssist.Hint="Pick Date" Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+                    -->
+
+
+                    <materialDesign:TimePicker IsInvalidTextAllowed="False" DockPanel.Dock="Top" Padding="10 3"
+                                               SelectedTimeFormat="Long"
+                                               materialDesign:TextFieldAssist.PrefixText="From          "
+                                               Style="{StaticResource CustomTimerPicker}"/>
+                    
+                    
+                    <ComboBox x:Name="FromTime" DockPanel.Dock="Top" Padding="10 3" 
+                              materialDesign:TextFieldAssist.PrefixText="From         "
+                              Style="{StaticResource TimePickComboBox}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center" Text="{Binding}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+
+                    <ComboBox x:Name="ToTime" DockPanel.Dock="Top" Padding="10 3" 
+                              ShouldPreserveUserEnteredPrefix="True"
+                              materialDesign:TextFieldAssist.PrefixText="To"
+                              Style="{StaticResource TimePickComboBox}">
+                        <ComboBoxItem>123</ComboBoxItem>
+                    </ComboBox>
+
+                    <!--<materialDesign:Clock DockPanel.Dock="Top" Width="auto" DisplayAutomation="CycleWithSeconds" Is24Hours="True" IsHeaderVisible="False"/>
+                    
+                    <materialDesign:Clock DockPanel.Dock="Top" Width="auto" DisplayAutomation="CycleWithSeconds" Is24Hours="True" IsHeaderVisible="False"/>-->
+
+                    <!--#region NewRegion -->
+                    <materialDesign:PackIcon Kind="Tilde" Width="30" Height="26" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 12">
+                        <materialDesign:PackIcon.RenderTransform>
+                            <RotateTransform Angle="90" CenterX="15" CenterY="13"/>
+                        </materialDesign:PackIcon.RenderTransform>
+                    </materialDesign:PackIcon>
+                    <!--#endregion-->
+
+                    <materialDesign:TimePicker IsInvalidTextAllowed="True" DockPanel.Dock="Top" Padding="10 3"
+                                               SelectedTime="12:00:00"
+                                               materialDesign:TextFieldAssist.PrefixText="To            "
+                                               Style="{StaticResource CustomTimerPicker}"/>
 
 
                 </DockPanel>
-
             </materialDesign:Card>
-            
-            
-            
-            
-            
         </StackPanel>
+        
+        
+        
 
         <StackPanel Grid.Column="1" Background="{StaticResource ColorInfo}">
             <StackPanel Background="{StaticResource ColorErrorTransparent}" HorizontalAlignment="Stretch" Height="300"/>
-
         </StackPanel>
+        
+        
 
     </Grid>
 </StackPanel>
