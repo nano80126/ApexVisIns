@@ -226,7 +226,7 @@ namespace ApexVisIns
 
             //SpinWait.SpinUntil(() => false, 1000);
 
-            // CreateIOWindow();
+            CreateIOWindow();
             // Debug.WriteLine(Dispatcher.Thread.ManagedThreadId);
 
             // BackgroundWorker.RunWorkerAsync();
@@ -368,6 +368,8 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void MsgInformer_ProgressValueChanged(object sender, MsgInformer.ProgressValueChangedEventArgs e)
         {
+            Debug.WriteLine($"{e.OldValue} {e.NewValue} {e.Duration}");
+
             Dispatcher.Invoke(() => MainProgress.SetPercent(e.OldValue, e.NewValue, e.Duration));
         }
         #endregion

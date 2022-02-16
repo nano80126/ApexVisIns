@@ -114,7 +114,7 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            // Initializer();
+            Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -323,6 +323,9 @@ namespace ApexVisIns.content
 
                         if (t.Result == 0)
                         {
+                            //return 0;
+                            /// /// /// /// /// /// /// /// /// /// /// ///
+
                             // 步序 : 原點復歸
                             MainWindow.ApexDefect.CurrentStep = 1;
                             // 執行原點復歸
@@ -572,6 +575,7 @@ namespace ApexVisIns.content
                                                 if (Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    Debug.WriteLine("cam1 init");
                                                 }
                                             }
                                             break;
@@ -582,6 +586,7 @@ namespace ApexVisIns.content
                                                 if (Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    Debug.WriteLine("cam2 init");
                                                 }
                                             }
                                             break;
@@ -592,6 +597,7 @@ namespace ApexVisIns.content
                                                 if (Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    Debug.WriteLine("cam3 init");
                                                 }
                                             }
                                             break;
@@ -602,6 +608,7 @@ namespace ApexVisIns.content
                                                 if (Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    Debug.WriteLine("cam4 init");
                                                 }
                                             }
                                             break;
@@ -610,6 +617,7 @@ namespace ApexVisIns.content
                                             MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                             break;
                                     }
+
                                 }
                             }
 
@@ -824,6 +832,7 @@ namespace ApexVisIns.content
                                             axis.SetAxisVelParam();
                                             // 更新 Progress Value
                                             MainWindow.MsgInformer.TargetProgressValue += 10;
+                                            Debug.WriteLine($"{axis.AxisName} Init");
                                         }
                                     }
                                 }
@@ -992,6 +1001,7 @@ namespace ApexVisIns.content
                                     Light24V.ResetAllChannel();
                                     // 更新 Progress bar
                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                    Debug.WriteLine($"24V light init");
                                 }
                                 break;
                             case "COM2":
@@ -1010,6 +1020,7 @@ namespace ApexVisIns.content
                                     Light_6V.ResetAllChannel();
                                     // 更新 Progress bar
                                     MainWindow.MsgInformer.TargetProgressValue += 10;
+                                    Debug.WriteLine($"6V light init");
                                 }
                                 break;
                             default:
@@ -1138,6 +1149,7 @@ namespace ApexVisIns.content
                             #endregion
 
                             MainWindow.MsgInformer.TargetProgressValue += 10;
+                            Debug.WriteLine($"Di Init");
                         }
 
                         if (!IOController.DoCtrlCreated)
@@ -1145,6 +1157,7 @@ namespace ApexVisIns.content
                             IOController.InitializeDoCtrl();
 
                             MainWindow.MsgInformer.TargetProgressValue += 10;
+                            Debug.WriteLine($"DO Init");
                         }
 
                         IoInitialized = true;
@@ -1180,8 +1193,8 @@ namespace ApexVisIns.content
         {
             Task.Run(async () =>
             {
-                Debug.WriteLine($"ServoMotion.Axes[0].CurrentStatus {ServoMotion.Axes[0].CurrentStatus}");
-                Debug.WriteLine($"ServoMotion.Axes[1].CurrentStatus {ServoMotion.Axes[1].CurrentStatus}");
+                // Debug.WriteLine($"ServoMotion.Axes[0].CurrentStatus {ServoMotion.Axes[0].CurrentStatus}");
+                // Debug.WriteLine($"ServoMotion.Axes[1].CurrentStatus {ServoMotion.Axes[1].CurrentStatus}");
 
                 if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 {
