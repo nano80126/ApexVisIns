@@ -185,7 +185,7 @@ namespace ApexVisIns.content
                 }
                 else
                 {
-                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空 (DeviceTab)");
                 }
             }
         }

@@ -22,7 +22,6 @@ namespace ApexVisIns.content
 
         #endregion
 
-
         #region Variables
         /// <summary>
         /// 主視窗物件
@@ -293,7 +292,7 @@ namespace ApexVisIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        //MainWindow.Dispatcher.Invoke(() => MainWindow.CreateIOWindow());
+                        MainWindow.Dispatcher.Invoke(() => MainWindow.CreateIOWindow());
 
                         // 等待 Progress 100%
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5 * 1000))
@@ -506,7 +505,7 @@ namespace ApexVisIns.content
                 }
                 else
                 {
-                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
                 }
             }
 
@@ -631,20 +630,17 @@ namespace ApexVisIns.content
                             }
                             else
                             {
-                                //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機未完全初始化");
                                 throw new Exception("相機未完全初始化");
                             }
                         }
                         else
                         {
-                            //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
                             throw new Exception("相機設定檔為空");
                         }
                     }
                     else
                     {
                         throw new Exception("相機設定檔不存在");
-                        //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
                     }
                 }
                 catch (Exception ex)
