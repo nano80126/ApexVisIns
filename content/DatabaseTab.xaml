@@ -28,11 +28,15 @@
         </Grid.Style>
 
         <Grid.ColumnDefinitions>
+            <!--1st-->
             <ColumnDefinition Width="auto"/>
+            <!--Separator-->
+            <ColumnDefinition Width="auto"/>
+            <!--2nd-->
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Stretch" Background="{StaticResource ColorTeal}">
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Top" Background="{x:Null}">
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                     <DockPanel.Resources>
@@ -71,28 +75,6 @@
                               materialDesign:CalendarAssist.IsHeaderVisible="False"
                               CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}" 
                               CalendarButtonStyle="{StaticResource CustomCalendarButton}" />
-
-                    <!--<TextBox DockPanel.Dock="Top" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-                    <TextBox DockPanel.Dock="Top" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>-->
-
-                    <!--<DatePicker Width="140" materialDesign:HintAssist.Hint="Pick Date" Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
-                    <DatePicker Width="140" materialDesign:HintAssist.Hint="Pick Date" Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
-                    -->
-
-                    <!--<materialDesign:TimePicker IsInvalidTextAllowed="False" DockPanel.Dock="Top" Padding="10 3"
-                                               SelectedTimeFormat="Long"
-                                               materialDesign:TextFieldAssist.PrefixText="From          "
-                                               Style="{StaticResource CustomTimerPicker}"/>-->
-                    
-                    <!--<ComboBox x:Name="FromTime" DockPanel.Dock="Top" Padding="10 3" 
-                              materialDesign:TextFieldAssist.PrefixText="From         "
-                              Style="{StaticResource TimePickComboBox}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock HorizontalAlignment="Center" Text="{Binding}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>-->
 
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
                         <StackPanel.Resources>
@@ -139,44 +121,61 @@
                         </ComboBox>
                     </StackPanel>
 
-
-                    <!--<ComboBox x:Name="ToTime" DockPanel.Dock="Top" Padding="10 3" 
-                              ShouldPreserveUserEnteredPrefix="True"
-                              materialDesign:TextFieldAssist.PrefixText="To"
-                              Style="{StaticResource TimePickComboBox}">
-                        <ComboBoxItem>123</ComboBoxItem>
-                    </ComboBox>-->
-
-                    <!--<materialDesign:Clock DockPanel.Dock="Top" Width="auto" DisplayAutomation="CycleWithSeconds" Is24Hours="True" IsHeaderVisible="False"/>
-                    
-                    <materialDesign:Clock DockPanel.Dock="Top" Width="auto" DisplayAutomation="CycleWithSeconds" Is24Hours="True" IsHeaderVisible="False"/>-->
-
-                    <!--#region NewRegion -->
-                    <!--<materialDesign:PackIcon Kind="Tilde" Width="30" Height="26" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 12">
-                        <materialDesign:PackIcon.RenderTransform>
-                            <RotateTransform Angle="90" CenterX="15" CenterY="13"/>
-                        </materialDesign:PackIcon.RenderTransform>
-                    </materialDesign:PackIcon>-->
-                    <!--#endregion-->
-
-                    <!--<materialDesign:TimePicker IsInvalidTextAllowed="True" DockPanel.Dock="Top" Padding="10 3"
-                                               SelectedTime="12:00:00"
-                                               materialDesign:TextFieldAssist.PrefixText="To            "
-                                               Style="{StaticResource CustomTimerPicker}"/>-->
-
+                    <Button Margin="0 8 0 0" Height="24" Click="FindCollectionButton_Click" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center"/>
+                            <TextBlock VerticalAlignment="Center" Text="查詢"/>
+                        </StackPanel>
+                    </Button>
 
                 </DockPanel>
             </materialDesign:Card>
         </StackPanel>
-        
-        
-        
 
-        <StackPanel Grid.Column="1" Background="{StaticResource ColorInfo}">
-            <StackPanel Background="{StaticResource ColorErrorTransparent}" HorizontalAlignment="Stretch" Height="300"/>
+        <!--Separator-->
+        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+        <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" Background="{x:Null}">
+
+            <materialDesign:Card x:Name="HistoryCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
+                                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Right">
+                        <ComboBox x:Name="DefectFilterCombobox" DockPanel.Dock="Top" HorizontalAlignment="Right" Padding="8 3" Cursor="Hand" MinWidth="180" 
+                                  materialDesign:HintAssist.Hint="過濾條件"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <!--//-->
+                        <Button Margin="12 0 0 0" Height="24" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="{StaticResource ColorInfo}"
+                                Foreground="{StaticResource ColorInfo}" >
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FilterOutline" Width="24" Height="20" VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center" Text="過濾"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <!--//-->
+                    <Separator Margin="0 10"/>
+                    <!--//-->
+                    
+                    
+                </DockPanel>
+            </materialDesign:Card>
+            
+       
+            
+            <!--
+            <StackPanel Background="White" HorizontalAlignment="Stretch" Height="300">
+                <Button Content="123" Style="{StaticResource MaterialDesignOutlinedButton}"></Button>
+            </StackPanel>
+            -->
         </StackPanel>
-        
-        
 
     </Grid>
 </StackPanel>

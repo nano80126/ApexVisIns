@@ -71,10 +71,18 @@
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   MouseRightButtonUp="CameraSelector_MouseRightButtonUp"
-                                  MinWidth="135" Margin="0 0 0 0">
+                                  MinWidth="180" Margin="0 0 0 0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                    <!--Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"-->
+                                    <TextBlock TextAlignment="Center" >
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}, {1}">
+                                                <Binding Path="Model" UpdateSourceTrigger="PropertyChanged" Mode="OneWay"/>
+                                                <Binding Path="SerialNumber" UpdateSourceTrigger="PropertyChanged" Mode="OneWay"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
@@ -223,7 +231,7 @@
         <!--#endregion-->
 
         <!-- Separator -->
-        <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" 
                    Background="{StaticResource ColorSecondaryTransparent}"/>
 
 

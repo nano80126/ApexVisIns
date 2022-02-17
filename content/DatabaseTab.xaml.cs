@@ -48,6 +48,7 @@ namespace ApexVisIns.content
 
         }
 
+
         /// <summary>
         /// DatePicker & TimePicker 初始化
         /// </summary>
@@ -79,6 +80,11 @@ namespace ApexVisIns.content
         {
             Keyboard.ClearFocus();
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
+        }
+
+        private void FindCollectionButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

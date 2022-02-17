@@ -50,17 +50,6 @@
 
         <!--#region 1st column, 1st row, 選擇器 & 狀態 -->
         <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" Orientation="Vertical" Width="300" VerticalAlignment="Top" Background="{x:Null}" >
-            <!--<StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Setter Property="Height" Value="780"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                            <Setter Property="Height" Value="960"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>-->
-
             <!--#region 軸卡選擇 -->
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0">
