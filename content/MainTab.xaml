@@ -52,9 +52,9 @@
                         <!--2. 確認 是否有原點復歸-->
                     </ListBox.IsEnabled>
 
-                    <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                    <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     <ListBoxItem Content="短" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    <ListBoxItem Content="中" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    <ListBoxItem Content="長" FontSize="16" Padding="25 0" Height="32" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </ListBox>
 
                 <Separator />

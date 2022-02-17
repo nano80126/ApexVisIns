@@ -554,7 +554,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// DI 讀取
+        /// 讀取 DI
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
@@ -566,11 +566,31 @@ namespace ApexVisIns
                 Debug.WriteLine($"Read DI: {data}");
                 for (int i = 0; i < DiArrayColl[port].Count; i++)
                 {
-                    //boolArray[i] = ((data >> (i % 8)) & 0b01) == 0b01;
                     DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
                 }
             }
             return err;
+        }
+
+        /// <summary>
+        /// 讀取 DI
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns>byte value</returns>
+        public byte ReadDIValue(int port)
+        {
+            ErrorCode err = InstantDiCtrl.Read(port, out byte data);
+
+            if (err == ErrorCode.Success)
+            {
+                Debug.WriteLine($"Read DI Value: {data}");
+                //for (int i = 0; i < DiArrayColl[port].Count; i++)
+                //{
+                //    DiArrayColl[port][i] = ((data >> (i % 8)) & 0b01) == 0b01;
+                //}
+                return data;
+            }
+            throw new Exception($"DI 讀取失敗 {err}");
         }
 
         /// <summary>
@@ -589,6 +609,24 @@ namespace ApexVisIns
                 DiArrayColl[port][bit] = data == 0b01;
             }
             return err;
+        }
+
+        /// <summary>
+        /// 讀取 DI Bit
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns>boolean</returns>
+        public bool ReadDIBitValue(int port, int bit)
+        {
+            ErrorCode err = InstantDiCtrl.ReadBit(port, bit, out byte data);
+
+            if (err == ErrorCode.Success)
+            {
+                Debug.WriteLine($"Read DI Bit Value: {data}");
+                //DiArrayColl[port][bit] = data == 0b01;
+                return data == 0b01;
+            }
+            throw new Exception($"DI 讀取失敗 {err}");
         }
 
         /// <summary>

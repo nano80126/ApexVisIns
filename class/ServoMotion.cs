@@ -2106,6 +2106,11 @@ namespace ApexVisIns
             }
         }
 
+        public void ChangeZeroReturned(bool zeroReturned)
+        {
+            ZeroReturned = zeroReturned;
+        }
+
         /// <summary>
         /// 往負方向找 HOME
         /// </summary>
@@ -2293,6 +2298,21 @@ namespace ApexVisIns
         public void PosMove(bool absolute = false)
         {
             uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// 位置移動
+        /// </summary>
+        /// <param name=""></param>
+        /// <param name="absolute"></param>
+        public void PosMove(double targetPos, bool absolute = false)
+        {
+            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
+
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");

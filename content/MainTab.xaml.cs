@@ -113,7 +113,7 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            // Initializer();
+            Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
 
@@ -286,6 +286,8 @@ namespace ApexVisIns.content
                     InitLightCtrls(token),
                     InitIOCtrl(token)).ContinueWith(t =>
                     {
+                        if (MainWindow.ApexDefect.HardwarePrepared) return 0;
+
                         if (token.IsCancellationRequested)
                         {
                             MainWindow.ApexDefect.CurrentStep = -1;
@@ -868,32 +870,7 @@ namespace ApexVisIns.content
                 }
             }, ct);
         }
-
-        /// <summary>
-        /// 馬達原點復歸
-        /// </summary>
-        private async Task MotionReturnZero()
-        {
-            if (ServoMotion != null && ServoMotion.DeviceOpened)
-            {
-                if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
-                {
-                    // 確認 IO (光電開關)
-
-                    //MainWindow.ApexDefect.ZeroReturned = false;
-                    //MainWindow.ApexDefect.ZeroReturning = true;
-
-                    await ServoMotion.Axes[0].PositiveWayHomeMove(true);
-
-                    //MainWindow.ApexDefect.ZeroReturning = false;
-                    //MainWindow.ApexDefect.ZeroReturned = true;
-                }
-                else
-                {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許啟動原點復歸");
-                }
-            }
-        }
+      
 
 #if false
         /// <summary>
@@ -1185,20 +1162,66 @@ namespace ApexVisIns.content
         #endregion
 
         #region 原點復歸
+        /// <summary>
+        /// 馬達原點復歸
+        /// </summary>
+        private async Task MotionReturnZero()
+        {
+            if (ServoMotion != null && ServoMotion.DeviceOpened)
+            {
+                if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
+                {
+                    // 確認 IO (光電開關)
+
+                    if (!ServoMotion.Axes[0].ZeroReturned)
+                    {
+                        if (!IOController.ReadDIBitValue(1, 7))
+                        {
+                            await ServoMotion.Axes[0].PositiveWayHomeMove(true);
+                        }
+                        else
+                        {
+                            MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"檢測台上有料無法進行原點復歸");
+                        }
+                    }
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許啟動原點復歸");
+                }
+            }
+        }
+
         private void ZeroReturnButton_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(async () =>
             {
-                // Debug.WriteLine($"ServoMotion.Axes[0].CurrentStatus {ServoMotion.Axes[0].CurrentStatus}");
-                // Debug.WriteLine($"ServoMotion.Axes[1].CurrentStatus {ServoMotion.Axes[1].CurrentStatus}");
+                foreach (MotionAxis axis in ServoMotion.Axes)
+                {
+                    axis.ChangeZeroReturned(false);
+                }
 
                 if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 {
-                    await MainWindow.ServoMotion.Axes[0].PositiveWayHomeMove(true);
+                    await MotionReturnZero();
                 }
             });
         }
         #endregion
+
+
+        #region 規格選擇
+        /// <summary>
+        /// 規格變更，改變馬達位置
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private async Task MotionSpecChange(int position)
+        {
+            //ServoMotion.Axes[0].tar
+
+        }
+
 
         /// <summary>
         /// 規格選擇變更
@@ -1209,8 +1232,24 @@ namespace ApexVisIns.content
         {
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
-            MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
+            //MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
+            switch ((sender as ListBox).SelectedIndex)
+            {
+                case 0:
+
+                    break;
+                case 1:
+
+                    break;
+
+                case 2:
+
+                    break;
+            }
+
+            Debug.WriteLine((sender as ListBox).SelectedIndex.ToString());
         }
+        #endregion
 
         /// <summary>
         /// 反初始化按鈕，

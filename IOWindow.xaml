@@ -22,7 +22,7 @@
         WindowState="Normal"
         WindowStyle="None"
         WindowStartupLocation="Manual"
-        Left="200"
+        Left="1600"
         Top="20"
         ShowInTaskbar="False"
         Topmost="False"

@@ -266,7 +266,11 @@ namespace ApexVisIns
         {
             //IOThread = new(() =>
             //{
-            IOWindow = new IOWindow(this);
+
+            if (IOWindow == null)
+            {
+                IOWindow = new IOWindow(this);
+            }
             IOWindow?.Show();
             //    IOWindow.Closed += (sender2, e2) => IOWindow.Dispatcher.InvokeShutdown();
             //    System.Windows.Threading.Dispatcher.Run();
