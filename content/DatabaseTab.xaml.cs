@@ -68,6 +68,9 @@ namespace ApexVisIns.content
                     EndTimePicker.Items.Add($"{st.AddSeconds(i):HH:mm}");
                 }
                 EndTimePicker.Items.Add($"{st.AddSeconds(86399):HH:mm}");
+
+                StartTimePicker.SelectedIndex = 0;  // 00:00
+                EndTimePicker.SelectedIndex = EndTimePicker.Items.Count - 1;    // 23:59
             }
         }
 

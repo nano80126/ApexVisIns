@@ -113,10 +113,9 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            Initializer();
+            // Initializer();
 
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
-
 
             //MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
             //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
@@ -1218,8 +1217,18 @@ namespace ApexVisIns.content
         /// <returns></returns>
         private async Task MotionSpecChange(int position)
         {
-            //ServoMotion.Axes[0].tar
-
+            if (ServoMotion != null && ServoMotion.DeviceOpened)
+            {
+                if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
+                {
+                    // Move absolute
+                    await MainWindow.ServoMotion.Axes[0].PosMoveAsync(position, true);
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許變更規格");
+                }
+            }
         }
 
 
@@ -1232,22 +1241,21 @@ namespace ApexVisIns.content
         {
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
-            //MessageBox.Show((sender as ListBox).SelectedIndex.ToString());
-            switch ((sender as ListBox).SelectedIndex)
+            Task.Run(async () =>
             {
-                case 0:
-
-                    break;
-                case 1:
-
-                    break;
-
-                case 2:
-
-                    break;
-            }
-
-            Debug.WriteLine((sender as ListBox).SelectedIndex.ToString());
+                switch ((sender as ListBox).SelectedIndex)
+                {
+                    case 0:
+                        await MotionSpecChange(-10000);
+                        break;
+                    case 1:
+                        await MotionSpecChange(20000);
+                        break;
+                    case 2:
+                        await MotionSpecChange(30000);
+                        break;
+                }
+            });
         }
         #endregion
 

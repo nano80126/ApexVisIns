@@ -2281,6 +2281,7 @@ namespace ApexVisIns
         /// 觸發位置控制
         /// </summary>
         /// <param name="absolute"></param>
+        [Obsolete("待刪除")]
         public void PosMove()
         {
             uint result = Absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
@@ -2311,13 +2312,41 @@ namespace ApexVisIns
         /// <param name="absolute"></param>
         public void PosMove(double targetPos, bool absolute = false)
         {
-            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
+            TargetPos = targetPos;
+            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
 
             if (result != (uint)ErrorCode.SUCCESS)
             {
                 throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
             }
         }
+
+        /// <summary>
+        /// 位置移動 (可等候)
+        /// </summary>
+        /// <param name="targetPos"></param>
+        /// <param name="absolute"></param>
+        /// <returns></returns>
+        public async Task PosMoveAsync(double targetPos, bool absolute = false)
+        {
+            await Task.Run(() =>
+            {
+                TargetPos = targetPos;
+                uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TartargetPosgetPos);
+
+                if (result != (uint)ErrorCode.SUCCESS)
+                {
+                    throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
+                }
+
+                // 等待一次 Timer Tick
+                SpinWait.SpinUntil(() => false, 150);
+
+                // 等待軸狀態變為READY
+                SpinWait.SpinUntil(() => CurrentStatus == "READY");
+            });
+        }
+
 
         /// <summary>
         /// 變更目標位置
