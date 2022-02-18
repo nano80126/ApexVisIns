@@ -99,6 +99,11 @@ namespace ApexVisIns.content
         private ServoMotion ServoMotion;
         #endregion
 
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded;
+
         public MainTab()
         {
             InitializeComponent();
@@ -118,9 +123,13 @@ namespace ApexVisIns.content
             // 測試 Motion 用
             //InitMotion(_cancellationTokenSource.Token).Wait();
 
-            InitLightCtrls(_cancellationTokenSource.Token).Wait();
+            //InitLightCtrls(_cancellationTokenSource.Token).Wait();
 
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+                loaded = true;
+            }
             //MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
             //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }

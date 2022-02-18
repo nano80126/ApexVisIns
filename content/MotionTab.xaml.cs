@@ -34,8 +34,12 @@ namespace ApexVisIns.content
         /// </summary>
         private bool DllIsValid;
         private string MotionDirectory { get; } = @"./motions";
-
         #endregion
+
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded;
 
         public MotionTab()
         {
@@ -58,7 +62,11 @@ namespace ApexVisIns.content
                 MainWindow.ServoMotion.EnableTimer(100);
             }
 
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
+                loaded = true;
+            }
         }
 
         /// <summary>

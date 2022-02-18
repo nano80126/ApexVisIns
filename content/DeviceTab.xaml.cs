@@ -45,6 +45,10 @@ namespace ApexVisIns.content
         private int _devInUse = -1;
         #endregion
 
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded;
         public DeviceTab()
         {
             InitializeComponent();
@@ -67,7 +71,12 @@ namespace ApexVisIns.content
             // 載入 Config
             LoadDeviceConfigs();
             #endregion
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
+
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
+                loaded = true;
+            }
         }
 
         /// <summary>

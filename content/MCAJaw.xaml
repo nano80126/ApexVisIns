@@ -18,9 +18,22 @@
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region Toolbar 1 -->
-        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True">
+        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
+            <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+                <ToolBar.Resources>
+                    <!--<Style></Style>-->
+                </ToolBar.Resources>
+            </ToolBar>
+        </ToolBarTray>
+        <!--#endregion-->
 
-
+        <!--#region Toolbar 2 -->
+        <ToolBarTray DockPanel.Dock="Right" FlowDirection="RightToLeft" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
+            <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+                <ToolBar.Resources>
+                    <!--//-->
+                </ToolBar.Resources>
+            </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
 
