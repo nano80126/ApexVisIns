@@ -115,8 +115,12 @@ namespace ApexVisIns.content
             // Initializer();
             // Initializer();
 
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+            // 測試 Motion 用
+            //InitMotion(_cancellationTokenSource.Token).Wait();
 
+            InitLightCtrls(_cancellationTokenSource.Token).Wait();
+
+            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
             //MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
             //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }
@@ -354,6 +358,22 @@ namespace ApexVisIns.content
                         {
                             // 規格選擇 // 規格選擇 // 規格選擇
                             MainWindow.ApexDefect.CurrentStep = 2;
+                            return 0;
+                        }
+                        else { return t.Result; }
+                    }, token).ContinueWith(t =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            MainWindow.ApexDefect.CurrentStep = -1;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        if (t.Result == 0)
+                        {
+                            Light24V.SetChannelValue(1, 128);
+                            Light_6V.SetChannelValue(1, 64);
+                            Light_6V.SetChannelValue(2, 64);
                             return 0;
                         }
                         else { return t.Result; }
@@ -1195,15 +1215,11 @@ namespace ApexVisIns.content
         {
             Task.Run(async () =>
             {
-                foreach (MotionAxis axis in ServoMotion.Axes)
-                {
-                    axis.ChangeZeroReturned(false);
-                }
-
-                if (ServoMotion.Axes[0].CurrentStatus == "READY")
-                {
-                    await MotionReturnZero();
-                }
+                //if (ServoMotion.Axes[0].CurrentStatus == "READY")
+                //{
+                ServoMotion.Axes[0].ChangeZeroReturned(false);
+                await MotionReturnZero();
+                //}
             });
         }
         #endregion
@@ -1219,18 +1235,36 @@ namespace ApexVisIns.content
         {
             if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
-                if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
+
+                if (SpinWait.SpinUntil(() => ServoMotion.Axes[0].CurrentStatus == "READY", 3000))
+                {
+                    await MainWindow.ServoMotion.Axes[0].PosMoveAsync(position, true);
+                } else
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許變更規格");
+                }
+
+
+                #region 保留
+#if false
+                if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 {
                     // Move absolute
+                    await MainWindow.ServoMotion.Axes[0].PosMoveAsync(position, true);
+                }
+                else if (ServoMotion.Axes[0].CurrentStatus == "PTP_MOT")
+                {
+
                     await MainWindow.ServoMotion.Axes[0].PosMoveAsync(position, true);
                 }
                 else
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許變更規格");
-                }
+                }  
+#endif
+                #endregion
             }
         }
-
 
         /// <summary>
         /// 規格選擇變更
@@ -1241,18 +1275,19 @@ namespace ApexVisIns.content
         {
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
+            int spec = (sender as ListBox).SelectedIndex;
             Task.Run(async () =>
             {
-                switch ((sender as ListBox).SelectedIndex)
+                switch (spec)
                 {
                     case 0:
-                        await MotionSpecChange(-10000);
+                        await MotionSpecChange(85000);
                         break;
                     case 1:
-                        await MotionSpecChange(20000);
+                        await MotionSpecChange(40000);
                         break;
                     case 2:
-                        await MotionSpecChange(30000);
+                        await MotionSpecChange(-30000);
                         break;
                 }
             });

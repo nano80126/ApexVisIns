@@ -657,6 +657,11 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 設定通道 Value (ch1 ~)
+        /// </summary>
+        /// <param name="ch">通道</param>
+        /// <param name="value">設定值</param>
         public void SetChannelValue(int ch, int value)
         {
             if (0 < ch && ch <= ChannelNumber)

@@ -4,10 +4,10 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:local="clr-namespace:ApexVisIns"
+            xmlns:app="clr-namespace:ApexVisIns"
             xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             xmlns:control="clr-namespace:ApexVisIns.control" 
-            d:DataContext="{d:DesignInstance Type=local:ApexDefect}"
+            d:DataContext="{d:DesignInstance Type=app:ApexDefect}"
             DataContext="{StaticResource ApexDefect}"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
@@ -16,7 +16,7 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-        <local:StatusColorConverter x:Key="StatusColorConverter"/>
+        <app:StatusColorConverter x:Key="StatusColorConverter"/>
     </StackPanel.Resources>
     
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">

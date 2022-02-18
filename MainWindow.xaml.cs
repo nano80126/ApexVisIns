@@ -397,7 +397,7 @@ namespace ApexVisIns
                 if (LoginPassword.Password == Password)
                 {
                     LoginFlag = true;
-                    IOWindow.PropertyChange(nameof(LoginFlag));
+                    IOWindow?.PropertyChange(nameof(LoginFlag));
                     LoginPasswordHint.Text = string.Empty;
                     LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;

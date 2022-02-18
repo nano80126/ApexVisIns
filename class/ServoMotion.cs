@@ -16,7 +16,7 @@ using System.Windows.Data;
 namespace ApexVisIns
 {
 
-    [Obsolete("因 PCI Card不會常常插拔，故不太需要 Work 來處理")]
+    [Obsolete("因 PCI Card不會常常插拔，故不需要開 LongLifeWorker 來處理")]
     public class MotionEnumer : LongLifeWorker
     {
         private readonly object _ColleciotnLock = new();
@@ -2332,7 +2332,9 @@ namespace ApexVisIns
             await Task.Run(() =>
             {
                 TargetPos = targetPos;
-                uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TartargetPosgetPos);
+                uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
+
+                Debug.WriteLine($"{result}");
 
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
