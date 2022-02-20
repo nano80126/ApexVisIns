@@ -21,6 +21,17 @@ namespace ApexVisIns.content
     /// </summary>
     public partial class DatabaseTab : StackPanel
     {
+        #region Variables
+
+        #endregion
+
+        #region Flags
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded; 
+        #endregion
+
         public DatabaseTab()
         {
             InitializeComponent();
@@ -35,7 +46,11 @@ namespace ApexVisIns.content
         {
             InitDateTimePickers();
 
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "履歷頁面已載入");
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "履歷頁面已載入");
+                loaded = true;
+            }
         }
 
         /// <summary>

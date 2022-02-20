@@ -99,10 +99,12 @@ namespace ApexVisIns.content
         private ServoMotion ServoMotion;
         #endregion
 
+        #region Flags
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded;
+        private bool loaded; 
+        #endregion
 
         public MainTab()
         {

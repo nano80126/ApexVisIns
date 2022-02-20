@@ -44,6 +44,13 @@ namespace ApexVisIns.content
         private ImageSource _imgSrc;
         #endregion
 
+        #region Flags
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded;
+        #endregion
+
         public EngineerTab()
         {
             InitializeComponent();
@@ -74,7 +81,12 @@ namespace ApexVisIns.content
             #region Reset ZoomRetio
             ZoomRatio = 100;
             #endregion
-            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
+
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
+                loaded = true;
+            }
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

@@ -24,16 +24,11 @@ namespace ApexVisIns.content
         #endregion
 
         #region Varibles
+        public MainWindow MainWindow { get; set; }
         /// <summary>
-        /// CamsSource.CollectionChanged Evnet has bound flag
-        /// </summary>
-        // private bool EventHasBound;
-
-        /// <summary>
-        /// Device Configs Directory
+        /// Device組態路徑, Device Configs Directory
         /// </summary>
         private string DevicesDirectory { get; } = @"./devices";
-        public MainWindow MainWindow { get; set; }
 
         /// <summary>
         /// Cameras for DeviceTab, only useing in this tab. 
@@ -45,10 +40,13 @@ namespace ApexVisIns.content
         private int _devInUse = -1;
         #endregion
 
+        #region Flags
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded;
+        private bool loaded; 
+        #endregion
+
         public DeviceTab()
         {
             InitializeComponent();

@@ -32,14 +32,17 @@ namespace ApexVisIns.content
         /// <summary>
         /// Dll 是否正確安裝
         /// </summary>
+        [Obsolete("待刪除")]
         private bool DllIsValid;
         private string MotionDirectory { get; } = @"./motions";
         #endregion
 
+        #region Flags
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded;
+        private bool loaded; 
+        #endregion
 
         public MotionTab()
         {

@@ -3,6 +3,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:app="clr-namespace:ApexVisIns"
+            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:ApexVisIns.content"
@@ -32,7 +33,75 @@
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <ToolBar.Resources>
                     <!--//-->
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="BorderBrush" Value="DarkBlue"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="CornerRadius" Value="2"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="0 2"/>
+                    </Style>
+                    <!--//-->
+                    <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
+                        <Setter Property="FlowDirection" Value="LeftToRight"/>
+                        <Setter Property="Margin" Value="8 0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                    <!--// Hardware Status-->
+                    <Style TargetType="materialDesign:PackIcon" x:Key="HWStatus">
+                        <Setter Property="Width" Value="16"/>
+                        <Setter Property="Height" Value="16"/>
+                        <Setter Property="Canvas.Right" Value="0"/>
+                        <Setter Property="Canvas.Bottom" Value="0"/>
+
+                        <Setter Property="Kind" Value="CloseCircle"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Connected), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                <Setter Property="Kind" Value="CheckCircle"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <!--// Camera Status-->
+                    <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus" BasedOn="{StaticResource HWStatus}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.IsGrabbing), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                <Setter Property="Kind" Value="CameraImage"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
                 </ToolBar.Resources>
+
+
+                <!--#region Light Ctrl Status -->
+                <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
+                    <StackPanel Orientation="Horizontal">
+                        <Canvas ToolTip="光源控制器">
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Canvas>
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+
+                <!--#region Camera Status -->
+                <Border FlowDirection="LeftToRight">
+                    <StackPanel Orientation="Horizontal">
+                        <Canvas ToolTip="Camera 1">
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                        </Canvas>
+                        <!--<Canvas></Canvas>
+                        <Canvas></Canvas>-->
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+
+
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
