@@ -14,7 +14,7 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-
+        <app:StatusColorConverter x:Key="StatusColorConverter"/>
     </StackPanel.Resources>
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
@@ -24,6 +24,12 @@
                 <ToolBar.Resources>
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
+
+                <TextBlock Margin="12 0 0 0" Text="INTAI 小 Jaw 檢測系統" FontSize="20" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas"
+                           Foreground="{StaticResource ColorInfo}"/>
+
+                <TextBlock Margin="12 8 0 0" Text="Ver. 1.0.0" FontSize="12" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas" 
+                           Foreground="{StaticResource ColorPrimaryTransparent}"/>
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -73,7 +79,6 @@
                     </Style>
                 </ToolBar.Resources>
 
-
                 <!--#region Light Ctrl Status -->
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
@@ -95,16 +100,223 @@
                                                      ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                                      ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
-                        <!--<Canvas></Canvas>
-                        <Canvas></Canvas>-->
+
+                        <Canvas ToolTip="Camera 2">
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                        </Canvas>
+
+                        <Canvas ToolTip="Camera 3">
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                        </Canvas>
+                        
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
 
+                <!--#region NewRegion -->
+                <!--<Border FlowDirection="LeftToRight" >
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{StaticResource BaslerCams}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Canvas ToolTip="Camera 3">
+                                        <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                                        <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                                ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                                ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
+                                    </Canvas>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>-->
+                <!--#endregion-->
 
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
-
     </DockPanel>
+
+    <Border x:Name="ContentBorder" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1" Background="AliceBlue">
+        <Grid x:Name="Content" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0" UseLayoutRounding="True">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Height" Value="780"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                            <Setter Property="Height" Value="960"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>    
+            </Grid.Style>
+            <!--//-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <!--//-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <!--#region Control Panel -->
+            <Border Grid.Row="0" Grid.Column="0" Background="{x:Null}">
+                <materialDesign:Card Style="{StaticResource GeneralCard}">
+                    <DockPanel Background="Transparent">
+                        <!--Panel Header-->
+                        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+                            <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"/>
+                            <!--  -->
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                            <!--  -->
+                            <TextBlock Text="{x:Null}"/>
+                        </DockPanel>
+                        <!-- Seperator -->
+                        <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                        <!--Panel Body-->
+                        <Grid x:Name="Body" DockPanel.Dock="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--//-->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+
+                            <!--#region 1st row  -->
+                            <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
+                            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"
+                                           FontWeight="SemiBold" TextAlignment="Center" 
+                                           Text="初始化"/>
+                            </Border>
+
+                            <!--Control Panel, 1st row, 2nd row-->
+                            <DockPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="24 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 3" VerticalAlignment="Top" HorizontalAlignment="Stretch" materialDesign:TextFieldAssist.PrefixText="Lot "
+                                         materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                            <!--</StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="0 0 0 0" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">-->
+                                <Button DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignOutlinedButton}" Content="開始檢測"
+                                        Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>
+                            </DockPanel>
+                            <!--#endregion-->
+
+                            <!--#region 2nd row -->
+                            <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 8 0 0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorSuccess}" 
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center" 
+                                       Text="良品數量&#x000A;">
+                                <!--<TextBlock.Text>
+                                    <Binding Path="OK" StringFormat="{}良品數量&#x000A;{0}" UpdateSourceTrigger="PropertyChanged"/>
+                                </TextBlock.Text>-->
+                            </TextBlock>
+
+                            <!--<TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                       Text="不良品數量&#x000A;">-->
+                                <!--<TextBlock.Text>
+                                    <Binding Path="NG" StringFormat="{}不良品數量&#x000A;{0}" UpdateSourceTrigger="PropertyChanged"/>
+                                </TextBlock.Text>-->
+                            <!--</TextBlock>-->
+                            <!--#endregion-->
+
+                            <!--#region 3rd row -->
+                            <TextBlock Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8 0 0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                       Text="不良品數量&#x000A;">
+                                <!--<TextBlock.Text>
+                                    <Binding Path="NG" StringFormat="{}不良品數量&#x000A;{0}" UpdateSourceTrigger="PropertyChanged"/>
+                                </TextBlock.Text>-->
+                            </TextBlock>
+
+                            <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 8 0 0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                       Text="不良品數量&#x000A;">
+                                <!--<TextBlock.Text>
+                                    <Binding Path="NG" StringFormat="{}不良品數量&#x000A;{0}" UpdateSourceTrigger="PropertyChanged"/>
+                                </TextBlock.Text>-->
+                            </TextBlock>
+
+                            <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Margin="0 8 0 0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                       Text="彎曲不良&#x000A;">
+                                <!--<TextBlock.Text>
+                                    <Binding Path="NG" StringFormat="{}不良品數量&#x000A;{0}" UpdateSourceTrigger="PropertyChanged"/>
+                                </TextBlock.Text>-->
+                            </TextBlock>
+                            <!--#endregion-->
+
+                        </Grid>
+                    </DockPanel>
+                </materialDesign:Card>
+            </Border>
+            <!--#endregion-->
+
+            <!--#region Camera 1 -->
+            <GroupBox Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" 
+                      materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
+                      materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
+                      FontSize="16" FontWeight="SemiBold"
+                      Background="{StaticResource ColorErrorTransparent}">
+                <!--<TextBlock Text="My Content" />-->
+            </GroupBox>
+            <!--#endregion-->
+
+            <!--#region Camera 2 -->
+            <GroupBox Header="前部攝影部"  Grid.Row="0" Grid.Column="2" materialDesign:ColorZoneAssist.Mode="Custom" 
+                      materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" 
+                      materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
+                      FontSize="16" FontWeight="SemiBold"
+                      Background="{StaticResource ColorSuccessTransparent}">
+                <!--<TextBlock Text="My Content" />-->
+            </GroupBox>
+            <!--#endregion-->
+            
+            <!--#region Camera 3 -->
+            <GroupBox Header="側面攝影機"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Mode="Custom" 
+                      materialDesign:ColorZoneAssist.Background="{StaticResource ColorPurple}" 
+                      materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
+                      FontSize="16" FontWeight="SemiBold"
+                      Background="{StaticResource ColorPrimaryTransparent}">
+                <!--<TextBlock Text="My Content" />-->
+            </GroupBox>
+            <!--#endregion-->
+
+            <!--<Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorErrorTransparent}"/>
+            <Border Grid.Row="0" Grid.Column="2" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorSuccessTransparent}"/>
+            <Border Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorPrimaryTransparent}"/>-->
+
+        </Grid>
+    </Border>
+
 </StackPanel>

@@ -190,8 +190,11 @@ Apex 外觀瑕疵檢測
 
 * [x] 光源控制器待轉移
 
-
 * [ ] Initializer 需要等待 Enumer
+
+* [ ] 新增 Hardware Status Block
+
+* [ ] 新增 CRC 計算
 
 ### Config Logic
 

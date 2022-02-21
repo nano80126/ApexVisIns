@@ -51,10 +51,10 @@ namespace ApexVisIns.content
         /// <summary>
         /// 初始化工作 CancellationTokenSource
         /// </summary>
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         #endregion
 
-        #region Local Object (方便 CALL)
+        #region Local Object (方便呼叫)
         /// <summary>
         /// IO 控制器
         /// </summary>
@@ -67,15 +67,6 @@ namespace ApexVisIns.content
         /// 6V 光源控制器
         /// </summary>
         private LightSerial Light_6V;
-
-        ///// <summary>
-        ///// 24V 光源控制器
-        ///// </summary>
-        //private LightSerial LIght24V;
-        ///// <summary>
-        ///// 6V 光源控制器
-        ///// </summary>
-        //private LightSerial LIght_6V;
 
         /// <summary>
         /// 相機 1
@@ -382,9 +373,40 @@ namespace ApexVisIns.content
 
                         if (t.Result == 0)
                         {
+                            #region 測試用區塊
                             Light24V.SetChannelValue(1, 128);
-                            Light_6V.SetChannelValue(1, 64);
-                            Light_6V.SetChannelValue(2, 64);
+                            Light_6V.SetChannelValue(1, 16);
+                            Light_6V.SetChannelValue(2, 16);
+
+                            _ = Task.Run(async () =>
+                            {
+                                //for (int i = 0; i < 100; i++)
+                                while (true)
+                                {
+                                    await ServoMotion.Axes[0].PosMoveAsync(100000, true);
+
+                                    await ServoMotion.Axes[0].PosMoveAsync(-30000, true);
+
+                                    if (token.IsCancellationRequested) break;
+                                }
+                            });
+
+                            _ = Task.Run(async () =>
+                            {
+                                //for (int i = 0; i < 100; i++)
+                                ServoMotion.Axes[1].ResetPos();
+                                SpinWait.SpinUntil(() => false, 500);
+                                while (true)
+                                {
+                                    await ServoMotion.Axes[1].PosMoveAsync(100000, true);
+
+                                    await ServoMotion.Axes[1].PosMoveAsync(-100000, true);
+
+                                    if (token.IsCancellationRequested) break;
+                                }
+                            });
+                            #endregion
+
                             return 0;
                         }
                         else { return t.Result; }

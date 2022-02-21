@@ -210,7 +210,7 @@
 
     <Border x:Name="ContentBorder" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1" Background="AliceBlue">
         <!--<StackPanel x:Name="Content" Orientation="Vertical" HorizontalAlignment="Stretch" Margin="1 0" UseLayoutRounding="True">-->
-        <Grid x:Name="Content" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="00 0" UseLayoutRounding="True">
+        <Grid x:Name="Content" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0 0" UseLayoutRounding="True">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Setter Property="Height" Value="780"/>
@@ -262,9 +262,9 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Control Panel 1st col, 1st row, 檢驗狀態 -->
+                            <!-- Control Panel, 1st col, 1st row, 檢驗狀態 -->
                             <Border x:Name="TestStatusBorder" Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10">
-                                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"
                                            FontWeight="SemiBold" TextAlignment="Center" Text="{Binding Status, Converter={StaticResource EnumDescriptionConverter}}"
                                            Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}">
                                     <!--<TextBlock.Style>
@@ -367,7 +367,7 @@
             <!--#region Images -->
             
             <!-- Image 1 -->
-            <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
+            <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <Viewbox x:Name="Image1Viewbox">
                     <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor},UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
@@ -375,7 +375,7 @@
             </Border>
 
             <!-- Image 2 -->
-            <Border Grid.Row="0" Grid.Column="2" x:Name="Image2Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
+            <Border Grid.Row="0" Grid.Column="2" x:Name="Image2Border" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <Viewbox x:Name="Image2Viewbox">
                     <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -394,7 +394,7 @@
             </Border>
 
             <!-- Image 3 -->
-            <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
+            <Border Grid.Row="1" Grid.ColumnSpan="3" x:Name="Image3Border" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <!-- Grid 待移除 -->
                 <!--<Grid>-->
                     <Viewbox x:Name="Image3Viewbox">
@@ -415,7 +415,7 @@
             </Border>
 
             <!--Image 4-->
-            <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" BorderThickness="1" BorderBrush="{StaticResource ColorGrayTransparent}">
+            <Border Grid.Row="2" Grid.ColumnSpan="3" x:Name="Image4Border" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <Viewbox x:Name="Image4Viewbox">
                     <Image x:Name="Image4" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                            Source="{Binding ImageSource4, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -433,7 +433,7 @@
             <!--#endregion-->
 
             <!--#region 方塊流程圖 -->
-            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder">
+            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <!--<ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 8">
                     <StackPanel.Resources>
@@ -524,7 +524,8 @@
             <!--#endregion-->
 
             <!--Record List-->
-            <Border Grid.RowSpan="4" Grid.Column="3" x:Name="RecordListBorder" Background="{StaticResource ColorBlueGrayTranparent}">
+            <Border Grid.RowSpan="4" Grid.Column="3" x:Name="RecordListBorder" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}"
+                    Background="{StaticResource ColorBlueGrayTranparent}">
                 <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>-->
 
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}"> 

@@ -189,7 +189,7 @@
             <!--//-->
             <!--#region TabControl -->
             <TabControl x:Name="AppTabControl"
-                        Grid.Row="1" VerticalAlignment="Stretch" 
+                        Grid.Row="1" VerticalAlignment="Stretch"
                         Style="{StaticResource MaterialDesignNavigatilRailTabControl}" materialDesign:ColorZoneAssist.Mode="Custom" 
                         materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
                         SelectedIndex="{Binding OnTabIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -321,11 +321,10 @@
                     </DockPanel>
                 </materialDesign:DialogHost.DialogContent>
 
-
                 <Border ClipToBounds="True" Background="{x:Null}">
                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="{x:Null}">
                         <!--<Button HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" Content="RUN" />-->
-                        <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                        <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 0 0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                                 materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                 Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
@@ -357,7 +356,7 @@
                         <materialDesign:PopupBox HorizontalAlignment="Right" PlacementMode="RightAndAlignBottomEdges" Focusable="False"
                                                  materialDesign:RippleAssist.IsDisabled="True" Padding="0 8">
                             <materialDesign:PopupBox.ToggleContent>
-                                <TextBlock x:Name="AppCog" Width="48" Height="48" Margin="-1 8" Padding="0 11" 
+                                <TextBlock x:Name="AppCog" Width="48" Height="48" Margin="-1 0 -1 8" Padding="0 11" 
                                            HorizontalAlignment="Left" VerticalAlignment="Bottom"
                                            TextAlignment="Center" Focusable="False" Foreground="{StaticResource ColorWhiteTransparent}">
                                     <materialDesign:PackIcon Kind="Cog" Width="30" Height="26" HorizontalAlignment="Center"/>

@@ -310,7 +310,7 @@ namespace ApexVisIns
             {
                 ApexDefect.StatusType.Init => new SolidColorBrush(Color.FromArgb(0xff, 0x21, 0x96, 0xf3)),
                 ApexDefect.StatusType.Idle => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
-                ApexDefect.StatusType.Ready => new SolidColorBrush(Colors.Black),
+                ApexDefect.StatusType.Ready => new SolidColorBrush(Color.FromArgb(0x00, 0x00, 0x00, 0x00)),
                 ApexDefect.StatusType.Running => new SolidColorBrush(Color.FromArgb(0xff, 0x4c, 0xaf, 0x50)),
                 ApexDefect.StatusType.Waiting => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
                 ApexDefect.StatusType.Finish => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xaf, 0x50)),
