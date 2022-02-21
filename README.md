@@ -196,6 +196,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] 新增 CRC 計算
 
+* [ ] 即停按下後關閉程式會當掉
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
