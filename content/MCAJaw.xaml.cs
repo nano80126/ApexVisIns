@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,16 @@ namespace ApexVisIns.content
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void MinusButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine((sender as Button).CommandParameter);
+        }
+
+        private void PlusButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine((sender as Button).CommandParameter);
         }
     }
 }

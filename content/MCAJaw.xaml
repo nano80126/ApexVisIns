@@ -230,26 +230,29 @@
                             <!--#endregion-->
 
                             <!--#region 2nd row -->
-                            <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 8 0 0" 
-                                        HorizontalAlignment="Center" VerticalAlignment="Top" UseLayoutRounding="True">
-                                <TextBlock DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
-                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorSuccess}" 
-                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center" 
-                                       Text="良品數量"/>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 8 0 0"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Top" UseLayoutRounding="True">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Consolas"
+                                           FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorSuccess}" 
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center" 
+                                           Text="良品數量"/>
 
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Minus}"
-                                            Background="{StaticResource ColorGrayTransparent}"
+                                <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 8 0 0">
+                                    <Button DockPanel.Dock="Left" HorizontalAlignment="Left"
+                                            Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Minus}"
+                                            Background="{StaticResource ColorGrayTransparent}" Click="MinusButton_Click" CommandParameter="-"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
 
-                                    <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 4" Margin="1 0" Width="120" TextAlignment="Center"
-                                         Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
-                                    <Button Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Plus}"
-                                             Background="{StaticResource ColorGrayTransparent}"
+                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" 
+                                            Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Plus}"
+                                            Background="{StaticResource ColorGrayTransparent}" Click="PlusButton_Click" CommandParameter="+"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                                </StackPanel>
+
+                                    <TextBox DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                             Padding="0 4" Margin="1 0" TextAlignment="Center"
+                                             Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                </DockPanel>
                             </StackPanel>
                             <!--#endregion-->
 
@@ -263,25 +266,28 @@
                             </StackPanel>
                             <!--//-->
                             <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 8 0 0"
-                                        HorizontalAlignment="Center" VerticalAlignment="Top" UseLayoutRounding="True">
-                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
-                                       FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
-                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
-                                       Text="不良品數量"/>
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Top" UseLayoutRounding="True">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Consolas"
+                                           FontSize="18" FontWeight="Bold" Foreground="{StaticResource ColorError}"
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center"
+                                           Text="不良品數量"/>
 
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Minus}"
+                                <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 8 0 0">
+                                    <Button DockPanel.Dock="Left" HorizontalAlignment="Left" 
+                                            Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Minus}"
                                             Background="{StaticResource ColorGrayTransparent}"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
 
-                                    <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 4" Margin="1 0" Width="120" TextAlignment="Center"
-                                         Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
-                                    <Button Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Plus}"
-                                             Background="{StaticResource ColorGrayTransparent}"
+                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" 
+                                            Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Plus}"
+                                            Background="{StaticResource ColorGrayTransparent}"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                                </StackPanel>
+                                    
+                                    <TextBox DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                                             Padding="0 4" Margin="1 0" TextAlignment="Center"
+                                             Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                </DockPanel>
                             </StackPanel>
                             <!--//-->
                             <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Margin="0 8 0 0" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
