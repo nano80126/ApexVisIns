@@ -529,6 +529,8 @@ namespace ApexVisIns
                 // Get the axis's current state
                 for (int i = 0; i < MaxAxisCount; i++)
                 {
+
+#if false
                     // 讀取軸狀態
                     _ = Motion.mAcm_AxGetState(AxisHandles[i], ref AxisState[i]);
 
@@ -536,7 +538,9 @@ namespace ApexVisIns
                     {
                         // 若軸狀態為Error，重置軸狀態
                         _ = Motion.mAcm_AxResetError(AxisHandles[i]);
-                    }
+                    } 
+#endif
+
                     // 命令軸減速至停止
                     _ = Motion.mAcm_AxStopDec(AxisHandles[i]);
                 }
@@ -1708,7 +1712,6 @@ namespace ApexVisIns
                 {
                     throw new Exception($"{AxisIndex}-Axis Servo Off 失敗: Code[0x{result:X}]");
                 }
-                //ServoOn = false;
                 IO_SVON.BitOn = false;
             }
         }

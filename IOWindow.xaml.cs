@@ -62,15 +62,30 @@ namespace ApexVisIns
             // 1. 重置錯誤
             // 2. 重新 Servo On
             // 3. 
+            try
+            {
+                MainWindow.ServoMotion.ResetAllError();
 
-            MainWindow.ServoMotion.ResetAllError();
+
+
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         private void EmgButton_Click(object sender, RoutedEventArgs e)
         {
             // 即停按鈕 (軟體)
+            try
+            {
 
-
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"軟體急停發生錯誤 :{ex.Message}");
+            }
         }
 
 

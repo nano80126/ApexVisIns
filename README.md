@@ -198,6 +198,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] 即停按下後關閉程式會當掉
 
+* [ ] Add _cancellation to camera retry methods 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

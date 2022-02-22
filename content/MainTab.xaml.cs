@@ -111,12 +111,16 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            // Initializer();
+            Initializer();
 
             // 測試 Motion 用
-            //InitMotion(_cancellationTokenSource.Token).Wait();
+            // InitMotion(_cancellationTokenSource.Token).Wait();
 
-            //InitLightCtrls(_cancellationTokenSource.Token).Wait();
+            // 測試光源用
+            // InitLightCtrls(_cancellationTokenSource.Token).Wait();
+
+            // 測試 IO 用
+            // InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
             if (!loaded)
             {
@@ -329,7 +333,7 @@ namespace ApexVisIns.content
 
                         if (t.Result == 0)
                         {
-                            //return 0;
+                            // return 0;
                             /// /// /// /// /// /// /// /// /// /// /// ///
 
                             // 步序 : 原點復歸
@@ -380,14 +384,16 @@ namespace ApexVisIns.content
 
                             _ = Task.Run(async () =>
                             {
-                                //for (int i = 0; i < 100; i++)
                                 while (true)
                                 {
                                     await ServoMotion.Axes[0].PosMoveAsync(100000, true);
 
                                     await ServoMotion.Axes[0].PosMoveAsync(-30000, true);
 
-                                    if (token.IsCancellationRequested) break;
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
                                 }
                             });
 
@@ -402,7 +408,10 @@ namespace ApexVisIns.content
 
                                     await ServoMotion.Axes[1].PosMoveAsync(-100000, true);
 
-                                    if (token.IsCancellationRequested) break;
+                                    if (token.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
                                 }
                             });
                             #endregion
@@ -1257,7 +1266,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region 規格選擇
         /// <summary>
         /// 規格變更，改變馬達位置
@@ -1410,7 +1418,6 @@ namespace ApexVisIns.content
             MainWindow.ApexDefect.Stop();
         }
         #endregion
-
 
         #region Basler 相機事件
         /// <summary>
