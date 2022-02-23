@@ -164,20 +164,20 @@
             <!--//-->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="6*"/>
+                <!--<ColumnDefinition Width="4*"/>-->
                 <!--<ColumnDefinition Width="4*"/>-->
             </Grid.ColumnDefinitions>
             <!--//-->
             <Grid.RowDefinitions>
-                <RowDefinition Height="4*"></RowDefinition>
-                <RowDefinition Height="3*"></RowDefinition>
-                <RowDefinition Height="3*"></RowDefinition>
-                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="13*"/>
+                <RowDefinition Height="7*"/>
+                <!--<RowDefinition Height="6*"></RowDefinition>-->
+                <!--<RowDefinition Height="2*"></RowDefinition>-->
             </Grid.RowDefinitions>
             <!--#region Control Panel -->
-            <Border Grid.Row="0" Grid.RowSpan="1" Grid.Column="0" Background="{x:Null}">
+            <Border Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Background="{x:Null}">
                 <materialDesign:Card Style="{StaticResource GeneralCard}">
                     <DockPanel Background="Transparent">
                         <!--Panel Header-->
@@ -202,28 +202,30 @@
                             </Grid.ColumnDefinitions>
                             <!--//-->
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
                             <!--#region 1st row  -->
                             <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0">
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28"
-                                           FontWeight="SemiBold" TextAlignment="Center" 
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                           TextAlignment="Center" FontSize="28" FontWeight="SemiBold" 
                                            Text="初始化"/>
                             </Border>
 
                             <!--Control Panel, 1st row, 2nd row-->
                             <DockPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="8 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 3" VerticalAlignment="Top" HorizontalAlignment="Stretch" materialDesign:TextFieldAssist.PrefixText="Lot "
-                                         materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False"
+                                
+                                <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 4" VerticalAlignment="Top" HorizontalAlignment="Stretch" materialDesign:TextFieldAssist.PrefixText="Lot"
+                                         materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
+                                         Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
                                          Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-                            <!--</StackPanel>
 
-                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="0 0 0 0" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch">-->
-                                <Button DockPanel.Dock="Bottom" VerticalAlignment="Bottom" FontSize="14" VerticalContentAlignment="Center"
+                                <Button DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Margin="0 12 0 0" Padding="0 0" 
+                                        VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                         Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
                                         Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>
                             </DockPanel>
@@ -296,6 +298,12 @@
                                        Text="彎曲不良">
                             </TextBlock>
                             <!--#endregion-->
+
+                            <!--#region 3rd row -->
+                            <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="開始檢測"
+                                    VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            <!--#endregion-->
                         </Grid>
                     </DockPanel>
                 </materialDesign:Card>
@@ -308,15 +316,19 @@
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock>
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
-                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                                <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Border Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
+                        <Viewbox x:Name="Image1Viewbox">
+                            <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        </Viewbox>
+                    </Border>
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="LSL"></TextBlock>
+                        <TextBlock Text="USL"></TextBlock>
+                        
+                    </StackPanel>
                 </StackPanel>
             </GroupBox>
             <!--#endregion-->
@@ -327,7 +339,14 @@
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Border Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
+                        <Viewbox x:Name="Image2Viewbox">
+                            <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        </Viewbox>
+                    </Border>
+
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
@@ -342,11 +361,18 @@
             
             <!--#region Camera 3 -->
             <GroupBox Header="側面攝影機"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Mode="Custom" 
-                      materialDesign:ColorZoneAssist.Background="{StaticResource ColorPurple}" 
+                      materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Border Width="800" Height="200" Background="{StaticResource ColorInfoTransparent}">
+                        <Viewbox x:Name="Image3Viewbox">
+                            <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        </Viewbox>
+                    </Border>
+
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}Camera 3, {0} x {1}">

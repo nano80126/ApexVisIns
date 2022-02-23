@@ -200,6 +200,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] Add _cancellation to camera retry methods 
 
+* [ ] 新增暖機 mode
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

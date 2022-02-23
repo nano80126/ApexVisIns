@@ -96,11 +96,11 @@
                         
                         <ComboBox x:Name="StartTimePicker" DockPanel.Dock="Top" Padding="8 3"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                  materialDesign:TextFieldAssist.PrefixText="S " 
+                                  materialDesign:TextFieldAssist.PrefixText="S "
                                   Style="{StaticResource TimePickComboBox}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Margin="20 0 0 0" HorizontalAlignment="Center" Text="{Binding}"/>
+                                    <TextBlock Width="90" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                             <!--//-->
@@ -113,8 +113,8 @@
                                   materialDesign:TextFieldAssist.PrefixText="E " 
                                   Style="{StaticResource TimePickComboBox}">
                             <ComboBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type TextBlock}">
-                                    <TextBlock Margin="20 0 0 0" HorizontalAlignment="Center" Text="{Binding}"/>
+                                <DataTemplate>
+                                    <TextBlock Width="90" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                             <!--//-->
@@ -161,14 +161,12 @@
                         </Button>
                     </StackPanel>
                     <!--//-->
-                    <Separator Margin="0 10"/>
+                    <Separator DockPanel.Dock="Top" Margin="0 10" />
                     <!--//-->
-                    
-                    
+                    <TextBlock DockPanel.Dock="Top" Text="Data History Content" FontSize="20" Foreground="{StaticResource ColorInfo}"/>
                 </DockPanel>
             </materialDesign:Card>
             
-       
             
             <!--
             <StackPanel Background="White" HorizontalAlignment="Stretch" Height="300">
