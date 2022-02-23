@@ -1,0 +1,99 @@
+﻿<Window x:Class="ApexVisIns.ModeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:ApexVisIns"
+        mc:Ignorable="d"
+        
+        TextElement.Foreground="{StaticResource MaterialDesignLightForeground}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        FontFamily="{StaticResource MaterialDesignFont}"
+        Background="Transparent"
+        
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        WindowState="Normal"
+        WindowStyle="None"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Topmost="False"
+        Title="ModeWindow" Height="120" Width="360"
+        Loaded="Window_Loaded"
+        Unloaded="Window_Unloaded">
+    <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="Transparent" Style="{StaticResource MainWindowBorder}">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>-->
+                <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">
+                        <Setter Property="Margin" Value="6 0"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                    </Style>
+                    <Style TargetType="materialDesign:PackIcon" x:Key="ModeChoice">
+                        <Setter Property="Margin" Value="0 0 4 0"/>
+                        <Setter Property="Kind" Value="CheckboxBlankOutline"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
+                                <Setter Property="Kind" Value="CheckboxOutline"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <RadioButton x:Name="AutoModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}"
+                             Foreground="{StaticResource ColorTeal}" Checked="RadioButton_Checked" CommandParameter="0">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
+                            <TextBlock VerticalAlignment="Center" Text="自動模式"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
+                             Foreground="{StaticResource ColorPink}" Checked="RadioButton_Checked" CommandParameter="1">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
+                            <TextBlock VerticalAlignment="Center" Text="暖機模式"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
+                             Foreground="{StaticResource ColorDeepPurple}" Checked="RadioButton_Checked" CommandParameter="2">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
+                            <TextBlock VerticalAlignment="Center" Text="設定模式"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+            </StackPanel>
+
+            <Button Grid.Row="2" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    Height="26" Content="確定" Focusable="False"
+                    Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
+                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+        </Grid>
+    </Border>
+</Window>

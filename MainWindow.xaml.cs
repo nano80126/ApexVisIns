@@ -126,6 +126,16 @@ namespace ApexVisIns
         {
             OutputPixelFormat = PixelType.Mono8
         };
+
+
+        public enum InitModes
+        {
+            AUTO = 0,
+            WARM = 1,
+            EDIT = 2
+        }
+
+        public InitModes InitMode = InitModes.AUTO;
         #endregion
 
         public MainWindow()
@@ -226,8 +236,21 @@ namespace ApexVisIns
 
             //SpinWait.SpinUntil(() => false, 1000);
 
-           //  CreateIOWindow();
-            // Debug.WriteLine(Dispatcher.Thread.ManagedThreadId);
+            //  CreateIOWindow();
+
+            ModeWindow modeWindow = new()
+            {
+                Owner = this
+            };
+
+            if (modeWindow.ShowDialog() == true)
+            {
+                Debug.WriteLine($"Result: {modeWindow.DialogResult}");
+
+                Debug.WriteLine($"Init Mode: {InitMode}");
+            }
+
+
 
             // BackgroundWorker.RunWorkerAsync();
             // MsgInformer.BackgroundWorker.RunWorkerAsync();

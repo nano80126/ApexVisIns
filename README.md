@@ -201,6 +201,8 @@ Apex 外觀瑕疵檢測
 * [ ] Add _cancellation to camera retry methods 
 
 * [ ] 新增暖機 mode
+	* 增加模式切換視窗
+
 
 ### Config Logic
 
