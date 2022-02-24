@@ -111,7 +111,11 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-            Initializer();
+
+            if (MainWindow.InitMode != MainWindow.InitModes.EDIT)
+            {
+                Initializer();
+            }
 
             // 測試 Motion 用
             // InitMotion(_cancellationTokenSource.Token).Wait();
@@ -288,6 +292,7 @@ namespace ApexVisIns.content
                 CancellationToken token = _cancellationTokenSource.Token;
                 // 步序 : 硬體初始化
                 MainWindow.ApexDefect.CurrentStep = 0;
+                MainWindow.ApexDefect.Status = ApexDefect.StatusType.Init;
                 // 同步初始化硬體
                 await Task.WhenAll(
                     InitCamera(token),
@@ -300,6 +305,7 @@ namespace ApexVisIns.content
                         if (token.IsCancellationRequested)
                         {
                             MainWindow.ApexDefect.CurrentStep = -1;
+                            MainWindow.ApexDefect.Status = ApexDefect.StatusType.Idle;
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -328,6 +334,7 @@ namespace ApexVisIns.content
                         if (token.IsCancellationRequested)
                         {
                             MainWindow.ApexDefect.CurrentStep = -1;
+                            MainWindow.ApexDefect.Status = ApexDefect.StatusType.Idle;
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -338,6 +345,7 @@ namespace ApexVisIns.content
 
                             // 步序 : 原點復歸
                             MainWindow.ApexDefect.CurrentStep = 1;
+                            MainWindow.ApexDefect.Status = ApexDefect.StatusType.Returning;
                             // 執行原點復歸
                             MotionReturnZero().Wait();
 
@@ -357,13 +365,27 @@ namespace ApexVisIns.content
                         if (token.IsCancellationRequested)
                         {
                             MainWindow.ApexDefect.CurrentStep = -1;
+                            MainWindow.ApexDefect.Status = ApexDefect.StatusType.Idle;
                             token.ThrowIfCancellationRequested();
                         }
 
                         if (t.Result == 0)
                         {
-                            // 規格選擇 // 規格選擇 // 規格選擇
-                            MainWindow.ApexDefect.CurrentStep = 2;
+                            // 自動模式，進入規格選擇
+                            if (MainWindow.InitMode == MainWindow.InitModes.AUTO)
+                            {
+                                // 規格選擇 // 規格選擇 // 規格選擇
+                                MainWindow.ApexDefect.CurrentStep = 2;
+                                MainWindow.ApexDefect.Status = ApexDefect.StatusType.Ready;
+                            }
+                            // 暖機模式，
+                            else if (MainWindow.InitMode == MainWindow.InitModes.WARM)
+                            {
+
+                                Warm(token);
+                                MainWindow.ApexDefect.CurrentStep = -1;
+                                MainWindow.ApexDefect.Status = ApexDefect.StatusType.Warm;
+                            }
                             return 0;
                         }
                         else { return t.Result; }
@@ -372,50 +394,18 @@ namespace ApexVisIns.content
                         if (token.IsCancellationRequested)
                         {
                             MainWindow.ApexDefect.CurrentStep = -1;
+                            MainWindow.ApexDefect.Status = ApexDefect.StatusType.Idle;
                             token.ThrowIfCancellationRequested();
                         }
 
                         if (t.Result == 0)
                         {
                             #region 測試用區塊
-                            Light24V.SetChannelValue(1, 128);
-                            Light_6V.SetChannelValue(1, 16);
-                            Light_6V.SetChannelValue(2, 16);
-
-                            _ = Task.Run(async () =>
-                            {
-                                while (true)
-                                {
-                                    await ServoMotion.Axes[0].PosMoveAsync(100000, true);
-
-                                    await ServoMotion.Axes[0].PosMoveAsync(-30000, true);
-
-                                    if (token.IsCancellationRequested)
-                                    {
-                                        break;
-                                    }
-                                }
-                            });
-
-                            _ = Task.Run(async () =>
-                            {
-                                //for (int i = 0; i < 100; i++)
-                                ServoMotion.Axes[1].ResetPos();
-                                SpinWait.SpinUntil(() => false, 500);
-                                while (true)
-                                {
-                                    await ServoMotion.Axes[1].PosMoveAsync(100000, true);
-
-                                    await ServoMotion.Axes[1].PosMoveAsync(-100000, true);
-
-                                    if (token.IsCancellationRequested)
-                                    {
-                                        break;
-                                    }
-                                }
-                            });
+                            // Light24V.SetChannelValue(1, 128);
+                            // Light_6V.SetChannelValue(1, 16);
+                            // Light_6V.SetChannelValue(2, 16);
                             #endregion
-
+                            
                             return 0;
                         }
                         else { return t.Result; }
@@ -1266,6 +1256,62 @@ namespace ApexVisIns.content
         }
         #endregion
 
+        #region 暖機
+        private void Warm(CancellationToken token)
+        {
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    Light24V.SetChannelValue(1, 128);
+                    Light24V.SetChannelValue(2, 0);
+                    Light24V.SetChannelValue(3, 0);
+
+                    await ServoMotion.Axes[0].PosMoveAsync(100000, true);
+
+                    Light24V.SetChannelValue(1, 0);
+                    Light24V.SetChannelValue(2, 128);
+                    Light24V.SetChannelValue(4, 0);
+
+                    await ServoMotion.Axes[0].PosMoveAsync(-30000, true);
+
+                    Light24V.SetChannelValue(3, 128);
+                    Light24V.SetChannelValue(4, 128);
+                    await ServoMotion.Axes[0].PosMoveAsync(35000, true);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                }
+            }, token);
+
+            _ = Task.Run(async () =>
+            {
+                //for (int i = 0; i < 100; i++)
+                ServoMotion.Axes[1].ResetPos();
+                SpinWait.SpinUntil(() => false, 500);
+                while (true)
+                {
+                    Light_6V.SetChannelValue(1, 64);
+                    Light_6V.SetChannelValue(2, 0);
+
+                    await ServoMotion.Axes[1].PosMoveAsync(100000, true);
+
+                    Light_6V.SetChannelValue(1, 0);
+                    Light_6V.SetChannelValue(2, 64);
+                    await ServoMotion.Axes[1].PosMoveAsync(-100000, true);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                }
+            }, token);
+        }
+
+        #endregion
+
         #region 規格選擇
         /// <summary>
         /// 規格變更，改變馬達位置
@@ -1276,16 +1322,16 @@ namespace ApexVisIns.content
         {
             if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
-
                 if (SpinWait.SpinUntil(() => ServoMotion.Axes[0].CurrentStatus == "READY", 3000))
                 {
+                    MainWindow.ApexDefect.Status = ApexDefect.StatusType.Moving;
                     await MainWindow.ServoMotion.Axes[0].PosMoveAsync(position, true);
-                } else
+                    MainWindow.ApexDefect.Status = ApexDefect.StatusType.Ready;
+                }
+                else
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態不允許變更規格");
                 }
-
-
                 #region 保留
 #if false
                 if (ServoMotion.Axes[0].CurrentStatus == "READY")
@@ -1317,7 +1363,7 @@ namespace ApexVisIns.content
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
             int spec = (sender as ListBox).SelectedIndex;
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 switch (spec)
                 {

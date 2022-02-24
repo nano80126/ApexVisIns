@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ApexVisIns.Product;
 
 namespace ApexVisIns.content
 {
@@ -22,7 +23,7 @@ namespace ApexVisIns.content
     public partial class MCAJaw : StackPanel
     {
         #region Resources
-
+        public JawSpecGroup JawSpecGroup { get; set; }
         #endregion
 
         #region Variables
@@ -37,7 +38,14 @@ namespace ApexVisIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
+            JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
 
+            for (int i = 0; i < 10; i++)
+            {
+                JawSpecGroup.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+            }
+
+            Debug.WriteLine(JawSpecGroup.SpecCollection.Count);
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

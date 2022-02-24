@@ -19,38 +19,36 @@ Apex 外觀瑕疵檢測
 	* 劃記
 	* 壓傷
 	* 色差
+	* 車刀紋
 
 ## 確認相機DELAY問題
 
 * 初步判定為舊筆電效能問題
 
-
 ## 為了性能，將可改為 struct 之 class 改為 struct
 
 
-### 待新增 API
+## 整理資料夾結構
 
-* [x] 光源控制器 (RS232), 保留可呼叫物件
-* [x] I/O 控制
-* [ ] 馬達控制 (EtherCAT)
-
-### 待移除
-
-* [ ] Thermometer (USE <=> RS485)
-* [ ] class 資料夾內部本專案無用 cs 檔
 
 ### Tab
 
 * Main Tab
 	* Control Panel
 	* Image Panel
-	* Record Panel
 	* Procedure Panel
+	* Record Panel
 * Config Tab
 	* 新增相機
 	* 相機Config
+* Motion Tab
+	* 設定馬達參數
+* Database Tab
+	* 紀錄查詢
+
 * Debug Tab
 	* For Programming
+
 
 ### TO DO LIST
 

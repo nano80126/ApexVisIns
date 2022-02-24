@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -238,18 +234,24 @@ namespace ApexVisIns
         {
             [Description("初始化")]
             Init = 0,       // 初始化階段
-            [Description("閒置")]
-            Idle = 1,       // 閒置
-            [Description("準備")]
+            [Description("原點復歸")]
+            Returning = 1,
+            [Description("準備完成")]
             Ready = 2,      // 準備完成
+            [Description("移動中")]
+            Moving = 3,
+            [Description("閒置")]
+            Idle = 4,       // 閒置 (Reset 後)
             [Description("檢驗中")]
-            Running = 3,    // 運轉中
+            Running = 5,    // 運轉中
             [Description("等待")]
-            Waiting = 4,    // 等待 (上下料)
+            Waiting = 6,    // 等待 (上下料)
             [Description("完成")]
-            Finish = 5,     // 完成
+            Finish = 7,     // 完成
             [Description("錯誤")]
-            Error = 6       // 報警
+            Error = 8,       // 報警
+            [Description("暖機")]
+            Warm = 9
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

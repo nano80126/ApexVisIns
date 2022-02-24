@@ -29,19 +29,24 @@
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3">
-                <!--<Grid.ColumnDefinitions>
+                <!--
+                <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>-->
-                <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
+                </Grid.ColumnDefinitions>
+                -->
+                <Image Grid.Column="0" UseLayoutRounding="True" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
             </Grid>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+            <Separator Grid.Row="1" />
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
                 <StackPanel.Resources>
                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">
                         <Setter Property="Margin" Value="6 0"/>
@@ -83,13 +88,13 @@
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
-                            <TextBlock VerticalAlignment="Center" Text="設定模式"/>
+                            <TextBlock VerticalAlignment="Center" Text="編輯模式"/>
                         </StackPanel>
                     </RadioButton.Content>
                 </RadioButton>
             </StackPanel>
 
-            <Button Grid.Row="2" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            <Button Grid.Row="3" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
                     Height="26" Content="確定" Focusable="False"
                     Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
                     Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>

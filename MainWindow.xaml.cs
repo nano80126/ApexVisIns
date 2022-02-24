@@ -135,7 +135,10 @@ namespace ApexVisIns
             EDIT = 2
         }
 
-        public InitModes InitMode = InitModes.AUTO;
+        /// <summary>
+        /// 初始化模式
+        /// </summary>
+        public InitModes InitMode { get; set; } = InitModes.AUTO;
         #endregion
 
         public MainWindow()
@@ -245,12 +248,8 @@ namespace ApexVisIns
 
             if (modeWindow.ShowDialog() == true)
             {
-                Debug.WriteLine($"Result: {modeWindow.DialogResult}");
-
                 Debug.WriteLine($"Init Mode: {InitMode}");
             }
-
-
 
             // BackgroundWorker.RunWorkerAsync();
             // MsgInformer.BackgroundWorker.RunWorkerAsync();

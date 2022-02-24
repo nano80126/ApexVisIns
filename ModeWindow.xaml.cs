@@ -33,6 +33,7 @@ namespace ApexVisIns
         {
 
         }
+
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             MainWindow.InitModes mode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), (sender as RadioButton).CommandParameter.ToString());

@@ -7,6 +7,7 @@
             xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:ApexVisIns.content"
+            xmlns:pd="clr-namespace:ApexVisIns.Product"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
@@ -14,7 +15,10 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-        <app:StatusColorConverter x:Key="StatusColorConverter"/>
+        <!--<app:StatusColorConverter x:Key="StatusColorConverter"/>--> 
+        
+        <pd:JawInspection x:Key="JawInspection"/>
+        <pd:JawSpecGroup x:Key="SpecGroup"/>
     </StackPanel.Resources>
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
@@ -167,13 +171,11 @@
                 <ColumnDefinition Width="6*"/>
                 <ColumnDefinition Width="6*"/>
                 <!--<ColumnDefinition Width="4*"/>-->
-                <!--<ColumnDefinition Width="4*"/>-->
             </Grid.ColumnDefinitions>
             <!--//-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="13*"/>
                 <RowDefinition Height="7*"/>
-                <!--<RowDefinition Height="6*"></RowDefinition>-->
                 <!--<RowDefinition Height="2*"></RowDefinition>-->
             </Grid.RowDefinitions>
             <!--#region Control Panel -->
@@ -218,7 +220,7 @@
 
                             <!--Control Panel, 1st row, 2nd row-->
                             <DockPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="8 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                
+
                                 <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 4" VerticalAlignment="Top" HorizontalAlignment="Stretch" materialDesign:TextFieldAssist.PrefixText="Lot"
                                          materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
                                          Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
@@ -275,7 +277,7 @@
                                            Text="不良品數量"/>
 
                                 <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 8 0 0">
-                                    <Button DockPanel.Dock="Left" HorizontalAlignment="Left" 
+                                    <Button DockPanel.Dock="Left" HorizontalAlignment="Left"
                                             Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Minus}"
                                             Background="{StaticResource ColorGrayTransparent}"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
@@ -284,7 +286,7 @@
                                             Padding="0" Width="26" Height="26" Content="{materialDesign:PackIcon Kind=Plus}"
                                             Background="{StaticResource ColorGrayTransparent}"
                                             Style="{StaticResource MaterialDesignFlatLightBgButton}"/>
-                                    
+
                                     <TextBox DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                                              Padding="0 4" Margin="1 0" TextAlignment="Center"
                                              Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
@@ -324,11 +326,45 @@
                         </Viewbox>
                     </Border>
 
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="LSL"></TextBlock>
-                        <TextBlock Text="USL"></TextBlock>
-                        
-                    </StackPanel>
+                    <!--<StackPanel Orientation="Horizontal" >
+                        <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualWidth}"/>
+                        <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualHeight}"/>
+                    </StackPanel>-->
+
+                    <ListView x:Name="SpecViewer" ScrollViewer.CanContentScroll="False" Background="Red" 
+                              ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding Item}" Header="項目" />
+                                <GridViewColumn DisplayMemberBinding="{Binding CenterLine}" Header="CL" />
+                                <GridViewColumn DisplayMemberBinding="{Binding LowerCtrlLimit}" Header="UCL" />
+                                <GridViewColumn DisplayMemberBinding="{Binding UpperCtrlLimit}" Header="LCL" />
+
+                                <GridViewColumn Header="Options">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Width="100" >
+                                                <ComboBoxItem Content="{Binding CenterLine}" />
+                                                <ComboBoxItem Content="{Binding UpperSpecLimit}" />
+                                                <ComboBoxItem Content="{Binding LowerSpecLimit}" />
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="良品">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox HorizontalAlignment="Center" Padding="5 3"
+                                                     Text="{Binding OK, Mode=OneWay}" 
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
                 </StackPanel>
             </GroupBox>
             <!--#endregion-->
@@ -355,6 +391,64 @@
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
+
+                    <!--#region DataGrid -->
+                    <DataGrid ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}" 
+                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
+                              materialDesign:DataGridAssist.CellPadding="4 2 2 2" 
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2">
+                        <DataGrid.Resources>
+                            <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                            <!--//-->
+                            <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Kind" Value="Close"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
+                                        <Setter Property="Kind" Value="Check"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Resources>
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Item}"/>
+                            <DataGridTextColumn Binding="{Binding LowerCtrlLimit}"/>
+                            <DataGridTextColumn Binding="{Binding UpperCtrlLimit}"/>
+                            <DataGridTextColumn Binding="{Binding CenterLine}"/>
+                            <DataGridTextColumn Binding="{Binding Result}"/>
+
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:Chip Tag="{Binding OK}" Style="{StaticResource ResultMark}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="良品"/>
+                                                <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
+                                            </StackPanel>
+                                        </materialDesign:Chip>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <!--#endregion-->
+
+
                 </StackPanel>
             </GroupBox>
             <!--#endregion-->
