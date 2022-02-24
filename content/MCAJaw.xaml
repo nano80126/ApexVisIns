@@ -313,13 +313,18 @@
             <!--#endregion-->
 
             <!--#region Camera 1 -->
-            <GroupBox Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" 
+            <GroupBox Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
-                    <Border Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image1Viewbox">
                             <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                                Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -331,19 +336,114 @@
                         <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualHeight}"/>
                     </StackPanel>-->
 
-                    <ListView x:Name="SpecViewer" ScrollViewer.CanContentScroll="False" Background="Red" 
+                    <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Headers hear" FontSize="16"/>
+                            <TextBlock Text="Headers hear" FontSize="16"/>
+                            <TextBlock Text="Headers hear" FontSize="16"/>
+                            <TextBlock Text="Headers hear" FontSize="16"/>
+                        </StackPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ScrollViewerSuccess}" 
+                                      Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}}">
+                            <ItemsControl ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Setter Property="MinHeight" Value="32"/>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding Item}" />
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding CenterLine}"/>
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding LowerCtrlLimit}"/>
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding LowerCtrlLimit}"/>
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding Result}"/>
+                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding OK}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+
+                    <!--#region NewRegion -->
+                    <!--<ListView x:Name="SpecViewer" ScrollViewer.CanContentScroll="False" Background="Red" 
+                              Height="250"
                               ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
+                        <ListView.Resources>
+                            <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                            --><!--//--><!--
+                            <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
+                                <Setter Property="Width" Value="16"/>
+                                <Setter Property="Height" Value="16"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Kind" Value="Close"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
+                                        <Setter Property="Kind" Value="Check"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                            --><!--//--><!--
+                            <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource MaterialDesignFlatButton}"/>
+                        </ListView.Resources>
+
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding Item}" Header="項目" />
-                                <GridViewColumn DisplayMemberBinding="{Binding CenterLine}" Header="CL" />
-                                <GridViewColumn DisplayMemberBinding="{Binding LowerCtrlLimit}" Header="UCL" />
-                                <GridViewColumn DisplayMemberBinding="{Binding UpperCtrlLimit}" Header="LCL" />
+                                <GridViewColumn Header="項目">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Item}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="CL">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CenterLine}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="LCL">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding LowerCtrlLimit}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="UCL">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding UpperCtrlLimit}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
 
                                 <GridViewColumn Header="Options">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ComboBox Width="100" >
+                                            <ComboBox Width="100" Padding="8 3" Margin="0 0" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignOutlinedComboBox}" >
                                                 <ComboBoxItem Content="{Binding CenterLine}" />
                                                 <ComboBoxItem Content="{Binding UpperSpecLimit}" />
                                                 <ComboBoxItem Content="{Binding LowerSpecLimit}" />
@@ -355,22 +455,26 @@
                                 <GridViewColumn Header="良品">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox HorizontalAlignment="Center" Padding="5 3"
-                                                     Text="{Binding OK, Mode=OneWay}" 
-                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                            <materialDesign:Chip Tag="{Binding OK}" Style="{StaticResource ResultMark}" IsEnabled="False" Margin="0 -8 0 0" Padding="0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="良品"/>
+                                                    <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
+                                                </StackPanel>
+                                            </materialDesign:Chip>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
                             </GridView>
                         </ListView.View>
-                    </ListView>
+                    </ListView>-->
+                    <!--#endregion-->
 
-                </StackPanel>
+                </Grid>
             </GroupBox>
             <!--#endregion-->
 
             <!--#region Camera 2 -->
-            <GroupBox Header="前部攝影部" Grid.Row="0" Grid.Column="2" materialDesign:ColorZoneAssist.Mode="Custom" 
+            <GroupBox Header="前部攝影部" Grid.Row="0" Grid.Column="2" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
@@ -393,59 +497,71 @@
                     </TextBlock>
 
                     <!--#region DataGrid -->
-                    <DataGrid ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}" 
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                        <DataGrid ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}" 
                               CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="4 2 2 2" 
-                              materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2">
-                        <DataGrid.Resources>
-                            <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                <Setter Property="FontSize" Value="16"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                <Setter Property="Width" Value="16"/>
-                                <Setter Property="Height" Value="16"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="Kind" Value="Close"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
-                                        <Setter Property="Kind" Value="Check"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.Resources>
-                        
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Item}"/>
-                            <DataGridTextColumn Binding="{Binding LowerCtrlLimit}"/>
-                            <DataGridTextColumn Binding="{Binding UpperCtrlLimit}"/>
-                            <DataGridTextColumn Binding="{Binding CenterLine}"/>
-                            <DataGridTextColumn Binding="{Binding Result}"/>
+                              CanUserReorderColumns="False" IsReadOnly="True" SelectionMode="Single"
+                               EnableRowVirtualization="False"
+                              CanUserResizeColumns="False" CanUserResizeRows="False"
+                              FontSize="14" HeadersVisibility="Column" RowHeight="40" Height="200"
+                              AlternatingRowBackground="{StaticResource ColorSuccessTransparent}"
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="8 3"
+                              materialDesign:DataGridAssist.CellPadding="12 0 0 0">
+                            <DataGrid.Resources>
+                                <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                                <!--//-->
+                                <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
+                                    <Setter Property="Width" Value="16"/>
+                                    <Setter Property="Height" Value="16"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Kind" Value="Close"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
+                                            <Setter Property="Kind" Value="Check"/>
+                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                                <!--//-->
+                                <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}" x:Key="CustomDataCell">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="MinWidth" Value="80"/>
+                                    <Setter Property="Padding" Value="0 13"/>
+                                </Style>
+                            </DataGrid.Resources>
 
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <materialDesign:Chip Tag="{Binding OK}" Style="{StaticResource ResultMark}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="良品"/>
-                                                <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
-                                            </StackPanel>
-                                        </materialDesign:Chip>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn CellStyle="{StaticResource CustomDataCell}" Binding="{Binding Item}" Header="項目" IsReadOnly="True"/>
+                                <DataGridTextColumn CellStyle="{StaticResource CustomDataCell}" Binding="{Binding LowerCtrlLimit}" Header="LCL" IsReadOnly="True" materialDesign:DataGridAssist.ColumnHeaderPadding="5 5 5 5"/>
+                                <DataGridTextColumn CellStyle="{StaticResource CustomDataCell}" Binding="{Binding UpperCtrlLimit}" Header="UCL" IsReadOnly="True"/>
+                                <DataGridTextColumn CellStyle="{StaticResource CustomDataCell}" Binding="{Binding CenterLine}" Header="CL" IsReadOnly="True"/>
+                                <DataGridTextColumn CellStyle="{StaticResource CustomDataCell}" Binding="{Binding Result}" Header="量測數據" IsReadOnly="True"/>
 
-                            
-                        </DataGrid.Columns>
-                    </DataGrid>
+                                <DataGridTemplateColumn IsReadOnly="True" Header="檢驗結果">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <materialDesign:Chip Tag="{Binding OK}" Style="{StaticResource ResultMark}" IsEnabled="False">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="良品"/>
+                                                    <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
+                                                </StackPanel>
+                                            </materialDesign:Chip>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </ScrollViewer>
                     <!--#endregion-->
 
 
@@ -454,7 +570,7 @@
             <!--#endregion-->
             
             <!--#region Camera 3 -->
-            <GroupBox Header="側面攝影機"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Mode="Custom" 
+            <GroupBox Header="側面攝影機"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
