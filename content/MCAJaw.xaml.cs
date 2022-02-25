@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ApexVisIns.Product;
 
+
 namespace ApexVisIns.content
 {
     /// <summary>
@@ -29,7 +30,6 @@ namespace ApexVisIns.content
         #region Variables
 
         #endregion
-
 
         public MCAJaw()
         {

@@ -4,11 +4,13 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             xmlns:local="clr-namespace:ApexVisIns.control"
             mc:Ignorable="d"
-            d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel,AncestorLevel=1}}" d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">
+            d:DesignHeight="450" d:DesignWidth="800"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+            d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">
+    <!--<StackPanel DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel,AncestorLevel=1}}" 
+                d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">-->
         <StackPanel.Resources>
             <Style TargetType="materialDesign:PackIcon">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -93,5 +95,5 @@
 
             <TextBlock FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 5" Text="{Binding StepNumber}"/>
         </Grid>
-    </StackPanel>
+    <!--</StackPanel>-->
 </StackPanel>

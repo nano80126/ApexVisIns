@@ -16,21 +16,21 @@ namespace ApexVisIns.control
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached("BlockName", typeof(string), typeof(ProcedureBlock), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty BlockNameProperty = DependencyProperty.RegisterAttached(nameof(BlockName), typeof(string), typeof(ProcedureBlock), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty CurrentStepProperty = DependencyProperty.RegisterAttached("CurrentStep", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
+        public static readonly DependencyProperty CurrentStepProperty = DependencyProperty.RegisterAttached(nameof(CurrentStep), typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
 
-        public static readonly DependencyProperty StepNumberProperty = DependencyProperty.RegisterAttached("StepNumber", typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
+        public static readonly DependencyProperty StepNumberProperty = DependencyProperty.RegisterAttached(nameof(StepNumber), typeof(int), typeof(ProcedureBlock), new PropertyMetadata(-1));
 
-        //public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+        // public static readonly DependencyProperty HighLightProperty = DependencyProperty.RegisterAttached("HighLight", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
 
-        public static readonly DependencyProperty ErrorProperty = DependencyProperty.RegisterAttached("Error", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+        public static readonly DependencyProperty ErrorProperty = DependencyProperty.RegisterAttached(nameof(Error), typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
 
-        public static readonly DependencyProperty EnableSubPackIconProperty = DependencyProperty.RegisterAttached("EnableSubPackIcon", typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
+        public static readonly DependencyProperty EnableSubPackIconProperty = DependencyProperty.RegisterAttached(nameof(EnableSubPackIcon), typeof(bool), typeof(ProcedureBlock), new PropertyMetadata(false));
 
-        public static readonly DependencyProperty SubPackIconProperty = DependencyProperty.RegisterAttached("SubPackIcon", typeof(PackIconKind), typeof(ProcedureBlock), new PropertyMetadata(PackIconKind.Abacus));
+        public static readonly DependencyProperty SubPackIconProperty = DependencyProperty.RegisterAttached(nameof(SubPackIcon), typeof(PackIconKind), typeof(ProcedureBlock), new PropertyMetadata(PackIconKind.Abacus));
 
-        public static readonly DependencyProperty SubPackIconColorProperty = DependencyProperty.RegisterAttached("SubPackIconColor", typeof(SolidColorBrush), typeof(ProcedureBlock), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
+        public static readonly DependencyProperty SubPackIconColorProperty = DependencyProperty.RegisterAttached(nameof(SubPackIconColor), typeof(SolidColorBrush), typeof(ProcedureBlock), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
 
 
         /// <summary>

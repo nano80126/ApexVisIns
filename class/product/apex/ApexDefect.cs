@@ -293,7 +293,6 @@ namespace ApexVisIns
     }
 
 
-
     /// <summary>
     /// Apex Defect Testing Status to Color
     /// </summary>
@@ -310,14 +309,17 @@ namespace ApexVisIns
             ApexDefect.StatusType status = (ApexDefect.StatusType)value;
             return status switch
             {
-                ApexDefect.StatusType.Init => new SolidColorBrush(Color.FromArgb(0xff, 0x21, 0x96, 0xf3)),
+                ApexDefect.StatusType.Init => new SolidColorBrush(Color.FromArgb(0x88, 0x21, 0x96, 0xf3)),
+                ApexDefect.StatusType.Returning => new SolidColorBrush(Color.FromArgb(0xff, 0x21, 0x96, 0xf3)),
+                ApexDefect.StatusType.Ready => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xaf, 0x50)),
+                ApexDefect.StatusType.Moving => new SolidColorBrush(Color.FromArgb(0xff, 0x00, 0x96, 0x88)),
                 ApexDefect.StatusType.Idle => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
-                ApexDefect.StatusType.Ready => new SolidColorBrush(Color.FromArgb(0x00, 0x00, 0x00, 0x00)),
                 ApexDefect.StatusType.Running => new SolidColorBrush(Color.FromArgb(0xff, 0x4c, 0xaf, 0x50)),
                 ApexDefect.StatusType.Waiting => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0xc1, 0x07)),
                 ApexDefect.StatusType.Finish => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xaf, 0x50)),
                 ApexDefect.StatusType.Error => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0x52, 0x52)),
-                _ => new SolidColorBrush(Colors.Red),
+                ApexDefect.StatusType.Warm => new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0x52, 0x52)),
+                _ => new SolidColorBrush(Colors.Red),   // Default
             };
             //return new SolidColorBrush(Colors.Red);
         }

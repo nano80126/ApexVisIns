@@ -922,7 +922,6 @@ namespace ApexVisIns.content
             }, ct);
         }
       
-
 #if false
         /// <summary>
         /// 光源控制初始化
@@ -1257,6 +1256,10 @@ namespace ApexVisIns.content
         #endregion
 
         #region 暖機
+        /// <summary>
+        /// 暖機
+        /// </summary>
+        /// <param name="token"></param>
         private void Warm(CancellationToken token)
         {
             _ = Task.Run(async () =>
@@ -1264,19 +1267,22 @@ namespace ApexVisIns.content
                 while (true)
                 {
                     Light24V.SetChannelValue(1, 128);
-                    Light24V.SetChannelValue(2, 0);
-                    Light24V.SetChannelValue(3, 0);
+                    // Light24V.SetChannelValue(2, 0);
+                    Light24V.SetChannelValue(3, 128);
+                    Light24V.SetChannelValue(4, 0);
 
                     await ServoMotion.Axes[0].PosMoveAsync(100000, true);
 
                     Light24V.SetChannelValue(1, 0);
-                    Light24V.SetChannelValue(2, 128);
-                    Light24V.SetChannelValue(4, 0);
+                    // Light24V.SetChannelValue(2, 128);
+                    Light24V.SetChannelValue(3, 0);
+                    Light24V.SetChannelValue(4, 128);
 
                     await ServoMotion.Axes[0].PosMoveAsync(-30000, true);
 
-                    Light24V.SetChannelValue(3, 128);
-                    Light24V.SetChannelValue(4, 128);
+                    Light24V.SetChannelValue(1, 64);
+                    Light24V.SetChannelValue(3, 64);
+                    Light24V.SetChannelValue(4, 64);
                     await ServoMotion.Axes[0].PosMoveAsync(35000, true);
 
                     if (token.IsCancellationRequested)
@@ -1309,7 +1315,6 @@ namespace ApexVisIns.content
                 }
             }, token);
         }
-
         #endregion
 
         #region 規格選擇
