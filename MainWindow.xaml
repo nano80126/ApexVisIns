@@ -113,6 +113,8 @@
         <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/>
         <!--D5 means 5-->
         <KeyBinding Modifiers="Ctrl" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/>
+        <!--D6 means 6-->
+        <KeyBinding Modifiers="Ctrl" Key="D6" Command="{StaticResource SwitchTab}" CommandParameter="5"/>
         <!--Config-->
 
         <!--Global-->

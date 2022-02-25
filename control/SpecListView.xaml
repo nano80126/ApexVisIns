@@ -17,7 +17,6 @@
             <Style TargetType="TextBlock">
                 <Setter Property="Padding" Value="8 3"/>
                 <Setter Property="Background" Value="{StaticResource ColorSuccess}"/>
-
             </Style>
         </StackPanel.Resources>
 
@@ -32,40 +31,42 @@
     <ScrollViewer VerticalScrollBarVisibility="Visible" Style="{Binding ScrollViewerStyle}"
                   Height="200" 
                   Background="Red">
-        <ItemsControl ItemsSource="{Binding ItemsSource}">
+        <ItemsControl ItemsSource="{Binding ItemsSource}" AlternationCount="100">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Background="{StaticResource ColorInfo}"/>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Background="{StaticResource ColorPink}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                    <Setter Property="MinHeight" Value="32"/>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
+            <!--<ItemsControl.ItemContainerStyle>-->
+                <!--<Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="MinHeight" Value="32"/>-->
+            <!--</ItemsControl.ItemContainerStyle>-->
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" d:DataContext="{d:DesignInstance Type={x:Type pd:SpecBase}}">
-                        <StackPanel.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="TextAlignment" Value="Left"/>
-                                <Setter Property="MinWidth" Value="80"/>
-                            </Style>
-                        </StackPanel.Resources>
+                    <Grid HorizontalAlignment="Stretch" Grid.Row="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Background="Yellow" Text="{Binding Item}"/>
-                        <TextBlock Text="{Binding CenterLine}"/>
-                        <TextBlock Background="{StaticResource ColorInfo}" Text="{Binding LowerCtrlLimit}"/>
-                        <TextBlock Text="{Binding UpperCtrlLimit}"/>
-                        <TextBlock Background="{StaticResource ColorSuccess}" Text="{Binding Result}"/>
-                        <TextBlock Text="{Binding OK}"/>
-                    </StackPanel>
+                        <TextBlock Grid.Column="0" Background="Yellow" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding CenterLine}"/>
+                        <TextBlock Grid.Column="2" Background="{StaticResource ColorInfo}" Text="{Binding LowerCtrlLimit}"/>
+                        <TextBlock Grid.Column="3" Text="{Binding UpperCtrlLimit}"/>
+                        <TextBlock Grid.Column="4" Background="{StaticResource ColorSuccess}" Text="{Binding Result}"/>
+                        <TextBlock Grid.Column="5" Text="{Binding OK}"/>
+                        <TextBlock Grid.Column="6" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+
+                    </Grid>
+                    
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

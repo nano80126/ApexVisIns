@@ -648,7 +648,14 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SelectedMotionAxis.StopMove();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SelectedMotionAxis.StopMove();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (InvalidOperationException ex)
             {
@@ -665,7 +672,14 @@ namespace ApexVisIns.content
         {
             try
             {
-                MainWindow.ServoMotion.SelectedMotionAxis.StopEmg();
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    MainWindow.ServoMotion.SelectedMotionAxis.StopEmg();
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
             }
             catch (InvalidOperationException ex)
             {

@@ -507,6 +507,7 @@
                         </TextBlock.Text>
                     </TextBlock>
 
+
                     <!--#region DataGrid -->
                     <ScrollViewer VerticalScrollBarVisibility="Hidden">
                         <DataGrid ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}" 

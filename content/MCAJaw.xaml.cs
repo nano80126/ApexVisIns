@@ -40,12 +40,13 @@ namespace ApexVisIns.content
         {
             JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
 
-            for (int i = 0; i < 10; i++)
+            if (JawSpecGroup.SpecCollection.Count == 0)
             {
-                JawSpecGroup.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                for (int i = 0; i < 10; i++)
+                {
+                    JawSpecGroup.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                }
             }
-
-            Debug.WriteLine(JawSpecGroup.SpecCollection.Count);
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

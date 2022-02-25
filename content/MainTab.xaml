@@ -473,6 +473,7 @@
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>
 
                     <control:ProcedureBlock BlockName="啟動檢驗" StepNumber="3" CurrentStep="{Binding CurrentStep, UpdateSourceTrigger=PropertyChanged}"
+                                            Error="{Binding StepError, UpdateSourceTrigger=PropertyChanged}"
                                             EnableSubPackIcon="True" SubPackIcon="User" SubPackIconColor="{StaticResource ColorInfo}"/>
 
                     <materialDesign:PackIcon Kind="ArrowRight" Width="32"/>

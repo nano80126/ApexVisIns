@@ -27,6 +27,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 檢測數值
         /// </summary>
+        [Description("檢驗數值")]
         public double Result
         {
             get => _result;
@@ -41,6 +42,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 檢測結果
         /// </summary>
+        [Description("檢驗結果")]
         public bool OK => LowerCtrlLimit <= Result && Result <= UpperCtrlLimit;
     }
 

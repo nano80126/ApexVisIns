@@ -20,7 +20,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 
 namespace ApexVisIns.control
@@ -33,21 +32,29 @@ namespace ApexVisIns.control
         public SpecListView()
         {
             InitializeComponent();
-
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            if (AutoCreateHeader)
-            {
-                Type t = ItemsSource.AsQueryable().ElementType;
+            //if (AutoCreateHeader)
+            //{
+            //    Type t = ItemsSource.AsQueryable().ElementType;
 
-                Header.Children.Clear();
-                foreach (PropertyInfo property in t.GetProperties())
-                {
-                    Header.Children.Add(new TextBlock { Text = property.Name });
-                }
-            }
+            //    PropertyInfo[] infos = t.GetProperties().Where(p => !p.Name.Contains("Spec")).ToArray();
+
+            //    Header.Children.Clear();
+            //    foreach (PropertyInfo item in infos)
+            //    {
+            //        DescriptionAttribute[] descriptionAttributes = (DescriptionAttribute[])item.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            //        if (descriptionAttributes.Length > 0)
+            //        {
+            //            Debug.WriteLine(descriptionAttributes[0].Description);
+            //            Header.Children.Insert(0, new TextBlock() { Text = descriptionAttributes[0].Description });
+            //        }
+            //        Debug.WriteLine($"{item.Name} {item.PropertyType}");
+            //    }
+            //}
         }
 
         public static readonly DependencyProperty AutoCreateHeaderProperty = 

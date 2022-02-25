@@ -373,6 +373,25 @@
         <!--#region 2nd column, 1st row, 參數、HOME、JOG -->
         <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}"
                     DataContext="{Binding SelectedMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}" >
+            <!--#region 按鈕樣式定義 -->
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="CustomPressedOutlineWriteButton">
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedSecondaryButton}" x:Key="CustomPressedOutlineStopButton">
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorIndigo}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <!--#endregion-->
+
             <!--#region 電子齒輪比 -->
             <materialDesign:Card x:Name="EcamCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -418,7 +437,7 @@
                         <!--<Separator Grid.Row="1" Grid.ColumnSpan="4" Margin="0 8"/>-->
                         <!--//-->
                         <Button Grid.Row="1" Grid.Column="3" Height="26" Margin="0 3" Content="寫入" Click="GearRatioSetBtn_Click"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                     </Grid>
                 </DockPanel>
             </materialDesign:Card>
@@ -486,7 +505,7 @@
                                      Text="{Binding JogVLTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Content="寫入" Click="JogVelParamSetBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                         <!--//-->
                         <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="0 8"/>
                         <!--//-->
@@ -608,7 +627,7 @@
                                  Text="{Binding HomeDec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="HomeVelParamSetBtn_Click" 
-                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                Style="{StaticResource CustomPressedOutlineWriteButton}"/>
 
                         <ComboBox x:Name="HomeModeSelector" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
@@ -639,11 +658,11 @@
                         -->
                         
                         <Button Grid.Row="3" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="開始" Click="HomeStartBtn_Click" 
-                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                Style="{StaticResource CustomPressedOutlineWriteButton}"/>
 
                         <!--停止-->
                         <Button Grid.Row="4" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
-                                    Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineStopButton}"/>
 
 
                     </Grid>
@@ -668,6 +687,25 @@
         <!--#region 3rd column, 1st row, 位置控制-->
         <StackPanel Grid.Column="4" Grid.Row="0" Orientation="Vertical" Background="{x:Null}"
                     DataContext="{Binding SelectedMotionAxis}" d:DataContext="{d:DesignInstance Type=app:ServoMotion}">
+            <!--#region 按鈕樣式定義 -->
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="CustomPressedOutlineWriteButton">
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedSecondaryButton}" x:Key="CustomPressedOutlineStopButton">
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorIndigo}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <!--#endregion-->
+
             <!--#region 位置控制 -->
             <materialDesign:Card x:Name="PosControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -729,7 +767,7 @@
                                  Text="{Binding Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="AxisVelParamSetBtn_Click" 
-                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                         <!--//-->
                         <Separator Grid.Row="3" Grid.ColumnSpan="4" Margin="0 8"/>
 
@@ -751,22 +789,22 @@
                         <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                      Text="{Binding TargetPos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Grid.Row="5" Grid.Column="3" MaxWidth="120" Height="26" Content="移動" Click="PtToPtBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                         <!--//-->
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="變更位置"/>
                         <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                      Text="{Binding ChangePosPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Grid.Row="6" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangePtBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                         <!--//-->
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="變更速度"/>
                         <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                      Text="{Binding ChangeVelPulse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Grid.Row="7" Grid.Column="3" MaxWidth="120" Height="26" Content="變更" Click="ChangeVelBtn_Click" 
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineWriteButton}"/>
                         <!--停止-->
                         <Button Grid.Row="8" Grid.ColumnSpan="100" Margin="0 3" Height="26" Content="停止" Click="MotionStop_Click"
-                                    Style="{StaticResource MaterialDesignOutlinedSecondaryButton}"/>
+                                    Style="{StaticResource CustomPressedOutlineStopButton}"/>
 
                         <!--<Button DockPanel.Dock="Bottom" Grid.Row="4" Grid.ColumnSpan="100" Margin="0 100 0 0" Height="120" Content="緊急停止" Click="MotionEmgStop_Click"
                                     Foreground="{StaticResource ColorError}" BorderBrush="{StaticResource ColorError}"

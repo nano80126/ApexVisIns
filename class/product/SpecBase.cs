@@ -25,11 +25,13 @@ namespace ApexVisIns.Product
         private double _lcl;
         private double _ucl;
 
+        [Description("項目")]
         public string Item { get; set; }
 
         /// <summary>
         /// 規格中心
         /// </summary>
+        [Description("規格中心")]
         public double CenterLine
         {
             get => _cl;
@@ -46,6 +48,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 規格下限
         /// </summary>
+        [Description("規格下限")]
         public double LowerSpecLimit
         {
             get => _lsl;
@@ -62,6 +65,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 規格上限
         /// </summary>
+        [Description("規格上限")]
         public double UpperSpecLimit
         {
             get => _usl;
@@ -78,6 +82,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 管制下限
         /// </summary>
+        [Description("管制下限")]
         public double LowerCtrlLimit
         {
             get => _lcl;
@@ -94,6 +99,7 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 管制上限
         /// </summary>
+        [Description("管制上限")]
         public double UpperCtrlLimit
         {
             get => _ucl;
