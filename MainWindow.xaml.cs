@@ -24,6 +24,7 @@ using MaterialDesignThemes;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Windows.Media.Animation;
+using ApexVisIns.Product;
 
 namespace ApexVisIns
 {

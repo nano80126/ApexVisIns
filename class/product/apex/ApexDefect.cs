@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace ApexVisIns
+namespace ApexVisIns.Product
 {
     public class ApexDefect : INotifyPropertyChanged, IDisposable
     {
@@ -297,7 +297,7 @@ namespace ApexVisIns
     /// Apex Defect Testing Status to Color
     /// </summary>
     [ValueConversion(typeof(ApexDefect.StatusType), typeof(SolidColorBrush))]
-    public class StatusColorConverter : IValueConverter
+    public class ApexStatusToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

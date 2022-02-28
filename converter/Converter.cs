@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace ApexVisIns.Converter
 {
@@ -198,6 +195,20 @@ namespace ApexVisIns.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) / System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [ValueConversion(typeof(int), typeof(bool))]
+    public class NumberIsOddConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToInt32(value, CultureInfo.CurrentCulture) % 2 == 1;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -6,8 +6,9 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
+            xmlns:pd="clr-namespace:ApexVisIns.Product"
             xmlns:control="clr-namespace:ApexVisIns.control" 
-            d:DataContext="{d:DesignInstance Type=app:ApexDefect}"
+            d:DataContext="{d:DesignInstance Type=pd:ApexDefect}"
             DataContext="{StaticResource ApexDefect}"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
@@ -16,7 +17,7 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-        <app:StatusColorConverter x:Key="StatusColorConverter"/>
+        <pd:ApexStatusToColorConverter x:Key="StatusColorConverter"/>
     </StackPanel.Resources>
     
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">

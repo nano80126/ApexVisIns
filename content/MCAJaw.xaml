@@ -313,10 +313,10 @@
             <!--#endregion-->
 
             <!--#region Camera 1 -->
-            <GroupBox Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
+            <GroupBox x:Name="ImageGroupBox1" Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                      FontSize="16" FontWeight="SemiBold" Padding="8"
+                      FontSize="16" FontWeight="SemiBold" Padding="8" VerticalAlignment="Stretch"
                       Background="Transparent">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                     <Grid.RowDefinitions>
@@ -324,7 +324,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
+                    <Border x:Name="Border1" Grid.Row="0" Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image1Viewbox">
                             <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                                Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
@@ -336,8 +336,9 @@
                         <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualHeight}"/>
                     </StackPanel>-->
 
-                    <control:SpecListView Grid.Row="1" AutoCreateHeader="True"
-                                          ScrollViewerStyle="{StaticResource ScrollViewerSuccess}"
+                    <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
+                                          ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"
+                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
 
                     <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch" Visibility="Collapsed">

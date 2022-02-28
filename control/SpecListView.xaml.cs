@@ -36,26 +36,14 @@ namespace ApexVisIns.control
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //if (AutoCreateHeader)
-            //{
-            //    Type t = ItemsSource.AsQueryable().ElementType;
 
-            //    PropertyInfo[] infos = t.GetProperties().Where(p => !p.Name.Contains("Spec")).ToArray();
-
-            //    Header.Children.Clear();
-            //    foreach (PropertyInfo item in infos)
-            //    {
-            //        DescriptionAttribute[] descriptionAttributes = (DescriptionAttribute[])item.GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-            //        if (descriptionAttributes.Length > 0)
-            //        {
-            //            Debug.WriteLine(descriptionAttributes[0].Description);
-            //            Header.Children.Insert(0, new TextBlock() { Text = descriptionAttributes[0].Description });
-            //        }
-            //        Debug.WriteLine($"{item.Name} {item.PropertyType}");
-            //    }
-            //}
         }
+
+        private void Scroller_Loaded(object sender, RoutedEventArgs e)
+        {
+            Scroller.SetBinding(HeightProperty, new Binding(nameof(ScrollViewerHeight)));
+        }
+
 
         public static readonly DependencyProperty AutoCreateHeaderProperty = 
             DependencyProperty.RegisterAttached(nameof(AutoCreateHeader), typeof(bool), typeof(SpecListView), new PropertyMetadata(false));
@@ -65,6 +53,9 @@ namespace ApexVisIns.control
 
         public static readonly DependencyProperty ScrollViewerStyleProperty = 
             DependencyProperty.RegisterAttached(nameof(ScrollViewerStyle), typeof(Style), typeof(SpecListView), new PropertyMetadata(default(Style)));
+
+        public static readonly DependencyProperty ScrollViewerHeightProperty =
+            DependencyProperty.RegisterAttached(nameof(ScrollViewerHeight), typeof(double), typeof(SpecListView), new PropertyMetadata(double.NaN));
 
 
         [Description("自動生成 Header")]
@@ -88,8 +79,11 @@ namespace ApexVisIns.control
             set => SetValue(ScrollViewerStyleProperty, value);
         }
 
-        public IEnumerable Headers { get; private set; }
-
-
+        [Description("滾輪高度")]
+        public double ScrollViewerHeight
+        {
+            get => (double)GetValue(ScrollViewerHeightProperty);
+            set => SetValue(ScrollViewerHeightProperty, value);
+        }
     }
 }

@@ -27,9 +27,10 @@ Apex 外觀瑕疵檢測
 
 ## 為了性能，將可改為 struct 之 class 改為 struct
 
-
 ## 整理資料夾結構
+* 一個產品一個命名空間
 
+## 修正初始化 Binding 失敗
 
 ### Tab
 

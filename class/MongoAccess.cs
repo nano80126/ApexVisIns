@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApexVisIns
+namespace ApexVisIns.MongoDB
 {
     /// <summary>
     /// 連結 Mongo 資料庫
@@ -14,6 +14,5 @@ namespace ApexVisIns
 
 
     }
-
 
 }
