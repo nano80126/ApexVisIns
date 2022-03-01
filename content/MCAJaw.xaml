@@ -324,6 +324,7 @@
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     
+                    <!--Image 1-->
                     <Border x:Name="Border1" Grid.Row="0" Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image1Viewbox">
                             <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -331,16 +332,22 @@
                         </Viewbox>
                     </Border>
 
-                    <!--<StackPanel Orientation="Horizontal" >
-                        <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualWidth}"/>
-                        <TextBlock Margin="8 0" Text="{Binding ElementName=SpecViewer, Path=ActualHeight}"/>
-                    </StackPanel>-->
+                    <!--標示視窗尺寸用，待刪除 -->
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
+                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
+                                <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
 
+                    <!--規格列表 1-->
                     <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
                                           ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
-
+                    
                     <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch" Visibility="Collapsed">
                         <StackPanel.Resources>
                             <Style TargetType="ScrollViewer">
@@ -388,99 +395,7 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
-
-                    <!--#region NewRegion -->
-                    <!--<ListView x:Name="SpecViewer" ScrollViewer.CanContentScroll="False" Background="Red" 
-                              Height="250"
-                              ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
-                        <ListView.Resources>
-                            <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                <Setter Property="FontSize" Value="16"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                            --><!--//--><!--
-                            <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                <Setter Property="Width" Value="16"/>
-                                <Setter Property="Height" Value="16"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="Kind" Value="Close"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
-                                        <Setter Property="Kind" Value="Check"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                            --><!--//--><!--
-                            <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource MaterialDesignFlatButton}"/>
-                        </ListView.Resources>
-
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="項目">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Item}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="CL">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding CenterLine}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="LCL">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding LowerCtrlLimit}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="UCL">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding UpperCtrlLimit}" VerticalAlignment="Center" Padding="0 0" Margin="0 -8"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-
-                                <GridViewColumn Header="Options">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox Width="100" Padding="8 3" Margin="0 0" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignOutlinedComboBox}" >
-                                                <ComboBoxItem Content="{Binding CenterLine}" />
-                                                <ComboBoxItem Content="{Binding UpperSpecLimit}" />
-                                                <ComboBoxItem Content="{Binding LowerSpecLimit}" />
-                                            </ComboBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-
-                                <GridViewColumn Header="良品">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <materialDesign:Chip Tag="{Binding OK}" Style="{StaticResource ResultMark}" IsEnabled="False" Margin="0 -8 0 0" Padding="0">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="良品"/>
-                                                    <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
-                                                </StackPanel>
-                                            </materialDesign:Chip>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>-->
-                    <!--#endregion-->
-
+                    
                 </Grid>
             </GroupBox>
             <!--#endregion-->
@@ -491,7 +406,13 @@
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!--Image 2--> 
                     <Border Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image2Viewbox">
                             <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -499,7 +420,8 @@
                         </Viewbox>
                     </Border>
 
-                    <TextBlock>
+                    <!--標示視窗尺寸用，待刪除-->
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
@@ -508,9 +430,14 @@
                         </TextBlock.Text>
                     </TextBlock>
 
+                    <!--規格列表 2-->
+                    <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
+                                          ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"
+                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
+                                          ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
 
                     <!--#region DataGrid -->
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Visibility="Collapsed">
                         <DataGrid ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}" 
                               CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
                               CanUserReorderColumns="False" IsReadOnly="True" SelectionMode="Single"
@@ -578,7 +505,7 @@
                     <!--#endregion-->
 
 
-                </StackPanel>
+                </Grid>
             </GroupBox>
             <!--#endregion-->
             
