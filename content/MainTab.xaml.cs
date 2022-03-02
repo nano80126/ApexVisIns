@@ -95,7 +95,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded; 
+        private bool loaded;
         #endregion
 
         public MainTab()
@@ -405,8 +405,9 @@ namespace ApexVisIns.content
                             // Light24V.SetChannelValue(1, 128);
                             // Light_6V.SetChannelValue(1, 16);
                             // Light_6V.SetChannelValue(2, 16);
+                            Debug.WriteLine($"{MainWindow.ApexDefect.CurrentStep}");
                             #endregion
-                            
+
                             return 0;
                         }
                         else { return t.Result; }
@@ -517,7 +518,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[0].IsConnected)
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
-                                        _ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature);
+                                        //_ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature, null);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -525,7 +526,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[1].IsConnected)
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
-                                        _ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
+                                        //_ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -533,7 +534,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[2].IsConnected)
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
-                                        _ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
+                                        //_ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -541,7 +542,7 @@ namespace ApexVisIns.content
                                     if (!MainWindow.BaslerCams[3].IsConnected)
                                     {
                                         BaslerCam4 = MainWindow.BaslerCams[3];
-                                        _ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
+                                        //_ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
                                         MainWindow.MsgInformer.TargetProgressValue += 5;
                                     }
                                     break;
@@ -610,25 +611,25 @@ namespace ApexVisIns.content
                             // 排序 Devices 
                             Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
 
-                            foreach (DeviceConfigBase device in devices)
+                            //foreach (DeviceConfigBase device in devices)
+                            Parallel.ForEach(devices, (device) =>
                             {
-                                Debug.WriteLine($"{cams.Count} {device.IP} {device.FullName} {device.SerialNumber}");
+
+                                // Debug.WriteLine($"{cams.Count} {device.IP} {device.FullName} {device.SerialNumber}");
 
                                 // 確認 Device 為在線上之 Camera
                                 if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
                                 {
-                                    Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
-
+                                    //Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
                                     switch (device.TargetFeature)
                                     {
                                         case DeviceConfigBase.TargetFeatureType.Ear:
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
-                                                if (Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature))
+                                                if (Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
-                                                    Debug.WriteLine("cam1 init");
                                                 }
                                             }
                                             break;
@@ -636,10 +637,9 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
-                                                if (Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature))
+                                                if (Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
-                                                    Debug.WriteLine("cam2 init");
                                                 }
                                             }
                                             break;
@@ -647,10 +647,9 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[2].IsConnected)
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
-                                                if (Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature))
+                                                if (Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
-                                                    Debug.WriteLine("cam3 init");
                                                 }
                                             }
                                             break;
@@ -658,10 +657,9 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[3].IsConnected)
                                             {
                                                 BaslerCam4 = MainWindow.BaslerCams[3];
-                                                if (Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature))
+                                                if (Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
-                                                    Debug.WriteLine("cam4 init");
                                                 }
                                             }
                                             break;
@@ -670,9 +668,8 @@ namespace ApexVisIns.content
                                             MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                             break;
                                     }
-
                                 }
-                            }
+                            });
 
                             // 設置初始化完成旗標
                             CameraInitialized = true;
@@ -922,7 +919,7 @@ namespace ApexVisIns.content
                 }
             }, ct);
         }
-      
+
 #if false
         /// <summary>
         /// 光源控制初始化
@@ -1376,8 +1373,8 @@ namespace ApexVisIns.content
                     case 0:
                         await MotionSpecChange(85000);
                         break;
-                    case 1:
-                        await MotionSpecChange(40000);
+                    case 1: // 中
+                        await MotionSpecChange(50000);
                         break;
                     case 2:
                         await MotionSpecChange(-30000);
@@ -1448,6 +1445,12 @@ namespace ApexVisIns.content
             //MainWindow.IOWindow.Close();
             //MainWindow.IOWindow = null;
 
+            MainWindow.ApexDefect.CurrentStep++;
+            
+            if (MainWindow.ApexDefect.CurrentStep > 5)
+            {
+                MainWindow.ApexDefect.CurrentStep = 0;
+            }
             //MainWindow.IOWindow = new IOWindow(this);
             //MainWindow.IOWindow.Show();
         }
@@ -1480,13 +1483,15 @@ namespace ApexVisIns.content
         /// <param name="serialNumber"></param>
         /// <param name="userData"></param>
         /// <returns></returns>
-        private bool Basler_Conntect(BaslerCam cam, string serialNumber, object userData)
+        private bool Basler_Conntect(BaslerCam cam, string serialNumber, object userData, CancellationToken ct)
         {
             int retryCount = 0;
 
             // retry 連線
             while (!cam.IsOpen)
             {
+                if (ct.IsCancellationRequested) break;
+
                 if (retryCount > 3)
                 {
                     break;
@@ -1710,7 +1715,7 @@ namespace ApexVisIns.content
                     case DeviceConfigBase.TargetFeatureType.Surface2:
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                         break;
-                } 
+                }
 
                 // Debug.WriteLine($"{userData}");
 

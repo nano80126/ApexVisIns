@@ -22,24 +22,10 @@ namespace ApexVisIns
             int matWidth = mat.Width;
             int matHeight = mat.Height;
 
-            algorithm.Apex img = new(mat);
+            Algorithm.Apex img = new(mat);
 
             try
             {
-                //Rect roi = AssistRect.GetRect();
-                //if (roi.Width * roi.Height > 0)
-                //{
-                //    //Mat roiImg = new(mat, roi);
-
-                //    Dispatcher.Invoke(() =>
-                //    {
-                //        //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
-
-                //        img.GetBackgroundMogROI(roi, 11);
-                //        img.GetCannyROI(roi, 120, 60);
-                //    });
-                //}
-
                 Dispatcher.Invoke(() =>
                 {
                     if (OnTabIndex == 0)
@@ -80,7 +66,8 @@ namespace ApexVisIns
     }
 }
 
-namespace ApexVisIns.algorithm
+
+namespace ApexVisIns.Algorithm
 {
     public class Apex : Algorithm
     {
@@ -228,6 +215,87 @@ namespace ApexVisIns.algorithm
                 srcImg.Dispose();
             }
             _disposed = true;
+        }
+    }
+
+    /// <summary>
+    /// Apex 處理方法
+    /// </summary>
+    public class ApexProcess
+    {
+
+        public static bool CheckTubeAnglePos(Mat src, out double x1Gap, out double x2Gap, out double x1Center, out double x2Center)
+        {
+            x1Gap = x2Gap = -1;
+            x1Center = x2Center = -1;
+
+            #region 上半
+            Rect roi1 = new(100, 580, 1000, 120);
+
+            Methods.GetRoiCanny(src, roi1, 75, 150, out Mat canny);
+
+            Methods.GetHoughVerticalXPos(canny, out int count, out double[] pos, 3);
+
+            if (count == 4)
+            {
+                x1Gap = Math.Abs((pos[0] + pos[3] - pos[1] - pos[2]) / 2);
+                x1Center = (pos[0] + pos[3]) / 2;
+            }
+            else
+            {
+                return false;
+            }
+            #endregion
+
+            #region 下半
+            OpenCvSharp.Rect roi2 = new OpenCvSharp.Rect(100, 1260, 1000, 120);
+
+            Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny2);
+
+            Methods.GetHoughVerticalXPos(canny2, out count, out pos, 3);
+
+            if (count == 4)
+            {
+                x2Gap = Math.Abs((pos[0] + pos[3] - pos[1] - pos[2]) / 2);
+                x2Center = (pos[0] + pos[3]) / 2;
+            }
+            else
+            {
+                return false;
+            }
+            #endregion
+
+            return true;
+        }
+
+        /// <summary>
+        /// 取得窗戶寬度
+        /// </summary>
+        /// <param name="src">源影像</param>
+        public static bool GetWindowWidth(Mat src, out double width1, out double width2)
+        {
+            width1 = 0;
+            width2 = 0;
+            #region 上半
+            Rect roi1 = new(100, 580, 1000, 120);
+            Methods.GetRoiCanny(src, roi1, 75, 150, out Mat canny);
+
+            if (!Methods.GetVertialWindowWidth(canny, out width1))
+            {
+                return false;
+            }
+            #endregion
+
+            #region 下半
+            Rect roi2 = new(100, 580, 1000, 120);
+            Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny2);
+
+            if (!Methods.GetVertialWindowWidth(canny2, out width2))
+            {
+                return false;
+            }
+            return true;
+            #endregion
         }
     }
 }

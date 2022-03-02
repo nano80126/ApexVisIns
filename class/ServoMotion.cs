@@ -2337,8 +2337,6 @@ namespace ApexVisIns
                 TargetPos = targetPos;
                 uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
 
-                Debug.WriteLine($"{result}");
-
                 if (result != (uint)ErrorCode.SUCCESS)
                 {
                     throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");

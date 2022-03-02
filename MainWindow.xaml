@@ -267,7 +267,7 @@
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
+                    <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 

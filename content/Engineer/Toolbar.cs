@@ -6,13 +6,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using ApexVisIns.Algorithm;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ApexVisIns.content
 {
     public partial class EngineerTab : StackPanel
     {
-
         #region Toolbar 事件
+        
+        /// <summary>
+        /// 相機選擇 Selector 變更事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CamSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //ComboBox comboBox = sender as ComboBox;
@@ -169,6 +177,7 @@ namespace ApexVisIns.content
                 else
                 {
                     cam.Camera.StreamGrabber.Stop();
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
                 }
             }
             catch (TimeoutException T)
@@ -326,6 +335,7 @@ namespace ApexVisIns.content
             Debug.WriteLine("Grabber Stop");
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "Grabber stoped");
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
+            //MainWindow.BaslerCam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
         }
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
@@ -342,17 +352,162 @@ namespace ApexVisIns.content
 
                 MainWindow.Dispatcher.Invoke(() =>
                 {
-                    MainWindow.ImageSource = mat.ToImageSource();
-                });
+                    //Methods.GetHoughLinesV(mat, new OpenCvSharp.Rect(110, 1150, 60, 200), 75, 150, out LineSegmentPoint[] lineV);
+#if true
+                    #region 管身
+                    OpenCvSharp.Rect roi1 = new OpenCvSharp.Rect(100, 580, 1000, 120);
+#if false
+                    Methods.GetRoiCanny(mat, roi1, 75, 150, out Mat canny);
 
-                //Dispatcher.Invoke(() =>
-                //{
-                //    ImageSource = mat.ToImageSource();
-                //});
+                    Methods.GetHoughVerticalXPos(canny, out int count, out double[] pos, 3);
+
+                    Debug.WriteLine($"count: {count}, {string.Join('|', pos)}");
+
+                    if (count == 4)
+                    {
+                        Debug.WriteLine($"{(pos[0] + pos[3]) / 2} {(pos[1] + pos[2]) / 2}");
+                    } 
+#endif
+                    Cv2.Rectangle(mat, roi1, Scalar.Gray, 2);
+                    #endregion
+
+                    #region 耳朵
+                    OpenCvSharp.Rect roi2 = new OpenCvSharp.Rect(100, 1260, 1000, 120);
+#if false
+                    Methods.GetRoiCanny(mat, roi2, 75, 150, out Mat canny2);
+
+                    Methods.GetHoughVerticalXPos(canny2, out int count2, out double[] pos2, 3);
+
+                    Debug.WriteLine($"count: {count2}, {string.Join('|', pos2)}");
+
+                    if (count2 == 4)
+                    {
+                        Debug.WriteLine($"{(pos2[0] + pos2[3]) / 2} {(pos2[1] + pos2[2]) / 2}");
+                    }
+#endif
+                    Cv2.Rectangle(mat, roi2, Scalar.Gray, 2);
+
+                    Methods.GetRoiCanny(mat, roi1, 75, 120, out Mat canny);
+                    Cv2.ImShow("canny", canny);
+                    Methods.GetVertialWindowWidth(canny, out double width);
+
+
+                    #endregion
+#endif
+
+#if fa
+                    Task.Run(async () =>
+                    {
+                        if (ApexProcess.CheckTubeAnglePos(mat, out double gap1, out double gap2, out double center1, out double center2))
+                        {
+                            Debug.WriteLine($"{gap1} {gap2}");
+                            Debug.WriteLine($"{center1} {center2}");
+
+                            if (gap1 > 1 || gap2 > 1)
+                            {
+                                await MainWindow.ServoMotion.Axes[1].PosMoveAsync(200, false);
+                            }
+                        }
+                        else
+                        {
+                            await MainWindow.ServoMotion.Axes[1].PosMoveAsync(200, false);
+                        }
+                    }); 
+#endif
+
+                    MainWindow.ImageSource = mat.ToImageSource();
+                    Debug.WriteLine($"width: {width}");
+                    Debug.WriteLine("------------------------------------------------");
+                });
             }
         }
         #endregion
 
+        #endregion
+
+
+        #region 
+        private async Task TurnTubeToZeroPos()
+        {
+            await Task.Run(async () =>
+            {
+                Camera camera = MainWindow.BaslerCam.Camera;
+                // 設為 Trigger Mode
+                camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                if (!camera.StreamGrabber.IsGrabbing)
+                {
+                    // 啟動 Grabber
+                    camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                }
+
+                double windowWidth = 0;
+                int moveCount = 0;
+                double pulse = 0;
+
+                //while (true)
+                //{
+                camera.WaitForFrameTriggerReady(3000, TimeoutHandling.Return);
+                camera.ExecuteSoftwareTrigger();
+
+
+                using IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.Return);
+                double pps = MainWindow.ServoMotion.Axes[1].PosActual;
+
+                if (grabResult.GrabSucceeded)
+                {
+                    Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);   // 轉 MatMono 
+
+                    if (ApexProcess.GetWindowWidth(mat, out double w1, out double w2))
+                    {
+                        if ((w1 + w2) / 2 > windowWidth)
+                        {
+                            windowWidth = (w1 + w2) / 2;
+                            pulse = pps;
+                        }
+
+                        await MainWindow.ServoMotion.Axes[1].PosMoveAsync(50, false);
+                    }
+                    else
+                    {
+                        await MainWindow.ServoMotion.Axes[1].PosMoveAsync(100, false);
+                    }
+                    moveCount++;
+
+
+                    Debug.WriteLine($"{MainWindow.ServoMotion.Axes[1].CurrentStatus} Count: {moveCount}");
+                    Debug.WriteLine($"{windowWidth}");
+
+                    //if (moveCount > 50) break;
+
+                    //if (ApexProcess.CheckTubeAnglePos(mat, out double gap1, out double gap2, out double center1, out double center2))
+                    //{
+                    //    Debug.WriteLine($"{gap1} {gap2}");
+                    //    Debug.WriteLine($"{center1} {center2}");
+
+                    //    if (gap1 > 1 || gap2 > 1)
+                    //    {
+                    //        await MainWindow.ServoMotion.Axes[1].PosMoveAsync(100, false);
+                    //    }
+                    //    else
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    await MainWindow.ServoMotion.Axes[1].PosMoveAsync(200, false);
+                    //}
+                }
+                else
+                {
+                    Debug.WriteLine(grabResult.ErrorCode);
+                }
+                //}
+
+                //Debug.WriteLine($"Width: {windowWidth}, Pulse: {pulse}");
+            });
+        }
         #endregion
     }
 }

@@ -41,7 +41,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded; 
+        private bool loaded;
         #endregion
 
         public MotionTab()
@@ -161,6 +161,10 @@ namespace ApexVisIns.content
                 if (!MainWindow.ServoMotion.DeviceOpened)
                 {
                     MainWindow.ServoMotion.ListAvailableDevices();
+                    if (DeviceSelector.Items.Count > 0)
+                    {
+                        DeviceSelector.SelectedIndex = 0;
+                    }
                 }
                 else
                 {

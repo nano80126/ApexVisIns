@@ -234,10 +234,14 @@
                 <!--//-->
                 <Separator/>
 
+                
                 <!--#region Region For Test Region For Test Region For Test Region For Test Region For Test -->
-                <!--<Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26"/>
-                </Button>-->
+                <Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
+                        <TextBlock Margin="8 0 0 0" Text="測試用按鈕" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
                 <!--#endregion-->
 
             </ToolBar>
