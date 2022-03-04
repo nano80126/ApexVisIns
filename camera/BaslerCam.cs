@@ -490,12 +490,15 @@ namespace ApexVisIns
 
         public override void Close()
         {
-            Camera.Close();
-            Camera.Dispose();
-            Camera = null;
+            if (Camera != null)
+            {
+                Camera.Close();
+                Camera.Dispose();
+                Camera = null;
 
-            OnPropertyChanged(nameof(IsConnected));
-            OnPropertyChanged(nameof(IsOpen));
+                OnPropertyChanged(nameof(IsConnected));
+                OnPropertyChanged(nameof(IsOpen));
+            }
         }
 
         public void Dispose()

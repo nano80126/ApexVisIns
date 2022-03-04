@@ -116,13 +116,13 @@ namespace ApexVisIns
     /// </summary>
     public class LightChannel : INotifyPropertyChanged
     {
-        private int _value;
+        private ushort _value;
 
         public LightChannel()
         {
         }
 
-        public LightChannel(string channel, int value)
+        public LightChannel(string channel, ushort value)
         {
             Channel = channel;
             Value = value;
@@ -130,7 +130,7 @@ namespace ApexVisIns
 
         public string Channel { get; set; }
 
-        public int Value
+        public ushort Value
         {
             get => _value;
             set
@@ -377,7 +377,7 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="value">目標設定值</param>
-        public void SetChannelValue(int ch, int value)
+        public void SetChannelValue(int ch, ushort value)
         {
             if (0 < ch && ch <= ChannelNumber)
             {
@@ -662,7 +662,7 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="ch">通道</param>
         /// <param name="value">設定值</param>
-        public void SetChannelValue(int ch, int value)
+        public void SetChannelValue(int ch, ushort value)
         {
             if (0 < ch && ch <= ChannelNumber)
             {
@@ -677,6 +677,31 @@ namespace ApexVisIns
             }
         }
 
+
+        /// <summary>
+        /// 一次設置所有通道
+        /// </summary>
+        /// <param name="ch1">Ch1 設定值</param>
+        /// <param name="ch2">Ch2 設定值</param>
+        /// <param name="ch3">Ch3 設定值</param>
+        /// <param name="ch4">Ch4 設定值</param>
+        public void SetAllChannelValue(ushort ch1 = 0, ushort ch2 = 0, ushort ch3 = 0, ushort ch4 = 0)
+        {
+            string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
+            Write(cmd);
+            _ = ReadLine();
+            Channels[0].Value = ch1;
+            Channels[1].Value = ch2;
+            Channels[2].Value = ch3;
+            Channels[3].Value = ch4;
+        }
+
+
+        /// <summary>
+        /// 取得通道 Value
+        /// </summary>
+        /// <param name="ch">通道</param>
+        /// <returns>返回通道值</returns>
         public int GetChannelValue(int ch)
         {
             if (0 < ch && ch <= ChannelNumber)

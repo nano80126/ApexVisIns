@@ -41,7 +41,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded; 
+        private bool loaded;
         #endregion
 
         public MotionTab()
@@ -161,6 +161,10 @@ namespace ApexVisIns.content
                 if (!MainWindow.ServoMotion.DeviceOpened)
                 {
                     MainWindow.ServoMotion.ListAvailableDevices();
+                    if (DeviceSelector.Items.Count > 0)
+                    {
+                        DeviceSelector.SelectedIndex = 0;
+                    }
                 }
                 else
                 {
@@ -188,6 +192,8 @@ namespace ApexVisIns.content
                     MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.MotionDevice).DeviceNumber);
                     // 重置各軸錯誤
                     MainWindow.ServoMotion.ResetAllError();
+                    // 
+                    if (AxisSelector.Items.Count > 0) AxisSelector.SelectedIndex = 0;
                 }
                 else
                 {
@@ -279,6 +285,26 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
+
+
+        private void AllServoOn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!MainWindow.ServoMotion.AllServoOn)
+                {
+                    MainWindow.ServoMotion.SetAllServoOn();
+                } else
+                {
+                    MainWindow.ServoMotion.SetAllServoOff();
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
 
         /// <summary>
         /// 重置命令位置
@@ -803,5 +829,6 @@ namespace ApexVisIns.content
             Debug.WriteLine($"123");
         }
 
+       
     }
 }

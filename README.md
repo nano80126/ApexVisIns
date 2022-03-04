@@ -30,6 +30,10 @@ Apex 外觀瑕疵檢測
 ## 整理資料夾結構
 * 一個產品一個命名空間
 
+
+## 定位有機率失敗
+
+
 ## 修正初始化 Binding 失敗
 
 ### Tab
@@ -172,7 +176,7 @@ Apex 外觀瑕疵檢測
 
 * [x] MotionTab 尋找軸卡改為按鈕觸發
 
-* [ ] 原點復歸前確認 IO
+* [x] 原點復歸前確認 IO
 
 * [x] 整理初始化流程 methods
 	* try... catch
@@ -186,22 +190,35 @@ Apex 外觀瑕疵檢測
 
 * [ ] 新增 IO panel 彈出視窗
 	* 即時更新
+	* 
 
 * [x] 光源控制器待轉移
 
 * [ ] Initializer 需要等待 Enumer
 
-* [ ] 新增 Hardware Status Block
+* [x] 新增 Hardware Status Block
 
 * [ ] 新增 CRC 計算
 
-* [ ] 即停按下後關閉程式會當掉
+* [x] 即停按下後關閉程式會當掉
 
 * [ ] Add _cancellation to camera retry methods 
 
-* [ ] 新增暖機 mode
+* [x] 新增暖機 mode
 	* 增加模式切換視窗
 
+* [ ] 新增 Database 連線 Block
+	* 若未連線也可測量，但是紀錄不會留下 
+
+* [ ] 軟體即停處置
+
+* [ ] Reset 處置
+
+* [ ] Servo On All in MotionTab
+
+* [ ] 重構 Alogorithm
+
+* [ ] EngineerTab.xaml camera use Task open
 
 ### Config Logic
 

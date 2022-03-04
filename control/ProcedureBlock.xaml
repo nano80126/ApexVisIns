@@ -1,47 +1,15 @@
-﻿<StackPanel x:Class="ApexVisIns.control.ProcedureBlock"
+﻿<StackPanel x:Class="ApexVisIns.Control.ProcedureBlock"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:local="clr-namespace:ApexVisIns.control"
+            xmlns:local="clr-namespace:ApexVisIns.Control"
             mc:Ignorable="d"
-            d:DesignHeight="450" d:DesignWidth="800"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
-            d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">
-    <!--<StackPanel DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel,AncestorLevel=1}}" 
-                d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">-->
+            d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}}" 
+                d:DataContext="{d:DesignInstance Type={x:Type local:ProcedureBlock}}">
         <StackPanel.Resources>
-            <Style TargetType="materialDesign:PackIcon">
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Width" Value="64"/>
-                <Setter Property="Height" Value="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"/>
-                <Setter Property="Foreground" Value="{StaticResource ColorGrayTransparent}"/>
-                <Style.Triggers>
-                    <!-- HighLight -->
-                    <DataTrigger Binding="{Binding (local:PBHelper.HighLight), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
-                    </DataTrigger>
-
-                    <!--<DataTrigger Binding="{Binding (local:PBHelper.Error), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                    </DataTrigger>-->
-
-                    <!-- Step Error -->
-                    <DataTrigger Value="True">
-                        <DataTrigger.Binding>
-                            <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                <Binding Path="(local:PBHelper.HighLight)" RelativeSource="{RelativeSource Mode=Self}"/>
-                                <Binding Path="(local:PBHelper.Error)" RelativeSource="{RelativeSource Mode=Self}"/>
-                            </MultiBinding>
-                        </DataTrigger.Binding>
-
-                        <Setter Property="FontWeight" Value="Bold"/>
-                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-            <!--//-->
             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}" x:Key="ProcedureBlockName">
                 <Setter Property="FontWeight" Value="SemiBold"/>
                 <Setter Property="FontSize" Value="16"/>
@@ -51,7 +19,7 @@
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
                     </DataTrigger>
-                       
+
                     <!-- Step Error -->
                     <DataTrigger Value="True">
                         <DataTrigger.Binding>
@@ -60,7 +28,7 @@
                                 <Binding Path="(local:PBHelper.Error)" RelativeSource="{RelativeSource Mode=Self}"/>
                             </MultiBinding>
                         </DataTrigger.Binding>
-                        
+
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
                     </DataTrigger>
@@ -68,6 +36,7 @@
             </Style>
         </StackPanel.Resources>
 
+        <!--Step Name, 步序名稱-->
         <TextBlock Text="{Binding BlockName}" local:PBHelper.Error="{Binding Error}"
                    HorizontalAlignment="Center" FontSize="16" Style="{StaticResource ProcedureBlockName}">
             <local:PBHelper.HighLight>
@@ -78,7 +47,40 @@
             </local:PBHelper.HighLight>
         </TextBlock>
 
+        <!--Icon Block-->
         <Grid>
+            <Grid.Resources>
+                <Style TargetType="materialDesign:PackIcon">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Width" Value="64"/>
+                    <Setter Property="Height" Value="{Binding Path=Width, RelativeSource={RelativeSource Mode=Self}}"/>
+                    <Setter Property="Foreground" Value="{StaticResource ColorGrayTransparent}"/>
+                    <Style.Triggers>
+                        <!-- HighLight -->
+                        <DataTrigger Binding="{Binding (local:PBHelper.HighLight), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                        </DataTrigger>
+
+                        <!--<DataTrigger Binding="{Binding (local:PBHelper.Error), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                    </DataTrigger>-->
+
+                        <!-- Step Error -->
+                        <DataTrigger Value="True">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                    <Binding Path="(local:PBHelper.HighLight)" RelativeSource="{RelativeSource Mode=Self}"/>
+                                    <Binding Path="(local:PBHelper.Error)" RelativeSource="{RelativeSource Mode=Self}"/>
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
+
             <!--local:PBHelper.HighLight="{Binding StepNumber, Converter={StaticResource EqualConverter}, ConverterParameter={Binding CurrentStep}}"-->
             <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom" 
                                      local:PBHelper.Error="{Binding Error}">
@@ -86,14 +88,14 @@
                     <MultiBinding Converter="{StaticResource NumberEqualConverter}">
                         <Binding Path="StepNumber"/>
                         <Binding Path="CurrentStep"/>
-                    </MultiBinding>    
+                    </MultiBinding>
                 </local:PBHelper.HighLight>
             </materialDesign:PackIcon>
 
             <materialDesign:PackIcon Width="26" HorizontalAlignment="Center" Kind="{Binding SubPackIcon}" Foreground="{Binding SubPackIconColor}" 
-                                     Visibility="{Binding EnableSubPackIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                 Visibility="{Binding EnableSubPackIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <TextBlock FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 5 5" Text="{Binding StepNumber}"/>
         </Grid>
-    <!--</StackPanel>-->
+    </StackPanel>
 </StackPanel>

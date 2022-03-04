@@ -234,9 +234,13 @@
                 <!--//-->
                 <Separator/>
 
+                
                 <!--#region Region For Test Region For Test Region For Test Region For Test Region For Test -->
                 <!--<Button Margin="50 0 0 0" VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26"/>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
+                        <TextBlock Margin="8 0 0 0" Text="測試用按鈕" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>-->
                 <!--#endregion-->
 
@@ -246,7 +250,7 @@
         <!--#region SubToolbar -->
         <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0" FlowDirection="RightToLeft" >
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" 
-                     Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+                     Height="38" ToolBarTray.IsLocked="True" Focusable="False" FlowDirection="LeftToRight">
                 <!--//-->
 
                 <!--<TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=CamSelector, Path=SelectedIndex , Converter={StaticResource EqualConverter}, ConverterParameter=-1, FallbackValue=False}"/>
@@ -259,16 +263,28 @@
                             <Binding Path="IsGrabbing" Source="{StaticResource BaslerCam}" FallbackValue="False" UpdateSourceTrigger="PropertyChanged"/>
                         </MultiBinding>
                     </TextBlock.Text>
-                </TextBlock>
+                </TextBlock>-->
 
-                --><!--// // // // // // // // // //--><!--
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualWidth}"/>
-                
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageViewbox, Path=ActualHeight}"/>
+                <Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
+                        <TextBlock Margin="8 0 0 0" Text="測試1" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualWidth}"/>
+                <Button VerticalAlignment="Center" Click="Button2_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
+                        <TextBlock Margin="8 0 0 0" Text="測試2" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=ImageCanvas, Path=ActualHeight}"/>-->
+                <Button VerticalAlignment="Center" Click="Button3_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
+                        <TextBlock Margin="8 0 0 0" Text="測試3" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->

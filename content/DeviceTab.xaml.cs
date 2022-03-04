@@ -343,9 +343,12 @@ namespace ApexVisIns.content
                     if (_deviceCams.Exists(e => e.SerialNumber == serialNumber))
                     {
                         _devInUse = _deviceCams.FindIndex(0, _deviceCams.Count, e => e.SerialNumber == serialNumber);
+                        #region 變更 DataContext
+                        CameraStatusBorder.DataContext = _deviceCams[_devInUse];
                         CameraOpen.DataContext = _deviceCams[_devInUse];
                         CameraClose.DataContext = _deviceCams[_devInUse];
                         UserSetActionPanel.DataContext = _deviceCams[_devInUse];
+                        #endregion
                     }
                     else // 不在列表中，新增一台新物件
                     {
@@ -357,20 +360,28 @@ namespace ApexVisIns.content
                         };
                         _deviceCams.Add(deviceCam);
 
+                        #region 變更 DataContext
+                        CameraStatusBorder.DataContext = deviceCam;
                         CameraOpen.DataContext = deviceCam;
                         CameraClose.DataContext = deviceCam;
                         UserSetActionPanel.DataContext = deviceCam;
+                        #endregion
 
                         _devInUse = _deviceCams.IndexOf(deviceCam);
                     }
                 }
                 else
                 {
+                    #region 移除 DataContext
+                    CameraStatusBorder.DataContext = null;
                     CameraOpen.DataContext = null;
                     CameraClose.DataContext = null;
+                    UserSetActionPanel.DataContext = null;
+                    #endregion
                 }
 
-#if false
+                // // // // // // // 以下待刪除 
+#if false 
                 //Binding binding = new("IsOpen")
                 //{
                 //    Source = MainWindow.BaslerCams[idx],
@@ -401,7 +412,6 @@ namespace ApexVisIns.content
                 //    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                 //});  
 #endif
-
                 Debug.WriteLine($"DevieConfig Index: {idx}, Device In Use Index: {_devInUse}");
                 //Debug.WriteLine($"{TgtSelector.SelectedItem} {TgtSelector.SelectedIndex}");
             }
@@ -803,7 +813,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 待刪除
+        /// 目標特徵變更 ComboBox Selection Changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

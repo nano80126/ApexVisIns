@@ -167,6 +167,10 @@ namespace ApexVisIns
         }
     }
 
+
+    /// <summary>
+    /// 伺服運動控制
+    /// </summary>
     public class ServoMotion : INotifyPropertyChanged, IDisposable
     {
         #region Variables
@@ -276,6 +280,11 @@ namespace ApexVisIns
         /// 最大軸數
         /// </summary>
         public uint MaxAxisCount { get; private set; }
+
+        /// <summary>
+        /// 是否所有軸 ServoOn
+        /// </summary>
+        public bool AllServoOn => Axes.All(axis => axis != null && axis.IO_SVON.BitOn);
 
         /// <summary>
         /// 確認 DLL 已安裝且版本符合
@@ -665,6 +674,7 @@ namespace ApexVisIns
         private void StatusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             GetMotionInfo();
+            //OnPropertyChanged(nameof(AllServoOn));
         }
 
         /// <summary>
@@ -788,8 +798,8 @@ namespace ApexVisIns
                 if (result == (uint)ErrorCode.SUCCESS)
                 {
                     SetMotionIOStatus(IOStatus);
-                    // UpdateIO();
-                    SelectedMotionAxis.UpdateIO();
+                    SelectedMotionAxis.UpdateIO(); // 觸發 PropertyUpdate
+                    OnPropertyChanged(nameof(AllServoOn));  // 觸發 PropertyUpdate
                 }
 
                 // Get Axis current state
@@ -1781,7 +1791,6 @@ namespace ApexVisIns
             {
                 throw new InvalidOperationException($"讀取電子齒輪比 N1 失敗: Code[0x{result:X}]");
             }
-
             GearN1 = ppu;
 
             result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxPPUDenominator, ref ppum);
@@ -1824,6 +1833,41 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 寫入速度參數 (With Argument)
+        /// </summary>
+        /// <param name="Vlow">初始速度</param>
+        /// <param name="Vhigh">目標速度</param>
+        /// <param name="acc">加速度</param>
+        /// <param name="dec">減速度</param>
+        public void SetAxisVelParam(double Vlow, double Vhigh, double acc, double dec)
+        {
+            uint result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelLow, Vlow);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入初始速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelHigh, Vhigh);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入目標速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxAcc, acc);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入加速度失敗: Code[0x{result:X}]");
+            }
+
+            result = Motion.mAcm_SetF64Property(AxisHandle, (uint)PropertyID.PAR_AxDec, dec);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"寫入減速度失敗: Code[0x{result:X}]");
+            }
+            GetAxisVelParam();
+        }
+
+        /// <summary>
         /// 讀取速度參數
         /// </summary>
         public void GetAxisVelParam()
@@ -1836,28 +1880,28 @@ namespace ApexVisIns
             uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelLow, ref axVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取初始速度失敗: Code[0x{result:X}]");
             }
             VelLow = axVelLow;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxVelHigh, ref axVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取目標速度失敗: Code[0x{result:X}]");
             }
             VelHigh = axVelHigh;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxAcc, ref axAcc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG加速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取加速度失敗: Code[0x{result:X}]");
             }
             Acc = axAcc;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.PAR_AxDec, ref axDec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG減速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取減速度失敗: Code[0x{result:X}]");
             }
             Dec = axDec;
         }
@@ -1917,35 +1961,35 @@ namespace ApexVisIns
             uint result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelLow, ref axJogVelLow);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG初始速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取 JOG 初始速度失敗: Code[0x{result:X}]");
             }
             JogVelLow = axJogVelLow;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogVelHigh, ref axJogVelHigh);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG目標速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取 JOG 目標速度失敗: Code[0x{result:X}]");
             }
             JogVelHigh = axJogVelHigh;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogAcc, ref axJogAcc);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG加速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取 JOG 加速度失敗: Code[0x{result:X}]");
             }
             JogAcc = axJogAcc;
 
             result = Motion.mAcm_GetF64Property(AxisHandle, (uint)PropertyID.CFG_AxJogDec, ref axJogDec);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG減速度失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取 JOG 減速度失敗: Code[0x{result:X}]");
             }
             JogDec = axJogDec;
 
             result = Motion.mAcm_GetU32Property(AxisHandle, (uint)PropertyID.CFG_AxJogVLTime, ref axJogVLTime);
             if (result != (uint)ErrorCode.SUCCESS)
             {
-                throw new InvalidOperationException($"讀取JOG初速時間失敗: Code[0x{result:X}]");
+                throw new InvalidOperationException($"讀取 JOG 初速時間失敗: Code[0x{result:X}]");
             }
             JogVLTime = axJogVLTime;
         }
@@ -2309,14 +2353,14 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 位置移動
+        /// 直接觸發位置控制
         /// </summary>
-        /// <param name=""></param>
-        /// <param name="absolute"></param>
+        /// <param name="targetPos">(double)目標位置</param>
+        /// <param name="absolute">(bool)絕對位置</param>
         public void PosMove(double targetPos, bool absolute = false)
         {
-            TargetPos = targetPos;
-            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
+            //TargetPos = targetPos;
+            uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
 
             if (result != (uint)ErrorCode.SUCCESS)
             {
@@ -2325,19 +2369,29 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 位置移動 (可等候)
+        /// (try) 觸發位置控制
         /// </summary>
         /// <param name="targetPos"></param>
         /// <param name="absolute"></param>
+        /// <returns></returns>
+        public uint TryPosMove(double targetPos, bool absolute = false)
+        {
+            //TargetPos = targetPos;
+            return absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
+        }
+
+        /// <summary>
+        /// 位置移動 (可等候)
+        /// </summary>
+        /// <param name="targetPos">(double)目標位置</param>
+        /// <param name="absolute">(bool)絕對位置</param>
         /// <returns></returns>
         public async Task PosMoveAsync(double targetPos, bool absolute = false)
         {
             await Task.Run(() =>
             {
-                TargetPos = targetPos;
-                uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, TargetPos) : Motion.mAcm_AxMoveRel(AxisHandle, TargetPos);
-
-                Debug.WriteLine($"{result}");
+                //TargetPos = targetPos;
+                uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
 
                 if (result != (uint)ErrorCode.SUCCESS)
                 {

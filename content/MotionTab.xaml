@@ -194,7 +194,36 @@
                                 </Style>
                             </Button.Style>
                         </Button>
+                        <!--//-->
                     </DockPanel>
+                    
+
+                    <Button x:Name="AllServoOn" DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="26" MinWidth="135" VerticalAlignment="Center"
+                            HorizontalAlignment="Right" Click="AllServoOn_Click"
+                            IsEnabled="{Binding Path=DeviceOpened, Source={StaticResource ServoMotion}}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <TextBlock Text="All Servo On" Foreground="{StaticResource ColorTeal}"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <!--//-->
+                                
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AllServoOn, Source={StaticResource ServoMotion}, UpdateSourceTrigger=PropertyChanged}"  Value="True">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <TextBlock Text="All Servo Off" Foreground="{StaticResource ColorIndigo}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
                 </DockPanel>
             </materialDesign:Card>
             <!--#endregion-->

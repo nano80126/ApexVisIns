@@ -18,6 +18,7 @@ using Basler.Pylon;
 using Basler;
 using System.Threading;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace ApexVisIns.content
 {
@@ -111,7 +112,43 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //await TurnTubeToZeroPos();
             // This function is for test
+
+            MainWindow.PreCounterPos();
+
+            MainWindow.ApexCountPointFlags.Steps = 0;
+            MainWindow.ApexCountPointFlags.LastWindowWidth = 0;
+            MainWindow.ApexCountPointFlags.MaxWindowWidth = 0;
+
+            //step1done = false;
+            //step2done = false;
+            //step3done = false;
+            //step4done = false;
+            //maxWindowWidth = 0;
+            //lastWindowWidth = 0;
+        }
+
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.PreInspectWindow();
+        }
+
+        private void Button3_Click(object sender, RoutedEventArgs e)
+        {
+            byte b = 0;
+
+            b |= 0b0001;
+            Debug.WriteLine(b);
+
+            b |= 0b0010;
+            Debug.WriteLine(b);
+
+            b |= 0b0100;
+            Debug.WriteLine(b);
+
+            b |= 0b1000;
+            Debug.WriteLine(b);
         }
 
         /// <summary>
@@ -369,5 +406,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
+    
     }
 }
