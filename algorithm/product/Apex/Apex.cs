@@ -17,7 +17,6 @@ namespace ApexVisIns
         /// 保留做為參考
         /// </summary>
         /// <param name="mat">來源影像</param>
-        [Obsolete("等待重構")]
         public void ProcessApex(Mat mat)
         {
             int matWidth = mat.Width;
@@ -206,7 +205,6 @@ namespace ApexVisIns
         }
 
     }
-
 }
 
 
@@ -367,48 +365,6 @@ namespace ApexVisIns.Algorithm
     public class ApexProcess
     {
 
-        public static bool CheckTubeAnglePos(Mat src, out double x1Gap, out double x2Gap, out double x1Center, out double x2Center)
-        {
-            x1Gap = x2Gap = -1;
-            x1Center = x2Center = -1;
-
-            #region 上半
-            Rect roi1 = new(100, 580, 1000, 120);
-
-            Methods.GetRoiCanny(src, roi1, 75, 150, out Mat canny);
-
-            Methods.GetHoughVerticalXPos(canny, 100, out int count, out double[] pos, 3);
-
-            if (count == 4)
-            {
-                x1Gap = Math.Abs((pos[0] + pos[3] - pos[1] - pos[2]) / 2);
-                x1Center = (pos[0] + pos[3]) / 2;
-            }
-            else
-            {
-                return false;
-            }
-            #endregion
-
-            #region 下半
-            OpenCvSharp.Rect roi2 = new OpenCvSharp.Rect(100, 1260, 1000, 120);
-
-            Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny2);
-
-            Methods.GetHoughVerticalXPos(canny2, 100, out count, out pos, 3);
-
-            if (count == 4)
-            {
-                x2Gap = Math.Abs((pos[0] + pos[3] - pos[1] - pos[2]) / 2);
-                x2Center = (pos[0] + pos[3]) / 2;
-            }
-            else
-            {
-                return false;
-            }
-            #endregion
-
-            return true;
-        }
+        
     }
 }
