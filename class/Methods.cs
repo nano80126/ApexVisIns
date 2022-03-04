@@ -13,18 +13,18 @@ namespace ApexVisIns
         /// <summary>
         /// 取得 Canny 影像
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="th1"></param>
-        /// <param name="th2"></param>
-        /// <param name="canny"></param>
-        public static void GetCanny(Mat src, byte th1, byte th2, out Mat canny)
+        /// <param name="roi"></param>
+        /// <param name="th1">閾值 1</param>
+        /// <param name="th2">閾值 2</param>
+        /// <param name="canny">(out) canny 圖像</param>
+        public static void GetCanny(Mat roi, byte th1, byte th2, out Mat canny)
         {
             try
             {
                 canny = new Mat();
 
                 using Mat blur = new();
-                Cv2.BilateralFilter(src, blur, 15, 1100, 5);
+                Cv2.BilateralFilter(roi, blur, 15, 100, 5);
                 Cv2.Canny(blur, canny, th1, th2, 3);
             }
             catch (OpenCVException)
@@ -40,11 +40,11 @@ namespace ApexVisIns
         /// <summary>
         /// 取得 ROI Canny 影像
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="roi"></param>
-        /// <param name="th1"></param>
-        /// <param name="th2"></param>
-        /// <param name="canny"></param>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">roi 方形區域</param>
+        /// <param name="th1">閾值 1</param>
+        /// <param name="th2">閾值 2</param>
+        /// <param name="canny">(out) canny 圖像</param>
         public static void GetRoiCanny(Mat src, Rect roi, byte th1, byte th2, out Mat canny)
         {
             try
@@ -67,11 +67,20 @@ namespace ApexVisIns
             }
         }
 
-
-        public static void GetContours(Mat src, Point offset, byte th1, byte th2, out Point[][] con, out Point[] connectedCon, int contourLength = 0)
+        /// <summary>
+        /// 取得輪廓點陣列
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="offset">Offset 位移</param>
+        /// <param name="th1">Canny 閾值 1</param>
+        /// <param name="th2">Canny 閾值 2</param>
+        /// <param name="con">輪廓陣列</param>
+        /// <param name="cons">一維化輪廓陣列</param>
+        /// <param name="conLength">輪廓長度閾值，過濾小於此長度值的輪廓</param>
+        public static void GetContours(Mat src, Point offset, byte th1, byte th2, out Point[][] con, out Point[] cons, int conLength = 0)
         {
             con = null;
-            connectedCon = null;
+            cons = null;
 
             try
             {
@@ -83,15 +92,10 @@ namespace ApexVisIns
 
                 Cv2.FindContours(canny, out con, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, offset);
 
-                IEnumerable<Point[]> filter = con.Where(c => c.Length > contourLength);
+                IEnumerable<Point[]> filter = con.Where(c => c.Length > conLength);
 
                 con = filter.ToArray();
-                connectedCon = filter.SelectMany(pts => pts).ToArray();
-                //con = con.Where(c => c.Length > contourLength).ToArray();
-                //for (int i = 0; i < con.Length; i++)
-                //{
-                //    connectedCon = connectedCon.Concat(con[i].ToArray()).ToArray();
-                //}
+                cons = filter.SelectMany(pts => pts).ToArray();
             }
             catch (OpenCVException)
             {
@@ -103,6 +107,16 @@ namespace ApexVisIns
             }
         }
 
+
+        /// <summary>
+        /// 取得霍夫 Lines
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">ROI 方形區域</param>
+        /// <param name="th1">Canny 閾值 1</param>
+        /// <param name="th2">Canny 閾值 2</param>
+        /// <param name="lineSegments">霍夫直線</param>
+        /// <param name="lineLength">直線長度閾值，過濾小於指長度的直線</param>
         public static void GetHoughLines(Mat src, Rect roi, byte th1, byte th2, out LineSegmentPoint[] lineSegments, int lineLength = 0)
         {
             lineSegments = Array.Empty<LineSegmentPoint>();
@@ -131,6 +145,16 @@ namespace ApexVisIns
             }
         }
 
+
+        /// <summary>
+        /// 取得霍夫水平 / 垂直線
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">ROI 方形區域</param>
+        /// <param name="th1">Canny 閾值 1</param>
+        /// <param name="th2">Canny 閾值 1</param>
+        /// <param name="lineSegH">水平線</param>
+        /// <param name="lineSegV">垂直線</param>
         public static void GetHoughLines(Mat src, Rect roi, byte th1, byte th2, out LineSegmentPoint[] lineSegH, out LineSegmentPoint[] lineSegV)
         {
             lineSegH = lineSegV = Array.Empty<LineSegmentPoint>();
@@ -174,11 +198,11 @@ namespace ApexVisIns
         /// <summary>
         /// 計算水平 Hough Lines
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="roi"></param>
-        /// <param name="th1"></param>
-        /// <param name="th2"></param>
-        /// <param name="lineSegH"></param>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">ROI 方形區域</param>
+        /// <param name="th1">Canny 閾值 1</param>
+        /// <param name="th2">Canny 閾值 2</param>
+        /// <param name="lineSegH">水平線</param>
         /// <param name="Ygap"></param>
         public static void GetHoughLinesH(Mat src, Rect roi, byte th1, byte th2, out LineSegmentPoint[] lineSegH, int Ygap = 3)
         {
@@ -199,7 +223,7 @@ namespace ApexVisIns
                 // 1. 保留 Ygap < 3 的線 2. 平移 roi.X roi.Y
                 lineSegH = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Select(line =>
                 {
-                    line.Offset(roi.X, roi.Y);
+                    line.Offset(roi.Location);
                     return line;
                 }).ToArray();
             }
@@ -261,10 +285,10 @@ namespace ApexVisIns
         /// <summary>
         /// 計算 Center 垂直線
         /// </summary>
-        public static void GetHoughLinesCenterV(Mat src, Rect roi, byte th1, byte th2, out LineSegmentPoint[] leftLineSegV, out LineSegmentPoint[] rightLineSegV, out double CenterX, int Xgap = 3)
+        public static void GetHoughLinesCenterV(Mat src, Rect roi, byte th1, byte th2, out LineSegmentPoint[] LineSegVLeft, out LineSegmentPoint[] LineSegVRight, out double CenterX, int Xgap = 3)
         {
-            leftLineSegV = Array.Empty<LineSegmentPoint>();
-            rightLineSegV = Array.Empty<LineSegmentPoint>();
+            LineSegVLeft = Array.Empty<LineSegmentPoint>();
+            LineSegVRight = Array.Empty<LineSegmentPoint>();
             CenterX = 0;
 
             try
@@ -281,27 +305,29 @@ namespace ApexVisIns
 
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
+                    // 保留近垂直線
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap);
 
+                    // 計算中心
                     double max = filter.Max(line => Math.Max(line.P1.X, line.P2.X));
                     double min = filter.Min(line => Math.Min(line.P1.X, line.P2.X));
                     double mean = (max + min) / 2.0;
 
                     // 過濾 + 平移
-                    leftLineSegV = filter.Where(line => line.P1.X < mean).Select(line =>
+                    LineSegVLeft = filter.Where(line => line.P1.X < mean).Select(line =>
                     {
-                        line.Offset(roi.X, roi.Y);
+                        line.Offset(roi.Location);
                         return line;
                     }).ToArray();
                     // 過濾 + 平移
-                    rightLineSegV = filter.Where(line => line.P1.X > mean).Select(line =>
+                    LineSegVRight = filter.Where(line => line.P1.X > mean).Select(line =>
                     {
-                        line.Offset(roi.X, roi.Y);
+                        line.Offset(roi.Location);
                         return line;
                     }).ToArray();
 
-                    min = leftLineSegV.Average(line => (line.P1.X + line.P2.X) / 2);
-                    max = rightLineSegV.Max(line => (line.P1.X + line.P2.X) / 2);
+                    min = LineSegVLeft.Min(line => (line.P1.X + line.P2.X) / 2);
+                    max = LineSegVRight.Max(line => (line.P1.X + line.P2.X) / 2);
                     CenterX = (min + max) / 2;
                 }
             }
@@ -315,8 +341,10 @@ namespace ApexVisIns
         /// 取得分組後垂直線 X 座標位置，
         /// </summary>
         /// <param name="src">canny 影像</param>
-        /// <param name="XPosCount">X 座標數</param>
-        /// <param name="Xpos">X 座標</param>
+        /// <param name="offset">Offset 位移</param>
+        /// <param name="XPosCount">(out) X 座標數</param>
+        /// <param name="Xpos">(out) X 座標</param>
+        /// <param name="Xgap">X 座標 Gap</param>
         public static void GetHoughVerticalXPos(Mat src, int offset, out int XPosCount, out double[] Xpos, int Xgap = 3)
         {
             XPosCount = 0;

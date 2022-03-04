@@ -120,13 +120,6 @@ namespace ApexVisIns.content
             MainWindow.ApexCountPointFlags.Steps = 0;
             MainWindow.ApexCountPointFlags.LastWindowWidth = 0;
             MainWindow.ApexCountPointFlags.MaxWindowWidth = 0;
-
-            //step1done = false;
-            //step2done = false;
-            //step3done = false;
-            //step4done = false;
-            //maxWindowWidth = 0;
-            //lastWindowWidth = 0;
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
@@ -136,19 +129,7 @@ namespace ApexVisIns.content
 
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
-            byte b = 0;
 
-            b |= 0b0001;
-            Debug.WriteLine(b);
-
-            b |= 0b0010;
-            Debug.WriteLine(b);
-
-            b |= 0b0100;
-            Debug.WriteLine(b);
-
-            b |= 0b1000;
-            Debug.WriteLine(b);
         }
 
         /// <summary>

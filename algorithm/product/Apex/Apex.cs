@@ -17,6 +17,7 @@ namespace ApexVisIns
         /// 保留做為參考
         /// </summary>
         /// <param name="mat">來源影像</param>
+        [Obsolete("等待重構")]
         public void ProcessApex(Mat mat)
         {
             int matWidth = mat.Width;
@@ -65,6 +66,7 @@ namespace ApexVisIns
         }
 
 
+
         /// <summary>
         /// Apex 對位用 Flag 結構
         /// </summary>
@@ -83,6 +85,9 @@ namespace ApexVisIns
         }
 
 
+        /// <summary>
+        /// 工件對位前手續
+        /// </summary>
         public void PreCounterPos()
         {
             // 變更光源
@@ -94,12 +99,12 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        ///  初始化工件對位
+        /// 工件對位
         /// </summary>
         /// <param name="src"></param>
         public void CounterPos(Mat src)
         {
-            // 進入前要變更，不是寫在這
+            // 進入前要 Call PreCounterPos()
             // 變更光源 (96, 0, 128, 0)
             // 變更馬達速度 (20, 200, 10000,10000)
 
@@ -193,7 +198,9 @@ namespace ApexVisIns
             Debug.WriteLine($"{ApexCountPointFlags.MaxWindowWidth}");
         }
 
-
+        /// <summary>
+        /// 窗戶檢驗前手續
+        /// </summary>
         public void PreInspectWindow()
         {
             // 變更光源
@@ -204,6 +211,14 @@ namespace ApexVisIns
             ServoMotion.Axes[1].PosMove(-100, true);
         }
 
+        /// <summary>
+        /// 窗戶檢驗
+        /// </summary>
+        /// <param name="src"></param>
+        public void InspectWindow(Mat src)
+        {
+
+        }
     }
 }
 
@@ -358,6 +373,7 @@ namespace ApexVisIns.Algorithm
             _disposed = true;
         }
     }
+
 
     /// <summary>
     /// Apex 處理方法
