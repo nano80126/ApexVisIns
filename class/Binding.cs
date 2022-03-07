@@ -390,6 +390,11 @@ namespace ApexVisIns
         public double StrokeThickness { get; set; }
 
         /// <summary>
+        /// Rect 面積
+        /// </summary>
+        public double Area => Width * Height;
+
+        /// <summary>
         /// Reset temp point
         /// </summary>
         public void ResetTemp()

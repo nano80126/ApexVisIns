@@ -267,22 +267,36 @@
 
                 <Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
-                        <TextBlock Margin="8 0 0 0" Text="測試1" VerticalAlignment="Center"/>
+                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
+                        <TextBlock Margin="0 0 0 0" Text="測試1" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button2_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
-                        <TextBlock Margin="8 0 0 0" Text="測試2" VerticalAlignment="Center"/>
+                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
+                        <TextBlock Margin="0 0 0 0" Text="測試2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button3_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>
-                        <TextBlock Margin="8 0 0 0" Text="測試3" VerticalAlignment="Center"/>
+                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
+                        <TextBlock Margin="0 0 0 0" Text="測試3" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button VerticalAlignment="Center" Click="Button4_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
+                        <TextBlock Margin="0 0 0 0" Text="測試4" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button VerticalAlignment="Center" Click="Button5_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
+                        <TextBlock Margin="0 0 0 0" Text="測試5" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </ToolBar>

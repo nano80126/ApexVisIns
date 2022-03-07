@@ -67,6 +67,28 @@ namespace ApexVisIns
             }
         }
 
+
+        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat Otsu, out double threshHold)
+        {
+            try
+            {
+                Otsu = new Mat();
+
+                using Mat clone = new Mat(src, roi);
+                using Mat blur = new();
+
+                threshHold = Cv2.Threshold(clone, Otsu, th, max, ThresholdTypes.Otsu);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// 取得輪廓點陣列
         /// </summary>
@@ -345,23 +367,33 @@ namespace ApexVisIns
         /// <param name="XPosCount">(out) X 座標數</param>
         /// <param name="Xpos">(out) X 座標</param>
         /// <param name="Xgap">X 座標 Gap</param>
-        public static void GetHoughVerticalXPos(Mat src, int offset, out int XPosCount, out double[] Xpos, int Xgap = 3)
+        public static void GetHoughVerticalXPos(Mat src, int offset, out int XPosCount, out double[] Xpos, int Xgap = 3, int lineLength = 0)
         {
             XPosCount = 0;
-            Xpos = new double[0];
+            Xpos = Array.Empty<double>();
 
             try
             {
                 LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
 
+
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
-                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap);
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap).Where(line => line.Length() > lineLength);
+                    //IEnumerable<LineSegmentPoint> filter2 = filter.Where(line => line.Length() > lineLength);
 
-                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
+                    // foreach (LineSegmentPoint item in filter)
+                    // {
+                    //     Debug.WriteLine($"{item.Length()} {item.P1} {item.P2}");
+                    // }
+                    // for (int i = 0; i < filter.Count(); i++)
+                    // {
+                    //     Cv2.Line(src, lineSeg[i].P1, lineSeg[i].P2, Scalar.Gray);
+                    // }
+
+                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X + line.P2.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
 
                     XPosCount = groupings.Length;
-
                     Xpos = new double[groupings.Length];
                     for (int i = 0; i < groupings.Length; i++)
                     {
@@ -414,6 +446,7 @@ namespace ApexVisIns
                 throw;
             }
         }
+
 
         /// <summary>
         /// 確認影像是否含有目標物

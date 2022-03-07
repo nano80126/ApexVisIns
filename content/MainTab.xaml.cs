@@ -122,7 +122,7 @@ namespace ApexVisIns.content
             InitMotion(_cancellationTokenSource.Token).Wait();
 
             // 測試光源用
-            //InitLightCtrls(_cancellationTokenSource.Token).Wait();
+            InitLightCtrls(_cancellationTokenSource.Token).Wait();
 
             // 測試 IO 用
             // InitIOCtrl(_cancellationTokenSource.Token).Wait();

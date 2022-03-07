@@ -12,6 +12,7 @@ namespace ApexVisIns
 {
     public partial class MainWindow : System.Windows.Window
     {
+        #region 保留等待重構
         /// <summary>
         /// Apex 處理,
         /// 保留做為參考
@@ -64,14 +65,22 @@ namespace ApexVisIns
                 img.Dispose();
             }
         }
+        #endregion
 
 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
 
         /// <summary>
         /// Apex 對位用 Flag 結構
         /// </summary>
         public struct ApexCounterPointStruct
         {
+            /// <summary>
+            /// 工件對位步驟旗標
+            /// bit 0 ~ 3
+            /// </summary>
             public byte Steps { get; set; }
             public ushort LastWindowWidth { get; set; }
             public ushort MaxWindowWidth { get; set; }
@@ -84,11 +93,11 @@ namespace ApexVisIns
             ApexCountPointFlags = new ApexCounterPointStruct();
         }
 
-
         /// <summary>
-        /// 工件對位前手續
+        /// 角度校正前手續
+        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(轉一圈多)
         /// </summary>
-        public void PreCounterPos()
+        public void PreAngleCorrection()
         {
             // 變更光源
             LightCtrls[0].SetAllChannelValue(96, 0, 128, 0);
@@ -99,10 +108,12 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 工件對位
+        /// 角度校正, 
+        /// 校正後旋轉軸歸零.  
+        /// ※需要連續拍攝
         /// </summary>
         /// <param name="src"></param>
-        public void CounterPos(Mat src)
+        public void AngleCorrection(Mat src)
         {
             // 進入前要 Call PreCounterPos()
             // 變更光源 (96, 0, 128, 0)
@@ -198,10 +209,12 @@ namespace ApexVisIns
             Debug.WriteLine($"{ApexCountPointFlags.MaxWindowWidth}");
         }
 
+        #region 窗戶瑕疵, Window Defect
         /// <summary>
-        /// 窗戶檢驗前手續
+        /// 窗戶瑕疵檢驗前手續,
+        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(-100)
         /// </summary>
-        public void PreInspectWindow()
+        public void PreWindowInspection()
         {
             // 變更光源
             LightCtrls[0].SetAllChannelValue(320, 0, 128, 0);
@@ -212,13 +225,295 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 窗戶檢驗
+        /// 窗戶瑕疵檢驗前手續,
+        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(-100)
+        /// </summary>
+        public void PreWindowInspection2()
+        {
+            // 變更光源
+            LightCtrls[0].SetAllChannelValue(256, 0, 114, 0);
+            // 變更馬達速度
+            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
+            // 觸發馬達
+            ServoMotion.Axes[1].PosMove(-100, true);
+        }
+
+        /// <summary>
+        /// 窗戶瑕疵檢驗前手續,
+        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(-100)
+        /// </summary>
+        public void PreWindowInspection3()
+        {
+            // 變更光源
+            LightCtrls[0].SetAllChannelValue(224, 0, 114, 0);
+            // 變更馬達速度
+            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
+            // 觸發馬達
+            ServoMotion.Axes[1].PosMove(-100, true);
+        }
+
+        /// <summary>
+        /// 窗戶瑕疵檢驗，
+        /// 測試是否拆步驟 (先取 ROI 再瑕疵檢)
         /// </summary>
         /// <param name="src"></param>
-        public void InspectWindow(Mat src)
+        /// <returns>良品(true) / 不良品(false)</returns>
+        public bool WindowInspection(Mat src)
         {
+            Rect roi = new(100, 840, 1000, 240);
 
+            Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
+            Methods.GetHoughVerticalXPos(canny, roi.X, out int count, out double[] xPos);
+            canny.Dispose();
+
+            #region 陣列抽取
+            List<double> xPosList = new();
+            for (int i = 0; i < xPos.Length; i++)
+            {
+                if (i == 0 || xPos[i - 1] + 5 < xPos[i])
+                {
+                    xPosList.Add(xPos[i]);
+                }
+            }
+            xPos = xPosList.ToArray();
+            xPosList.Clear();
+            xPosList = null;
+            #endregion
+
+            Debug.WriteLine($"count: {xPos.Length}; {string.Join(" , ", xPos.Select(x => Math.Round(x, 2)))}");
+
+            // 尋找管內窗戶邊緣, 位置約落在 750 ~ 780
+            int cIdx = Array.FindIndex(xPos, 0, x => x is < 780 and > 750);
+            Debug.WriteLine($"center index: {cIdx}");
+
+            if (count >= 7)
+            {
+                Rect leftRoiWindow = new((int)xPos[1] - 20, 255, (int)xPos[cIdx - 1] - (int)xPos[1] + 40, 1400);
+                Rect rightRoiWindow = new((int)xPos[cIdx + 1] - 20, 255, (int)xPos[^2] - (int)xPos[cIdx + 1] + 40, 1400);
+
+                Mat leftRoiMat = new(src, leftRoiWindow);       // left canny window
+                Mat rightRoiMat = new(src, rightRoiWindow);     // right canny window   
+
+                #region 取得窗戶 canny
+                Methods.GetCanny(leftRoiMat, 75, 150, out Mat lcw1);    // left canny window 1
+                Methods.GetCanny(leftRoiMat, 60, 120, out Mat lcw2);
+                Methods.GetCanny(leftRoiMat, 50, 100, out Mat lcw3);
+                //Methods.GetCanny(leftRoiMat, 35, 150, out Mat cannyWindow4);
+
+                Methods.GetCanny(rightRoiMat, 75, 150, out Mat rcw1);   // right canny window 1
+                Methods.GetCanny(rightRoiMat, 60, 120, out Mat rcw2);
+                Methods.GetCanny(rightRoiMat, 50, 100, out Mat rcw3);
+                //Methods.GetCanny(rightRoiMat, 35, 150, out Mat cannyWindow44);
+                #endregion
+
+                // 尋找輪廓，內部輪廓 - 外部輪廓
+                Cv2.FindContours(lcw3 - lcw1 - lcw2, out Point[][] leftConsDiff, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, leftRoiWindow.Location);
+                // 尋找輪廓
+                Cv2.FindContours(rcw3 - rcw1 - rcw2, out Point[][] rightConsDiff, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, rightRoiWindow.Location);
+
+
+                #region 可刪
+                Mat leftConMat = new(lcw1.Height, lcw1.Width, MatType.CV_8UC1, Scalar.Black);
+                Mat rightConMat = new(rcw1.Height, rcw1.Width, MatType.CV_8UC1, Scalar.Black);
+                #endregion
+
+                // 過濾過短輪廓
+                Point[] leftFilter = leftConsDiff.Where(c => c.Length > 20).Aggregate(Array.Empty<Point>(), (acc, c) => acc.Concat(c).ToArray()).Where(pt =>
+                {
+                    return xPos[1] + 3 < pt.X && pt.X < xPos[cIdx - 1] - 3;
+                }).ToArray();
+
+                // 過濾過短輪廓
+                Point[] rightFilter = rightConsDiff.Where(c => c.Length > 20).Aggregate(Array.Empty<Point>(), (acc, c) => acc.Concat(c).ToArray()).Where(pt =>
+                {
+                    return xPos[cIdx + 1] + 3 < pt.X && pt.X < xPos[^2] - 3;
+                }).ToArray();
+
+                /// 左邊
+                for (int i = 0; i < leftFilter.Length; i++)
+                {
+                    Cv2.Circle(leftConMat, leftFilter[i].Subtract(leftRoiWindow.Location), 5, Scalar.Gray, 1);
+                    Cv2.Circle(src, leftFilter[i], 5, Scalar.Red, 2);
+                    //Debug.WriteLine($"{leftFilter[i]}  {leftFilter[i].Subtract(rightRoiWindow.Location)}");
+                }
+                Debug.WriteLine($"Left Con Length: {leftFilter.Length}");
+
+                Cv2.Resize(leftConMat, leftConMat, new OpenCvSharp.Size(leftRoiWindow.Width * 3 / 5, leftRoiWindow.Height * 3 / 5));
+                Cv2.ImShow("Left Con Mat", leftConMat);
+                Cv2.MoveWindow("Left Con Mat", 0, 0);
+
+                /// 右邊
+                for (int i = 0; i < rightFilter.Length; i++)
+                {
+                    Cv2.Circle(rightConMat, rightFilter[i].Subtract(rightRoiWindow.Location), 5, Scalar.Gray, 1);
+                    Cv2.Circle(src, rightFilter[i], 5, Scalar.Red, 2);
+                    //Debug.WriteLine($"{rightFilter[i]}  {rightFilter[i].Subtract(rightRoiWindow.Location)}");
+                }
+                Debug.WriteLine($"Right Con Length: {rightFilter.Length}");
+
+                Cv2.Resize(rightConMat, rightConMat, new OpenCvSharp.Size(rightRoiWindow.Width * 3 / 5, rightRoiWindow.Height * 3 / 5));
+                Cv2.ImShow("Right Con Mat", rightConMat);
+                Cv2.MoveWindow("Right Con Mat", leftRoiWindow.X - 100, 0);
+                //Cv2.dra
+
+                #region 畫出標示 (之後移除)
+                // 找出 / 標示分界點
+                //for (int i = 0; i < xPos.Length; i++)
+                //{
+                //    Cv2.Circle(src, new Point(xPos[i], 960), 7, Scalar.Black, 3);
+                //}
+                // 標示 窗戶 ROI
+                Cv2.Rectangle(src, leftRoiWindow, Scalar.Gray, 2);
+                // 標示 窗戶 ROI
+                Cv2.Rectangle(src, rightRoiWindow, Scalar.Gray, 2);
+                #endregion
+            }
+
+            #region 標示分界
+            for (int i = 0; i < xPos.Length; i++)
+            {
+                Cv2.Circle(src, new Point(xPos[i], 960), 7, Scalar.Black, 3);
+            }
+            #endregion
+
+            /// 等耳朵一起處理好，決定閾值
+            /// 等耳朵一起處理好，決定閾值
+            /// 等耳朵一起處理好，決定閾值
+
+
+            return true;
         }
+
+        /// <summary>
+        /// 窗戶瑕疵檢測(側光)前手續，
+        /// 128, 0
+        /// </summary>
+        public void PreWindowInspectionSideLight()
+        {
+            // 光源值待定 
+            LightCtrls[1].SetAllChannelValue(128, 0);
+        }
+
+        /// <summary>
+        /// 窗戶瑕疵檢測(側光)前手續，
+        /// 0, 256
+        /// </summary>
+        public void PreWindowInspectionSideLight2()
+        {
+            // 光源值待定 
+            LightCtrls[1].SetAllChannelValue(0, 256);
+        }
+
+        /// <summary>
+        /// 窗戶瑕疵檢測(側光)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <returns>良品(true) / 不良品(false)</returns>
+        public bool WindowInspectionSideLight(Mat src)
+        {
+            Rect roi = new(350, 1400, 500, 300);
+
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out double threshHold);
+
+            /// 待刪
+            Debug.WriteLine($"{threshHold}");
+
+            if (threshHold > 50)
+            {
+                // 如果需要回傳顯示不良範圍
+                // 這邊處理
+                // code here
+
+                otsu.Dispose();
+                return false;
+            }
+            else
+            {
+                otsu.Dispose();
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 窗戶瑕疵檢測(側光)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <returns>良品(true) / 不良品(false)</returns>
+        public bool WindowInspectionSideLight2(Mat src)
+        {
+            Rect roi = new(350, 160, 500, 300);
+
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out double threshHold);
+
+            /// 待刪
+            Debug.WriteLine($"{threshHold}");
+
+            if (threshHold > 50)
+            {
+                // 如果需要回傳顯示不良範圍
+                // 這邊處理
+                // code here
+
+                otsu.Dispose();
+                return false;
+            }
+            else
+            {
+                otsu.Dispose();
+                return true;
+            }
+        }
+        #endregion
+
+        #region 耳朵
+        /// <summary>
+        /// 耳朵瑕疵檢測前手續，
+        /// Light: 96, 0, 128, 128
+        /// Motion: xxxxx, -100
+        /// </summary>
+        public void PreEarInspectionRoi()
+        {
+            LightCtrls[0].SetAllChannelValue(96, 0, 128, 128);
+        }
+
+        /// <summary>
+        /// 取得耳朵瑕疵檢驗 ROI
+        /// </summary>
+        /// <param name="roi">(out) ROI Rect</param>
+        public void GetEarInspectionRoi(Mat src, out Rect roiL, out Rect roiR)
+        {
+            Rect roi = new(300, 600, 600, 200);
+
+            Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
+            Methods.GetHoughVerticalXPos(canny, roi.X, out _, out double[] xPos, 3, 50);
+            canny.Dispose();
+
+            roiL = new((int)xPos[0] + 1, 600, 50, 200);
+            roiR = new((int)xPos[1] - 51, 580, 50, 200);
+        }
+
+        /// <summary>
+        /// 耳朵瑕疵前手續，
+        /// Light: 256, 0, 128, 96
+        /// Motion: xxxxx, -100
+        /// </summary>
+        public void PreEarInspection()
+        {
+            LightCtrls[0].SetAllChannelValue(256, 0, 128, 96);
+        }
+
+        /// <summary>
+        /// 耳朵瑕疵檢測
+        /// </summary>
+        public bool EarInspection(Mat src, Rect roiL, Rect roiR)
+        {
+            // Canny + Otsu
+
+            return true;
+        }
+
+        // 另一邊
+        #endregion
     }
 }
 
@@ -381,6 +676,6 @@ namespace ApexVisIns.Algorithm
     public class ApexProcess
     {
 
-        
+
     }
 }

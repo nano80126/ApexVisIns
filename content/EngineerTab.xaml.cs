@@ -24,7 +24,7 @@ namespace ApexVisIns.content
 {
     /// <summary>
     /// Programming.xaml 的互動邏輯
-    /// </summary>
+    /// </summary>m
     public partial class EngineerTab : StackPanel, INotifyPropertyChanged
     {
         #region Resources
@@ -112,10 +112,10 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //await TurnTubeToZeroPos();
+            // await TurnTubeToZeroPos();
             // This function is for test
 
-            MainWindow.PreCounterPos();
+            MainWindow.PreAngleCorrection();
 
             MainWindow.ApexCountPointFlags.Steps = 0;
             MainWindow.ApexCountPointFlags.LastWindowWidth = 0;
@@ -124,12 +124,23 @@ namespace ApexVisIns.content
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.PreInspectWindow();
+            MainWindow.PreWindowInspection();
         }
 
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.PreWindowInspection2();
+        }
 
+        private void Button4_Click(object sender, RoutedEventArgs e)
+        {
+            //MainWindow.PreWindowInspection3();
+            MainWindow.PreEarInspectionRoi();
+        }
+
+        private void Button5_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.PreEarInspection();
         }
 
         /// <summary>
@@ -387,6 +398,5 @@ namespace ApexVisIns.content
         }
         #endregion
 
-    
     }
 }
