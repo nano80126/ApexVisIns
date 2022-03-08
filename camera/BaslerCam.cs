@@ -388,6 +388,7 @@ namespace ApexVisIns
     public class BaslerCam : CustomCam, IDisposable
     {
         private bool _disposed;
+        private bool _isGrabberOpened;
 
         /// <summary>
         /// 相機建構子
@@ -424,6 +425,21 @@ namespace ApexVisIns
         /// Grabber 是否開啟
         /// </summary>
         public bool IsGrabbing => Camera != null && Camera.StreamGrabber.IsGrabbing;
+        /// <summary>
+        /// 是否只開啟Grabber不拍照，拍照使用 RetrieveResult 觸發
+        /// </summary>
+        public bool IsGrabberOpened
+        {
+            get => _isGrabberOpened;
+            set
+            {
+                if (value != _isGrabberOpened)
+                {
+                    _isGrabberOpened = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 型號名稱

@@ -136,7 +136,7 @@
                         </MultiBinding>
                     </Button.IsEnabled>
 
-                    <materialDesign:PackIcon Width="30" Height="26">
+                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Setter Property="Kind" Value="CameraOutline"/>
@@ -146,20 +146,23 @@
                 </Button>
                 <!--連續擷取-->
                 <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black"
-                        IsEnabled="{Binding IsOpen, FallbackValue=False}" 
                         ToolTip="(F6) Continuous Shot" Style="{StaticResource MaterialDesignFlatButton}">
+                    <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
                     <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"-->
-                    <materialDesign:PackIcon Width="30" Height="26">
+
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                            <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
+                            <Binding Path="IsGrabberOpened" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                        </MultiBinding>
+                    </Button.IsEnabled>
+
+                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Style.Triggers>
-                                    <!--
-                                        <DataTrigger Binding="{Binding IsGrabbing, Source={StaticResource BaslerCam}, FallbackValue=False}" Value="True">
-                                            <Setter Property="Kind" Value="VideocamOffOutline"/>
-                                        </DataTrigger>
-                                    -->
                                     <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False}" Value="True">
-                                        <Setter Property="Kind" Value="VideocamOffOutline"/>
+                                        <Setter Property="Kind" Value="VideoOffOutline"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                                 <Setter Property="Kind" Value="VideoOutline"/>
@@ -167,6 +170,31 @@
                         </materialDesign:PackIcon.Style>
                     </materialDesign:PackIcon>
                 </Button>
+                <!--切換 StreamGrabber-->
+                <Separator/>
+                <Button x:Name="ToggleStreamGrabber" VerticalAlignment="Center" Click="ToggleStreamGrabber_Click" Focusable="False" Foreground="Black"
+                        IsEnabled="{Binding IsOpen, FallbackValue=False}"
+                        ToolTip="(F7) Toggle Stream Grabber" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False}" Value="True">
+                                        <Setter Property="Kind" Value="VideoMinusOutline"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Kind" Value="VideoPlusOutline"/>
+                            </Style>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
+                </Button>
+                <!--//-->
+                <Button x:Name="RetrieveImage" VerticalAlignment="Center" Click="RetrieveImage_Click" Focusable="False" Foreground="Black"
+                        IsEnabled="{Binding IsOpen, FallbackValue=False}"
+                        ToolTip="(F8) Retrieve Image" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Width="30" Height="26" Kind="ImageOutline"/>
+                </Button>
+                
                 <!--//-->
                 <Separator/>
                 <!--解析度 (Resolution)-->

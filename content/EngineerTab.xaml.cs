@@ -112,35 +112,37 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // await TurnTubeToZeroPos();
-            // This function is for test
-
             MainWindow.PreAngleCorrection();
 
-            MainWindow.ApexCountPointFlags.Steps = 0;
-            MainWindow.ApexCountPointFlags.LastWindowWidth = 0;
-            MainWindow.ApexCountPointFlags.MaxWindowWidth = 0;
+            MainWindow.ApexAngleCorrectionFlags.Steps = 0;
+            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
+            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
         }
 
+        
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.PreWindowInspection();
         }
 
+        
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.PreWindowInspection2();
         }
 
+        
         private void Button4_Click(object sender, RoutedEventArgs e)
         {
             //MainWindow.PreWindowInspection3();
-            MainWindow.PreEarInspectionRoi();
+            MainWindow.PreEarInspectionRoiL();
         }
+
 
         private void Button5_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.PreEarInspection();
+            //MainWindow.PreEarInspectionL();
+            MainWindow.PreEarInspectionRoiR();
         }
 
         /// <summary>
@@ -398,5 +400,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
+    
     }
 }

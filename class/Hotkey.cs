@@ -175,6 +175,23 @@ namespace ApexVisIns
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
+
+        private void ToggleStreamGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = OnTabIndex switch
+            {
+                4 => EngineerTab.ToggleStreamGrabber.IsEnabled,
+                _ => false
+            };
+        }
+
+
+        private void ToggleStreamGrabberCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            EngineerTab.ToggleStreamGrabber.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        }
+
+
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
             EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;

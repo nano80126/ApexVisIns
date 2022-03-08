@@ -71,6 +71,27 @@ namespace ApexVisIns.content
             Basler_ContinousGrab(MainWindow.BaslerCam);
         }
 
+        private void ToggleStreamGrabber_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MainWindow.BaslerCam.IsGrabberOpened)
+            {
+                Basler_StartStreamGrabber(MainWindow.BaslerCam);
+            }
+            else
+            {
+                Basler_StopStreamGrabber(MainWindow.BaslerCam);
+            }
+        }
+
+        private void RetrieveImage_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow.BaslerCam.IsGrabberOpened)
+            {
+                MainWindow.ApexDefectInspectionStepsFlags.EarSteps = 0;
+                Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
+            }
+        }
+
         private void ToggleCrosshair_Click(object sender, RoutedEventArgs e)
         {
             Crosshair.Enable = !Crosshair.Enable;
@@ -139,12 +160,78 @@ namespace ApexVisIns.content
             return false;
         }
 
+        /// <summary>
+        /// 啟動 StreamGrabber，
+        /// 此方法啟動時，改為 RetrieveResult 取得影像，
+        /// 
+        /// </summary>
+        /// <param name="cam"></param>
+        private void Basler_StartStreamGrabber(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    // 啟動 StreamGrabber，連續拍攝
+                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                    cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                    cam.IsGrabberOpened = true;
+
+                    // 
+                    cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+
+                    // 清空 Image
+                    MainWindow.ImageSource = null;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+        private void Basler_StopStreamGrabber(BaslerCam cam)
+        {
+            try
+            {
+                if (cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    cam.Camera.StreamGrabber.Stop();
+                    cam.IsGrabberOpened = false;
+
+                    cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
         public static void Basler_SingleGrab(BaslerCam cam)
         {
             try
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 啟動 StreamGrabber，拍攝一張
                     cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
 
                     cam.Camera.ExecuteSoftwareTrigger();
@@ -185,6 +272,127 @@ namespace ApexVisIns.content
                 {
                     cam.Camera.StreamGrabber.Stop();
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Stream Grabber Retrieve Image
+        /// </summary>
+        /// <param name="cam"></param>
+        private async void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
+        {
+            try
+            {
+                OpenCvSharp.Rect roiL = new();
+                OpenCvSharp.Rect roiR = new();
+                int count = 0;
+
+                while (MainWindow.ApexDefectInspectionStepsFlags.EarSteps != 0b1000)
+                {
+                    switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
+                    {
+                        case 101:
+                            continue;
+                        case 102:
+                            continue;
+                        default:
+                            break;
+                    }
+
+                    cam.Camera.ExecuteSoftwareTrigger();
+
+                    using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+
+                    if (grabResult.GrabSucceeded)
+                    {
+                        Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);   // 轉 MatMono 
+
+
+                        switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
+                        {
+                            case 0b0000:
+                                await MainWindow.PreEarInspectionRoiL();
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            case 0b0001:
+                                MainWindow.GetEarInspectionRoiL(mat, out roiL, out roiR);
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+
+                                #region 待刪
+                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
+                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
+
+                                Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                                Cv2.ImShow("ROIs", mat.Clone()); 
+                                #endregion
+                                break;
+                            case 0b0010:
+                                MainWindow.PreEarInspectionL();
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            case 0b0011:
+                                MainWindow.EarInspectionL(mat, roiL, roiR);
+
+                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
+                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            // 單邊完成
+                            case 0b0100:
+                                await MainWindow.PreEarInspectionRoiR();
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            case 0b0101:
+                                MainWindow.GetEarInspectionRoiR(mat, out roiL, out roiR);
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+
+                                #region 待刪
+                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
+                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
+
+                                Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                                Cv2.ImShow("ROIs2", mat.Clone()); 
+                                #endregion
+                                break;
+                            case 0b0110:
+                                MainWindow.PreEarInspectionR();
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            case 0b0111:
+                                MainWindow.EarInspectionR(mat, roiL, roiR);
+
+                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
+                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
+                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        // Cv2.ImShow("mat", mat);
+                        MainWindow.ImageSource = mat.ToImageSource();
+                    }
+
+
+                    Debug.WriteLine($"Count: {count}");
+                    if (count++ > 10)
+                    {
+                        break;
+                    }
                 }
             }
             catch (TimeoutException T)
@@ -362,46 +570,70 @@ namespace ApexVisIns.content
                     Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
                     Cv2.DestroyAllWindows();
 
-                    //MainWindow.AngleCorrection(mat);
+                    if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
+                    {
+                        MainWindow.AngleCorrection(mat);
+                    }
                     //MainWindow.WindowInspection(mat);
 
                     #region Assist Rect
                     if (AssistRect.Enable && AssistRect.Area > 0)
                     {
                         Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out double value);
+                        Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat Canny);
 
                         Cv2.Resize(Otsu, Otsu, new OpenCvSharp.Size(Otsu.Width * 3 / 5, Otsu.Height * 3 / 5));
                         Cv2.ImShow("Otsu", Otsu);
                         Debug.WriteLine($"Otsu Value: {value}");
+
+                        Cv2.Resize(Canny, Canny, new OpenCvSharp.Size(Canny.Width * 3 / 5, Canny.Height * 3 / 5));
+                        Cv2.ImShow("Canny", Canny);
                     }
                     #endregion
 
+#if false
+                    #region 耳朵檢驗
+                    switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
+                    {
+                        // 取得 ROI (單邊)
+                        case 0b0000:
+                            MainWindow.GetEarInspectionRoi(mat, out OpenCvSharp.Rect LeftROI, out OpenCvSharp.Rect RightROI);
+                            break;
+                        // 檢驗瑕疵
+                        case 0b0001:
+                            //MainWindow.EarInspection(mat, LeftROI, RightROI);
+                            break;
+                        // 取得 ROI (另一邊)
+                        case 0b0010:
 
-                    #region MyRegion
-                    MainWindow.GetEarInspectionRoi(mat, out OpenCvSharp.Rect LeftROI, out OpenCvSharp.Rect RightROI);
+                            break;
+                        // 檢驗瑕疵
+                        case 0b0011:
+                            break;
+                    }
                     #endregion
-                 
 
-                    Methods.GetRoiOtsu(mat, LeftROI, 0, 255, out Mat Otsu1, out double th1);
-                    Methods.GetRoiOtsu(mat, RightROI, 0, 255, out Mat Otsu2, out double th2);
+                    //Methods.GetRoiOtsu(mat, LeftROI, 0, 255, out Mat Otsu1, out double th1);
+                    //Methods.GetRoiOtsu(mat, RightROI, 0, 255, out Mat Otsu2, out double th2);
 
-                    Methods.GetRoiCanny(mat,LeftROI,75,150,out Mat Canny1);
-                    Methods.GetRoiCanny(mat, RightROI, 75,150,out Mat Canny2);
+                    //Methods.GetRoiCanny(mat, LeftROI, 75, 150, out Mat Canny1);
+                    //Methods.GetRoiCanny(mat, RightROI, 75, 150, out Mat Canny2);
 
-                    Debug.WriteLine($"th1: {th1}, th2: {th2}");
+                    //Debug.WriteLine($"th1: {th1}, th2: {th2}");
 
-                    Cv2.Rectangle(mat, LeftROI, Scalar.Gray, 2);
-                    Cv2.Rectangle(mat, RightROI, Scalar.Gray, 2);
+                    //Cv2.Rectangle(mat, LeftROI, Scalar.Gray, 2);
+                    //Cv2.Rectangle(mat, RightROI, Scalar.Gray, 2);
 
-                    Cv2.ImShow("Otsu1", Otsu1);
-                    Cv2.MoveWindow("Otsu1", 100, 0);
-                    Cv2.ImShow("Otsu2", Otsu2);
-                    Cv2.MoveWindow("Otsu2", 300, 0);
+                    //Cv2.ImShow("Otsu1", Otsu1);
+                    //Cv2.MoveWindow("Otsu1", 100, 0);
+                    //Cv2.ImShow("Otsu2", Otsu2);
+                    //Cv2.MoveWindow("Otsu2", 300, 0);
 
-                    Cv2.ImShow("Canny1", Canny1);
-                    Cv2.MoveWindow("Canny1", 500, 0);
-                    Cv2.ImShow("Canny2", Canny2);
-                    Cv2.MoveWindow("Canny2", 700, 0);
+                    //Cv2.ImShow("Canny1", Canny1);
+                    //Cv2.MoveWindow("Canny1", 500, 0);
+                    //Cv2.ImShow("Canny2", Canny2);
+                    //Cv2.MoveWindow("Canny2", 700, 0);
+#endif
 
                     //Cv2.CvtColor(mat, mat, ColorConversionCodes.GRAY2BGR);
                     //Cv2.Circle(mat, new OpenCvSharp.Point(500, 500), 5, Scalar.Red, 3);
@@ -415,6 +647,7 @@ namespace ApexVisIns.content
             }
         }
         #endregion
+
 
         #endregion
     }

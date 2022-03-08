@@ -75,22 +75,57 @@ namespace ApexVisIns
         /// <summary>
         /// Apex 對位用 Flag 結構
         /// </summary>
-        public struct ApexCounterPointStruct
+        public struct ApexAngleCorrectionStruct
         {
             /// <summary>
             /// 工件對位步驟旗標
-            /// bit 0 ~ 3
+            /// bit 0 ~ 3, 0 ~ 15
             /// </summary>
             public byte Steps { get; set; }
+            /// <summary>
+            /// 前一次檢驗之 Width
+            /// </summary>
             public ushort LastWindowWidth { get; set; }
+            /// <summary>
+            /// 最大檢驗之 Width
+            /// </summary>
             public ushort MaxWindowWidth { get; set; }
         }
 
-        public ApexCounterPointStruct ApexCountPointFlags;
 
+        /// <summary>
+        /// Apex 瑕疵檢驗用步驟結構
+        /// </summary>
+        public struct ApexDefectInspectionSteps
+        {
+            /// <summary>
+            /// 窗戶步驟
+            /// </summary>
+            public byte WindowSteps { get; set; }
+
+            /// <summary>
+            ///耳朵步驟
+            /// </summary>
+            public byte EarSteps { get; set; }
+
+            // 管件表面步驟
+            // 管件表面步驟
+        }
+
+        /// <summary>
+        /// Apex 管件選轉定位用結構旗標
+        /// </summary>
+        public ApexAngleCorrectionStruct ApexAngleCorrectionFlags;
+
+        /// <summary>
+        /// Apex 瑕疵檢驗用步驟旗標
+        /// </summary>
+        public ApexDefectInspectionSteps ApexDefectInspectionStepsFlags;
+
+        [Obsolete("用不到")]
         public void InitCountPointStruct()
         {
-            ApexCountPointFlags = new ApexCounterPointStruct();
+            ApexAngleCorrectionFlags = new ApexAngleCorrectionStruct();
         }
 
         /// <summary>
@@ -124,36 +159,36 @@ namespace ApexVisIns
             Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
             Methods.GetVertialWindowWidth(canny, out int count, out double width);
 
-            if (count == 4 && (ApexCountPointFlags.Steps & 0b1000) != 0b1000)
+            if (count == 4 && (ApexAngleCorrectionFlags.Steps & 0b1000) != 0b1000)
             {
-                if ((ApexCountPointFlags.Steps & 0b0001) != 0b0001)
+                if ((ApexAngleCorrectionFlags.Steps & 0b0001) != 0b0001)
                 {
                     if (width >= 350)
                     {
                         //step1done = true;
-                        ApexCountPointFlags.Steps |= 0b0001;
+                        ApexAngleCorrectionFlags.Steps |= 0b0001;
                         ServoMotion.Axes[1].StopMove();
-                        ApexCountPointFlags.LastWindowWidth = (ushort)width;
-                        ApexCountPointFlags.MaxWindowWidth = (ushort)width;
+                        ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
+                        ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
                         // 停止快動，進入慢速段
                     }
                 }
-                else if ((ApexCountPointFlags.Steps & 0b0011) != 0b0011)
+                else if ((ApexAngleCorrectionFlags.Steps & 0b0011) != 0b0011)
                 {
                     //if (width < 385)
                     //{
-                    if (width > ApexCountPointFlags.LastWindowWidth)
+                    if (width > ApexAngleCorrectionFlags.LastWindowWidth)
                     {
                         _ = ServoMotion.Axes[1].TryPosMove(5);
                     }
                     else
                     {
-                        ApexCountPointFlags.MaxWindowWidth = ApexCountPointFlags.LastWindowWidth;
+                        ApexAngleCorrectionFlags.MaxWindowWidth = ApexAngleCorrectionFlags.LastWindowWidth;
                         //step2done = true;
-                        ApexCountPointFlags.Steps |= 0b0010;
+                        ApexAngleCorrectionFlags.Steps |= 0b0010;
                         // 慢速轉超過，回轉
                     }
-                    ApexCountPointFlags.LastWindowWidth = (ushort)width;
+                    ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                     //}
                     //else
                     //{
@@ -162,40 +197,40 @@ namespace ApexVisIns
                     //}
                 }
                 //else if (step2done && !step3done)
-                else if ((ApexCountPointFlags.Steps & 0b0111) != 0b0111)
+                else if ((ApexAngleCorrectionFlags.Steps & 0b0111) != 0b0111)
                 {
                     //if (width < 385)
                     //{
-                    if (width < ApexCountPointFlags.MaxWindowWidth && width > ApexCountPointFlags.LastWindowWidth)
+                    if (width < ApexAngleCorrectionFlags.MaxWindowWidth && width > ApexAngleCorrectionFlags.LastWindowWidth)
                     {
                         _ = ServoMotion.Axes[1].TryPosMove(-3);
                     }
                     else
                     {
-                        ApexCountPointFlags.MaxWindowWidth = (ushort)width;
+                        ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
                         //step3done = true;
-                        ApexCountPointFlags.Steps |= 0b0100;
+                        ApexAngleCorrectionFlags.Steps |= 0b0100;
                     }
-                    ApexCountPointFlags.LastWindowWidth = (ushort)width;
+                    ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                     //}
                     //else
                     //{
                     //    ApexCountPointFlags.Steps |= 0b0100;
                     //}
                 }
-                else if ((ApexCountPointFlags.Steps & 0b1111) != 0b1111)
+                else if ((ApexAngleCorrectionFlags.Steps & 0b1111) != 0b1111)
                 //else if (step3done && !step4done)
                 {
                     //if (width < 385)
                     //{
-                    if (width < ApexCountPointFlags.MaxWindowWidth)
+                    if (width < ApexAngleCorrectionFlags.MaxWindowWidth)
                     {
                         _ = ServoMotion.Axes[1].TryPosMove(1);
                     }
                     else
                     {
-                        ApexCountPointFlags.MaxWindowWidth = (ushort)width;
-                        ApexCountPointFlags.Steps |= 0b1000;
+                        ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                        ApexAngleCorrectionFlags.Steps |= 0b1000;
 
                         // 重置 POS
                         ServoMotion.Axes[1].ResetPos();
@@ -204,9 +239,9 @@ namespace ApexVisIns
                 }
             }
 
-            Debug.WriteLine($"{ApexCountPointFlags.Steps}");
+            Debug.WriteLine($"{ApexAngleCorrectionFlags.Steps}");
             Debug.WriteLine($"{width}");
-            Debug.WriteLine($"{ApexCountPointFlags.MaxWindowWidth}");
+            Debug.WriteLine($"{ApexAngleCorrectionFlags.MaxWindowWidth}");
         }
 
         #region 窗戶瑕疵, Window Defect
@@ -467,20 +502,23 @@ namespace ApexVisIns
 
         #region 耳朵
         /// <summary>
-        /// 耳朵瑕疵檢測前手續，
+        /// 耳朵瑕疵檢測前手續 (L)，
         /// Light: 96, 0, 128, 128
         /// Motion: xxxxx, -100
         /// </summary>
-        public void PreEarInspectionRoi()
+        public async Task PreEarInspectionRoiL()
         {
+            // 變更光源
             LightCtrls[0].SetAllChannelValue(96, 0, 128, 128);
+            // 旋轉至目標位置
+            await ServoMotion.Axes[1].PosMoveAsync(-100, true);
         }
 
         /// <summary>
-        /// 取得耳朵瑕疵檢驗 ROI
+        /// 取得耳朵瑕疵檢驗 ROI (L)
         /// </summary>
         /// <param name="roi">(out) ROI Rect</param>
-        public void GetEarInspectionRoi(Mat src, out Rect roiL, out Rect roiR)
+        public void GetEarInspectionRoiL(Mat src, out Rect roiL, out Rect roiR)
         {
             Rect roi = new(300, 600, 600, 200);
 
@@ -489,26 +527,107 @@ namespace ApexVisIns
             canny.Dispose();
 
             roiL = new((int)xPos[0] + 1, 600, 50, 200);
-            roiR = new((int)xPos[1] - 51, 580, 50, 200);
+            roiR = new((int)xPos[^1] - 51, 580, 50, 200);
         }
 
         /// <summary>
-        /// 耳朵瑕疵前手續，
+        /// 耳朵瑕疵前手續 (L)，
         /// Light: 256, 0, 128, 96
         /// Motion: xxxxx, -100
         /// </summary>
-        public void PreEarInspection()
+        public  void PreEarInspectionL()
         {
             LightCtrls[0].SetAllChannelValue(256, 0, 128, 96);
+            //LightCtrls[1].SetAllChannelValue(0, 128);
         }
 
         /// <summary>
-        /// 耳朵瑕疵檢測
+        /// 耳朵瑕疵檢測 (L)
         /// </summary>
-        public bool EarInspection(Mat src, Rect roiL, Rect roiR)
+        public bool EarInspectionL(Mat src, Rect roiL, Rect roiR)
         {
             // Canny + Otsu
 
+            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out double th1);
+            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out double th2);
+
+            Methods.GetRoiCanny(src, roiL, 75, 150, out Mat Canny1);
+            Methods.GetRoiCanny(src, roiR, 75, 150, out Mat Canny2);
+
+            Mat concat = new();
+
+            Cv2.HConcat(new Mat[] { Otsu1, Otsu2, Canny1, Canny2 }, concat);
+            Otsu1.Dispose();
+            Otsu2.Dispose();
+            Canny1.Dispose();
+            Canny2.Dispose();
+
+            Cv2.ImShow("concat", concat);
+            return true;
+        }
+
+        /// <summary>
+        /// 耳朵瑕疵檢測前手續 (R)，
+        /// Light: 96, 0, 128, 128
+        /// Motion: xxxxx, 100
+        /// </summary>
+        public async Task PreEarInspectionRoiR()
+        {
+            // 變更光源
+            LightCtrls[0].SetAllChannelValue(96, 0, 128, 128);
+            // 旋轉至目標位置
+            await ServoMotion.Axes[1].PosMoveAsync(100, true);
+        }
+
+        /// <summary>
+        /// 取得耳朵瑕疵檢驗 ROI (R)
+        /// </summary>
+        /// <param name="roi">(out) ROI Rect</param>
+        public void GetEarInspectionRoiR(Mat src, out Rect roiL, out Rect roiR)
+        {
+            Rect roi = new(300, 600, 600, 200);
+
+            Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
+            Methods.GetHoughVerticalXPos(canny, roi.X, out _, out double[] xPos, 3, 50);
+            canny.Dispose();
+
+            roiL = new((int)xPos[0] + 1, 580, 50, 200);
+            roiR = new((int)xPos[^1] - 51, 600, 50, 200);
+        }
+
+        /// <summary>
+        /// 耳朵瑕疵前手續 (L)，
+        /// Light: 256, 0, 128, 96
+        /// Motion: xxxxx, -100
+        /// </summary>
+        public void PreEarInspectionR()
+        {
+            LightCtrls[0].SetAllChannelValue(256, 0, 128, 96);
+            //LightCtrls[1].SetAllChannelValue(0, 128);
+        }
+
+        /// <summary>
+        /// 耳朵瑕疵檢測 (L)
+        /// </summary>
+        public bool EarInspectionR(Mat src, Rect roiL, Rect roiR)
+        {
+            // Canny + Otsu
+
+            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out double th1);
+            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out double th2);
+
+            Methods.GetRoiCanny(src, roiL, 75, 150, out Mat Canny1);
+            Methods.GetRoiCanny(src, roiR, 75, 150, out Mat Canny2);
+
+            Mat concat = new();
+
+            Cv2.HConcat(new Mat[] { Otsu1, Otsu2, Canny1, Canny2 }, concat);
+            Otsu1.Dispose();
+            Otsu2.Dispose();
+            Canny1.Dispose();
+            Canny2.Dispose();
+
+            Cv2.ImShow("concat2", concat);
             return true;
         }
 
