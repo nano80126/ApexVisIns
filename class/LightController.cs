@@ -690,12 +690,11 @@ namespace ApexVisIns
             string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
             Write(cmd);
             _ = ReadLine();
-            Channels[0].Value = ch1;
-            Channels[1].Value = ch2;
-            Channels[2].Value = ch3;
-            Channels[3].Value = ch4;
+            if (Channels.Count > 0) Channels[0].Value = ch1;
+            if (Channels.Count > 1) Channels[1].Value = ch2;
+            if (Channels.Count > 2) Channels[2].Value = ch3;
+            if (Channels.Count > 3) Channels[3].Value = ch4;
         }
-
 
         /// <summary>
         /// 取得通道 Value

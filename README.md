@@ -220,6 +220,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] EngineerTab.xaml camera use Task open
 
+* [ ] Config Panel 增加參數
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

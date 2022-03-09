@@ -148,15 +148,13 @@
                 <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black"
                         ToolTip="(F6) Continuous Shot" Style="{StaticResource MaterialDesignFlatButton}">
                     <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
-                    <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, FallbackValue=False}"-->
-
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
                             <Binding Path="IsGrabberOpened" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
                         </MultiBinding>
                     </Button.IsEnabled>
-
+                    <!--//-->
                     <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
@@ -173,8 +171,15 @@
                 <!--切換 StreamGrabber-->
                 <Separator/>
                 <Button x:Name="ToggleStreamGrabber" VerticalAlignment="Center" Click="ToggleStreamGrabber_Click" Focusable="False" Foreground="Black"
-                        IsEnabled="{Binding IsOpen, FallbackValue=False}"
                         ToolTip="(F7) Toggle Stream Grabber" Style="{StaticResource MaterialDesignFlatButton}">
+                        <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                            <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
+                            <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                        </MultiBinding>                        
+                    </Button.IsEnabled>
+                    <!--//-->
                     <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
@@ -190,8 +195,16 @@
                 </Button>
                 <!--//-->
                 <Button x:Name="RetrieveImage" VerticalAlignment="Center" Click="RetrieveImage_Click" Focusable="False" Foreground="Black"
-                        IsEnabled="{Binding IsOpen, FallbackValue=False}"
                         ToolTip="(F8) Retrieve Image" Style="{StaticResource MaterialDesignFlatButton}">
+                        <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                            <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
+                            <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                        </MultiBinding>
+                    </Button.IsEnabled>
+                    
+                    
                     <materialDesign:PackIcon Width="30" Height="26" Kind="ImageOutline"/>
                 </Button>
                 

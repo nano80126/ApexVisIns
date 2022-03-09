@@ -389,6 +389,7 @@ namespace ApexVisIns
     {
         private bool _disposed;
         private bool _isGrabberOpened;
+        private bool _isContinuousGrabbing;
 
         /// <summary>
         /// 相機建構子
@@ -425,6 +426,23 @@ namespace ApexVisIns
         /// Grabber 是否開啟
         /// </summary>
         public bool IsGrabbing => Camera != null && Camera.StreamGrabber.IsGrabbing;
+        
+        /// <summary>
+        /// 是否連續拍攝
+        /// </summary>
+        public bool IsContinuousGrabbing
+        {
+            get => _isContinuousGrabbing;
+            set
+            {
+                if (value != _isContinuousGrabbing)
+                {
+                    _isContinuousGrabbing = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
         /// <summary>
         /// 是否只開啟Grabber不拍照，拍照使用 RetrieveResult 觸發
         /// </summary>

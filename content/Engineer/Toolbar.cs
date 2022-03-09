@@ -88,6 +88,7 @@ namespace ApexVisIns.content
             if (MainWindow.BaslerCam.IsGrabberOpened)
             {
                 MainWindow.ApexDefectInspectionStepsFlags.EarSteps = 0;
+                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0;
                 Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
             }
         }
@@ -177,6 +178,7 @@ namespace ApexVisIns.content
 
                     cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
                     cam.IsGrabberOpened = true;
+                    cam.IsContinuousGrabbing = false;
 
                     // 
                     cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
@@ -267,11 +269,17 @@ namespace ApexVisIns.content
                 {
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+                    // 變更 Flag (連續拍攝)
+                    cam.IsContinuousGrabbing = true;
                 }
                 else
                 {
                     cam.Camera.StreamGrabber.Stop();
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                    // 變更 Flag (不為連續拍攝)
+                    cam.IsContinuousGrabbing = false;
                 }
             }
             catch (TimeoutException T)
@@ -295,105 +303,54 @@ namespace ApexVisIns.content
         /// <param name="cam"></param>
         private async void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
         {
+            // 檢測
+            // MainWindow.ApexEarInspectionSequence(cam);
             try
             {
                 OpenCvSharp.Rect roiL = new();
                 OpenCvSharp.Rect roiR = new();
                 int count = 0;
 
-                while (MainWindow.ApexDefectInspectionStepsFlags.EarSteps != 0b1000)
+                Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
+
+                Cv2.DestroyAllWindows();
+                while (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps != 0b0111)
                 {
-                    switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
+                    Debug.WriteLine($"Count: {count} Steps: {MainWindow.ApexDefectInspectionStepsFlags.WindowSteps}");
+                    if (count++ >= 12)
                     {
-                        case 101:
-                            continue;
-                        case 102:
-                            continue;
-                        default:
-                            break;
+                        break;
                     }
 
                     cam.Camera.ExecuteSoftwareTrigger();
 
                     using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                    Debug.WriteLine($"Frames: {grabResult.ImageNumber}");
 
                     if (grabResult.GrabSucceeded)
                     {
                         Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);   // 轉 MatMono 
 
-
-                        switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
+                        switch (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps)
                         {
                             case 0b0000:
-                                await MainWindow.PreEarInspectionRoiL();
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                await MainWindow.PreWindowInspectionRoi();
+                                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                                 break;
                             case 0b0001:
-                                MainWindow.GetEarInspectionRoiL(mat, out roiL, out roiR);
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-
-                                #region 待刪
-                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-
-                                Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                Cv2.ImShow("ROIs", mat.Clone()); 
-                                #endregion
-                                break;
-                            case 0b0010:
-                                MainWindow.PreEarInspectionL();
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-                                break;
-                            case 0b0011:
-                                MainWindow.EarInspectionL(mat, roiL, roiR);
-
-                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-                                break;
-                            // 單邊完成
-                            case 0b0100:
-                                await MainWindow.PreEarInspectionRoiR();
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-                                break;
-                            case 0b0101:
-                                MainWindow.GetEarInspectionRoiR(mat, out roiL, out roiR);
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-
-                                #region 待刪
-                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-
-                                Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                Cv2.ImShow("ROIs2", mat.Clone()); 
-                                #endregion
-                                break;
-                            case 0b0110:
-                                MainWindow.PreEarInspectionR();
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
-                                break;
-                            case 0b0111:
-                                MainWindow.EarInspectionR(mat, roiL, roiR);
-
-                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-                                MainWindow.ApexDefectInspectionStepsFlags.EarSteps += 0b1;
+                                MainWindow.WindowInspectionRoi(mat, out roiL, out roiR);
+                                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+                                count = 13;
                                 break;
                             default:
                                 break;
                         }
 
-                        // Cv2.ImShow("mat", mat);
                         MainWindow.ImageSource = mat.ToImageSource();
                     }
-
-
-                    Debug.WriteLine($"Count: {count}");
-                    if (count++ > 10)
-                    {
-                        break;
-                    }
                 }
+
+                Debug.WriteLine($"Stop: {DateTime.Now:ss.fff}");
             }
             catch (TimeoutException T)
             {
@@ -570,10 +527,10 @@ namespace ApexVisIns.content
                     Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
                     Cv2.DestroyAllWindows();
 
-                    if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
-                    {
-                        MainWindow.AngleCorrection(mat);
-                    }
+                    //if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
+                    //{
+                    //    MainWindow.AngleCorrection(mat);
+                    //}
                     //MainWindow.WindowInspection(mat);
 
                     #region Assist Rect

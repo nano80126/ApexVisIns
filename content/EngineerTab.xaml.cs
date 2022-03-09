@@ -122,27 +122,31 @@ namespace ApexVisIns.content
         
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
+            //MainWindow.PreWindowInspection();
+            //MainWindow.PreEarInspection();
             MainWindow.PreWindowInspection();
         }
 
         
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
+            //MainWindow.PreEarInspectionSide();
             MainWindow.PreWindowInspection2();
         }
 
         
-        private void Button4_Click(object sender, RoutedEventArgs e)
+        private async void Button4_Click(object sender, RoutedEventArgs e)
         {
             //MainWindow.PreWindowInspection3();
-            MainWindow.PreEarInspectionRoiL();
+            //await MainWindow.PreEarInspectionRoiL();
+            MainWindow.PreWindowInspection3();
         }
 
 
-        private void Button5_Click(object sender, RoutedEventArgs e)
+        private async void Button5_Click(object sender, RoutedEventArgs e)
         {
             //MainWindow.PreEarInspectionL();
-            MainWindow.PreEarInspectionRoiR();
+            //await MainWindow.PreEarInspectionRoiR();
         }
 
         /// <summary>
