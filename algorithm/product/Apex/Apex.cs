@@ -321,6 +321,20 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 取得窗戶上下緣
+        /// </summary>
+        /// <param name="src">來源</param>
+        /// <param name="top">窗戶上緣</param>
+        /// <param name="bottom">窗戶下緣</param>
+        public void WindowInspectionTopBottomLimit(Mat src, out double top, out double bottom)
+        {
+            Rect roi = new(500, 240, 200, 1400);
+
+            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+            Methods.GetHoughWindowYPos(canny, roi.Y, out top, out bottom, 5, 50);
+        }
+
+        /// <summary>
         /// 取得窗戶瑕疵檢驗 ROI
         /// </summary>
         public void WindowInspectionRoi(Mat src, out double[] xPos, out Rect roiL, out Rect roiR)
@@ -331,26 +345,30 @@ namespace ApexVisIns
             Methods.GetHoughVerticalXPos(canny, roi.X, out int count, out xPos, 3, 50);
             canny.Dispose();
 
-            // 陣列抽取，刪除相近邊緣
-            List<double> xList = new();
-            for (int i = 0; i < count; i++)
+            /// 陣列抽取，刪除相近邊緣
+            if (count >= 7)
             {
-                // 每個 x 座標至少相差 30 pixel
-                if (i == 0 || xPos[i - 1] + 30 < xPos[i])
+                List<double> xList = new();
+                for (int i = 0; i < count; i++)
                 {
-                    xList.Add(xPos[i]);
+                    // 每個 x 座標至少相差 30 pixel
+                    if (i == 0 || xPos[i - 1] + 30 < xPos[i])
+                    {
+                        xList.Add(xPos[i]);
+                    }
                 }
+                xPos = xList.ToArray();
+                xList.Clear();
             }
-            xPos = xList.ToArray();
-            xList.Clear();
 
+            #region 待刪除
             for (int i = 0; i < xPos.Length; i++)
             {
                 Cv2.Circle(src, new Point(xPos[i], 960), 7, Scalar.Black, 3);
-            }
-            //Debug.WriteLine($"Lines: {count}, {string.Join(" , ", xPos)}");
+            } 
+            #endregion
 
-            if (count == 7)
+            if (xPos.Length == 7)
             {
                 roiL = new Rect((int)xPos[1] - 20, 240, (int)(xPos[2] - xPos[1]) + 40, 1400);
                 roiR = new Rect((int)xPos[^3] - 20, 240, (int)(xPos[^2] - xPos[^3] + 40), 1400);
@@ -456,6 +474,7 @@ namespace ApexVisIns
             Methods.GetCanny(matR, 60, 120, out Mat rcw2);
             Methods.GetCanny(matR, 50, 100, out Mat rcw3);
 
+#if false
             #region 待刪除
             Cv2.ImShow("lcw1", lcw1);
             Cv2.MoveWindow("lcw1", 100, 0);
@@ -469,8 +488,9 @@ namespace ApexVisIns
             Cv2.ImShow("rcw2", rcw2);
             Cv2.MoveWindow("rcw2", 900, 0);
             Cv2.ImShow("rcw3", rcw3);
-            Cv2.MoveWindow("rcw3", 1100, 0); 
-            #endregion
+            Cv2.MoveWindow("rcw3", 1100, 0);
+            #endregion  
+#endif
 
             matL.Dispose();
             matR.Dispose();
@@ -483,9 +503,9 @@ namespace ApexVisIns
             //Cv2.FindContours(rcw3 - rcw1 - rcw2, out Point[][] DiffConsR, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, roiR.Location);
             Cv2.FindContours(rcw1 & rcw2, out Point[][] DiffConsR, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, roiR.Location);
 
-            //Cv2.ImShow("LLL", lcw3 - lcw1 - lcw2);
-            //Cv2.ImShow("RRR", rcw3 - rcw1 - rcw2);
-            //Debug.WriteLine($"{DiffConsL.Length} {DiffConsR.Length}");
+            // Cv2.ImShow("LLL", lcw3 - lcw1 - lcw2);
+            // Cv2.ImShow("RRR", rcw3 - rcw1 - rcw2);
+            // Debug.WriteLine($"{DiffConsL.Length} {DiffConsR.Length}");
 
 
 #if false
@@ -497,22 +517,17 @@ namespace ApexVisIns
 
 
             Point[] FilterL = DiffConsL.Where(c => 1 < c.Length && c.Length < 1200).Aggregate(Array.Empty<Point>(), (acc, c) => acc.Concat(c).ToArray()).Where(pt =>
-             {
-                 return xPos[1] + 3 < pt.X && pt.X < xPos[2] - 3;
-             }).ToArray();
-
-
-            for (int i = 0; i < DiffConsR.Length; i++)
             {
-                Debug.WriteLine($"{DiffConsR[i].Length} {DiffConsR[i][0]} {DiffConsR[i][^1]} {Cv2.ArcLength(DiffConsR[i], false)}");
-            }
+                return xPos[1] + 3 < pt.X && pt.X < xPos[2] - 3;
+            }).ToArray();
+
 
             Point[] FilterR = DiffConsR.Where(c => 1 < c.Length && c.Length < 1200).Aggregate(Array.Empty<Point>(), (acc, c) => acc.Concat(c).ToArray()).Where(pt =>
-               {
-                   return xPos[^3] + 3 < pt.X && pt.X < xPos[^2] - 3;
-               }).ToArray();
+            {
+                return xPos[^3] + 3 < pt.X && pt.X < xPos[^2] - 3;
+            }).ToArray();
 
-            Debug.WriteLine($"{xPos[^3]} {xPos[^2]}");
+            //Debug.WriteLine($"{xPos[^3]} {xPos[^2]}");
 
             #region Draw circles
             for (int i = 0; i < FilterL.Length; i++)

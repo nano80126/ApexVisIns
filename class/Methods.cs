@@ -360,6 +360,73 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 取得方框內部 Y 座標，
+        /// </summary>
+        /// <param name="src">canny 影像</param>
+        /// <param name="offset">Offset 位移</param>
+        /// <param name="Ypos">(out) Y 座標；長度必為 2</param>
+        public static void GetHoughWindowYPos(Mat src, int offset, out double y1, out double y2, int Ygap = 3, int lineLength = 0)
+        {
+            y1 = y2 = 0;
+
+            try
+            {
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
+
+                if (lineSeg != null && lineSeg.Length > 0)
+                {
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).OrderBy(line => line.P1.Y + line.P2.Y);
+
+                    LineSegmentPoint pt1 = filter.Last(line => (line.P1.Y + line.P2.Y) / 2 < 960);
+                    LineSegmentPoint pt2 = filter.First(line => (line.P1.Y + line.P2.Y) / 2 > 960);
+
+                    y1 = (pt1.P1.Y + pt1.P2.Y) / 2 + offset;    // 上緣
+                    y2 = (pt2.P1.Y + pt2.P2.Y) / 2 + offset;    // 下緣
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得分組後垂直線 Y 座標位置，
+        /// </summary>
+        /// <param name="src">canny 影像</param>
+        /// <param name="offset">Offset 位移</param>
+        /// <param name="XPosCount">(out) Y 座標數</param>
+        /// <param name="Xpos">(out) Y 座標</param>
+        /// <param name="Xgap">Y 座標 Gap</param>
+        public static void GetHoughHorizonalYPos(Mat src, int offset, out int YPosCount, out double[] Ypos, int Ygap = 3, int lineLengh = 0)
+        {
+            YPosCount = 0;
+            Ypos = Array.Empty<double>();
+
+            try
+            {
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
+
+                if (lineSeg != null && lineSeg.Length > 0)
+                {
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLengh && Math.Abs(line.P2.Y - line.P1.Y) < Ygap);
+                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.Y + line.P2.Y).GroupBy(line => Math.Floor((double)(line.P1.Y * line.P2.Y) / 10000)).ToArray();
+
+                    YPosCount = groupings.Length;
+                    Ypos = new double[groupings.Length];
+                    for (int j = 0; j < groupings.Length; j++)
+                    {
+                        Ypos[j] = groupings[j].Average(a => Math.Round((double)(a.P1.Y + a.P2.Y) / 2)) + offset;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 取得分組後垂直線 X 座標位置，
         /// </summary>
         /// <param name="src">canny 影像</param>
@@ -376,21 +443,9 @@ namespace ApexVisIns
             {
                 LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
 
-
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
-                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap).Where(line => line.Length() > lineLength);
-                    //IEnumerable<LineSegmentPoint> filter2 = filter.Where(line => line.Length() > lineLength);
-
-                    // foreach (LineSegmentPoint item in filter)
-                    // {
-                    //     Debug.WriteLine($"{item.Length()} {item.P1} {item.P2}");
-                    // }
-                    // for (int i = 0; i < filter.Count(); i++)
-                    // {
-                    //     Cv2.Line(src, lineSeg[i].P1, lineSeg[i].P2, Scalar.Gray);
-                    // }
-
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) < Xgap);
                     IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X + line.P2.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
 
                     XPosCount = groupings.Length;
@@ -406,6 +461,7 @@ namespace ApexVisIns
                 throw;
             }
         }
+
 
         /// <summary>
         /// 取得窗戶 Width

@@ -312,9 +312,13 @@ namespace ApexVisIns.content
                 OpenCvSharp.Rect roiL = new();
                 OpenCvSharp.Rect roiR = new();
 
+                // double[] yPos = Array.Empty<double>();
+                double top = 0;
+                double bottom = 0;
                 double[] xPos = Array.Empty<double>();
                 double[] xPos2 = Array.Empty<double>();
                 double[] xPos3 = Array.Empty<double>();
+                double[] xArray = Array.Empty<double>();
 
                 int Loop = 0;
 
@@ -380,49 +384,111 @@ namespace ApexVisIns.content
                         switch (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps)
                         {
                             case 0b0001:    // 1 ROI
+                                MainWindow.WindowInspectionTopBottomLimit(mat, out top, out bottom);
                                 MainWindow.WindowInspectionRoi(mat, out xPos, out roiL, out roiR);
+
+                                Debug.WriteLine($"{top} {bottom}");
+
+                                #region MyRegion
                                 //Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
                                 //Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
                                 //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 //Cv2.ImShow("ROIs1", mat.Clone());
-                                //Cv2.MoveWindow("ROIs1", 0, 0);
+                                //Cv2.MoveWindow("ROIs1", 0, 0); 
+                                #endregion
 
-                                if (xPos.Length == 7) MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                Debug.WriteLine($"{xPos.Length} {string.Join(" , ", xPos)}");
+
+                                if (xPos.Length == 7)
+                                {
+                                    xArray = xPos;
+                                    xPos = null;
+                                    roiL.Y = roiR.Y = (int)top;
+                                    roiL.Height = roiR.Height = (int)(bottom - top);
+                                    MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                }
                                 else MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                                 break;
                             case 0b0011:    // 3 ROI
+                                //MainWindow.WindowInspectionTopBottomLimit(mat, out yPos);
                                 MainWindow.WindowInspectionRoi(mat, out xPos2, out roiL, out roiR);
+
+                                #region MyRegion
                                 //Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
                                 //Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
                                 //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 //Cv2.ImShow("ROIs2", mat.Clone());
                                 //Cv2.MoveWindow("ROIs2", 600, 0);
 
-                                if (xPos2.Length == 7) MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                //for (int i = 0; i < xPos2.Length; i++)
+                                //{
+                                //    Cv2.Circle(mat, new OpenCvSharp.Point(xPos2[i], 800), 5, Scalar.Black, 2);
+                                //    Cv2.Circle(mat, new OpenCvSharp.Point(xPos2[i], 1120), 5, Scalar.Black, 2);
+                                //}
+                                //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                                //Cv2.ImShow("xPos2", mat.Clone()); 
+                                #endregion
+
+                                Debug.WriteLine($"{xPos2.Length} {string.Join(" , ", xPos2)}");
+
+                                if (xPos2.Length == 7)
+                                {
+                                    xArray = xPos2;
+                                    xPos2 = null;
+                                    roiL.Y = roiR.Y = (int)top;
+                                    roiL.Height = roiR.Height = (int)(bottom - top);
+                                    MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                }
                                 else MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                                 break;
                             case 0b0101:    // 5 ROI
                                 MainWindow.WindowInspectionRoi(mat, out xPos3, out roiL, out roiR);
+
+                                #region MyRegion
                                 Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
                                 Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
                                 Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("ROIs3", mat.Clone());
                                 Cv2.MoveWindow("ROIs3", 1200, 0);
+                                #endregion
 
-                                if (xPos3.Length == 7) MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                if (xPos3.Length == 7)
+                                {
+                                    xArray = xPos3;
+                                    xPos3 = null;
+                                    roiL.Y = roiR.Y = (int)top;
+                                    roiL.Height = roiR.Height = (int)(bottom - top);
+                                    MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
+                                }
                                 else
                                 {
-                                    //
                                     // 如果取三次ROI還失敗，這邊合併並抽取 (30 pixel 間隔)
-                                    // 
+                                    // 如果取三次ROI還失敗，這邊合併並抽取 (30 pixel 間隔)
+                                    xArray = xPos.Concat(xPos2).Concat(xPos3).OrderBy(x => x).ToArray();
 
+                                    List<double> xList = new();
+                                    for (int i = 0; i < xArray.Length; i++)
+                                    {
+                                        if (i == 0 || xArray[i - 1] + 30 < xArray[i])
+                                        {
+                                            xList.Add(xArray[i]);
+                                        }
+                                    }
+                                    xArray = xList.ToArray();
+                                    xList.Clear();
 
-                                    //xPos = xPos2 = xPos3 = null;
+                                    roiL = new OpenCvSharp.Rect((int)xArray[1] - 20, (int)top, (int)(xArray[2] - xArray[1]) + 40, (int)(bottom - top));
+                                    roiR = new OpenCvSharp.Rect((int)xArray[^3] - 20, (int)top, (int)(xArray[^2] - xArray[^3]) + 40, (int)(bottom - top));
+
+                                    Debug.WriteLine($"xArray: {string.Join(" , ", xArray)}");
+                                    Debug.WriteLine($"L: {roiL}, R: {roiR}");
+
+                                    xPos = xPos2 = xPos3 = null;
                                     MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
                                 }
                                 break;
                             case 0b0111:    // 7
-                                MainWindow.WindowInspection(mat, xPos3, roiL, roiR);
+                                MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
                                 #region 待刪除
@@ -433,7 +499,7 @@ namespace ApexVisIns.content
                                 #endregion
                                 break;
                             case 0b1001:    // 9
-                                MainWindow.WindowInspection(mat, xPos3, roiL, roiR);
+                                MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
                                 #region 待刪除
@@ -444,11 +510,15 @@ namespace ApexVisIns.content
                                 #endregion
                                 break;
                             case 0b1011:    // 11
-                                MainWindow.WindowInspection(mat, xPos3, roiL, roiR);
+                                MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
                                 #region 待刪除
                                 Mat m3 = new();
+
+                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
+                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
+
                                 Cv2.Resize(mat, m3, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat3", m3);
                                 Cv2.MoveWindow("mat3", 1200, 0); 
