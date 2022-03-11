@@ -144,12 +144,7 @@ namespace ApexVisIns
         /// </summary>
         public ApexDefectInspectionSteps ApexDefectInspectionStepsFlags;
 
-        [Obsolete("用不到")]
-        public void InitCountPointStruct()
-        {
-            ApexAngleCorrectionFlags = new ApexAngleCorrectionStruct();
-        }
-
+        #region 工件角度校正，工件角度校正，工件角度校正
         /// <summary>
         /// 角度校正前手續
         /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(轉一圈多)
@@ -274,8 +269,36 @@ namespace ApexVisIns
             // 變更馬達速度
             ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
         }
+        #endregion
 
-        #region 窗戶瑕疵, Window Defect
+
+        #region 窗戶瑕疵檢驗, Window Defect，窗戶瑕疵檢驗, Window Defect，窗戶瑕疵檢驗, Window Defect
+        /// <summary>
+        /// Apex 窗戶檢驗順序 (單一特徵)，
+        /// 此為測試用，正式須配合窗戶檢驗方法
+        /// </summary>
+        /// <param name="cam"></param>
+        public async void ApexWindpwInspectionSequence(BaslerCam cam)
+        {
+            try
+            {
+                
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
         /// <summary>
         /// 取得窗戶瑕疵 ROI 前手續
         /// </summary>
@@ -321,12 +344,12 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得窗戶上下緣
+        /// 取得窗戶上下邊緣
         /// </summary>
         /// <param name="src">來源</param>
         /// <param name="top">窗戶上緣</param>
         /// <param name="bottom">窗戶下緣</param>
-        public void WindowInspectionTopBottomLimit(Mat src, out double top, out double bottom)
+        public void WindowInspectionTopBottomEdge(Mat src, out double top, out double bottom)
         {
             Rect roi = new(500, 240, 200, 1400);
 
@@ -380,7 +403,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 窗戶瑕疵檢驗前手續,
         /// Light1 : 320, 0, 128, 0；
@@ -404,7 +426,6 @@ namespace ApexVisIns
             LightCtrls[0].SetAllChannelValue(256, 0, 128, 0);
             LightCtrls[1].SetAllChannelValue(0, 0);
         }
-
 
         /// <summary>
         /// 窗戶瑕疵檢驗前手續,
@@ -712,15 +733,43 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 窗戶瑕疵檢驗 (測光) 
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="roi"></param>
+        /// <returns></returns>
+        public bool WindowInspectionSideLight(Mat src, Rect roi)
+        {
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshold);
+
+            Debug.WriteLine($"Otsu threshhold : {threshold}");
+
+            if (threshold > 50)
+            {
+                Cv2.ImShow("Otsu1", otsu);
+                Methods.GetCanny(otsu, threshold, (byte)(threshold + 75), out Mat canny);
+                Cv2.ImShow("Otsu Canny", canny);
+                return false;
+            }
+            else
+            {
+                otsu.Dispose();
+                return true;
+            }
+        }
+
+
+        /// <summary>
         /// 窗戶瑕疵檢測(側光)
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>良品(true) / 不良品(false)</returns>
-        public bool WindowInspectionSideLight(Mat src)
+        [Obsolete("待刪除")]
+        public bool WindowInspectionSideLight_old(Mat src)
         {
             Rect roi = new(350, 1400, 500, 300);
 
-            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out double threshHold);
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshHold);
 
             /// 待刪
             Debug.WriteLine($"{threshHold}");
@@ -746,11 +795,12 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>良品(true) / 不良品(false)</returns>
-        public bool WindowInspectionSideLight2(Mat src)
+        [Obsolete("待刪除")]
+        public bool WindowInspectionSideLight2_old(Mat src)
         {
             Rect roi = new(350, 160, 500, 300);
 
-            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out double threshHold);
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshHold);
 
             /// 待刪
             Debug.WriteLine($"{threshHold}");
@@ -772,7 +822,7 @@ namespace ApexVisIns
         }
         #endregion
 
-        #region 耳朵瑕疵， Ear Defect
+        #region 耳朵瑕疵檢驗， Ear Defect，耳朵瑕疵檢驗， Ear Defect，耳朵瑕疵檢驗， Ear Defect
         /// <summary>
         /// Apex 耳朵檢驗順序 (單一特徵)，
         /// 此為測試用，正式須配合窗戶檢驗方法
@@ -981,8 +1031,8 @@ namespace ApexVisIns
         public bool EarInspectionL(Mat src, Rect roiL, Rect roiR)
         {
             // Canny + Otsu
-            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out double th1);
-            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out double th2);
+            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out byte th1);
+            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out byte th2);
 
             Methods.GetRoiCanny(src, roiL, 75, 150, out Mat Canny1);
             Methods.GetRoiCanny(src, roiR, 75, 150, out Mat Canny2);
@@ -1053,8 +1103,8 @@ namespace ApexVisIns
         public bool EarInspectionR(Mat src, Rect roiL, Rect roiR)
         {
             // Canny + Otsu
-            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out double th1);
-            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out double th2);
+            Methods.GetRoiOtsu(src, roiL, 0, 255, out Mat Otsu1, out byte th1);
+            Methods.GetRoiOtsu(src, roiR, 0, 255, out Mat Otsu2, out byte th2);
 
             Methods.GetRoiCanny(src, roiL, 75, 150, out Mat Canny1);
             Methods.GetRoiCanny(src, roiR, 75, 150, out Mat Canny2);
@@ -1100,7 +1150,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 耳朵檢測完畢
+        /// 耳朵檢測完畢，關閉所有光源
         /// </summary>
         public void PostEarInspection()
         {

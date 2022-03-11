@@ -68,7 +68,7 @@ namespace ApexVisIns
         }
 
 
-        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat Otsu, out double threshHold)
+        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat Otsu, out byte threshHold)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace ApexVisIns
                 using Mat clone = new Mat(src, roi);
                 using Mat blur = new();
 
-                threshHold = Cv2.Threshold(clone, Otsu, th, max, ThresholdTypes.Otsu);
+                threshHold = (byte)Cv2.Threshold(clone, Otsu, th, max, ThresholdTypes.Otsu);
             }
             catch (OpenCVException)
             {

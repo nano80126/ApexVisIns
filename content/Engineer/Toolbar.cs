@@ -296,15 +296,16 @@ namespace ApexVisIns.content
             }
         }
 
-
         /// <summary>
         /// Stream Grabber Retrieve Image
         /// </summary>
         /// <param name="cam"></param>
         private async void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
         {
-            // 檢測
+            // 耳朵檢測
             // MainWindow.ApexEarInspectionSequence(cam);
+            // 窗戶檢驗
+            //MainWindow.ApexWindpwInspectionSequence(cam);
 
             //return;
             try
@@ -325,7 +326,7 @@ namespace ApexVisIns.content
                 Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
                 Cv2.DestroyAllWindows();
-                while (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps != 0b1100)
+                while (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps != 0b10000)
                 {
                     Debug.WriteLine($"Loop: {Loop} Steps: {MainWindow.ApexDefectInspectionStepsFlags.WindowSteps}");
                     if (Loop++ >= 12)
@@ -361,11 +362,13 @@ namespace ApexVisIns.content
                             continue;
                         case 0b1100:    // 12
                             // 開啟側光
-
+                            MainWindow.PreWindowInspectionSide();
+                            MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b1110:    // 14
                             // 開啟側光
-                            
+                            MainWindow.PreWindowInspectionSide2();
+                            MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         default:
                             //Loop = 12;
@@ -384,7 +387,7 @@ namespace ApexVisIns.content
                         switch (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps)
                         {
                             case 0b0001:    // 1 ROI
-                                MainWindow.WindowInspectionTopBottomLimit(mat, out top, out bottom);
+                                MainWindow.WindowInspectionTopBottomEdge(mat, out top, out bottom);
                                 MainWindow.WindowInspectionRoi(mat, out xPos, out roiL, out roiR);
 
                                 Debug.WriteLine($"{top} {bottom}");
@@ -463,7 +466,6 @@ namespace ApexVisIns.content
                                 else
                                 {
                                     // 如果取三次ROI還失敗，這邊合併並抽取 (30 pixel 間隔)
-                                    // 如果取三次ROI還失敗，這邊合併並抽取 (30 pixel 間隔)
                                     xArray = xPos.Concat(xPos2).Concat(xPos3).OrderBy(x => x).ToArray();
 
                                     List<double> xList = new();
@@ -495,7 +497,7 @@ namespace ApexVisIns.content
                                 Mat m1 = new();
                                 Cv2.Resize(mat, m1, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat1", m1);
-                                Cv2.MoveWindow("mat1", 0, 0); 
+                                Cv2.MoveWindow("mat1", 0, 0);
                                 #endregion
                                 break;
                             case 0b1001:    // 9
@@ -506,7 +508,7 @@ namespace ApexVisIns.content
                                 Mat m2 = new();
                                 Cv2.Resize(mat, m2, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat2", m2);
-                                Cv2.MoveWindow("mat2", 600, 0); 
+                                Cv2.MoveWindow("mat2", 600, 0);
                                 #endregion
                                 break;
                             case 0b1011:    // 11
@@ -521,16 +523,20 @@ namespace ApexVisIns.content
 
                                 Cv2.Resize(mat, m3, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat3", m3);
-                                Cv2.MoveWindow("mat3", 1200, 0); 
+                                Cv2.MoveWindow("mat3", 1200, 0);
                                 #endregion
                                 break;
                             case 0b1101:    // 13
                                 // 側光
-
+                                OpenCvSharp.Rect roiTop = new OpenCvSharp.Rect(roiL.X + roiL.Width, (int)(top - 300), roiR.X - (roiL.X + roiL.Width), 300);
+                                MainWindow.WindowInspectionSideLight(mat, roiTop);
+                                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                                 break;
                             case 0b1111:    // 15
                                 // 側光
-
+                                OpenCvSharp.Rect roiBot = new OpenCvSharp.Rect(roiL.X + roiL.Width, (int)bottom, roiR.X - (roiL.X + roiL.Width), 300);
+                                MainWindow.WindowInspectionSideLight(mat, roiBot);
+                                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                                 break;
                             default:
                                 break;
@@ -725,7 +731,7 @@ namespace ApexVisIns.content
                     #region Assist Rect
                     if (AssistRect.Enable && AssistRect.Area > 0)
                     {
-                        Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out double value);
+                        Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out byte value);
                         Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat Canny);
 
                         Cv2.Resize(Otsu, Otsu, new OpenCvSharp.Size(Otsu.Width * 3 / 5, Otsu.Height * 3 / 5));

@@ -214,13 +214,16 @@ Apex 外觀瑕疵檢測
 
 * [ ] Reset 處置
 
-* [ ] Servo On All in MotionTab
+* [x] Servo On All in MotionTab
 
 * [ ] 重構 Alogorithm
 
 * [ ] EngineerTab.xaml camera use Task open
 
 * [ ] Config Panel 增加參數
+	* 新增 Format
+	* 新增 offset、置中按鈕
+	* 取消自動置中
 
 ### Config Logic
 
