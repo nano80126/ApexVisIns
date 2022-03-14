@@ -578,7 +578,7 @@ namespace ApexVisIns
                 if (value > _targetProgressValue)
                 {
                     // 1 % = 100 ms
-                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 50);
+                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 45);
                     ProgressAnimation.Add(() =>
                     {
                         OnProgressValueChanged(_progress, value, timeSpan);

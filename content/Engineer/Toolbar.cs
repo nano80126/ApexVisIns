@@ -303,17 +303,18 @@ namespace ApexVisIns.content
         private async void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
         {
             // 耳朵檢測
-            // MainWindow.ApexEarInspectionSequence(cam);
+            MainWindow.ApexEarInspectionSequence(cam);
             // 窗戶檢驗
             //MainWindow.ApexWindpwInspectionSequence(cam);
 
-            //return;
+            return;
             try
             {
+
+#if false
                 OpenCvSharp.Rect roiL = new();
                 OpenCvSharp.Rect roiR = new();
 
-                // double[] yPos = Array.Empty<double>();
                 double top = 0;
                 double bottom = 0;
                 double[] xPos = Array.Empty<double>();
@@ -322,14 +323,13 @@ namespace ApexVisIns.content
                 double[] xArray = Array.Empty<double>();
 
                 int Loop = 0;
-
                 Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
                 Cv2.DestroyAllWindows();
                 while (MainWindow.ApexDefectInspectionStepsFlags.WindowSteps != 0b10000)
                 {
                     Debug.WriteLine($"Loop: {Loop} Steps: {MainWindow.ApexDefectInspectionStepsFlags.WindowSteps}");
-                    if (Loop++ >= 12)
+                    if (Loop++ >= 16)
                     {
                         break;
                     }
@@ -360,18 +360,15 @@ namespace ApexVisIns.content
                             MainWindow.PreWindowInspection3();
                             MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
-                        case 0b1100:    // 12
-                            // 開啟側光
+                        case 0b1100:    // 12 // 開啟側光
                             MainWindow.PreWindowInspectionSide();
                             MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
-                        case 0b1110:    // 14
-                            // 開啟側光
+                        case 0b1110:    // 14 // 開啟側光
                             MainWindow.PreWindowInspectionSide2();
                             MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         default:
-                            //Loop = 12;
                             break;
                     }
 
@@ -390,19 +387,7 @@ namespace ApexVisIns.content
                                 MainWindow.WindowInspectionTopBottomEdge(mat, out top, out bottom);
                                 MainWindow.WindowInspectionRoi(mat, out xPos, out roiL, out roiR);
 
-                                Debug.WriteLine($"{top} {bottom}");
-
-                                #region MyRegion
-                                //Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                //Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-                                //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                //Cv2.ImShow("ROIs1", mat.Clone());
-                                //Cv2.MoveWindow("ROIs1", 0, 0); 
-                                #endregion
-
-                                Debug.WriteLine($"{xPos.Length} {string.Join(" , ", xPos)}");
-
-                                if (xPos.Length == 7)
+                                if (xPos.Length == 7)    // 有找到 7 個分界點
                                 {
                                     xArray = xPos;
                                     xPos = null;
@@ -410,31 +395,17 @@ namespace ApexVisIns.content
                                     roiL.Height = roiR.Height = (int)(bottom - top);
                                     MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
                                 }
-                                else MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+                                else
+                                {
+                                    MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+                                }
+
                                 break;
                             case 0b0011:    // 3 ROI
                                 //MainWindow.WindowInspectionTopBottomLimit(mat, out yPos);
                                 MainWindow.WindowInspectionRoi(mat, out xPos2, out roiL, out roiR);
 
-                                #region MyRegion
-                                //Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                //Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-                                //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                //Cv2.ImShow("ROIs2", mat.Clone());
-                                //Cv2.MoveWindow("ROIs2", 600, 0);
-
-                                //for (int i = 0; i < xPos2.Length; i++)
-                                //{
-                                //    Cv2.Circle(mat, new OpenCvSharp.Point(xPos2[i], 800), 5, Scalar.Black, 2);
-                                //    Cv2.Circle(mat, new OpenCvSharp.Point(xPos2[i], 1120), 5, Scalar.Black, 2);
-                                //}
-                                //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                //Cv2.ImShow("xPos2", mat.Clone()); 
-                                #endregion
-
-                                Debug.WriteLine($"{xPos2.Length} {string.Join(" , ", xPos2)}");
-
-                                if (xPos2.Length == 7)
+                                if (xPos2.Length == 7)  // 有找到 7 個分界點
                                 {
                                     xArray = xPos2;
                                     xPos2 = null;
@@ -442,20 +413,15 @@ namespace ApexVisIns.content
                                     roiL.Height = roiR.Height = (int)(bottom - top);
                                     MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
                                 }
-                                else MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+                                else
+                                {
+                                    MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+                                }
                                 break;
                             case 0b0101:    // 5 ROI
                                 MainWindow.WindowInspectionRoi(mat, out xPos3, out roiL, out roiR);
 
-                                #region MyRegion
-                                Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
-                                Cv2.Rectangle(mat, roiR, Scalar.Gray, 2);
-                                Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                                Cv2.ImShow("ROIs3", mat.Clone());
-                                Cv2.MoveWindow("ROIs3", 1200, 0);
-                                #endregion
-
-                                if (xPos3.Length == 7)
+                                if (xPos3.Length == 7)   // 有找到 7 個分界點
                                 {
                                     xArray = xPos3;
                                     xPos3 = null;
@@ -481,9 +447,6 @@ namespace ApexVisIns.content
 
                                     roiL = new OpenCvSharp.Rect((int)xArray[1] - 20, (int)top, (int)(xArray[2] - xArray[1]) + 40, (int)(bottom - top));
                                     roiR = new OpenCvSharp.Rect((int)xArray[^3] - 20, (int)top, (int)(xArray[^2] - xArray[^3]) + 40, (int)(bottom - top));
-
-                                    Debug.WriteLine($"xArray: {string.Join(" , ", xArray)}");
-                                    Debug.WriteLine($"L: {roiL}, R: {roiR}");
 
                                     xPos = xPos2 = xPos3 = null;
                                     MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0b0110;
@@ -526,26 +489,44 @@ namespace ApexVisIns.content
                                 Cv2.MoveWindow("mat3", 1200, 0);
                                 #endregion
                                 break;
-                            case 0b1101:    // 13
-                                // 側光
-                                OpenCvSharp.Rect roiTop = new OpenCvSharp.Rect(roiL.X + roiL.Width, (int)(top - 300), roiR.X - (roiL.X + roiL.Width), 300);
-                                MainWindow.WindowInspectionSideLight(mat, roiTop);
+                            case 0b1101:    // 13 // 側光
+                                OpenCvSharp.Rect roiTop = new((int)xArray[2], (int)(top - 80), (int)(xArray[4] - xArray[2]), 120);
+                                MainWindow.WindowInspectionSideLight(mat, roiTop, 0);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+
+                                #region 待刪除
+                                Mat otsu1 = new();
+
+                                Cv2.Rectangle(mat, roiTop, Scalar.Gray, 2);
+                                Cv2.Resize(mat, otsu1, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                                Cv2.ImShow("Otsu1", otsu1);
+                                Cv2.MoveWindow("Otsu1", 300, 0);
+                                #endregion
                                 break;
-                            case 0b1111:    // 15
-                                // 側光
-                                OpenCvSharp.Rect roiBot = new OpenCvSharp.Rect(roiL.X + roiL.Width, (int)bottom, roiR.X - (roiL.X + roiL.Width), 300);
-                                MainWindow.WindowInspectionSideLight(mat, roiBot);
+                            case 0b1111:    // 15 // 側光
+                                OpenCvSharp.Rect roiBot = new((int)xArray[2], (int)bottom - 40, (int)(xArray[4] - xArray[2]), 120);
+                                MainWindow.WindowInspectionSideLight(mat, roiBot, 1);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
+
+                                #region 待刪除
+                                Mat otsu2 = new();
+
+                                Cv2.Rectangle(mat, roiBot, Scalar.Gray, 2);
+                                Cv2.Resize(mat, otsu2, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                                Cv2.ImShow("Otsu2", otsu2);
+                                Cv2.MoveWindow("Otsu2", 900, 0);
+                                #endregion
                                 break;
                             default:
                                 break;
                         }
-
                         MainWindow.ImageSource = mat.ToImageSource();
                     }
                 }
-                Debug.WriteLine($"Stop: {DateTime.Now:ss.fff}");
+
+                Debug.WriteLine($"Stop: {DateTime.Now:ss.fff}"); 
+#endif
+      
             }
             catch (TimeoutException T)
             {
@@ -720,26 +701,59 @@ namespace ApexVisIns.content
                 MainWindow.Dispatcher.Invoke(() =>
                 {
                     Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
-                    Cv2.DestroyAllWindows();
 
                     if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
                     {
                         MainWindow.AngleCorrection(mat);
                     }
-                    //MainWindow.WindowInspection(mat);
+                    // MainWindow.WindowInspection(mat);
 
                     #region Assist Rect
                     if (AssistRect.Enable && AssistRect.Area > 0)
                     {
-                        Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out byte value);
-                        Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat Canny);
+                        Cv2.DestroyAllWindows();
+                        // 
+                        Mat sharp = new();
+                        InputArray kernel = InputArray.Create(new double[3, 3] {
+                            { -0.8, -0.8, -0.8 },
+                            { -0.8, 6.4, -0.8 },
+                            { -0.8, -0.8, -0.8 }
+                        });
+                        Cv2.Filter2D(mat, sharp, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
 
-                        Cv2.Resize(Otsu, Otsu, new OpenCvSharp.Size(Otsu.Width * 3 / 5, Otsu.Height * 3 / 5));
-                        Cv2.ImShow("Otsu", Otsu);
-                        Debug.WriteLine($"Otsu Value: {value}");
+                        // Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out byte value);
+                        Methods.GetRoiCanny(sharp, AssistRect.GetRect(), 60, 180, out Mat Canny);
 
-                        Cv2.Resize(Canny, Canny, new OpenCvSharp.Size(Canny.Width * 3 / 5, Canny.Height * 3 / 5));
-                        Cv2.ImShow("Canny", Canny);
+                        Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
+                        // 這邊要過濾過短 contours
+
+                        int y = 10;
+                        for (int i = 0; i < cons.Length; i++)
+                        {
+                            if (cons[i].Length > 30)
+                            {
+                                Mat m = new(sharp.Clone(), AssistRect.GetRect());
+
+                                Cv2.DrawContours(m, cons, i, Scalar.FromRgb(0, 0, 0), 2, offset: AssistRect.GetRect().Location * -1);
+                                Cv2.ImShow($"mat{i}", m);
+
+                                if (i % 10 == 0) y += 180;
+                                Cv2.MoveWindow($"mat{i}", 180 * (i % 10), y);
+                            }
+
+                            Debug.WriteLine($"Length: {cons[i].Length}, ArcLength: {Cv2.ArcLength(cons[i], true)}, ArcLength: {Cv2.ArcLength(cons[i], false)}");
+                        }
+                        Debug.WriteLine($"Cons Count: {cons.Length}");
+
+                        Cv2.Resize(sharp, sharp, new OpenCvSharp.Size(sharp.Width / 2, sharp.Height / 2));
+                        Cv2.ImShow($"sharp", sharp);
+
+
+                        // Cv2.Resize(Otsu, Otsu, new OpenCvSharp.Size(Otsu.Width * 3 / 5, Otsu.Height * 3 / 5));
+                        // Cv2.ImShow("Otsu", Otsu);
+                        // Debug.WriteLine($"Otsu Value: {value}");
+                        // Cv2.Resize(Canny, Canny, new OpenCvSharp.Size(Canny.Width * 3 / 5, Canny.Height * 3 / 5));
+                        // Cv2.ImShow("Canny", Canny);
                     }
                     #endregion
 

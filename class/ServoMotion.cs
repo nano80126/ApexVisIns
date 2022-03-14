@@ -2432,6 +2432,18 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 變更運轉速度
+        /// </summary>
+        public void ChangeVel(double vel)
+        {
+            uint result = Motion.mAcm_AxChangeVel(AxisHandle, vel);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"位置控制變更運轉速度失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
         /// 馬達停止
         /// </summary>
         public void StopMove()

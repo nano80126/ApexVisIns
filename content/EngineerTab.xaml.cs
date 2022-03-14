@@ -112,6 +112,8 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            OpenCvSharp.Cv2.DestroyAllWindows();
+
             MainWindow.PreAngleCorrection();
 
             MainWindow.ApexAngleCorrectionFlags.Steps = 0;
@@ -119,34 +121,30 @@ namespace ApexVisIns.content
             MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
         }
 
-        
+
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
-            //MainWindow.PreWindowInspection();
-            //MainWindow.PreEarInspection();
-            MainWindow.PreWindowInspection();
+            MainWindow.ApexAngleCorrectionFlags.Steps = 0b0101;
         }
 
-        
+
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
-            //MainWindow.PreEarInspectionSide();
-            MainWindow.PreWindowInspection2();
-        }
-
-        
-        private async void Button4_Click(object sender, RoutedEventArgs e)
-        {
-            //MainWindow.PreWindowInspection3();
-            //await MainWindow.PreEarInspectionRoiL();
-            MainWindow.PreWindowInspection3();
+            MainWindow.LightCtrls[0].SetAllChannelValue(128, 0, 0, 108);
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
         }
 
 
-        private async void Button5_Click(object sender, RoutedEventArgs e)
+        private void Button4_Click(object sender, RoutedEventArgs e)
         {
-            //MainWindow.PreEarInspectionL();
-            //await MainWindow.PreEarInspectionRoiR();
+            MainWindow.LightCtrls[0].SetAllChannelValue(128, 0, 0, 108);
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+        }
+
+        private void Button5_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.LightCtrls[0].ResetAllChannel();
+            MainWindow.LightCtrls[1].ResetAllChannel();
         }
 
         /// <summary>

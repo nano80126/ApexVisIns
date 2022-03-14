@@ -41,6 +41,7 @@
         <RoutedUICommand x:Key="SingleShot" Text="Single Shot"/>
         <RoutedUICommand x:Key="ContinuousShot" Text="Continuous Shot"/>
         <RoutedUICommand x:Key="ToggleStreamGrabber" Text="Toggle Stream Grabber"/>
+        <RoutedUICommand x:Key="RetrieveImage" Text="Retrieve Image"/>
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
         <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
         <!--Tab-->
@@ -51,8 +52,7 @@
 
 
         <!--#region BackgroundWorker -->
-        <componentModel:BackgroundWorker x:Name="Worker" x:Key="Worker" WorkerReportsProgress="True"
-                                         WorkerSupportsCancellation="True"/>
+        <componentModel:BackgroundWorker x:Name="Worker" x:Key="Worker" WorkerReportsProgress="True" WorkerSupportsCancellation="True"/>
         <!--#endregion-->
 
         <!--<sys:Boolean x:Key="LoginFlag">
@@ -102,6 +102,7 @@
         <KeyBinding Key="F5" Command="{StaticResource SingleShot}"/>
         <KeyBinding Key="F6" Command="{StaticResource ContinuousShot}"/>
         <KeyBinding Key="F7" Command="{StaticResource ToggleStreamGrabber}"/>
+        <KeyBinding Key="F8" Command="{StaticResource RetrieveImage}"/>
         <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
         <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
         <!--Tab-->
@@ -133,6 +134,7 @@
         <CommandBinding Command="{StaticResource SingleShot}" CanExecute="SingleShotCanExecute" Executed="SingleShotCommand"/>
         <CommandBinding Command="{StaticResource ContinuousShot}" CanExecute="ContinousShotCanExecute" Executed="ContinousShotCommand"/>
         <CommandBinding Command="{StaticResource ToggleStreamGrabber}" CanExecute="ToggleStreamGrabberCanExecute" Executed="ToggleStreamGrabberCommand" />
+        <CommandBinding Command="{StaticResource RetrieveImage}" CanExecute="RetrieveImageCanExecute" Executed="RetrieveImageCommand"/>
         <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="EngineerTabCanExcute" Executed="CrosshairOnCommnad"/>
         <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="EngineerTabCanExcute" Executed="AssisRectOnCommand"/>
         <!--Switch Tab-->

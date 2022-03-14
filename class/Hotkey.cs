@@ -46,14 +46,17 @@ namespace ApexVisIns
             // EngineerTab is focused
             e.CanExecute = OnTabIndex == 4;
         }
+        
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
+        
         private void MaxCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
+        
         private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = DebugMode && !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
@@ -175,7 +178,6 @@ namespace ApexVisIns
             //ContinouseShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
-
         private void ToggleStreamGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = OnTabIndex switch
@@ -185,12 +187,24 @@ namespace ApexVisIns
             };
         }
 
-
         private void ToggleStreamGrabberCommand(object sender, ExecutedRoutedEventArgs e)
         {
             EngineerTab.ToggleStreamGrabber.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
+        private void RetrieveImageCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = OnTabIndex switch
+            {
+                4 => EngineerTab.RetrieveImage.IsEnabled,
+                _ => false
+            };
+        }
+
+        private void RetrieveImageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            EngineerTab.RetrieveImage.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        }
 
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
