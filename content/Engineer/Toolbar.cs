@@ -17,7 +17,6 @@ namespace ApexVisIns.content
     public partial class EngineerTab : StackPanel
     {
         #region Toolbar 元件事件
-
         /// <summary>
         /// 相機選擇 Selector 變更事件
         /// </summary>
@@ -305,8 +304,9 @@ namespace ApexVisIns.content
             // 耳朵檢測
             MainWindow.ApexEarInspectionSequence(cam);
             // 窗戶檢驗
-            //MainWindow.ApexWindpwInspectionSequence(cam);
+            // MainWindow.ApexWindpwInspectionSequence(cam);
 
+            
             return;
             try
             {
@@ -712,12 +712,12 @@ namespace ApexVisIns.content
                     if (AssistRect.Enable && AssistRect.Area > 0)
                     {
                         Cv2.DestroyAllWindows();
-                        // 
+                        #region Coding custom ROI Method here
                         Mat sharp = new();
                         InputArray kernel = InputArray.Create(new double[3, 3] {
-                            { -0.8, -0.8, -0.8 },
-                            { -0.8, 6.4, -0.8 },
-                            { -0.8, -0.8, -0.8 }
+                            { -0.8, 1.6, -0.8 },
+                            { -0.8, 1.6, -0.8 },
+                            { -0.8, 1.6, -0.8 }
                         });
                         Cv2.Filter2D(mat, sharp, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
 
@@ -725,35 +725,8 @@ namespace ApexVisIns.content
                         Methods.GetRoiCanny(sharp, AssistRect.GetRect(), 60, 180, out Mat Canny);
 
                         Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
-                        // 這邊要過濾過短 contours
-
-                        int y = 10;
-                        for (int i = 0; i < cons.Length; i++)
-                        {
-                            if (cons[i].Length > 30)
-                            {
-                                Mat m = new(sharp.Clone(), AssistRect.GetRect());
-
-                                Cv2.DrawContours(m, cons, i, Scalar.FromRgb(0, 0, 0), 2, offset: AssistRect.GetRect().Location * -1);
-                                Cv2.ImShow($"mat{i}", m);
-
-                                if (i % 10 == 0) y += 180;
-                                Cv2.MoveWindow($"mat{i}", 180 * (i % 10), y);
-                            }
-
-                            Debug.WriteLine($"Length: {cons[i].Length}, ArcLength: {Cv2.ArcLength(cons[i], true)}, ArcLength: {Cv2.ArcLength(cons[i], false)}");
-                        }
-                        Debug.WriteLine($"Cons Count: {cons.Length}");
-
-                        Cv2.Resize(sharp, sharp, new OpenCvSharp.Size(sharp.Width / 2, sharp.Height / 2));
-                        Cv2.ImShow($"sharp", sharp);
-
-
-                        // Cv2.Resize(Otsu, Otsu, new OpenCvSharp.Size(Otsu.Width * 3 / 5, Otsu.Height * 3 / 5));
-                        // Cv2.ImShow("Otsu", Otsu);
-                        // Debug.WriteLine($"Otsu Value: {value}");
-                        // Cv2.Resize(Canny, Canny, new OpenCvSharp.Size(Canny.Width * 3 / 5, Canny.Height * 3 / 5));
-                        // Cv2.ImShow("Canny", Canny);
+                        // 這邊要過濾過短 contours 
+                        #endregion
                     }
                     #endregion
 

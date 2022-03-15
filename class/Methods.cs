@@ -67,17 +67,50 @@ namespace ApexVisIns
             }
         }
 
-
-        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat Otsu, out byte threshHold)
+        /// <summary>
+        /// 取得 ROI Otsu 影像、閾值
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">roi 方形區域</param>
+        /// <param name="th">閾值</param>
+        /// <param name="max">最大值</param>
+        /// <param name="otsu">Otsu 影像</param>
+        /// <param name="threshHold">Otsu 閾值</param>
+        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat otsu, out byte threshHold)
         {
             try
             {
-                Otsu = new Mat();
+                otsu = new Mat();
+                using Mat clone = new(src, roi);
 
-                using Mat clone = new Mat(src, roi);
-                using Mat blur = new();
+                threshHold = (byte)Cv2.Threshold(clone, otsu, th, max, ThresholdTypes.Otsu);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
 
-                threshHold = (byte)Cv2.Threshold(clone, Otsu, th, max, ThresholdTypes.Otsu);
+        /// <summary>
+        /// 取得 ROI 濾波影像
+        /// </summary>
+        public static void GetRoiFilter2D(Mat src, Rect roi, double kernelCenterValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                using Mat clone = new(src, roi);
+                double s = kernelCenterValue / 8 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s,s,s},{s,kernelCenterValue,s },{s,s,s }
+                });
+                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
             }
             catch (OpenCVException)
             {
@@ -129,7 +162,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 取得霍夫 Lines
         /// </summary>
@@ -166,7 +198,6 @@ namespace ApexVisIns
                 throw;
             }
         }
-
 
         /// <summary>
         /// 取得霍夫水平 / 垂直線
@@ -259,7 +290,6 @@ namespace ApexVisIns
                 throw;
             }
         }
-
 
         /// <summary>
         /// 計算垂直Hough Lines
@@ -462,14 +492,13 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 取得窗戶 Width
         /// </summary>
         /// <param name="src">canny 影</param>
         /// <param name="width"></param>
         /// <returns>是否檢測到窗戶</returns>
-        public static bool GetVertialWindowWidth(Mat src, out int lineCount, out double width, int Xgap = 3)
+        public static bool GetVertialWindowWidth(Mat src, out int lineCount, out double width, int Xgap = 3, int lineLength = 0)
         {
             lineCount = 0;
             width = 0;
@@ -480,8 +509,7 @@ namespace ApexVisIns
 
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
-                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap);
-
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) < Xgap);
                     IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
 
                     if (groupings.Length == 4)
@@ -502,7 +530,6 @@ namespace ApexVisIns
                 throw;
             }
         }
-
 
         /// <summary>
         /// 確認影像是否含有目標物

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,47 @@ namespace ApexVisIns
         {
             DialogResult = true;
             Close();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.F1:
+                    AutoModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
+                    break;
+                case Key.F2:
+                    WarmModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
+                    break;
+                case Key.F3:
+                    EditModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.F1:
+                    (Owner as MainWindow).InitMode = MainWindow.InitModes.AUTO;
+                    DialogResult = true;
+                    Close();
+                    break;
+                case Key.F2:
+                    (Owner as MainWindow).InitMode = MainWindow.InitModes.WARM;
+                    DialogResult = true;
+                    Close();
+                    break;
+                case Key.F3:
+                    (Owner as MainWindow).InitMode = MainWindow.InitModes.EDIT;
+                    DialogResult = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

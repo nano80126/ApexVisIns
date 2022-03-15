@@ -121,12 +121,10 @@ namespace ApexVisIns.content
             MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
         }
 
-
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.ApexAngleCorrectionFlags.Steps = 0b0101;
         }
-
 
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
