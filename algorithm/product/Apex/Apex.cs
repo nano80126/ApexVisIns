@@ -79,6 +79,11 @@ namespace ApexVisIns
         /// </summary>
         public struct ApexAngleCorrectionStruct
         {
+            public ApexAngleCorrectionStruct(byte direction) : this()
+            {
+                Direction = direction;
+            }
+
             /// <summary>
             /// 工件對位步驟旗標
             /// bit 0 ~ 3, 0 ~ 15
@@ -92,6 +97,11 @@ namespace ApexVisIns
             /// 最大檢驗之 Width
             /// </summary>
             public ushort MaxWindowWidth { get; set; }
+
+            /// <summary>
+            /// 方向 (1: 正轉, 0: 逆轉)
+            /// </summary>
+            public byte Direction { get; set; }
         }
 
 
@@ -136,7 +146,7 @@ namespace ApexVisIns
         /// <summary>
         /// Apex 管件選轉定位用結構旗標
         /// </summary>
-        public ApexAngleCorrectionStruct ApexAngleCorrectionFlags;
+        public ApexAngleCorrectionStruct ApexAngleCorrectionFlags = new ApexAngleCorrectionStruct(1);
 
         /// <summary>
         /// Apex 瑕疵檢驗用步驟旗標
@@ -177,20 +187,22 @@ namespace ApexVisIns
         {
             Rect roi = new(100, 840, 1000, 240);
 
+
             Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
-            bool FindWindow = Methods.GetVertialWindowWidth(canny, out int count, out double width, 50);
+            bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50);
+
+            byte endStep = 0b0110;
 
             // canny.Dispose();
-            if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101)
+            if (FindWindow && ApexAngleCorrectionFlags.Steps != endStep)
             {
                 Cv2.ImShow("AngleCorrectionCanny", canny);
 
                 switch (ApexAngleCorrectionFlags.Steps)
                 {
                     // 這邊應該判斷 width 是增加的
-                    case 0b0000:    // 0
-                        // 高速中，初步找窗戶
-                        if (width > 200 && width > ApexAngleCorrectionFlags.LastWindowWidth)
+                    case 0b0000:    // 0 // 高速中，初步找窗戶
+                        if (width > 200 && width > ApexAngleCorrectionFlags.LastWindowWidth + 5)    // width 增加中
                         {
                             ServoMotion.Axes[1].ChangeVel(200); // 轉低速
                             ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
@@ -198,8 +210,16 @@ namespace ApexVisIns
                         }
                         ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                         break;
-                    case 0b0001:    // 1
-                        // 低速中，慢速找窗戶
+                    case 0b0001:    // 1 // 低速中，慢速找窗戶
+                        if (width > 300 && width > ApexAngleCorrectionFlags.LastWindowWidth + 3)
+                        {
+                            ServoMotion.Axes[1].ChangeVel(50);  // 轉極低速
+                            ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
+                        ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
+                        break;
+                    case 0b0010:    // 2 // 極低速，定位窗戶
                         if (width > 350)
                         {
                             ServoMotion.Axes[1].StopMove();
@@ -209,53 +229,62 @@ namespace ApexVisIns
                         }
                         ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                         break;
-                    case 0b0010:    // 2
-                        // 極低速，定位窗戶
-                        if (width > ApexAngleCorrectionFlags.LastWindowWidth)   // width 還在增加中
+                    case 0b0011:    // 3
+                        if (width > ApexAngleCorrectionFlags.LastWindowWidth)   // width 增加中
                         {
                             _ = ServoMotion.Axes[1].TryPosMove(5);
                         }
                         else
                         {
+                            ApexAngleCorrectionFlags.Direction ^= 0b01; // 逆轉
+
                             // 轉過頭
                             ApexAngleCorrectionFlags.MaxWindowWidth = ApexAngleCorrectionFlags.LastWindowWidth;
                             ApexAngleCorrectionFlags.Steps += 0b01;
+                            //ApexAngleCorrectionFlags.Steps = 0b0110;
                         }
                         ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                         break;
-                    case 0b0011:    // 3
+                    case 0b0100:    // 4 
                         if (width < ApexAngleCorrectionFlags.MaxWindowWidth)    // 當前 width < 最大 width
                         {
-                            if (width > ApexAngleCorrectionFlags.LastWindowWidth)
+                            if (ApexAngleCorrectionFlags.Direction == 1)
                             {
-                                // 逆轉 -3 pulse
-                                _ = ServoMotion.Axes[1].TryPosMove(-3);
+                                // 正轉 3 pulse
+                                _ = ServoMotion.Axes[1].TryPosMove(1);
                             }
                             else
                             {
-                                // 正轉 3 pulse
-                                _ = ServoMotion.Axes[1].TryPosMove(3);
+                                // 逆轉 -3 pulse
+                                _ = ServoMotion.Axes[1].TryPosMove(-1);
                             }
                         }
                         else
                         {
                             ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
-                            ApexAngleCorrectionFlags.Steps += 0b01;
+                            ApexAngleCorrectionFlags.Steps = 0b0110;
                         }
                         ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                         break;
-                    case 0b0100:    // 4
-                        if (width < ApexAngleCorrectionFlags.MaxWindowWidth)
+                    case 0b0101:    // 5
+                        if (width < ApexAngleCorrectionFlags.MaxWindowWidth) // 
                         {
-                            if (width > ApexAngleCorrectionFlags.LastWindowWidth)
+                            if (width < ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-                                // 逆轉 - pulse
-                                _ = ServoMotion.Axes[1].TryPosMove(-1);
+                                ApexAngleCorrectionFlags.Direction ^= 0b01;
+                                ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
+                                break;
                             }
-                            else
+
+                            if (ApexAngleCorrectionFlags.Direction == 1)
                             {
                                 // 正轉 1 pulse
                                 _ = ServoMotion.Axes[1].TryPosMove(1);
+                            }
+                            else
+                            {
+                                // 逆轉 - pulse
+                                _ = ServoMotion.Axes[1].TryPosMove(-1);
                             }
                         }
                         else
@@ -263,10 +292,12 @@ namespace ApexVisIns
                             ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
 
                             // 重置 POS
-                            ServoMotion.Axes[1].ResetPos();
-                            ApexAngleCorrectionFlags.Steps += 0b01;
+                            if (ServoMotion.Axes[1].TryResetPos() == (uint)Advantech.Motion.ErrorCode.SUCCESS)
+                            {
+                                ApexAngleCorrectionFlags.Steps += 0b01;
 
-                            Cv2.DestroyAllWindows();
+                                Cv2.DestroyAllWindows();
+                            }
                         }
                         ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                         break;
@@ -275,11 +306,74 @@ namespace ApexVisIns
                 }
             }
 
-            if (ApexAngleCorrectionFlags.Steps != 0b0101)
+            if (ApexAngleCorrectionFlags.Steps != endStep + 1)   // endStep + 1 // 之後刪除 + 1
             {
                 Debug.WriteLine($"Steps: {ApexAngleCorrectionFlags.Steps}");
                 Debug.WriteLine($"Width: {width}");
+                Debug.WriteLine($"Last Width: {ApexAngleCorrectionFlags.LastWindowWidth}");
                 Debug.WriteLine($"Max Width: {ApexAngleCorrectionFlags.MaxWindowWidth}");
+                Debug.WriteLine($"Direction: {ApexAngleCorrectionFlags.Direction}");
+            }
+        }
+
+
+        /// <summary>
+        /// 角度校正，
+        /// 相機(窗戶) 1 粗定位，粗定位時不使用相機 2
+        /// 相機(耳朵) 2 精定位，精定位時不使用相機 1
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="src2"></param>
+        public void AngleCorrection(Mat src, Mat src2)
+        {
+            if (!src.Empty())
+            {
+                // X: 1200 - 100, Y: 960 - 120
+                Rect roi = new(100, 840, 1000, 240);
+
+                Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+                bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
+
+                if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101)
+                {
+                    Cv2.ImShow("ApexCorrectionCanny", canny);
+
+                    switch (ApexAngleCorrectionFlags.Steps)
+                    {
+                        case 0b0000:    // 0 // 快速找窗戶
+                            if (width > 200 && width > ApexAngleCorrectionFlags.LastWindowWidth)
+                            {
+
+                            }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
+                            break;
+                        case 0b0001:    // 1 // 慢速找窗戶
+                            if (width > 300)
+                            {
+
+                            }
+                            break;
+                        case 0b0010:    // 2 // 極慢速找窗戶
+                            break;
+                        case 0b0011:    // 3 // 
+                            break;
+                        case 0b0100:    // 4 // 
+                            break;
+                        case 0b0101:    // 5 // 
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+
+
+            if (!src2.Empty())
+            {
+
+
+
             }
         }
 
@@ -304,6 +398,8 @@ namespace ApexVisIns
         {
             try
             {
+                int msDelay = 75;
+
                 Rect roiL = new();
                 Rect roiR = new();
 
@@ -334,30 +430,37 @@ namespace ApexVisIns
                             continue;
                         case 0b0010:    // 2
                             PreWindowInspectionRoi2();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b0100:    // 4
                             PreWindowInspectionRoi3();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b0110:    // 6
                             PreWindowInspection();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b1000:    // 8
                             PreWindowInspection2();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b1010:    // 10
                             PreWindowInspection3();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b1100:    // 12 // 開啟側光
                             PreWindowInspectionSide();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         case 0b1110:    // 14 // 開啟側光
                             PreWindowInspectionSide2();
+                            _ = SpinWait.SpinUntil(() => false, msDelay);
                             ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
                             continue;
                         default:
@@ -482,7 +585,8 @@ namespace ApexVisIns
                                 #endregion
                                 break;
                             case 0b1101:    // 13 // 側光
-                                Rect roiTop = new((int)xArray[2], (int)(top - 80), (int)(xArray[4] - xArray[2]), 120);
+                                // 1 - 2 R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
+                                Rect roiTop = new((int)xArray[1], (int)(top - 80), (int)(xArray[^2] - xArray[1]), 120);
                                 WindowInspectionSideLight(mat, roiTop, 0);
                                 ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
@@ -496,7 +600,8 @@ namespace ApexVisIns
                                 #endregion
                                 break;
                             case 0b1111:    // 15 // 側光
-                                Rect roiBot = new((int)xArray[2], (int)bottom - 40, (int)(xArray[4] - xArray[2]), 120);
+                                // 1 - 2 R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
+                                Rect roiBot = new((int)xArray[1], (int)bottom - 40, (int)(xArray[^2] - xArray[1]), 120);
                                 WindowInspectionSideLight(mat, roiBot, 1);
                                 ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
@@ -673,41 +778,6 @@ namespace ApexVisIns
             LightCtrls[1].SetAllChannelValue(0, 0);
         }
 
-
-#if false
-        /// <summary>
-        /// 窗戶瑕疵檢驗前手續,
-        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(-100)
-        /// </summary>
-        [Obsolete()]
-        public void PreWindowInspection_old()
-        {
-            // 變更光源
-            LightCtrls[0].SetAllChannelValue(256, 0, 114, 0);
-            LightCtrls[1].SetAllChannelValue(0, 0);
-            // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
-            // 觸發馬達
-            ServoMotion.Axes[1].PosMove(-100, true);
-        }
-
-        /// <summary>
-        /// 窗戶瑕疵檢驗前手續,
-        /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(-100)
-        /// </summary>
-        [Obsolete()]
-        public void PreWindowInspection_old2()
-        {
-            // 變更光源
-            LightCtrls[0].SetAllChannelValue(224, 0, 114, 0);
-            LightCtrls[1].SetAllChannelValue(0, 0);
-            // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
-            // 觸發馬達
-            ServoMotion.Axes[1].PosMove(-100, true);
-        } 
-#endif
-
         /// <summary>
         /// 窗戶瑕疵檢驗，
         /// 測試是否拆步驟 (先取 ROI 再瑕疵檢)
@@ -826,7 +896,7 @@ namespace ApexVisIns
 
         /// <summary>
         /// 窗戶瑕疵檢測(側光)前手續，
-        /// 128, 256
+        /// 128, 0
         /// </summary>
         public void PreWindowInspectionSide2()
         {
@@ -858,67 +928,6 @@ namespace ApexVisIns
             else
             {
                 //otsu.Dispose();
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 窗戶瑕疵檢測(側光)
-        /// </summary>
-        /// <param name="src">來源影像</param>
-        /// <returns>良品(true) / 不良品(false)</returns>
-        [Obsolete("待刪除")]
-        public bool WindowInspectionSideLight_old(Mat src)
-        {
-            Rect roi = new(350, 1400, 500, 300);
-            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshHold);
-
-            /// 待刪
-            Debug.WriteLine($"{threshHold}");
-
-            if (threshHold > 50)
-            {
-                // 如果需要回傳顯示不良範圍
-                // 這邊處理
-                // Code Here
-
-                otsu.Dispose();
-                return false;
-            }
-            else
-            {
-                otsu.Dispose();
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 窗戶瑕疵檢測(側光)
-        /// </summary>
-        /// <param name="src">來源影像</param>
-        /// <returns>良品(true) / 不良品(false)</returns>
-        [Obsolete("待刪除")]
-        public bool WindowInspectionSideLight2_old(Mat src)
-        {
-            Rect roi = new(350, 160, 500, 300);
-
-            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshHold);
-
-            /// 待刪
-            Debug.WriteLine($"{threshHold}");
-
-            if (threshHold > 50)
-            {
-                // 如果需要回傳顯示不良範圍
-                // 這邊處理
-                // code here
-
-                otsu.Dispose();
-                return false;
-            }
-            else
-            {
-                otsu.Dispose();
                 return true;
             }
         }

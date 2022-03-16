@@ -1374,7 +1374,7 @@ namespace ApexVisIns.content
                         await MotionSpecChange(85000);
                         break;
                     case 1: // 中
-                        await MotionSpecChange(50000);
+                        await MotionSpecChange(43500);
                         break;
                     case 2:
                         await MotionSpecChange(-30000);

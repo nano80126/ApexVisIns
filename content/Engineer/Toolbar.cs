@@ -306,7 +306,7 @@ namespace ApexVisIns.content
             // 窗戶檢驗
             // MainWindow.ApexWindpwInspectionSequence(cam);
 
-            
+
             return;
             try
             {

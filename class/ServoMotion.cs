@@ -1746,6 +1746,16 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 嘗試 Reset Servo Position 
+        /// </summary>
+        /// <returns>Return Error Code or 1 (不為Servo On 狀態)</returns>
+        public uint TryResetPos()
+        {
+            double cmdPos = 0;
+            return IO_SVON.BitOn ? Motion.mAcm_AxSetCmdPosition(AxisHandle, cmdPos) : 1;
+        }
+
+        /// <summary>
         /// 重置錯誤
         /// </summary>
         public void ResetError()

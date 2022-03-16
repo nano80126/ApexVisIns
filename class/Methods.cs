@@ -496,9 +496,13 @@ namespace ApexVisIns
         /// 取得窗戶 Width
         /// </summary>
         /// <param name="src">canny 影</param>
-        /// <param name="width"></param>
+        /// <param name="lineCount">(out) 線數量</param>
+        /// <param name="width">(out) 窗戶 Width</param>
+        /// <param name="Xgap">垂直線 X 跨度</param>
+        /// <param name="lineLength">線長度閾值</param>
+        /// <param name="minWindowWidth">最小窗戶 Width</param>
         /// <returns>是否檢測到窗戶</returns>
-        public static bool GetVertialWindowWidth(Mat src, out int lineCount, out double width, int Xgap = 3, int lineLength = 0)
+        public static bool GetVertialWindowWidth(Mat src, out int lineCount, out double width, int Xgap = 5, int lineLength = 0, int minWindowWidth = 100)
         {
             lineCount = 0;
             width = 0;
@@ -516,6 +520,11 @@ namespace ApexVisIns
                     {
                         lineCount = groupings.Length;
                         width = groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
+                        
+                        if (width < minWindowWidth)
+                        {
+                            return false;
+                        }
                     }
                     else
                     {

@@ -112,13 +112,21 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenCvSharp.Cv2.DestroyAllWindows();
+            try
+            {
+                OpenCvSharp.Cv2.DestroyAllWindows();
 
-            MainWindow.PreAngleCorrection();
+                MainWindow.PreAngleCorrection();
 
-            MainWindow.ApexAngleCorrectionFlags.Steps = 0;
-            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
-            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+                MainWindow.ApexAngleCorrectionFlags.Steps = 0;
+                MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
+                MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+                MainWindow.ApexAngleCorrectionFlags.Direction = 1;
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+            }
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
