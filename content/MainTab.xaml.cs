@@ -127,6 +127,9 @@ namespace ApexVisIns.content
             // 測試 IO 用
             // InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
+            // 測試相機用
+            InitCamera(_cancellationTokenSource.Token).Wait();
+
             if (!loaded)
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
@@ -148,141 +151,6 @@ namespace ApexVisIns.content
         #endregion
 
         #region 初始化
-        /// <summary>
-        /// 建立初始化工作者
-        /// </summary>
-        [Obsolete("待移除")]
-        private void _Initializer()
-        {
-            _ = Task<int>.Run(() =>
-            {
-                // 硬體初始化 // 硬體初始化 // 硬體初始化
-                MainWindow.ApexDefect.CurrentStep = 0;  // 步序 : 硬體初始化
-
-                // 等待相機 Enumerator 搜尋完畢
-                if (SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
-                {
-                    //_ = SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-                    InitCamera();
-                }
-                else
-                {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "相機 Enumerator 啟動失敗");
-                }
-
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                //if (SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 1000))
-                if (ServoMotion.CheckDllVersion())
-                {
-                    //_ = SpinWait.SpinUntil(() => MainWindow.ServoMotion.MotionDevices.Count > 0, 3000);
-                    InitMotion();
-                }
-                else
-                {
-                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "");
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "MOTION 控制驅動未安裝或版本不符");
-                }
-
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                // 等待 Com Port 搜尋完畢
-                if (SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 1000))
-                {
-                    //_ = SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000);
-                    //InitLightCtrls();
-                }
-                else
-                {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, "光源控制 Enumerator 啟動失敗");
-                }
-
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                InitIOCtrl();
-
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                // _ = SpinWait.SpinUntil(() => false, 1500);
-                // MainWindow.MsgInformer.TargetProgressValue = 200;
-
-                // 等待 5 秒
-                if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 100, 5 * 1000))
-                {
-                    // 硬體初始化失敗
-                    MainWindow.ApexDefect.StepError = true;
-                    return 1;   // 
-                }
-
-                // 暫停 Worker 
-                MainWindow.CameraEnumer.WorkerPause();
-                MainWindow.LightEnumer.WorkerPause();
-
-                return 0;
-            }, _cancellationTokenSource.Token).ContinueWith<int>(t =>
-            {
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                if (t.Result == 0)
-                {
-                    // 原點復歸 // 原點復歸 // 原點復歸
-                    MainWindow.ApexDefect.CurrentStep = 1;  // 步序 : 原點復歸 
-
-                    MotionReturnZero().Wait();
-
-                    if (!MainWindow.ApexDefect.ZeroReturned)
-                    {
-                        MainWindow.ApexDefect.StepError = true;
-                        return 2;
-                    }
-                    return 0;
-                }
-                else
-                {
-                    return t.Result;
-                }
-            }, _cancellationTokenSource.Token).ContinueWith<int>(t =>
-            {
-                if (_cancellationTokenSource.IsCancellationRequested)
-                {
-                    MainWindow.ApexDefect.CurrentStep = -1;
-                    _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-
-                if (t.Result == 0)
-                {
-                    // 規格選擇 // 規格選擇 // 規格選擇
-                    // 原點復歸成功 // 進入人員操作
-                    MainWindow.ApexDefect.CurrentStep = 2;  // 步序 : 規格選擇 
-                    return 0;
-                }
-                else
-                {
-                    return t.Result;
-                }
-            }, _cancellationTokenSource.Token);
-        }
-
         /// <summary>
         /// 初始化工作
         /// </summary>
@@ -475,106 +343,6 @@ namespace ApexVisIns.content
         /// <summary>
         /// 相機初始化
         /// </summary>
-        [Obsolete("待轉移至新方法")]
-        private void InitCamera()
-        {
-            if (CameraInitialized) { return; }
-
-            // 1. 載入 DeviceConfigs
-            // 2. 確認每個 Camera 的Target
-            // 3. 開啟相機
-            // 4. 載入 UserSet
-
-            string path = @"./devices/device.json";
-
-            if (!File.Exists(path))
-            {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔不存在");
-            }
-            else
-            {
-                using StreamReader reader = new(path);
-                string jsonStr = reader.ReadToEnd();
-
-                if (jsonStr != string.Empty)
-                {
-                    // 有組態的 camera
-                    DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
-
-                    // 在線上的 camera
-                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                    // Devices 排序
-                    Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
-
-                    foreach (DeviceConfigBase device in devices)
-                    {
-                        // 確認有組態的 camera 在線上
-                        if (cams.Exists(cam => cam.SerialNumber == device.SerialNumber))
-                        {
-                            switch (device.TargetFeature)
-                            {
-                                case DeviceConfigBase.TargetFeatureType.Ear:
-                                    if (!MainWindow.BaslerCams[0].IsConnected)
-                                    {
-                                        BaslerCam1 = MainWindow.BaslerCams[0];
-                                        //_ = Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature, null);
-                                        MainWindow.MsgInformer.TargetProgressValue += 5;
-                                    }
-                                    break;
-                                case DeviceConfigBase.TargetFeatureType.Window:
-                                    if (!MainWindow.BaslerCams[1].IsConnected)
-                                    {
-                                        BaslerCam2 = MainWindow.BaslerCams[1];
-                                        //_ = Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature);
-                                        MainWindow.MsgInformer.TargetProgressValue += 5;
-                                    }
-                                    break;
-                                case DeviceConfigBase.TargetFeatureType.Surface1:
-                                    if (!MainWindow.BaslerCams[2].IsConnected)
-                                    {
-                                        BaslerCam3 = MainWindow.BaslerCams[2];
-                                        //_ = Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature);
-                                        MainWindow.MsgInformer.TargetProgressValue += 5;
-                                    }
-                                    break;
-                                case DeviceConfigBase.TargetFeatureType.Surface2:
-                                    if (!MainWindow.BaslerCams[3].IsConnected)
-                                    {
-                                        BaslerCam4 = MainWindow.BaslerCams[3];
-                                        //_ = Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature);
-                                        MainWindow.MsgInformer.TargetProgressValue += 5;
-                                    }
-                                    break;
-                                default:
-                                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
-                                    break;
-                            }
-                        }
-                    }
-
-                    // Motion 初始化旗標
-                    CameraInitialized = true;
-
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
-                }
-                else
-                {
-                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
-                }
-            }
-
-            // CameraInitialized = true;
-
-            // Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "相機初始化完成"));
-            // MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
-            // MainWindow.ProgressValue += 20;
-            // 更新progress value
-        }
-
-        /// <summary>
-        /// 相機初始化
-        /// </summary>
         /// <param name="ct">CancellationToken</param>s
         private Task InitCamera(CancellationToken ct)
         {
@@ -702,110 +470,6 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 運動初始化
-        /// </summary>
-        [Obsolete("待轉移至新方法")]
-        private void InitMotion()
-        {
-            if (MotionInitialized)
-            {
-                return;
-            }
-            // 1. 確認驅動 (移動到 Motion Enumer)
-            // 2. Get Device
-            // 3. 取得 Motor Configs
-            // 4. Device Open
-            // 5. Axis Open
-            // 6. 載入 Config
-
-            ServoMotion = MainWindow.ServoMotion;
-
-            try
-            {
-                ServoMotion.ListAvailableDevices();
-                if (ServoMotion.MotionDevices.Count > 0)
-                {
-                    // uint deviceNumber = MainWindow.MotionEnumer.GetFirstDeivceNum();
-                    uint deviceNumber = MainWindow.ServoMotion.MotionDevices[0].DeviceNumber;
-
-                    if (!ServoMotion.DeviceOpened)
-                    {
-                        // 開啟軸卡，重置
-                        ServoMotion.OpenDevice(deviceNumber);
-                        // 確認軸卡開啟
-                        if (ServoMotion.DeviceOpened)
-                        {
-                            // 啟動 Timer 
-                            ServoMotion.EnableAllTimer(100);
-
-                            // 重置全部軸錯誤
-                            ServoMotion.ResetAllError();
-
-                            // 全部軸 Servo ON
-                            ServoMotion.SetAllServoOn();
-
-                            // 全軸 Servo On
-                            // foreach (MotionAxis axis in ServoMotion.Axes)
-                            // {
-                            //     axis.SetServoOn();
-                            // }
-
-                            #region 載入 Config
-                            string motionPath = $@"{Environment.CurrentDirectory}\motions\motion.json";
-
-                            using StreamReader reader = File.OpenText(motionPath);
-                            string jsonStr = reader.ReadToEnd();
-
-                            if (jsonStr != string.Empty)
-                            {
-                                MotionVelParam[] velParams = JsonSerializer.Deserialize<MotionVelParam[]>(jsonStr);
-
-                                foreach (MotionVelParam item in velParams)
-                                {
-                                    MotionAxis axis = MainWindow.ServoMotion.Axes.FirstOrDefault(axis => axis.SlaveNumber == item.SlaveNumber);
-                                    if (axis != null)
-                                    {
-                                        axis.LoadFromVelParam(item);
-                                        // 寫入參數
-                                        axis.SetGearRatio();
-                                        axis.SetJogVelParam();
-                                        axis.SetHomeVelParam();
-                                        axis.SetAxisVelParam();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"Motion 設定檔為空");
-                            }
-                            #endregion
-                        }
-                        else
-                        {
-                            throw new Exception($"軸卡開啟失敗");
-                        }
-                    }
-
-                    // 更新 Progress Value
-                    MainWindow.MsgInformer.TargetProgressValue += 20;
-
-                    // Motion 初始化旗標
-                    MotionInitialized = true;
-
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.MOTION, "MOTION 控制初始化完成");
-                }
-                else // 軸卡未連線
-                {
-                    throw new Exception("找不到控制軸卡");
-                }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"MOTION 控制初始化失敗: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// 運動控制初始化
         /// </summary>
         /// <param name="ct">CancellationToken</param>
@@ -920,68 +584,6 @@ namespace ApexVisIns.content
             }, ct);
         }
 
-#if false
-        /// <summary>
-        /// 光源控制初始化
-        /// </summary>
-        [Obsolete("待轉移至新方法")]
-        private void InitLightCtrls()
-        {
-            if (LightCtrlsInitiliazed)
-            {
-                return;
-            }
-
-            Light24V = MainWindow.LightCtrls[0];
-            Light_6V = MainWindow.LightCtrls[1];
-
-            try
-            {
-                if (!Light24V.IsComOpen)
-                {
-                    bool res24V = Light24V.ComOpen("COM1", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-
-                    if (!res24V)
-                    {
-                        throw new Exception("24V 控制器沒有回應");
-                    }
-                }
-                MainWindow.MsgInformer.TargetProgressValue += 10;     // 更新 Progress Value
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
-            }
-
-            try
-            {
-                if (!Light_6V.IsComOpen)
-                {
-                    bool res_6V = Light_6V.ComOpen("COM2", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-
-                    if (!res_6V)
-                    {
-                        throw new Exception("6V 控制器沒有回應");
-                    }
-                }
-                MainWindow.MsgInformer.TargetProgressValue += 10;     // 更新 Progress Value
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源控制初始化失敗: {ex.Message}");
-            }
-
-            if (Light24V.IsComOpen && Light_6V.IsComOpen)
-            {
-                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
-
-                MainWindow.LightEnumer.WorkerPause();
-                LightCtrlsInitiliazed = true;
-            }
-        }
-
-#endif
-
         /// <summary>
         /// 光源控制初始化
         /// </summary>
@@ -1067,67 +669,6 @@ namespace ApexVisIns.content
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
                 }
             }, ct);
-        }
-
-        /// <summary>
-        /// IO 控制器初始化
-        /// </summary>
-        [Obsolete("待轉移至新方法")]
-        private void InitIOCtrl()
-        {
-            if (IoInitialized)
-            {
-                return;
-            }
-
-            IOController = MainWindow.IOController;
-
-            try
-            {
-                // 確認驅動安裝 // bool IO_DllIsValid = IOController.CheckDllVersion();
-                if (IOController.CheckDllVersion())
-                {
-                    // IOContoller 內部沒有Dispacher
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    // 初始化 DI Control
-                    if (!IOController.DiCtrlCreated)
-                    {
-                        IOController.DigitalInputChanged += Controller_DigitalInputChanged;
-                        IOController.InitializeDiCtrl();
-                    }
-                    //});
-                    //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                    MainWindow.MsgInformer.TargetProgressValue += 10; // 更新 Progress Value
-
-
-                    // IOContoller 內部沒有 Dispacher
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    // 初始化 DO Control
-                    if (!IOController.DoCtrlCreated)
-                    {
-                        IOController.InitializeDoCtrl();
-                    }
-                    //});
-                    //MainWindow.ProgressValue += 10; // 更新 Progress Value
-                    MainWindow.MsgInformer.TargetProgressValue += 10; // 更新 Progress Value
-
-                    IoInitialized = true;
-
-                    //Dispatcher.Invoke(() => MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "光源控制器初始化完成"));
-                    MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
-                }
-                else
-                {
-                    throw new DllNotFoundException("IO 驅動未安裝或版本不符");
-                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, "IO 控制驅動未安裝或版本不符");
-                }
-            }
-            catch (Exception ex)
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"IO 控制初始化失敗: {ex.Message}");
-            }
         }
 
         /// <summary>
@@ -1402,11 +943,11 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 開始相機抓取
+        /// 切換相機抓取
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StartCameraGrab_Click(object sender, RoutedEventArgs e)
+        private void ToggleCameraGrabbing_Click(object sender, RoutedEventArgs e)
         {
             foreach (BaslerCam cam in MainWindow.BaslerCams)
             {
@@ -1418,18 +959,45 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 停止相機抓取
+        /// 啟動相機 Grabber
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StopCameraGrab_Click(object sender, RoutedEventArgs e)
+        private void StartCameraGrabber_Click(object sender, RoutedEventArgs e)
         {
             foreach (BaslerCam cam in MainWindow.BaslerCams)
             {
-                if (cam.IsOpen)
+                if (!cam.IsGrabberOpened)
                 {
-                    //Basler_ContinousGrab(cam);
-                    cam.Camera.StreamGrabber.Stop();
+                    Basler_StartStreamGrabber(cam);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 關閉相機 Grabber
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StopCameraGrabber_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (BaslerCam cam in MainWindow.BaslerCams)
+            {
+                if (cam.IsGrabberOpened)
+                {
+                    Basler_StopStreamGrabber(cam);
+                }
+            }
+        }
+
+        private void RetrieveImage_Click(object sender, RoutedEventArgs e)
+        {
+
+            foreach (BaslerCam cam in MainWindow.BaslerCams)
+            {
+                if (cam.IsGrabberOpened)
+                {
+                    Basler_StreamGrabber_RetrieveImage(cam);
                 }
             }
         }
@@ -1550,14 +1118,78 @@ namespace ApexVisIns.content
             return false;
         }
 
-        private void Basler_ContinousGrab(BaslerCam cam)
+
+        private void Basler_StartStreamGrabber(BaslerCam cam)
         {
             try
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
-                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+                    // 啟動 StreamGrabber 連續拍攝
+                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                    cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                    cam.IsGrabberOpened = true;
+                    cam.IsContinuousGrabbing = false;
+
+                    // 
+                    cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+
+                    Debug.WriteLine($"{cam.Camera.StreamGrabber.UserData} {cam.Camera.StreamGrabber.UserData.GetType()}");
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+        private void Basler_StopStreamGrabber(BaslerCam cam)
+        {
+            try
+            {
+                if (cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    cam.Camera.StreamGrabber.Stop();
+                    cam.IsGrabberOpened = false;
+
+                    cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
+        private void Basler_SingleGrab(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    // 啟動 StreamGrabber 拍攝一張
+                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                    cam.Camera.ExecuteSoftwareTrigger();
+                    _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
                 }
             }
             catch (TimeoutException T)
@@ -1573,6 +1205,93 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
         }
+
+        private void Basler_ContinousGrab(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+                    // 變更 Flag 連續拍攝
+                    cam.IsContinuousGrabbing = true;
+                }
+                else
+                {
+                    cam.Camera.StreamGrabber.Stop();
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                    // 變更 Flag (不為連續拍攝)
+                    cam.IsContinuousGrabbing = false;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
+        private void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
+        {
+            try
+            {
+                cam.Camera.ExecuteSoftwareTrigger();
+
+                using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                Debug.WriteLine($"{grabResult.ImageNumber}");
+
+                if (grabResult.GrabSucceeded)
+                {
+                    Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                    switch ((DeviceConfigBase.TargetFeatureType)grabResult.StreamGrabberUserData)
+                    {
+                        case DeviceConfigBase.TargetFeatureType.Window:
+                            //MainWindow.AngleCorrection(mat, null);
+
+                            MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource1 = mat.ToImageSource());
+                            break;
+                        case DeviceConfigBase.TargetFeatureType.Ear:
+                            //MainWindow.AngleCorrection(null, mat);
+
+                            MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
+                            break;
+                        case DeviceConfigBase.TargetFeatureType.Surface1:
+                            MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
+                            break;
+                        case DeviceConfigBase.TargetFeatureType.Surface2:
+                            MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
 
         private void Camera_CameraOpened(object sender, EventArgs e)
         {
@@ -1703,17 +1422,32 @@ namespace ApexVisIns.content
 
                 switch (targetFeatureType)
                 {
-                    case DeviceConfigBase.TargetFeatureType.Ear:
-                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource1 = mat.ToImageSource());
-                        break;
                     case DeviceConfigBase.TargetFeatureType.Window:
-                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
+                        MainWindow.Dispatcher.Invoke(() =>
+                        {
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0100)
+                            {
+                                MainWindow.AngleCorrection(mat, null);
+                            }
+                            MainWindow.ImageSource1 = mat.ToImageSource();
+                        });
+                        break;
+                    case DeviceConfigBase.TargetFeatureType.Ear:
+                        MainWindow.Dispatcher.Invoke(() => {
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101)
+                            {
+                                MainWindow.AngleCorrection(null, mat);
+                            }
+                            MainWindow.ImageSource2 = mat.ToImageSource();
+                        });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface2:
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
+                        break;
+                    default:
                         break;
                 }
 
@@ -1727,6 +1461,9 @@ namespace ApexVisIns.content
 
             // throw new NotImplementedException();
         }
+
         #endregion
+
+
     }
 }

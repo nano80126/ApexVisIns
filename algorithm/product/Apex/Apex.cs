@@ -99,6 +99,11 @@ namespace ApexVisIns
             public ushort MaxWindowWidth { get; set; }
 
             /// <summary>
+            /// 窗戶 Width 穩定計數
+            /// </summary>
+            public byte WidthStable { get; set; }
+
+            /// <summary>
             /// 方向 (1: 正轉, 0: 逆轉)
             /// </summary>
             public byte Direction { get; set; }
@@ -161,7 +166,7 @@ namespace ApexVisIns
         public void PreAngleCorrection()
         {
             // 變更光源
-            LightCtrls[0].SetAllChannelValue(96, 0, 128, 0);
+            LightCtrls[0].SetAllChannelValue(96, 0, 128, 128);
             // 變更馬達速度
             ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
             // 觸發馬達
@@ -187,7 +192,6 @@ namespace ApexVisIns
         {
             Rect roi = new(100, 840, 1000, 240);
 
-
             Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50);
 
@@ -196,7 +200,10 @@ namespace ApexVisIns
             // canny.Dispose();
             if (FindWindow && ApexAngleCorrectionFlags.Steps != endStep)
             {
-                Cv2.ImShow("AngleCorrectionCanny", canny);
+                Dispatcher.Invoke(() =>
+                {
+                    Cv2.ImShow("AngleCorrectionCanny", canny);
+                });
 
                 switch (ApexAngleCorrectionFlags.Steps)
                 {
@@ -322,20 +329,21 @@ namespace ApexVisIns
         /// 相機(窗戶) 1 粗定位，粗定位時不使用相機 2
         /// 相機(耳朵) 2 精定位，精定位時不使用相機 1
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="src2"></param>
+        /// <param name="src">相機 1 影像</param>
+        /// <param name="src2">相機 2 影像</param>
         public void AngleCorrection(Mat src, Mat src2)
         {
-            if (!src.Empty())
+            if (src != null && !src.Empty())
             {
                 // X: 1200 - 100, Y: 960 - 120
                 Rect roi = new(100, 840, 1000, 240);
 
-                Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+                Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
                 bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
 
                 if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101)
                 {
+                    // Cv2.ImShow("Canny", new Mat(src, roi));
                     Cv2.ImShow("ApexCorrectionCanny", canny);
 
                     switch (ApexAngleCorrectionFlags.Steps)
@@ -343,39 +351,163 @@ namespace ApexVisIns
                         case 0b0000:    // 0 // 快速找窗戶
                             if (width > 200 && width > ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-
+                                ServoMotion.Axes[1].ChangeVel(200);
+                                ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                                ApexAngleCorrectionFlags.Steps += 0b01;
                             }
                             ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             break;
                         case 0b0001:    // 1 // 慢速找窗戶
-                            if (width > 300)
+                            if (width > 300 && width > ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-
+                                ServoMotion.Axes[1].ChangeVel(50);
+                                ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                                ApexAngleCorrectionFlags.Steps += 0b01;
                             }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             break;
                         case 0b0010:    // 2 // 極慢速找窗戶
+                            if (width > 350)
+                            {
+                                ServoMotion.Axes[1].StopMove();
+
+                                ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                            }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             break;
-                        case 0b0011:    // 3 // 
+                        case 0b0011:    // 3 // 每次 + pulse
+                            if (width >= ApexAngleCorrectionFlags.LastWindowWidth)
+                            {
+                                _ = ServoMotion.Axes[1].TryPosMove(5);
+                            }
+                            else
+                            {
+                                // 轉過頭
+                                ApexAngleCorrectionFlags.MaxWindowWidth = ApexAngleCorrectionFlags.LastWindowWidth;
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                            }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             break;
                         case 0b0100:    // 4 // 
-                            break;
-                        case 0b0101:    // 5 // 
+                            if (width < ApexAngleCorrectionFlags.MaxWindowWidth)
+                            {
+                                if (width > ApexAngleCorrectionFlags.LastWindowWidth)
+                                {
+                                    _ = ServoMotion.Axes[1].TryPosMove(-1);
+                                }
+                                else if (width < ApexAngleCorrectionFlags.LastWindowWidth)
+                                {
+                                    _ = ServoMotion.Axes[1].TryPosMove(1);
+                                }
+                                else
+                                {
+                                    ApexAngleCorrectionFlags.WidthStable += 0b01;
+
+                                    if (ApexAngleCorrectionFlags.WidthStable > 20)
+                                    {
+                                        ApexAngleCorrectionFlags.Steps += 0b01;
+                                        Cv2.DestroyWindow("ApexCorrectionCanny");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                                // 到此粗定位結束
+
+                                Cv2.DestroyWindow("ApexCorrectionCanny");
+                            }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             break;
                         default:
                             break;
                     }
                 }
+
+                Debug.WriteLine($"Width: {width} Last: {ApexAngleCorrectionFlags.LastWindowWidth} Max: {ApexAngleCorrectionFlags.MaxWindowWidth}");
+                //return;
             }
 
 
-
-            if (!src2.Empty())
+            if (src2 != null && !src2.Empty())
             {
+                // X: 600 - 90, Y: 960 - 90
+                Rect roi = new(510, 870, 180, 180);
+
+                Methods.GetRoiFilter2D(src2, roi, 6.4, out Mat filter);
+                Methods.GetCanny(filter, 50, 80, out Mat canny);
+
+                // 找輪廓
+                Cv2.FindContours(canny, out Point[][] cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxNone);
+                // 過濾過短
+                cons = cons.Where(cons => cons.Length > 120).ToArray();
+
+                Debug.WriteLine($"cons length: {cons.Length}");
+
+                Moments[] moments = new Moments[cons.Length];
+                Point2f[] centers = new Point2f[cons.Length];
+
+                Cv2.CvtColor(filter, filter, ColorConversionCodes.GRAY2BGR);
+
+                for (int i = 0; i < cons.Length; i++)
+                {
+                    moments[i] = Cv2.Moments(cons[i]);
+                    centers[i] = new Point2f((float)(moments[i].M10 / moments[i].M00), (float)(moments[i].M01 / moments[i].M00));
+
+                    Cv2.Circle(filter, (int)centers[i].X, (int)centers[i].Y, 5, Scalar.Red, 2);
+
+                    Debug.WriteLine($"MC: {centers[i]} {cons[i].Length}");
+                }
+
+                Cv2.Circle(filter, 90, 90, 5, Scalar.Blue, 2);
+
+                Point[] concat = cons.SelectMany(con => con.ToArray()).ToArray();
+                Cv2.MinEnclosingCircle(concat, out Point2f c, out float r);
+
+                Cv2.Circle(filter, (int)c.X, (int)c.Y, 5, Scalar.Green, 2);
+                Cv2.Circle(filter, (int)c.X, (int)c.Y, (int)r, Scalar.Cyan, 2);
+                Debug.WriteLine($"Center {c}");
+
+                Cv2.ImShow("Ear Canny", filter);
+                Cv2.ImShow("Ear Canny2", canny);
+
+                Mat small = new();
+                Cv2.Resize(src2, small, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
+                Cv2.ImShow("src2", small);
+                Cv2.ImShow($"ZOOM", new Mat(src2, roi));
 
 
+                //Debug.WriteLine($"Center: {c} Radius: {r}");
 
+                switch (ApexAngleCorrectionFlags.Steps)
+                {
+                    case 0b0101:    // 5
+                        //LightCtrls[1]
+
+                        break;
+                    case 0b0110:    // 6
+
+                        break;
+                    case 0b0111:    // 7
+
+                        break;
+                    case 0b1000:    // 8
+
+                        break;
+                    case 0b1001:    // 9
+
+                        break;
+                    default:
+                        break;
+                }
+                //return;
             }
+
+            Debug.WriteLine($"Steps: {ApexAngleCorrectionFlags.Steps}");
         }
+
 
         /// <summary>
         /// 角度校正後手續，變更旋轉速度

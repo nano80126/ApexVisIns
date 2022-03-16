@@ -225,6 +225,8 @@ Apex 外觀瑕疵檢測
 	* 新增 offset、置中按鈕
 	* 取消自動置中
 
+* [ ] Camera Close 增加相機就算啟動中也可以 Close 的功能
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

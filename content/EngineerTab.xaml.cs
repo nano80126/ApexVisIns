@@ -121,6 +121,7 @@ namespace ApexVisIns.content
                 MainWindow.ApexAngleCorrectionFlags.Steps = 0;
                 MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
                 MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+                MainWindow.ApexAngleCorrectionFlags.WidthStable = 0;
                 MainWindow.ApexAngleCorrectionFlags.Direction = 1;
             }
             catch (Exception ex)
@@ -139,7 +140,6 @@ namespace ApexVisIns.content
             MainWindow.LightCtrls[0].SetAllChannelValue(128, 0, 0, 108);
             MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
         }
-
 
         private void Button4_Click(object sender, RoutedEventArgs e)
         {
