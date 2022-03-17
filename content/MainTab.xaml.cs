@@ -391,7 +391,7 @@ namespace ApexVisIns.content
                                     //Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
                                     switch (device.TargetFeature)
                                     {
-                                        case DeviceConfigBase.TargetFeatureType.Ear:
+                                        case DeviceConfigBase.TargetFeatureType.Window:
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
@@ -401,7 +401,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Window:
+                                        case DeviceConfigBase.TargetFeatureType.Ear:
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
@@ -1241,7 +1241,6 @@ namespace ApexVisIns.content
             }
         }
 
-
         private void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
         {
             try
@@ -1259,12 +1258,10 @@ namespace ApexVisIns.content
                     {
                         case DeviceConfigBase.TargetFeatureType.Window:
                             //MainWindow.AngleCorrection(mat, null);
-
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource1 = mat.ToImageSource());
                             break;
                         case DeviceConfigBase.TargetFeatureType.Ear:
                             //MainWindow.AngleCorrection(null, mat);
-
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
                             break;
                         case DeviceConfigBase.TargetFeatureType.Surface1:
@@ -1291,7 +1288,6 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
         }
-
 
         private void Camera_CameraOpened(object sender, EventArgs e)
         {
@@ -1408,6 +1404,12 @@ namespace ApexVisIns.content
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
+            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 8)
+            {
+                EndAngleCorrection();
+                return;
+            }
+
             IGrabResult grabResult = e.GrabResult;
 
             if (grabResult.GrabSucceeded)
@@ -1434,7 +1436,7 @@ namespace ApexVisIns.content
                         break;
                     case DeviceConfigBase.TargetFeatureType.Ear:
                         MainWindow.Dispatcher.Invoke(() => {
-                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101)
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101 && MainWindow.ApexAngleCorrectionFlags.Steps < 8)
                             {
                                 MainWindow.AngleCorrection(null, mat);
                             }

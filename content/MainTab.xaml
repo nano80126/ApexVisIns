@@ -60,7 +60,7 @@
                 <Separator />
 
                 <!--#region 測試用 -->
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Click="ToggleCameraGrabbing_Click" MinWidth="120">
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Click="ToggleCameraGrabbing_Click">
                     <!--Style="{StaticResource MaterialDesignToolButton}"-->
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
@@ -74,23 +74,23 @@
                                             <Binding Path="[3].IsGrabbing" Source="{StaticResource BaslerCams}" FallbackValue="False"/>
                                         </MultiBinding>
                                     </DataTrigger.Binding>
-                                    <Setter Property="Content" Value="Stop Camera"/>
+                                    <Setter Property="Content" Value="啟動拍攝"/>
                                     <Setter Property="Foreground" Value="{StaticResource ColorWarning}"/>
                                 </DataTrigger>
                             </Style.Triggers>
-                            <Setter Property="Content" Value="Start Camera"/>
+                            <Setter Property="Content" Value="關閉拍攝"/>
                             <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
                         </Style>
                     </Button.Style>
                 </Button>
 
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="Start Grabber" Foreground="{StaticResource ColorSuccess}"
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="啟動Grabber" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StartCameraGrabber_Click"/>
 
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="Stop Grabber" Foreground="{StaticResource ColorSuccess}"
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止Grabber" Foreground="{StaticResource ColorOrange}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopCameraGrabber_Click"/>
 
-                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="Retrieve Image" Foreground="{StaticResource ColorSuccess}"
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="擷取影像" Foreground="{StaticResource ColorPurple}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="RetrieveImage_Click"/>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="裝置斷線" Foreground="{StaticResource ColorError}"
@@ -107,6 +107,10 @@
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止相機" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopCamera_Click">
+                </Button>
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="順序檢測" Foreground="{StaticResource ColorIndigo}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="SequenceInspect_Click">
                 </Button>
                 <!--#endregion-->
 

@@ -122,6 +122,59 @@ namespace ApexVisIns
             }
         }
 
+        public static void GetRoiVerticalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                using Mat clone = new(src, roi);
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, centerValue, s },
+                    { s, centerValue, s },
+                    { s, centerValue, s }
+                });
+                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        public static void GetRoiHorizonalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                using Mat clone = new(src, roi);
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, s, s },
+                    { centerValue, centerValue, centerValue },
+                    { s, s, s }
+                });
+                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// 取得輪廓點陣列
         /// </summary>

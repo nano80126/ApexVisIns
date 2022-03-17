@@ -19,19 +19,63 @@ namespace ApexVisIns.content
     {
         private void AngleCorrectionButton_Click(object sender, RoutedEventArgs e)
         {
+            StartAngleCorrection();
+            #region MyRegion
+            //Cv2.DestroyAllWindows();
+
+            //MainWindow.PreAngleCorrection();
+
+            //#region Flags
+            //MainWindow.ApexAngleCorrectionFlags.Steps = 0;
+            //MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;
+            //MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+            //MainWindow.ApexAngleCorrectionFlags.Direction = 1;
+            //#endregion
+
+            //_ = SpinWait.SpinUntil(() => false, 500);
+
+            //// 窗戶
+            //if (!BaslerCam1.IsContinuousGrabbing)
+            //{
+            //    BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+            //    BaslerCam1.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+            //    BaslerCam1.IsContinuousGrabbing = true;
+            //}
+
+            //// 耳朵
+            //if (!BaslerCam2.IsContinuousGrabbing)
+            //{
+            //    BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+            //    BaslerCam2.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+            //    BaslerCam2.IsContinuousGrabbing = true;
+            //} 
+            #endregion
+        }
+
+        private void StopCamera_Click(object sender, RoutedEventArgs e)
+        {
+            StopWindowEarCameraContinous();
+        }
+
+        private void SequenceInspect_Click(object sender, RoutedEventArgs e)
+        {
             Cv2.DestroyAllWindows();
 
-            MainWindow.PreAngleCorrection();
+            MainWindow.ApexDefectInspectionStepsFlags.CombineStep = 1;
 
-            #region Flags
-            MainWindow.ApexAngleCorrectionFlags.Steps = 0;
-            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;
-            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
-            MainWindow.ApexAngleCorrectionFlags.Direction = 1;
-            #endregion
+            MainWindow.ApexWindowEarInspectionSequence(BaslerCam1, BaslerCam2);
+            //StopWindowEarCameraContinous();
+        }
 
-            _ = SpinWait.SpinUntil(() => false, 500);
 
+        #region Methods
+        /// <summary>
+        /// 開始窗戶、耳朵相機連續拍攝
+        /// </summary>
+        private void StartWindowEarCameraContinous()
+        {
             // 窗戶
             if (!BaslerCam1.IsContinuousGrabbing)
             {
@@ -51,9 +95,12 @@ namespace ApexVisIns.content
             }
         }
 
-        private void StopCamera_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 停止窗戶、耳朵相機連續拍攝
+        /// </summary>
+        private void StopWindowEarCameraContinous()
         {
-            if (BaslerCam1.Camera.StreamGrabber.IsGrabbing)
+            if (BaslerCam1.Camera.StreamGrabber.IsGrabbing && BaslerCam1.IsContinuousGrabbing)
             {
                 BaslerCam1.Camera.StreamGrabber.Stop();
                 BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
@@ -61,30 +108,7 @@ namespace ApexVisIns.content
                 BaslerCam1.IsContinuousGrabbing = false;
             }
 
-            if (BaslerCam2.Camera.StreamGrabber.IsGrabbing)
-            {
-                BaslerCam2.Camera.StreamGrabber.Stop();
-                BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCam2.IsContinuousGrabbing = false;
-            }
-
-
-            Debug.WriteLine(Marshal.SizeOf(MainWindow.ApexAngleCorrectionFlags));
-        }
-
-
-        private void StopWindowEarCamera()
-        {
-            if (BaslerCam1.Camera.StreamGrabber.IsGrabbing)
-            {
-                BaslerCam1.Camera.StreamGrabber.Stop();
-                BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCam1.IsContinuousGrabbing = false;
-            }
-
-            if (BaslerCam2.Camera.StreamGrabber.IsGrabbing)
+            if (BaslerCam2.Camera.StreamGrabber.IsGrabbing && BaslerCam2.IsContinuousGrabbing)
             {
                 BaslerCam2.Camera.StreamGrabber.Stop();
                 BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
@@ -93,5 +117,37 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 開始角度校正
+        /// </summary>
+        private void StartAngleCorrection()
+        {
+            Cv2.DestroyAllWindows();
+
+            MainWindow.PreAngleCorrection();
+
+            #region Flags
+            MainWindow.ApexAngleCorrectionFlags.Steps = 0;
+            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;
+            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+            MainWindow.ApexAngleCorrectionFlags.Direction = 1;
+            #endregion
+
+            _ = SpinWait.SpinUntil(() => false, 500);
+
+            StartWindowEarCameraContinous();
+        }
+
+        /// <summary>
+        /// 角度校正結束
+        /// </summary>
+        private void EndAngleCorrection()
+        {
+            StopWindowEarCameraContinous();
+
+
+            Cv2.DestroyAllWindows();
+        }
+        #endregion
     }
 }

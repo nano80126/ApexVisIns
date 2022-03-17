@@ -144,6 +144,27 @@ namespace ApexVisIns
             /// </summary>
             public byte EarSteps { get; set; }
 
+            /// <summary>
+            /// 耳朵窗戶同時檢驗步驟；
+            /// 0b0000(0):
+            /// 0b0001(1):
+            /// 0b0010(2):
+            /// 0b0011(3):
+            /// 0b0100(4):
+            /// 0b0101(5):
+            /// 0b0110(6):
+            /// 0b0111(7):
+            /// 0b1000(8):
+            /// 0b1001(9):
+            /// 0b1010(10):
+            /// 0b1011(11):
+            /// 0b1100(12):
+            /// 0b1101(13):
+            /// 0b1110(14):
+            /// 0b1111(15):
+            /// </summary>
+            public byte CombineStep { get; set; }
+
             // 管件表面步驟
             // 管件表面步驟
         }
@@ -323,7 +344,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 角度校正，
         /// 相機(窗戶) 1 粗定位，粗定位時不使用相機 2
@@ -430,14 +450,17 @@ namespace ApexVisIns
                 //return;
             }
 
-
             if (src2 != null && !src2.Empty())
             {
                 // X: 600 - 90, Y: 960 - 90
                 Rect roi = new(510, 870, 180, 180);
 
-                Methods.GetRoiFilter2D(src2, roi, 6.4, out Mat filter);
-                Methods.GetCanny(filter, 50, 80, out Mat canny);
+                int l = 0;
+                int r = 0;
+
+                // 銳化垂直
+                Methods.GetRoiVerticalFilter2D(src2, roi, 1.8, out Mat filter);
+                Methods.GetCanny(filter, 75, 150, out Mat canny);
 
                 // 找輪廓
                 Cv2.FindContours(canny, out Point[][] cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxNone);
@@ -449,55 +472,98 @@ namespace ApexVisIns
                 Moments[] moments = new Moments[cons.Length];
                 Point2f[] centers = new Point2f[cons.Length];
 
+                // 轉彩色
                 Cv2.CvtColor(filter, filter, ColorConversionCodes.GRAY2BGR);
 
+                // 計算質心
                 for (int i = 0; i < cons.Length; i++)
                 {
                     moments[i] = Cv2.Moments(cons[i]);
+                    
+                    #region 可以刪
                     centers[i] = new Point2f((float)(moments[i].M10 / moments[i].M00), (float)(moments[i].M01 / moments[i].M00));
-
                     Cv2.Circle(filter, (int)centers[i].X, (int)centers[i].Y, 5, Scalar.Red, 2);
+                    Debug.WriteLine($"MC: {centers[i]} {cons[i].Length}"); 
+                    #endregion
 
-                    Debug.WriteLine($"MC: {centers[i]} {cons[i].Length}");
+                    if (moments[i].M10 / moments[i].M00 < (roi.Width / 2))
+                    {
+                        l++;
+                    }
+                    else if (moments[i].M10 / moments[i].M00 > (roi.Width / 2))
+                    {
+                        r++;
+                    }
                 }
 
-                Cv2.Circle(filter, 90, 90, 5, Scalar.Blue, 2);
-
                 Point[] concat = cons.SelectMany(con => con.ToArray()).ToArray();
-                Cv2.MinEnclosingCircle(concat, out Point2f c, out float r);
+                Cv2.MinEnclosingCircle(concat, out Point2f c, out float rad);
 
                 Cv2.Circle(filter, (int)c.X, (int)c.Y, 5, Scalar.Green, 2);
-                Cv2.Circle(filter, (int)c.X, (int)c.Y, (int)r, Scalar.Cyan, 2);
-                Debug.WriteLine($"Center {c}");
+                Cv2.Circle(filter, (int)c.X, (int)c.Y, (int)rad, Scalar.Cyan, 2);
 
+                #region 可刪
                 Cv2.ImShow("Ear Canny", filter);
                 Cv2.ImShow("Ear Canny2", canny);
 
                 Mat small = new();
                 Cv2.Resize(src2, small, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
                 Cv2.ImShow("src2", small);
-                Cv2.ImShow($"ZOOM", new Mat(src2, roi));
+                Cv2.ImShow($"ZOOM", new Mat(src2, roi)); 
+                #endregion
 
-
-                //Debug.WriteLine($"Center: {c} Radius: {r}");
+                Debug.WriteLine($"L: {l}; R: {r}");
 
                 switch (ApexAngleCorrectionFlags.Steps)
                 {
                     case 0b0101:    // 5
-                        //LightCtrls[1]
+                        if (l + r == 1)
+                        {
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                            break;
+                        }
 
+                        if (l > r)
+                        {
+                            _ = ServoMotion.Axes[1].TryPosMove(-1);
+                        }
+                        else if (l < r)
+                        {
+                            _ = ServoMotion.Axes[1].TryPosMove(1);
+                        }
+                        else
+                        {
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
                         break;
                     case 0b0110:    // 6
-
+                        if (l + r == 1) // 剩一個大輪廓
+                        {
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
+                        else if (l > r)
+                        {
+                            _ = ServoMotion.Axes[1].TryPosMove(-1);
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
+                        else if (l < r)
+                        {
+                            _ = ServoMotion.Axes[1].TryPosMove(1);
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
+                        else
+                        {
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                        }
+                        // 到此精定位結束
                         break;
                     case 0b0111:    // 7
-
-                        break;
-                    case 0b1000:    // 8
-
-                        break;
-                    case 0b1001:    // 9
-
+                        // 重置 POS
+                        if (ServoMotion.Axes[1].TryResetPos() == (uint)Advantech.Motion.ErrorCode.SUCCESS)
+                        {
+                            ApexAngleCorrectionFlags.Steps += 0b01;
+                            Cv2.DestroyAllWindows();
+                        }
                         break;
                     default:
                         break;
@@ -508,7 +574,6 @@ namespace ApexVisIns
             Debug.WriteLine($"Steps: {ApexAngleCorrectionFlags.Steps}");
         }
 
-
         /// <summary>
         /// 角度校正後手續，變更旋轉速度
         /// </summary>
@@ -516,6 +581,276 @@ namespace ApexVisIns
         {
             // 變更馬達速度
             ServoMotion.Axes[1].SetAxisVelParam(20, 500, 5000, 5000);
+        }
+        #endregion
+
+
+        #region 窗戶耳朵同時檢驗
+        public async void ApexWindowEarInspectionSequence(BaslerCam cam1, BaslerCam cam2)
+        {
+            try
+            {
+                IGrabResult grabResult1 = null;
+                IGrabResult grabResult2 = null;
+                Mat mat1 = null;
+                Mat mat2 = null;
+
+                #region 窗戶
+                Rect winRoiL = Rect.Empty;
+                Rect winRoiR = Rect.Empty;
+                double top = 0; // 窗戶內部上緣
+                double bot = 0; // 窗戶內部下緣
+                double[] xPos = Array.Empty<double>();
+                double[] xPos2 = Array.Empty<double>();
+                double[] xPos3 = Array.Empty<double>();
+                double[] xArray = Array.Empty<double>();
+                #endregion
+
+                #region 耳朵
+                Rect earRoiL = Rect.Empty;
+                Rect earRoiR = Rect.Empty;
+                #endregion
+
+                int CycleCount = 0;
+
+                byte endStep = 0b1111;
+
+                while (ApexDefectInspectionStepsFlags.CombineStep != endStep)
+                {
+                    if (CycleCount++ > 30)
+                    {
+                        break;
+                    }
+                    Debug.WriteLine($"Cycle Count: {CycleCount}");
+
+                    switch (ApexDefectInspectionStepsFlags.CombineStep)
+                    {
+                        case 0b0000:    // 0 // 0.111 孔毛邊
+                            PreEarHoleInspection();
+                            _ = SpinWait.SpinUntil(() => false, 50);
+
+                            // 擷取
+                            cam2.Camera.ExecuteSoftwareTrigger();
+                            grabResult2 = cam2.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
+
+                            EarHoleInspection(mat2);
+                            ApexDefectInspectionStepsFlags.CombineStep += 0b01;
+                            break;
+                        case 0b0001:    // 1 // 窗戶 & 耳朵(L) ROI
+                            await PreEarLWindowRoi();
+
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            cam2.Camera.ExecuteSoftwareTrigger();
+
+                            grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            grabResult2 = cam2.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+                            mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
+                            GetWindowInspectionTopBottomEdge(mat1, out top, out bot);
+                            GetEarWindowRoi(mat1, mat2, out xPos, out winRoiL, out winRoiR, out earRoiL, out earRoiR);
+
+                            if (xPos.Length == 7)
+                            {
+                                xArray = xPos;
+                                xPos = null;
+                                winRoiL.Y = winRoiR.Y = (int)top;
+                                winRoiL.Height = winRoiR.Height = (int)(bot - top);
+                                ApexDefectInspectionStepsFlags.CombineStep += 0b10; // 2
+                            }
+                            else
+                            {
+                                ApexDefectInspectionStepsFlags.CombineStep += 0b01; // 1
+                            }
+                            break;
+                        case 0b0010:    // 2 // 窗戶 & 耳朵(L) ROI
+                            PreEarLWindowRoi2();
+                            _ = SpinWait.SpinUntil(() => false, 50);
+
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+
+                            GetEarWindowRoi(mat1, null, out xPos2, out winRoiL, out winRoiR, out earRoiL, out earRoiR);
+
+                            if (xPos2.Length == 7)
+                            {
+                                xArray = xPos2;
+                                xPos2 = null;
+                                winRoiL.Y = winRoiR.Y = (int)top;
+                                winRoiL.Height = winRoiR.Height = (int)(bot - top);
+                            }
+                            else
+                            {
+                                xArray = xPos.Concat(xPos3).OrderBy(x => x).ToArray();
+
+                                List<double> xList = new(7);
+                                for (int i = 0; i < xArray.Length; i++)
+                                {
+                                    if (i == 0 || xArray[i - 1] + 30 < xArray[i])
+                                    {
+                                        xList.Add(xArray[i]);
+                                    }
+                                }
+                                xArray = xList.ToArray();
+                                xList.Clear();
+                                xList = null;
+
+
+                                winRoiL = new Rect((int)xArray[1] - 20, (int)top, (int)(xArray[2] - xArray[1]) + 40, (int)(bot - top));
+                                winRoiR = new Rect((int)xArray[^3] - 20, (int)top, (int)(xArray[^2] - xArray[^3]) + 40, (int)(bot - top));
+                                xPos = xPos2 = xPos3 = null;
+
+                                Cv2.Rectangle(mat1, winRoiL, Scalar.Black);
+                                Cv2.Rectangle(mat1, winRoiR, Scalar.Black);
+                                Cv2.ImShow("mat1", mat1.Clone());
+                                ApexDefectInspectionStepsFlags.CombineStep += 0b01; // 1
+                            }
+                            break;
+                        case 0b0011:    // 3 //
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+
+                            Cv2.Rectangle(mat1, winRoiL, Scalar.Black, 2);
+                            Cv2.Rectangle(mat1, winRoiR, Scalar.Black, 2);
+                            Cv2.Resize(mat1, mat1, new OpenCvSharp.Size(mat1.Width / 2, mat1.Height / 2));
+                            Cv2.ImShow("mat1", mat1.Clone());
+
+                            ApexDefectInspectionStepsFlags.CombineStep += 0b01; // 1
+                            break;
+                        default:
+                            break;
+                    }
+
+                    //cam1.Camera.ExecuteSoftwareTrigger();
+                    //cam2.Camera.ExecuteSoftwareTrigger();
+
+                    //using IGrabResult grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                    //using IGrabResult grabResult2 = cam2.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+
+                    //if (grabResult1.GrabSucceeded)
+                    //{
+
+                    //}
+
+                    //if (grabResult2.GrabSucceeded)
+                    //{
+
+                    //}
+
+                    Debug.WriteLine($"Step: {ApexDefectInspectionStepsFlags.CombineStep}");
+
+                    mat1?.Dispose();
+                    mat2?.Dispose();
+                    grabResult1?.Dispose();
+                    grabResult2?.Dispose();
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+        /// <summary>
+        /// 窗戶、耳朵(L) ROI 尋找前步驟；
+        /// Light 1：96, 0, 108, 128；
+        /// Light 2：0, 0；
+        /// Motion ：10, 500, 1000, 1000;
+        /// Pos Abs：-100
+        /// </summary>
+        /// <returns></returns>
+        public async Task PreEarLWindowRoi()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(96, 0, 108, 128);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+            // 變更馬達速度
+            ServoMotion.Axes[1].SetAxisVelParam(10, 500, 1000, 1000);
+            // 旋轉至目標位置
+            await ServoMotion.Axes[1].PosMoveAsync(-100, true);
+        }
+
+        /// <summary>
+        /// 窗戶、耳朵(L) ROI 尋找前步驟Ver.2；
+        /// Light 1：96, 0, 108, 128 
+        /// Light 2：0, 0 
+        /// </summary>
+        /// <returns></returns>
+        public void PreEarLWindowRoi2()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(256, 0, 128, 128);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+        }
+
+        /// <summary>
+        /// 取得窗戶、耳朵(L) ROI
+        /// </summary>
+        /// <param name="src">影像(窗戶)</param>
+        /// <param name="src2">影像(耳朵)</param>
+        /// <param name="winXpos">窗戶xArray</param>
+        /// <param name="wRoiL">窗戶 ROI 左</param>
+        /// <param name="wRoiR">窗戶 ROI 右</param>
+        /// <param name="eRoiL">窗戶 ROI 左</param>
+        /// <param name="eRoiR">窗戶 ROI 右</param>
+        public void GetEarWindowRoi(Mat src, Mat src2, out double[] winXpos, out Rect wRoiL, out Rect wRoiR, out Rect eRoiL, out Rect eRoiR)
+        {
+            if (src != null)
+            {
+                GetWindowInspectionRoi(src, out winXpos, out wRoiL, out wRoiR);
+                #region 刪除
+                Cv2.Rectangle(src, wRoiL, Scalar.Black, 2);
+                Cv2.Rectangle(src, wRoiR, Scalar.Black, 2);
+                Cv2.Resize(src, src, new OpenCvSharp.Size(src.Width / 2, src.Height / 2));
+                Cv2.ImShow($"win {DateTime.Now:ss.fff}", src.Clone());
+                #endregion
+            }
+            else
+            {
+                wRoiL = Rect.Empty;
+                wRoiR = Rect.Empty;
+                winXpos = Array.Empty<double>();
+            }
+
+            if (src2 != null)
+            {
+                GetEarInspectionRoiL(src2, out eRoiL, out eRoiR);
+                #region 刪除
+                Cv2.Rectangle(src2, eRoiL, Scalar.Black, 2);
+                Cv2.Rectangle(src2, eRoiR, Scalar.Black, 2);
+                Cv2.Resize(src2, src2, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
+                Cv2.ImShow("ear", src2.Clone());
+                #endregion
+            }
+            else
+            {
+                eRoiL = Rect.Empty;
+                eRoiR = Rect.Empty;
+            }
+
+            //Cv2.Rectangle(src, wRoiL, Scalar.Black, 2);
+            //Cv2.Rectangle(src, wRoiR, Scalar.Black, 2);
+
+            //Cv2.Rectangle(src2, eRoiL, Scalar.Black, 2);
+            //Cv2.Rectangle(src2, eRoiR, Scalar.Black, 2);
+
+            //Cv2.Resize(src, src, new OpenCvSharp.Size(src.Width / 2, src.Height / 2));
+            //Cv2.Resize(src2, src2, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
+            //Cv2.ImShow("win", src);
+            //Cv2.ImShow("ear", src2);
         }
         #endregion
 
@@ -611,8 +946,8 @@ namespace ApexVisIns
                         switch (ApexDefectInspectionStepsFlags.WindowSteps)
                         {
                             case 0b0001:    // 1 ROI
-                                WindowInspectionTopBottomEdge(mat, out top, out bottom);
-                                WindowInspectionRoi(mat, out xPos, out roiL, out roiR);
+                                GetWindowInspectionTopBottomEdge(mat, out top, out bottom);
+                                GetWindowInspectionRoi(mat, out xPos, out roiL, out roiR);
 
                                 if (xPos.Length == 7)    // 有找到 7 個分界點
                                 {
@@ -630,7 +965,7 @@ namespace ApexVisIns
                                 break;
                             case 0b0011:    // 3 ROI
                                 //MainWindow.WindowInspectionTopBottomLimit(mat, out yPos);
-                                WindowInspectionRoi(mat, out xPos2, out roiL, out roiR);
+                                GetWindowInspectionRoi(mat, out xPos2, out roiL, out roiR);
 
                                 if (xPos2.Length == 7)  // 有找到 7 個分界點
                                 {
@@ -646,7 +981,7 @@ namespace ApexVisIns
                                 }
                                 break;
                             case 0b0101:    // 5 ROI
-                                WindowInspectionRoi(mat, out xPos3, out roiL, out roiR);
+                                GetWindowInspectionRoi(mat, out xPos3, out roiL, out roiR);
 
                                 if (xPos3.Length == 7)   // 有找到 7 個分界點
                                 {
@@ -717,7 +1052,7 @@ namespace ApexVisIns
                                 #endregion
                                 break;
                             case 0b1101:    // 13 // 側光
-                                // 1 - 2 R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
+                                // 1 - 2: R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
                                 Rect roiTop = new((int)xArray[1], (int)(top - 80), (int)(xArray[^2] - xArray[1]), 120);
                                 WindowInspectionSideLight(mat, roiTop, 0);
                                 ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
@@ -732,7 +1067,7 @@ namespace ApexVisIns
                                 #endregion
                                 break;
                             case 0b1111:    // 15 // 側光
-                                // 1 - 2 R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
+                                // 1 - 2: R 角, 2 - 4: 窗戶邊緣, ^3 - ^2: R 角
                                 Rect roiBot = new((int)xArray[1], (int)bottom - 40, (int)(xArray[^2] - xArray[1]), 120);
                                 WindowInspectionSideLight(mat, roiBot, 1);
                                 ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
@@ -771,7 +1106,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得窗戶瑕疵 ROI 前手續
+        /// 取得窗戶瑕疵 ROI 前手續；
+        /// Light 1：320, 0, 160, X；
+        /// Light 2：0, 0
         /// </summary>
         public async Task PreWindowInspectionRoi()
         {
@@ -779,13 +1116,15 @@ namespace ApexVisIns
             LightCtrls[0].SetAllChannelValue(320, 0, 160, 0);
             LightCtrls[1].SetAllChannelValue(0, 0);
             // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 10000, 10000);
+            ServoMotion.Axes[1].SetAxisVelParam(80, 800, 5000, 5000);
             // 觸發馬達
             await ServoMotion.Axes[1].PosMoveAsync(-100, true);
         }
 
         /// <summary>
-        /// 取得窗戶瑕疵 ROI 前手續 2
+        /// 取得窗戶瑕疵 ROI 前手續 2；
+        /// Light 1：288, 0, 144, 0；
+        /// Light 2：0, 0
         /// </summary>
         /// <returns></returns>
         public void PreWindowInspectionRoi2()
@@ -800,7 +1139,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 取得窗戶瑕疵 ROI 前手續 3
+        /// 取得窗戶瑕疵 ROI 前手續 3；
+        /// Light 1：256, 0, 128, 0；
+        /// Light 2：0, 0
         /// </summary>
         /// <returns></returns>
         public void PreWindowInspectionRoi3()
@@ -820,7 +1161,7 @@ namespace ApexVisIns
         /// <param name="src">來源</param>
         /// <param name="top">窗戶上緣</param>
         /// <param name="bottom">窗戶下緣</param>
-        public void WindowInspectionTopBottomEdge(Mat src, out double top, out double bottom)
+        public void GetWindowInspectionTopBottomEdge(Mat src, out double top, out double bottom)
         {
             Rect roi = new(500, 240, 200, 1400);
 
@@ -831,11 +1172,15 @@ namespace ApexVisIns
         /// <summary>
         /// 取得窗戶瑕疵檢驗 ROI
         /// </summary>
-        public void WindowInspectionRoi(Mat src, out double[] xPos, out Rect roiL, out Rect roiR)
+        public void GetWindowInspectionRoi(Mat src, out double[] xPos, out Rect roiL, out Rect roiR)
         {
             Rect roi = new(100, 840, 1000, 240);
 
-            Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
+            Methods.GetRoiVerticalFilter2D(src, roi, 1.8, out Mat filter);
+
+            Cv2.ImShow("WindowFilter", filter);
+            Methods.GetCanny(filter, 60, 100, out Mat canny);
+            //Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
             Methods.GetHoughVerticalXPos(canny, roi.X, out int count, out xPos, 3, 50);
             canny.Dispose();
 
@@ -1268,7 +1613,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 耳朵孔檢測前手續
+        /// 耳朵孔檢測前手續；
+        /// Light 1：128, 0, 0, 108；
+        /// Light 2：0, 0
         /// </summary>
         public void PreEarHoleInspection()
         {
@@ -1299,8 +1646,8 @@ namespace ApexVisIns
 
             #region 
             #region 刪
-            Mat contours = new(src, roi);
-            Cv2.CvtColor(contours, contours, ColorConversionCodes.GRAY2BGR);
+            Mat circleMat = new(src, roi);
+            Cv2.CvtColor(circleMat, circleMat, ColorConversionCodes.GRAY2BGR);
             #endregion
 
             ///
@@ -1309,7 +1656,6 @@ namespace ApexVisIns
             double max = concat.Max(pt => pt.DistanceTo(((Point)c)));
             double min = concat.Min(pt => pt.DistanceTo((Point)c));
             double avg = concat.Average(pt => pt.DistanceTo((Point)c));
-
             ///
 
             #region 刪
@@ -1318,14 +1664,16 @@ namespace ApexVisIns
             Debug.WriteLine($"Avg: {avg}");
             Debug.WriteLine($"Rad: {r}");
 
-            Cv2.Circle(contours, (int)c.X, (int)c.Y, (int)r, Scalar.Red, 2);
-            Cv2.Circle(contours, (int)c.X, (int)c.Y, 2, Scalar.Blue, 2);
+            Cv2.Circle(circleMat, (int)c.X, (int)c.Y, (int)r, Scalar.Red, 2);    // 外徑
+            Cv2.Circle(circleMat, (int)c.X, (int)c.Y, 2, Scalar.Blue, 2);        // 圓心
 
             Debug.WriteLine($"Ccons Length {cons.Length}");
             Debug.WriteLine($"Concat cons Length {concat.Length}");
 
-            Cv2.ImShow("filter2D", contours);
-            Cv2.MoveWindow("filter2D", 20, 20);
+            Cv2.ImShow("filter", filter);
+            Cv2.ImShow("filter2D", circleMat);
+            Cv2.MoveWindow("filter", 20, 20);
+            Cv2.MoveWindow("filter2D", 220, 20);
             #endregion
             #endregion
 
@@ -1368,9 +1716,8 @@ namespace ApexVisIns
             Methods.GetHoughVerticalXPos(canny, roi.X, out _, out double[] xPos, 3, 30);
 
             Debug.WriteLine($"xPos Count: {xPos.Length} {string.Join(" , ", xPos)}");
-            Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny.Clone());
+            //Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny.Clone());
             canny.Dispose();
-
 
             roiL = new((int)xPos[0], 930, 45, 150);
             roiR = new((int)xPos[^1] - 45, 930, 45, 200);
