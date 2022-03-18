@@ -648,7 +648,9 @@ namespace ApexVisIns
 
                             mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
                             mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
+                            // 抓取窗戶上下緣
                             GetWindowInspectionTopBottomEdge(mat1, out top, out bot);
+                            // 抓取窗戶、耳朵 ROI
                             GetEarWindowRoi(mat1, mat2, out xPos, out winRoiL, out winRoiR, out earRoiL, out earRoiR);
 
                             if (xPos.Length == 7)
@@ -672,7 +674,7 @@ namespace ApexVisIns
                             grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
                             mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
 
-                            GetEarWindowRoi(mat1, null, out xPos2, out winRoiL, out winRoiR, out earRoiL, out earRoiR);
+                            GetEarWindowRoi(mat1, null, out xPos2, out winRoiL, out winRoiR, out _, out _);
 
                             if (xPos2.Length == 7)
                             {
@@ -685,6 +687,7 @@ namespace ApexVisIns
                             {
                                 xArray = xPos.Concat(xPos3).OrderBy(x => x).ToArray();
 
+                                #region 陣列抽取
                                 List<double> xList = new(7);
                                 for (int i = 0; i < xArray.Length; i++)
                                 {
@@ -696,19 +699,20 @@ namespace ApexVisIns
                                 xArray = xList.ToArray();
                                 xList.Clear();
                                 xList = null;
-
+                                #endregion
 
                                 winRoiL = new Rect((int)xArray[1] - 20, (int)top, (int)(xArray[2] - xArray[1]) + 40, (int)(bot - top));
                                 winRoiR = new Rect((int)xArray[^3] - 20, (int)top, (int)(xArray[^2] - xArray[^3]) + 40, (int)(bot - top));
                                 xPos = xPos2 = xPos3 = null;
 
-                                Cv2.Rectangle(mat1, winRoiL, Scalar.Black);
-                                Cv2.Rectangle(mat1, winRoiR, Scalar.Black);
-                                Cv2.ImShow("mat1", mat1.Clone());
+                                // Cv2.Rectangle(mat1, winRoiL, Scalar.Black);
+                                // Cv2.Rectangle(mat1, winRoiR, Scalar.Black);
+                                // Cv2.ImShow("mat1", mat1.Clone());
+
                                 ApexDefectInspectionStepsFlags.CombineStep += 0b01; // 1
                             }
                             break;
-                        case 0b0011:    // 3 //
+                        case 0b0011:    // 3 // 
                             cam1.Camera.ExecuteSoftwareTrigger();
                             grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
                             mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
@@ -717,6 +721,8 @@ namespace ApexVisIns
                             Cv2.Rectangle(mat1, winRoiR, Scalar.Black, 2);
                             Cv2.Resize(mat1, mat1, new OpenCvSharp.Size(mat1.Width / 2, mat1.Height / 2));
                             Cv2.ImShow("mat1", mat1.Clone());
+
+                            
 
                             ApexDefectInspectionStepsFlags.CombineStep += 0b01; // 1
                             break;
@@ -741,11 +747,13 @@ namespace ApexVisIns
                     //}
 
                     Debug.WriteLine($"Step: {ApexDefectInspectionStepsFlags.CombineStep}");
-
+                    
+                    #region Dispose 物件，釋放記憶體
                     mat1?.Dispose();
                     mat2?.Dispose();
                     grabResult1?.Dispose();
-                    grabResult2?.Dispose();
+                    grabResult2?.Dispose(); 
+                    #endregion
                 }
             }
             catch (TimeoutException T)
@@ -840,17 +848,17 @@ namespace ApexVisIns
                 eRoiL = Rect.Empty;
                 eRoiR = Rect.Empty;
             }
+        }
 
-            //Cv2.Rectangle(src, wRoiL, Scalar.Black, 2);
-            //Cv2.Rectangle(src, wRoiR, Scalar.Black, 2);
-
-            //Cv2.Rectangle(src2, eRoiL, Scalar.Black, 2);
-            //Cv2.Rectangle(src2, eRoiR, Scalar.Black, 2);
-
-            //Cv2.Resize(src, src, new OpenCvSharp.Size(src.Width / 2, src.Height / 2));
-            //Cv2.Resize(src2, src2, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
-            //Cv2.ImShow("win", src);
-            //Cv2.ImShow("ear", src2);
+        /// <summary>
+        /// 耳朵、窗戶瑕疵檢側前步驟
+        /// </summary>
+        public void PreEarWindowIns()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue();
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue();
         }
         #endregion
 
