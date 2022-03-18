@@ -74,11 +74,11 @@
                                             <Binding Path="[3].IsGrabbing" Source="{StaticResource BaslerCams}" FallbackValue="False"/>
                                         </MultiBinding>
                                     </DataTrigger.Binding>
-                                    <Setter Property="Content" Value="啟動拍攝"/>
+                                    <Setter Property="Content" Value="關閉拍攝"/>
                                     <Setter Property="Foreground" Value="{StaticResource ColorWarning}"/>
                                 </DataTrigger>
                             </Style.Triggers>
-                            <Setter Property="Content" Value="關閉拍攝"/>
+                            <Setter Property="Content" Value="啟動拍攝"/>
                             <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
                         </Style>
                     </Button.Style>

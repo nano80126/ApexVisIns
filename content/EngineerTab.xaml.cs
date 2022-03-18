@@ -122,6 +122,7 @@ namespace ApexVisIns.content
                 MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
                 MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
                 MainWindow.ApexAngleCorrectionFlags.WidthStable = 0;
+                MainWindow.ApexAngleCorrectionFlags.CircleStable = 0;
                 MainWindow.ApexAngleCorrectionFlags.Direction = 1;
             }
             catch (Exception ex)

@@ -117,18 +117,21 @@ namespace ApexVisIns.content
             {
                 Initializer();
             }
+            else // else for 測試用
+            {
+                // 測試 Motion 用
+                InitMotion(_cancellationTokenSource.Token).Wait();
 
-            // 測試 Motion 用
-            InitMotion(_cancellationTokenSource.Token).Wait();
+                // 測試光源用
+                InitLightCtrls(_cancellationTokenSource.Token).Wait();
 
-            // 測試光源用
-            InitLightCtrls(_cancellationTokenSource.Token).Wait();
+                // 測試 IO 用
+                // InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-            // 測試 IO 用
-            // InitIOCtrl(_cancellationTokenSource.Token).Wait();
+                // 測試相機用
+                InitCamera(_cancellationTokenSource.Token).Wait();
+            }
 
-            // 測試相機用
-            InitCamera(_cancellationTokenSource.Token).Wait();
 
             if (!loaded)
             {

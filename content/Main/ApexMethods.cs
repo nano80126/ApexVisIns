@@ -69,7 +69,6 @@ namespace ApexVisIns.content
             //StopWindowEarCameraContinous();
         }
 
-
         #region Methods
         /// <summary>
         /// 開始窗戶、耳朵相機連續拍攝
@@ -145,8 +144,7 @@ namespace ApexVisIns.content
         {
             StopWindowEarCameraContinous();
 
-
-            Cv2.DestroyAllWindows();
+            //Cv2.DestroyAllWindows();
         }
         #endregion
     }
