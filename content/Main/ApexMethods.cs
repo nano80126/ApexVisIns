@@ -59,14 +59,9 @@ namespace ApexVisIns.content
             StopWindowEarCameraContinous();
         }
 
-        private void SequenceInspect_Click(object sender, RoutedEventArgs e)
+        private void SequenceInspection_Click(object sender, RoutedEventArgs e)
         {
-            Cv2.DestroyAllWindows();
-
-            MainWindow.ApexDefectInspectionStepsFlags.CombineStep = 1;
-
-            MainWindow.ApexWindowEarInspectionSequence(BaslerCam1, BaslerCam2);
-            //StopWindowEarCameraContinous();
+            StartSequenceIns();
         }
 
         #region Methods
@@ -117,6 +112,66 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 開始窗戶、耳朵相機 Grabber
+        /// </summary>
+        private void StartWindowEarGrabber()
+        {
+            if (!BaslerCam1.IsGrabberOpened && !BaslerCam1.IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCam1.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                BaslerCam1.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                BaslerCam1.IsGrabberOpened = true;
+                BaslerCam1.IsContinuousGrabbing = false;
+
+                // 
+                BaslerCam1.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+
+            }
+
+            if (!BaslerCam2.IsGrabberOpened && !BaslerCam2.IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCam2.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                BaslerCam2.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                BaslerCam2.IsGrabberOpened = true;
+                BaslerCam2.IsContinuousGrabbing = false;
+
+                // 
+                BaslerCam2.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+            }
+        }
+
+        /// <summary>
+        /// 停止窗戶、耳朵相機 Grabber
+        /// </summary>
+        private void StopWindowEarGrabber()
+        {
+            if (BaslerCam1.IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCam1.Camera.StreamGrabber.Stop();
+                BaslerCam1.IsGrabberOpened = false;
+
+                // 
+                BaslerCam1.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+
+            }
+
+            if (BaslerCam2.IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCam2.Camera.StreamGrabber.Stop();
+                BaslerCam2.IsGrabberOpened = false;
+
+                // 
+                BaslerCam2.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+            }
+        }
+
+        /// <summary>
         /// 開始角度校正
         /// </summary>
         private void StartAngleCorrection()
@@ -127,7 +182,7 @@ namespace ApexVisIns.content
 
             #region Flags
             MainWindow.ApexAngleCorrectionFlags.Steps = 0;
-            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;
+            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;  // 窗戶寬度不會超過 400 // 一般約 380
             MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
             MainWindow.ApexAngleCorrectionFlags.Direction = 1;
             #endregion
@@ -143,8 +198,23 @@ namespace ApexVisIns.content
         private void EndAngleCorrection()
         {
             StopWindowEarCameraContinous();
+            // Cv2.DestroyAllWindows();
+        }
 
-            //Cv2.DestroyAllWindows();
+
+        /// <summary>
+        /// 開始序列檢測
+        /// </summary>
+        private void StartSequenceIns()
+        {
+            Cv2.DestroyAllWindows();
+
+            MainWindow.ApexDefectInspectionStepsFlags.Steps = 0;
+
+            StartWindowEarGrabber();
+
+            MainWindow.ApexWindowEarInspectionSequence(BaslerCam1, BaslerCam2);
+            //StopWindowEarCameraContinous();
         }
         #endregion
     }

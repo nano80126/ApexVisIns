@@ -68,6 +68,33 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 取得 Otsu 影像、閾值
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="th"></param>
+        /// <param name="max"></param>
+        /// <param name="otsu"></param>
+        /// <param name="threshHold"></param>
+        public static void GatOtsu(Mat src, byte th, byte max, out Mat otsu, out byte threshHold)
+        {
+            try
+            {
+                otsu = new Mat();
+                //using Mat clone = new(src, roi);
+
+                threshHold = (byte)Cv2.Threshold(src, otsu, th, max, ThresholdTypes.Otsu);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 取得 ROI Otsu 影像、閾值
         /// </summary>
         /// <param name="src">來源影像</param>
@@ -84,6 +111,60 @@ namespace ApexVisIns
                 using Mat clone = new(src, roi);
 
                 threshHold = (byte)Cv2.Threshold(clone, otsu, th, max, ThresholdTypes.Otsu);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得 ROI 高斯
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="roi"></param>
+        /// <param name="kernelSize"></param>
+        /// <param name="sigmaX"></param>
+        /// <param name="sigmaY"></param>
+        /// <param name="blur"></param>
+        public static void GetRoiGaussianBlur(Mat src, Rect roi, Size kernelSize, double sigmaX, double sigmaY, out Mat blur)
+        {
+            try
+            {
+                blur = new Mat();
+                using Mat clone = new(src, roi);
+
+                Cv2.GaussianBlur(clone, blur, kernelSize, sigmaX, sigmaY);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得濾波影像
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="kernelCenterValue"></param>
+        /// <param name="filter"></param>
+        public static void GetFilter2D(Mat src, double kernelCenterValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                double s = kernelCenterValue / 8 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s,s,s},{s,kernelCenterValue,s },{s,s,s }
+                });
+                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
             }
             catch (OpenCVException)
             {
@@ -122,6 +203,31 @@ namespace ApexVisIns
             }
         }
 
+        public static void GetVerticalFilter2D(Mat src, double centerValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, centerValue, s },
+                    { s, centerValue, s },
+                    { s, centerValue, s }
+                });
+                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+        
         public static void GetRoiVerticalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
         {
             try
@@ -137,6 +243,31 @@ namespace ApexVisIns
                     { s, centerValue, s }
                 });
                 Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        public static void GetHorizonalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, s, s },
+                    { centerValue, centerValue, centerValue },
+                    { s, s, s }
+                });
+                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
             }
             catch (OpenCVException)
             {
@@ -458,7 +589,12 @@ namespace ApexVisIns
 
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
+                    Debug.WriteLine($"filter.length {lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Count()}");
+
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).OrderBy(line => line.P1.Y + line.P2.Y);
+
+                    Debug.WriteLine($"filter.length {filter.Count()}");
+                    Debug.WriteLine($"{string.Join(" , ", filter)}");
 
                     LineSegmentPoint pt1 = filter.Last(line => (line.P1.Y + line.P2.Y) / 2 < 960);
                     LineSegmentPoint pt2 = filter.First(line => (line.P1.Y + line.P2.Y) / 2 > 960);

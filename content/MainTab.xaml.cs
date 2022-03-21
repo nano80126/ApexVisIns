@@ -436,7 +436,7 @@ namespace ApexVisIns.content
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Null:
                                         default:
-                                            MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
+                                            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                             break;
                                     }
                                 }
@@ -763,10 +763,10 @@ namespace ApexVisIns.content
             {
                 if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
                 {
-                    // 確認 IO (光電開關)
 
                     if (!ServoMotion.Axes[0].ZeroReturned)
                     {
+                        // 確認 IO (光電開關)
                         if (!IOController.ReadDIBitValue(1, 7))
                         {
                             await ServoMotion.Axes[0].PositiveWayHomeMove(true);
@@ -907,11 +907,20 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void SpecSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (IOController.ReadDIBitValue(1, 7))
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"檢測台上有料不允許進行規格選擇");
+                //(sender as ListBox).SelectedValue = e.RemovedItems[0];
+                e.Handled = true;
+                return;
+            }
+
             // 1. 確認是否原點復歸
             // 2. 確認尺寸計算脈波數
             int spec = (sender as ListBox).SelectedIndex;
             _ = Task.Run(async () =>
             {
+                MainWindow.ApexDefect.Status = ApexDefect.StatusType.Moving;
                 switch (spec)
                 {
                     case 0:
@@ -924,6 +933,7 @@ namespace ApexVisIns.content
                         await MotionSpecChange(-30000);
                         break;
                 }
+                MainWindow.ApexDefect.Status = ApexDefect.StatusType.Ready;
             });
         }
         #endregion

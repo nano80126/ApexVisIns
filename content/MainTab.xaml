@@ -110,7 +110,7 @@
                 </Button>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="順序檢測" Foreground="{StaticResource ColorIndigo}"
-                        Style="{StaticResource MaterialDesignToolButton}" Click="SequenceInspect_Click">
+                        Style="{StaticResource MaterialDesignToolButton}" Click="SequenceInspection_Click">
                 </Button>
                 <!--#endregion-->
 
