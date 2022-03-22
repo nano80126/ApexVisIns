@@ -75,7 +75,7 @@ namespace ApexVisIns
         /// <param name="max"></param>
         /// <param name="otsu"></param>
         /// <param name="threshHold"></param>
-        public static void GatOtsu(Mat src, byte th, byte max, out Mat otsu, out byte threshHold)
+        public static void GetOtsu(Mat src, byte th, byte max, out Mat otsu, out byte threshHold)
         {
             try
             {
@@ -150,19 +150,22 @@ namespace ApexVisIns
         /// <summary>
         /// 取得濾波影像
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="kernelCenterValue"></param>
-        /// <param name="filter"></param>
-        public static void GetFilter2D(Mat src, double kernelCenterValue, out Mat filter)
+        /// <param name="src">來源影像</param>
+        /// <param name="kernelCenterValue">中心值</param>
+        /// <param name="compesation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetFilter2D(Mat src, double kernelCenterValue, double compesation, out Mat filter)
         {
             try
             {
                 filter = new Mat();
 
-                double s = kernelCenterValue / 8 * -1;
+                double s = kernelCenterValue / 9 * -1;
 
                 InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s,s,s},{s,kernelCenterValue,s },{s,s,s }
+                    { s, s, s},
+                    { s, kernelCenterValue - s + compesation, s },
+                    { s, s, s }
                 });
                 Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
             }
@@ -179,118 +182,23 @@ namespace ApexVisIns
         /// <summary>
         /// 取得 ROI 濾波影像
         /// </summary>
-        public static void GetRoiFilter2D(Mat src, Rect roi, double kernelCenterValue, out Mat filter)
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">roi 區域</param>
+        /// <param name="kernelCenterValue">中心值</param>
+        /// <param name="compensation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetRoiFilter2D(Mat src, Rect roi, double kernelCenterValue, double compensation, out Mat filter)
         {
             try
             {
                 filter = new Mat();
 
                 using Mat clone = new(src, roi);
-                double s = kernelCenterValue / 8 * -1;
+                double s = kernelCenterValue / 9 * -1;
 
                 InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s,s,s},{s,kernelCenterValue,s },{s,s,s }
-                });
-                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
-            }
-            catch (OpenCVException)
-            {
-                throw;
-            }
-            catch (OpenCvSharpException)
-            {
-                throw;
-            }
-        }
-
-        public static void GetVerticalFilter2D(Mat src, double centerValue, out Mat filter)
-        {
-            try
-            {
-                filter = new Mat();
-
-                double s = centerValue / 3 * -1;
-
-                InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s, centerValue, s },
-                    { s, centerValue, s },
-                    { s, centerValue, s }
-                });
-                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
-            }
-            catch (OpenCVException)
-            {
-                throw;
-            }
-            catch (OpenCvSharpException)
-            {
-                throw;
-            }
-        }
-        
-        public static void GetRoiVerticalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
-        {
-            try
-            {
-                filter = new Mat();
-
-                using Mat clone = new(src, roi);
-                double s = centerValue / 3 * -1;
-
-                InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s, centerValue, s },
-                    { s, centerValue, s },
-                    { s, centerValue, s }
-                });
-                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
-            }
-            catch (OpenCVException)
-            {
-                throw;
-            }
-            catch (OpenCvSharpException)
-            {
-                throw;
-            }
-        }
-
-        public static void GetHorizonalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
-        {
-            try
-            {
-                filter = new Mat();
-
-                double s = centerValue / 3 * -1;
-
-                InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s, s, s },
-                    { centerValue, centerValue, centerValue },
-                    { s, s, s }
-                });
-                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
-            }
-            catch (OpenCVException)
-            {
-                throw;
-            }
-            catch (OpenCvSharpException)
-            {
-                throw;
-            }
-        }
-
-        public static void GetRoiHorizonalFilter2D(Mat src, Rect roi, double centerValue, out Mat filter)
-        {
-            try
-            {
-                filter = new Mat();
-
-                using Mat clone = new(src, roi);
-                double s = centerValue / 3 * -1;
-
-                InputArray kernel = InputArray.Create(new double[3, 3] {
-                    { s, s, s },
-                    { centerValue, centerValue, centerValue },
+                    { s, s, s},
+                    { s, kernelCenterValue - s + compensation, s },
                     { s, s, s }
                 });
                 Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
@@ -305,6 +213,137 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 取得垂直方向濾波影像
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="centerValue">中心值</param>
+        /// <param name="compesation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetVerticalFilter2D(Mat src, double centerValue, double compesation, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, centerValue - s + compesation, s },
+                    { s, centerValue - s + compesation, s },
+                    { s, centerValue - s + compesation, s }
+                });
+                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得 ROI 垂直方向濾波影像
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">roi 區域</param>
+        /// <param name="centerValue">中心值</param>
+        /// <param name="compesation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetRoiVerticalFilter2D(Mat src, Rect roi, double centerValue, double compesation, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                using Mat clone = new(src, roi);
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, centerValue - s + compesation, s },
+                    { s, centerValue - s + compesation, s },
+                    { s, centerValue - s + compesation, s }
+                });
+                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得水平方向濾波影像 
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="centerValue">中心值</param>
+        /// <param name="compesation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetHorizonalFilter2D(Mat src, double centerValue, double compesation,out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, s, s },
+                    { centerValue - s + compesation, centerValue - s + compesation, centerValue - s + compesation },
+                    { s, s, s }
+                });
+                Cv2.Filter2D(src, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得 ROI 水平方向濾波影像
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">roi 區域</param>
+        /// <param name="centerValue">中心值</param>
+        /// <param name="compesation">中心補償值</param>
+        /// <param name="filter">(out) 濾波影像</param>
+        public static void GetRoiHorizonalFilter2D(Mat src, Rect roi, double centerValue, double compesation, out Mat filter)
+        {
+            try
+            {
+                filter = new Mat();
+
+                using Mat clone = new(src, roi);
+                double s = centerValue / 3 * -1;
+
+                InputArray kernel = InputArray.Create(new double[3, 3] {
+                    { s, s, s },
+                    { centerValue - s + compesation, centerValue - s + compesation, centerValue - s + compesation },
+                    { s, s, s }
+                });
+                Cv2.Filter2D(clone, filter, MatType.CV_8U, kernel, new Point(-1, -1), 0);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// 取得輪廓點陣列
@@ -589,12 +628,12 @@ namespace ApexVisIns
 
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
-                    Debug.WriteLine($"filter.length {lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Count()}");
+                    //Debug.WriteLine($"filter.length {lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Count()}");
 
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.Y - line.P1.Y) < Ygap).OrderBy(line => line.P1.Y + line.P2.Y);
 
-                    Debug.WriteLine($"filter.length {filter.Count()}");
-                    Debug.WriteLine($"{string.Join(" , ", filter)}");
+                    // Debug.WriteLine($"filter.length {filter.Count()}");
+                    // Debug.WriteLine($"{string.Join(" , ", filter)}");
 
                     LineSegmentPoint pt1 = filter.Last(line => (line.P1.Y + line.P2.Y) / 2 < 960);
                     LineSegmentPoint pt2 = filter.First(line => (line.P1.Y + line.P2.Y) / 2 > 960);

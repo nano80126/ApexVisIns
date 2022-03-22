@@ -2369,7 +2369,6 @@ namespace ApexVisIns
         /// <param name="absolute">(bool)絕對位置</param>
         public void PosMove(double targetPos, bool absolute = false)
         {
-            //TargetPos = targetPos;
             uint result = absolute ? Motion.mAcm_AxMoveAbs(AxisHandle, targetPos) : Motion.mAcm_AxMoveRel(AxisHandle, targetPos);
 
             if (result != (uint)ErrorCode.SUCCESS)
@@ -2451,6 +2450,16 @@ namespace ApexVisIns
             {
                 throw new InvalidOperationException($"位置控制變更運轉速度失敗: Code[0x{result:X}]");
             }
+        }
+
+        /// <summary>
+        /// (try) 變更運轉速度
+        /// </summary>
+        /// <param name="vel"></param>
+        /// <returns></returns>
+        public uint TryChangeVel(double vel)
+        {
+            return Motion.mAcm_AxChangeVel(AxisHandle, vel);
         }
 
         /// <summary>

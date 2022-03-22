@@ -9,6 +9,7 @@ using OpenCvSharp;
 using System.Diagnostics;
 using Basler.Pylon;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace ApexVisIns
 {
@@ -88,30 +89,36 @@ namespace ApexVisIns
             /// 工件對位步驟旗標
             /// bit 0 ~ 3, 0 ~ 15
             /// </summary>
-            public byte Steps { get; set; }
+            public byte Steps { get; set; }             // 1
             /// <summary>
             /// 前一次檢驗之 Width
             /// </summary>
-            public ushort LastWindowWidth { get; set; }
+            public ushort LastWindowWidth { get; set; } // 2
             /// <summary>
             /// 最大檢驗之 Width
             /// </summary>
-            public ushort MaxWindowWidth { get; set; }
-
+            public ushort MaxWindowWidth { get; set; }  // 2
+            
             /// <summary>
             /// 窗戶 Width 穩定計數
             /// </summary>
-            public byte WidthStable { get; set; }
+            public byte WidthStable { get; set; }       // 1
 
             /// <summary>
             /// 0.111 孔穩定計數
             /// </summary>
-            public byte CircleStable { get; set; }
+            public byte CircleStable { get; set; }      // 1
+
+            /// <summary>
+            /// Otsu 閾值
+            /// </summary>
+            public byte OtsuThreshlod { get;  set; }    // 1
 
             /// <summary>
             /// 方向 (1: 正轉, 0: 逆轉)
             /// </summary>
-            public byte Direction { get; set; }
+            [Obsolete("deprecated")]
+            public byte Direction { get; set; }         // 1
         }
 
 
@@ -198,11 +205,16 @@ namespace ApexVisIns
             ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
             // 觸發馬達
             //ServoMotion.Axes[1].PosMove(5000);
-            if (ServoMotion.Axes[1].TryPosMove(5000) != 0)
+            //if (ServoMotion.Axes[1].TryPosMove(5000) != 0)
+            //{
+            //    _ = SpinWait.SpinUntil(() => false, 100);
+            //    ServoMotion.Axes[1].PosMove(5000);
+            //}
+            uint ret = 0;
+            do
             {
-                _ = SpinWait.SpinUntil(() => false, 100);
-                ServoMotion.Axes[1].PosMove(5000);
-            }
+                ret = ServoMotion.Axes[1].TryPosMove(5000);
+            } while (ret != 0);
         }
 
         /// <summary>
@@ -369,7 +381,17 @@ namespace ApexVisIns
                 // X: 1200 - 100, Y: 960 - 120
                 Rect roi = new(100, 840, 1000, 240);
 
-                Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
+                if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
+                {
+                    Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
+                    ApexAngleCorrectionFlags.OtsuThreshlod = th;
+                }
+                byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;
+
+
+                // 需要開運算除毛邊?
+
+                Methods.GetRoiCanny(src, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
                 bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
 
                 if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101)
@@ -480,7 +502,7 @@ namespace ApexVisIns
                 int r = 0; // 孔右輪廓 count
 
                 // 銳化垂直
-                Methods.GetRoiVerticalFilter2D(src2, roi, 1.8, out Mat filter);
+                Methods.GetRoiVerticalFilter2D(src2, roi, 1.8, -0.6, out Mat filter);
                 Methods.GetCanny(filter, 75, 150, out Mat canny);
 
                 // 找輪廓
@@ -1336,10 +1358,26 @@ namespace ApexVisIns
         /// <param name="bottom">窗戶下緣</param>
         public void GetWindowInspectionTopBottomEdge(Mat src, out double top, out double bottom)
         {
-            Rect roi = new(500, 240, 200, 1400);
+            Rect roi = new(450, 240, 250, 1400);
 
-            Methods.GetRoiCanny(src, roi, 60, 120, out Mat canny);
+            Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshold);
+            // 埢積核
+            Mat morele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(5, 3), new Point(-1, -1));
+            // 閉運算
+            Cv2.MorphologyEx(otsu, otsu, MorphTypes.Close, morele, null, 2);
+
+            //Methods.GetRoiCanny(src, roi, 60, 120, out Mat canny);
+            Methods.GetCanny(otsu, (byte)(threshold - 20), (byte)(threshold * 1.8), out Mat canny);
+            //otsu.Dispose();
             // Cv2.Resize(canny, canny, new OpenCvSharp.Size(canny.Width / 2, canny.Height / 2));
+
+            //Mat otsu2 = new Mat();
+            //Mat canny2 = new Mat();
+            //Cv2.Resize(otsu, otsu2, new OpenCvSharp.Size(otsu.Width / 2, otsu.Height / 2));
+            //Cv2.Resize(canny, canny2, new OpenCvSharp.Size(canny.Width / 2, canny.Height / 2));
+            //Cv2.ImShow("top bottom otsu", otsu2);
+            //Cv2.ImShow("top bottom canny", canny2);
+
             // Cv2.ImShow("src", new Mat(src, roi));
             // Cv2.ImShow("TopBottomEdge", canny);
             Methods.GetHoughWindowYPos(canny, roi.Y, out top, out bottom, 10, 40);
@@ -1352,7 +1390,7 @@ namespace ApexVisIns
         {
             Rect roi = new(100, 840, 1000, 240);
 
-            Methods.GetRoiVerticalFilter2D(src, roi, 1.8, out Mat filter);
+            Methods.GetRoiVerticalFilter2D(src, roi, 1.8, -0.6, out Mat filter);
             Methods.GetCanny(filter, 60, 100, out Mat canny);
             //Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
             Methods.GetHoughVerticalXPos(canny, roi.X, out int count, out xPos, 3, 50);
@@ -1442,14 +1480,14 @@ namespace ApexVisIns
             // Mat matR = new(src, roiR);
 
             #region 前處理
-            Methods.GetRoiGaussianBlur(src, roiL, new OpenCvSharp.Size(3, 3), 5, 0, out Mat tempL);
-            Methods.GetRoiGaussianBlur(src, roiR, new OpenCvSharp.Size(3, 3), 5, 0, out Mat tempR);
+            Methods.GetRoiGaussianBlur(src, roiL, new OpenCvSharp.Size(3, 3), 0.808, 0, out Mat tempL);
+            Methods.GetRoiGaussianBlur(src, roiR, new OpenCvSharp.Size(3, 3), 0.808, 0, out Mat tempR);
 
-            Methods.GetVerticalFilter2D(tempL, 1.35, out Mat matL);
-            Methods.GetVerticalFilter2D(tempR, 1.35, out Mat matR);
+            Methods.GetVerticalFilter2D(tempL, 1.35, -0.45, out Mat matL);
+            Methods.GetVerticalFilter2D(tempR, 1.35, -0.45, out Mat matR);
 
-            Methods.GatOtsu(matL, 0, 255, out _, out byte th1);
-            Methods.GatOtsu(matR, 0, 255, out _, out byte th2);
+            Methods.GetOtsu(matL, 0, 255, out _, out byte th1);
+            Methods.GetOtsu(matR, 0, 255, out _, out byte th2);
 
             Debug.WriteLine($"th : {th1}; th2 : {th2}");
 
@@ -1560,7 +1598,7 @@ namespace ApexVisIns
         {
             // 光源值待定 
             LightCtrls[0].SetAllChannelValue(0, 0, 0, 0);
-            LightCtrls[1].SetAllChannelValue(0, 256);
+            LightCtrls[1].SetAllChannelValue(0, 320);
         }
 
         /// <summary>
@@ -1571,7 +1609,7 @@ namespace ApexVisIns
         {
             // 光源值待定 
             LightCtrls[0].SetAllChannelValue(0, 0, 0, 0);
-            LightCtrls[1].SetAllChannelValue(128, 0);
+            LightCtrls[1].SetAllChannelValue(160, 0);
         }
 
         /// <summary>
@@ -1583,24 +1621,30 @@ namespace ApexVisIns
         public bool WindowInspectionSideLight(Mat src, Rect roi)
         {
             Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshold);
+            // Methods.GetRoiHorizonalFilter2D(src, roi, 2.7, -0.3, out Mat filter);
+            // Methods.GetOtsu(filter, 0, 255, out Mat otsu, out byte threshold);
 
-            Debug.WriteLine($"Otsu threshhold : {threshold}");
+            // 
+            // 是否增加閉運算?
+            // 
+            Debug.WriteLine($"Window Side Light Otsu Threshhold : {threshold}");
 
-            if (threshold > 50)
+            // Cv2.ImShow("SideLightBlur", blur);
+            // Cv2.ImShow("SideLightOtsu", otsu);
+
+            if (threshold > 40)
             {
                 // 閾值過大，代表有瑕疵造成反射
                 Methods.GetCanny(otsu, (byte)(threshold - 20), (byte)(threshold * 1.8), out Mat canny);
-                //Cv2.ImShow("Otsu Canny", canny);
+                // Cv2.ImShow("Otsu Canny", canny);
 
-                Cv2.CvtColor(src, src, ColorConversionCodes.BGRA2BGR);
-
+                Cv2.CvtColor(src, src, ColorConversionCodes.GRAY2BGR);
                 Cv2.FindContours(canny, out Point[][] cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
                 for (int i = 0; i < cons.Length; i++)
                 {
                     Cv2.MinEnclosingCircle(cons[i], out Point2f c, out float r);
                     Cv2.Circle(src, (int)c.X, (int)c.Y, (int)r, Scalar.Red, 2);
                 }
-
                 return false;
             }
             else
@@ -1834,8 +1878,10 @@ namespace ApexVisIns
         {
             Rect roi = new(510, 870, 180, 180);
 
-            Methods.GetRoiFilter2D(src, roi, 6.4, out Mat filter);
-            Methods.GetCanny(filter, 50, 180, out Mat canny);
+            Methods.GetRoiFilter2D(src, roi, 2.7, -0.3, out Mat filter);
+            //Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
+            Methods.GetCanny(filter, 50, 120, out Mat canny);
+            // Cv2.ImShow("hole canny", canny);
 
             // 尋找輪廓
             Cv2.FindContours(canny, out Point[][] cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
@@ -1875,7 +1921,7 @@ namespace ApexVisIns
             #endregion
             #endregion
 
-            if (min < r - 5)
+            if (min < r - 5 || max - min > 5)
             {
                 #region 之後只保留 flag
                 Cv2.Circle(circleMat, (int)c.X, (int)c.Y, (int)r, Scalar.Red, 2);   // 外徑
@@ -1976,9 +2022,9 @@ namespace ApexVisIns
 
             string dt = $"{DateTime.Now:ss.fff}";
             Cv2.ImShow($"c{dt}", c);
-            Cv2.MoveWindow($"c{dt}", 20, 20 + th1 + th2);
+            Cv2.MoveWindow($"c{dt}", 20, 20 + (th1 + th2) * 3);
             Cv2.ImShow($"c2{dt}", c2);
-            Cv2.MoveWindow($"c2{dt}", 50 + c.Width, 20 + th1 + th2);
+            Cv2.MoveWindow($"c2{dt}", 50 + c.Width, 20 + (th1 + th2) * 3);
 
             // 這邊要寫演算，ex 毛邊、車刀紋、銑削不良
 

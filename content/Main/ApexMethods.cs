@@ -20,38 +20,6 @@ namespace ApexVisIns.content
         private void AngleCorrectionButton_Click(object sender, RoutedEventArgs e)
         {
             StartAngleCorrection();
-            #region MyRegion
-            //Cv2.DestroyAllWindows();
-
-            //MainWindow.PreAngleCorrection();
-
-            //#region Flags
-            //MainWindow.ApexAngleCorrectionFlags.Steps = 0;
-            //MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;
-            //MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
-            //MainWindow.ApexAngleCorrectionFlags.Direction = 1;
-            //#endregion
-
-            //_ = SpinWait.SpinUntil(() => false, 500);
-
-            //// 窗戶
-            //if (!BaslerCam1.IsContinuousGrabbing)
-            //{
-            //    BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-            //    BaslerCam1.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-            //    BaslerCam1.IsContinuousGrabbing = true;
-            //}
-
-            //// 耳朵
-            //if (!BaslerCam2.IsContinuousGrabbing)
-            //{
-            //    BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-            //    BaslerCam2.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-            //    BaslerCam2.IsContinuousGrabbing = true;
-            //} 
-            #endregion
         }
 
         private void StopCamera_Click(object sender, RoutedEventArgs e)
@@ -87,6 +55,24 @@ namespace ApexVisIns.content
 
                 BaslerCam2.IsContinuousGrabbing = true;
             }
+
+            // 表面 1 
+            if (!BaslerCam3.IsContinuousGrabbing)
+            {
+                BaslerCam3.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                BaslerCam3.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+                BaslerCam3.IsContinuousGrabbing = true;
+            }
+
+            // 表面 2
+            if (!BaslerCam4.IsContinuousGrabbing)
+            {
+                BaslerCam4.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                BaslerCam4.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+                BaslerCam4.IsContinuousGrabbing = true;
+            }
         }
 
         /// <summary>
@@ -108,6 +94,22 @@ namespace ApexVisIns.content
                 BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 
                 BaslerCam2.IsContinuousGrabbing = false;
+            }
+
+            if (BaslerCam3.Camera.StreamGrabber.IsGrabbing && BaslerCam3.IsContinuousGrabbing)
+            {
+                BaslerCam3.Camera.StreamGrabber.Stop();
+                BaslerCam3.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                BaslerCam3.IsContinuousGrabbing = false;
+            }
+
+            if (BaslerCam4.Camera.StreamGrabber.IsGrabbing && BaslerCam4.IsContinuousGrabbing)
+            {
+                BaslerCam4.Camera.StreamGrabber.Stop();
+                BaslerCam4.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                BaslerCam4.IsContinuousGrabbing = false;
             }
         }
 
@@ -181,9 +183,10 @@ namespace ApexVisIns.content
             MainWindow.PreAngleCorrection();
 
             #region Flags
-            MainWindow.ApexAngleCorrectionFlags.Steps = 0;
+            MainWindow.ApexAngleCorrectionFlags.Steps = 0;              // 當前步序
             MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;  // 窗戶寬度不會超過 400 // 一般約 380
-            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
+            MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;     // 窗戶最大值
+            MainWindow.ApexAngleCorrectionFlags.OtsuThreshlod = 0;      // Otsu 閾值
             MainWindow.ApexAngleCorrectionFlags.Direction = 1;
             #endregion
 

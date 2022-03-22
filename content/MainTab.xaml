@@ -103,14 +103,17 @@
                 <!--#region 測試用 -->
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="角度校正" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="AngleCorrectionButton_Click">
+                    <Button.ToolTip>啟動角度校正</Button.ToolTip>
                 </Button>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止相機" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopCamera_Click">
+                    <Button.ToolTip>停止相機連續拍攝，角度校正失敗時可用來關閉相機</Button.ToolTip>
                 </Button>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="順序檢測" Foreground="{StaticResource ColorIndigo}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="SequenceInspection_Click">
+                    <Button.ToolTip>開始窗戶、耳朵瑕疵檢測</Button.ToolTip>
                 </Button>
                 <!--#endregion-->
 
