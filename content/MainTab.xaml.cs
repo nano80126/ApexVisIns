@@ -120,16 +120,16 @@ namespace ApexVisIns.content
             else // else for 測試用
             {
                 // 測試 Motion 用
-                InitMotion(_cancellationTokenSource.Token).Wait();
+                //InitMotion(_cancellationTokenSource.Token).Wait();
 
-                // 測試光源用
-                InitLightCtrls(_cancellationTokenSource.Token).Wait();
+                //// 測試光源用
+                //InitLightCtrls(_cancellationTokenSource.Token).Wait();
 
-                // 測試 IO 用
-                // InitIOCtrl(_cancellationTokenSource.Token).Wait();
+                //// 測試 IO 用
+                //// InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-                // 測試相機用
-                InitCamera(_cancellationTokenSource.Token).Wait();
+                //// 測試相機用
+                //InitCamera(_cancellationTokenSource.Token).Wait();
             }
 
 
@@ -310,10 +310,14 @@ namespace ApexVisIns.content
         /// </summary>
         private void CloseHardware()
         {
-            BaslerCam1?.Close();
-            BaslerCam2?.Close();
-            BaslerCam3?.Close();
-            BaslerCam4?.Close();
+            Basler_Disconnect(BaslerCam1);
+            Basler_Disconnect(BaslerCam2);
+            Basler_Disconnect(BaslerCam3);
+            Basler_Disconnect(BaslerCam4);
+            // BaslerCam1?.Close();
+            // BaslerCam2?.Close();
+            // BaslerCam3?.Close();
+            // BaslerCam4?.Close();
 
             // 關閉軸卡
             if (ServoMotion != null && ServoMotion.DeviceOpened)
@@ -927,7 +931,7 @@ namespace ApexVisIns.content
                         await MotionSpecChange(85000);
                         break;
                     case 1: // 中
-                        await MotionSpecChange(43500);
+                        await MotionSpecChange(44000);
                         break;
                     case 2:
                         await MotionSpecChange(-30000);
@@ -1118,7 +1122,13 @@ namespace ApexVisIns.content
         {
             try
             {
-                cam.Close();
+                if (cam != null)
+                {
+                    cam.Camera.CameraOpened -= Camera_CameraOpened;
+                    cam.Camera.CameraClosing -= Camera_CameraClosing;
+                    cam.Camera.CameraClosed -= Camera_CameraClosed;
+                    cam.Close();
+                }
 
                 // GC 回收
                 GC.Collect();

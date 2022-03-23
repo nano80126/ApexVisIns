@@ -702,30 +702,35 @@ namespace ApexVisIns.content
                 {
                     Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
-                    if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
-                    {
-                        MainWindow.AngleCorrection(mat);
-                    }
+                    //if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
+                    //{
+                    //    MainWindow.AngleCorrection(mat);
+                    //}
                     // MainWindow.WindowInspection(mat);
 
                     #region Assist Rect
                     if (AssistRect.Enable && AssistRect.Area > 0)
                     {
-                        Cv2.DestroyAllWindows();
+                        //Cv2.DestroyAllWindows();
                         #region Coding custom ROI Method here
-                        Mat sharp = new();
-                        InputArray kernel = InputArray.Create(new double[3, 3] {
-                            { -0.8, 1.6, -0.8 },
-                            { -0.8, 1.6, -0.8 },
-                            { -0.8, 1.6, -0.8 }
-                        });
-                        Cv2.Filter2D(mat, sharp, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
+                        //Mat sharp = new();
+                        //InputArray kernel = InputArray.Create(new double[3, 3] {
+                        //    { -0.8, 2.4, -0.8 },
+                        //    { -0.8, 2.4, -0.8 },
+                        //    { -0.8, 2.4, -0.8 }
+                        //});
+                        //Cv2.Filter2D(mat, sharp, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
 
-                        // Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out byte value);
-                        Methods.GetRoiCanny(sharp, AssistRect.GetRect(), 60, 180, out Mat Canny);
 
-                        Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
+                        //Methods.GetRoiOtsu(sharp, AssistRect.GetRect(), 0, 50, out Mat Otsu, out byte value);
+                        Methods.GetRoiVerticalFilter2D(mat, AssistRect.GetRect(), 1.8, -0.6, out Mat filter);                        
+                        //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 10, 20, out Mat Canny);
+
+                        //Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
                         // 這邊要過濾過短 contours 
+
+                        Cv2.ImShow("ROI canny", filter);
+                        Cv2.MoveWindow("ROI canny", 20, 20);
                         #endregion
                     }
                     #endregion
