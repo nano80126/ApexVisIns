@@ -70,10 +70,28 @@ namespace ApexVisIns
         }
         #endregion
 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
+        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
 
-        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
-        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
-        ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// 
+        #region APEX ROI
+        /// <summary>
+        /// 角度校正窗戶ROI
+        /// </summary>
+        private Rect WindowLeftRightRoi = new(100, 840, 1000, 240);
+        /// <summary>
+        /// 窗戶抓取上下邊緣Roi
+        /// </summary>
+        private Rect WindowTopBotEdgeRoi = new(450, 240, 250, 1400);
+        /// <summary>
+        /// 耳朵孔ROI
+        /// </summary>
+        private Rect EarHoleRoi = new(510, 860, 180, 180);
+        /// <summary>
+        /// 耳朵抓取左右邊緣Roi
+        /// </summary>
+        private Rect EarLeftRightRoi  = new(350, 900, 500, 200);
+        #endregion
 
         /// <summary>
         /// Apex 對位用 Flag 結構
@@ -82,7 +100,7 @@ namespace ApexVisIns
         {
             public ApexAngleCorrectionStruct(byte direction) : this()
             {
-                Direction = direction;
+                CorrectionMode = direction;
             }
 
             /// <summary>
@@ -98,7 +116,7 @@ namespace ApexVisIns
             /// 最大檢驗之 Width
             /// </summary>
             public ushort MaxWindowWidth { get; set; }  // 2
-            
+
             /// <summary>
             /// 窗戶 Width 穩定計數
             /// </summary>
@@ -112,15 +130,13 @@ namespace ApexVisIns
             /// <summary>
             /// Otsu 閾值
             /// </summary>
-            public byte OtsuThreshlod { get;  set; }    // 1
+            public byte OtsuThreshlod { get; set; }    // 1
 
             /// <summary>
-            /// 方向 (1: 正轉, 0: 逆轉)
+            /// 方向 (0: 快正轉, 1: 快逆轉, 2: 慢正轉, 3: 慢逆轉, 4: 低速正轉, 5: 低速逆轉, 6: 正接近, 7: 逆接近, 8: 未定)
             /// </summary>
-            [Obsolete("deprecated")]
-            public byte Direction { get; set; }         // 1
+            public byte CorrectionMode { get; set; }         // 1
         }
-
 
         /// <summary>
         /// Apex 瑕疵檢驗用步驟結構
@@ -137,6 +153,7 @@ namespace ApexVisIns
             /// 0b0101(5): 
             /// 0b0110(6): 
             /// </summary>
+            [Obsolete("deprecated")]
             public byte WindowSteps { get; set; }
 
             /// <summary>
@@ -154,6 +171,7 @@ namespace ApexVisIns
             /// 0b1010(10): (R)抓取瑕疵 打側光；
             /// 0b1011(11): (R)抓取 瑕疵(側光)；
             /// </summary>
+            [Obsolete("deprecated")]
             public byte EarSteps { get; set; }
 
             /// <summary>
@@ -181,7 +199,7 @@ namespace ApexVisIns
         /// <summary>
         /// Apex 管件選轉定位用結構旗標
         /// </summary>
-        public ApexAngleCorrectionStruct ApexAngleCorrectionFlags = new ApexAngleCorrectionStruct(1);
+        public ApexAngleCorrectionStruct ApexAngleCorrectionFlags = new ApexAngleCorrectionStruct(5);
 
         /// <summary>
         /// Apex 瑕疵檢驗用步驟旗標
@@ -189,6 +207,133 @@ namespace ApexVisIns
         public ApexDefectInspectionSteps ApexDefectInspectionStepsFlags;
 
         #region 工件角度校正，工件角度校正，工件角度校正
+        public void PreCheckRatationWay()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(160, 0, 128, 128);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+            // 變更馬達速度
+            ServoMotion.Axes[1].SetAxisVelParam(5, 50, 2000, 2000);
+            // 啟動定速旋轉
+            _ = ServoMotion.Axes[1].TryVelMove(0);
+        }
+
+        /// <summary>
+        /// 確認旋轉方向，確認Otsu 閾值
+        /// </summary>
+        /// <param name="cam">目標相機</param>
+        public void CheckRatationWay(BaslerCam cam, out byte direction)
+        {
+            direction = 2;  // 2 未定
+            try
+            {
+                IGrabResult grabResult = null;
+                Mat mat = null;
+
+                cam.Camera.ExecuteSoftwareTrigger();
+                grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                Rect roi = WindowLeftRightRoi;
+
+                if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
+                {
+                    Methods.GetRoiOtsu(mat, roi, 0, 255, out _, out byte th);
+                    ApexAngleCorrectionFlags.OtsuThreshlod = th;
+                }
+                byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;   // Otsu 閾值
+                                                                        //// 需要開運算除毛邊?
+                Methods.GetRoiCanny(mat, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
+
+                // 這邊第一次要確認方向
+                byte dir = ApexAngleCorrectionFlags.CorrectionMode;
+                bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width1, 3, 50, 100);
+
+                Debug.WriteLine($"width 1:{width1}");
+
+                SpinWait.SpinUntil(() => false, 100);
+
+                cam.Camera.ExecuteSoftwareTrigger();
+                grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                Methods.GetRoiCanny(mat, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out canny);
+
+                // 這邊第一次要確認方向
+                dir = ApexAngleCorrectionFlags.CorrectionMode;
+                FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width2, 3, 50, 100);
+
+                Debug.WriteLine($"width 2:{width2}");
+
+                ServoMotion.Axes[1].StopMove();
+
+                if (width1 == 0 && width2 == 0)
+                {
+                    direction = 0;      // 快正轉
+                }
+                else
+                {
+                    if (width2 > width1)    // 正轉
+                    {
+                        if (width2 < 200)   // Vel = 200
+                        {
+                            direction = 0;  // 快正轉
+                        }
+                        else if (width2 < 300)
+                        {
+                            direction = 2;  // 慢正轉
+                        }
+                        else if (width2 < 350)
+                        {
+                            direction = 4;  // 低速正轉
+                        }
+                        else
+                        {
+                            direction = 6;  // 正接近
+                        }
+                    }
+                    else
+                    {
+                        if (width1 < 200)
+                        {
+                            direction = 1;  // 快逆轉
+                        }
+                        else if (width1 < 300)
+                        {
+                            direction = 3;  // 慢逆傳
+                        }
+                        else if (width1 < 350)
+                        {
+                            direction = 5;  // 低速逆轉
+                        }
+                        else
+                        {
+                            direction = 7;  // 逆接近
+                        }
+                    }
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, $"{T.Message}");
+
+                Debug.WriteLine($"T {T.Message} {T.Source}");
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, $"{I.Message}");
+
+                Debug.WriteLine($"I {I.Message} {I.Source}");
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, $"{E.Message}");
+
+                Debug.WriteLine($"E {E.Message} {E.Source}");
+            }
+        }
+
         /// <summary>
         /// 角度校正前手續 (高速)
         /// 變更光源, 變更旋轉軸速度, 啟動旋轉軸(轉一圈多)
@@ -199,20 +344,15 @@ namespace ApexVisIns
             LightCtrls[0].SetAllChannelValue(160, 0, 128, 128);
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
-            // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
-            // 觸發馬達
-            //ServoMotion.Axes[1].PosMove(5000);
-            //if (ServoMotion.Axes[1].TryPosMove(5000) != 0)
+            //// 變更馬達速度
+            //ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
+            //// 啟動馬達
+            //uint ret;
+            //do
             //{
-            //    _ = SpinWait.SpinUntil(() => false, 100);
-            //    ServoMotion.Axes[1].PosMove(5000);
-            //}
-            uint ret = 0;
-            do
-            {
-                ret = ServoMotion.Axes[1].TryPosMove(5000);
-            } while (ret != 0);
+            //    // ret = ServoMotion.Axes[1].TryPosMove(5000);
+            //    ret = ServoMotion.Axes[1].TryVelMove(0);
+            //} while (ret != 0);
         }
 
         /// <summary>
@@ -235,6 +375,7 @@ namespace ApexVisIns
             Rect roi = new(100, 840, 1000, 240);
 
             Methods.GetRoiCanny(src, roi, 75, 120, out Mat canny);
+            byte dir = 0;
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50);
 
             byte endStep = 0b0110;
@@ -285,7 +426,7 @@ namespace ApexVisIns
                         }
                         else
                         {
-                            ApexAngleCorrectionFlags.Direction ^= 0b01; // 逆轉
+                            ApexAngleCorrectionFlags.CorrectionMode ^= 0b01; // 逆轉
 
                             // 轉過頭
                             ApexAngleCorrectionFlags.MaxWindowWidth = ApexAngleCorrectionFlags.LastWindowWidth;
@@ -297,7 +438,7 @@ namespace ApexVisIns
                     case 0b0100:    // 4 
                         if (width < ApexAngleCorrectionFlags.MaxWindowWidth)    // 當前 width < 最大 width
                         {
-                            if (ApexAngleCorrectionFlags.Direction == 1)
+                            if (ApexAngleCorrectionFlags.CorrectionMode == 1)
                             {
                                 // 正轉 3 pulse
                                 _ = ServoMotion.Axes[1].TryPosMove(1);
@@ -320,12 +461,12 @@ namespace ApexVisIns
                         {
                             if (width < ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-                                ApexAngleCorrectionFlags.Direction ^= 0b01;
+                                ApexAngleCorrectionFlags.CorrectionMode ^= 0b01;
                                 ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                                 break;
                             }
 
-                            if (ApexAngleCorrectionFlags.Direction == 1)
+                            if (ApexAngleCorrectionFlags.CorrectionMode == 1)
                             {
                                 // 正轉 1 pulse
                                 _ = ServoMotion.Axes[1].TryPosMove(1);
@@ -361,7 +502,7 @@ namespace ApexVisIns
                 Debug.WriteLine($"Width: {width}");
                 Debug.WriteLine($"Last Width: {ApexAngleCorrectionFlags.LastWindowWidth}");
                 Debug.WriteLine($"Max Width: {ApexAngleCorrectionFlags.MaxWindowWidth}");
-                Debug.WriteLine($"Direction: {ApexAngleCorrectionFlags.Direction}");
+                Debug.WriteLine($"Direction: {ApexAngleCorrectionFlags.CorrectionMode}");
             }
         }
 
@@ -377,53 +518,81 @@ namespace ApexVisIns
             if (src != null && !src.Empty())
             {
                 // X: 1200 - 100, Y: 960 - 120
-                Rect roi = new(100, 840, 1000, 240);
+                //Rect roi = new(100, 840, 1000, 240);
+                Rect roi = WindowLeftRightRoi;
 
-                if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
-                {
-                    Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
-                    ApexAngleCorrectionFlags.OtsuThreshlod = th;
-                }
-                byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;
-
-
+                //if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
+                //{
+                //    Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
+                //    ApexAngleCorrectionFlags.OtsuThreshlod = th;
+                //}
+                byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;   // Otsu 閾值
                 // 需要開運算除毛邊?
 
                 Methods.GetRoiCanny(src, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
+
+                // 這邊第一次要確認方向
+                //byte dir = ApexAngleCorrectionFlags.CorrectionMode;
                 bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
 
-                if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101)
+                //Debug.WriteLine($"Dir: {dir}");
+
+                if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0110) // end step: 6
                 {
+                    //ApexAngleCorrectionFlags.CorrectionMode = dir;   // 有找到窗再變更
                     // Cv2.ImShow("Canny", new Mat(src, roi));
                     Cv2.ImShow("ApexCorrectionCanny", canny);
                     Cv2.MoveWindow("ApexCorrectionCanny", 20, 500);
 
+                    //Debug.WriteLine($"Dir: {dir} step: {ApexAngleCorrectionFlags.Steps}");
+
                     switch (ApexAngleCorrectionFlags.Steps)
                     {
-                        case 0b0000:    // 0 // 快速找窗戶
-                            #region 0b0000 // 0 // 快速找窗戶
+                        case 0b0000:    // 0 // 確認方向
+                            #region 0b0000 // 0 // 確認方向是否有誤
+                            if (ApexAngleCorrectionFlags.LastWindowWidth > 0)
+                            {
+                                if (width > ApexAngleCorrectionFlags.LastWindowWidth)
+                                {
+                                    ApexAngleCorrectionFlags.CorrectionMode = 1; // 正轉
+                                    ApexAngleCorrectionFlags.Steps += 0b01;
+                                }
+                                else
+                                {
+                                    ApexAngleCorrectionFlags.CorrectionMode = 0; // 逆轉
+                                    ServoMotion.Axes[1].StopEmg();
+                                    ServoMotion.Axes[1].VelMove(1);
+                                    // ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
+                                    ApexAngleCorrectionFlags.Steps += 0b01;
+                                }
+                            }
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
+                            #endregion
+                            break;
+                        case 0b0001:    // 1 // 快速找窗戶
+                            #region 0b0001 // 1 // 快速找窗戶
                             if (width > 200 && width > ApexAngleCorrectionFlags.LastWindowWidth)
                             {
                                 ServoMotion.Axes[1].ChangeVel(200);
                                 ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                             }
-                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width; 
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
                             break;
-                        case 0b0001:    // 1 // 慢速找窗戶
-                            #region 0b0001 // 1 // 慢速找窗戶
+                        case 0b0010:    // 2 // 慢速找窗戶
+                            #region 0b0010 // 2 // 慢速找窗戶
                             if (width > 300 && width > ApexAngleCorrectionFlags.LastWindowWidth)
                             {
                                 ServoMotion.Axes[1].ChangeVel(50);
                                 ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                             }
-                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width; 
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
                             break;
-                        case 0b0010:    // 2 // 極慢速找窗戶
-                            #region 0b0010 // 2 // 極慢速找窗戶
+                        case 0b0011:    // 3 // 極慢速找窗戶
+                            #region 0b0011 // 3 // 極慢速找窗戶
                             if (width > 350)
                             {
                                 ServoMotion.Axes[1].StopMove();
@@ -431,14 +600,22 @@ namespace ApexVisIns
                                 ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)width;
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                             }
-                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width; 
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
                             break;
-                        case 0b0011:    // 3 // 每次 +5 pulse
-                            #region 0b0011 // 3 // 每次 +5 pulse
+                        case 0b0100:    // 4 // 每次 +5 pulse
+                            #region 0b0100 // 4 // 每次 +5 pulse
                             if (width >= ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-                                _ = ServoMotion.Axes[1].TryPosMove(5);
+                                if ((ApexAngleCorrectionFlags.CorrectionMode & 0b0001) == 0b0000)   // 正向
+                                {
+                                    _ = ServoMotion.Axes[1].TryPosMove(5);
+                                }
+                                else if ((ApexAngleCorrectionFlags.CorrectionMode & 0b0001) == 0b0001)  // 逆向
+                                {
+                                    _ = ServoMotion.Axes[1].TryPosMove(-5);
+                                }
+                                //_ = ServoMotion.Axes[1].TryPosMove(5);
                             }
                             else
                             {
@@ -446,11 +623,11 @@ namespace ApexVisIns
                                 ApexAngleCorrectionFlags.MaxWindowWidth = ApexAngleCorrectionFlags.LastWindowWidth;
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                             }
-                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width; 
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
                             break;
-                        case 0b0100:    // 4 // 
-                            #region 0b0100 // 4 // 粗定位
+                        case 0b0101:    // 5 // 
+                            #region 0b0101 // 5 // 粗定位
                             if (width < ApexAngleCorrectionFlags.MaxWindowWidth)
                             {
                                 if (width > ApexAngleCorrectionFlags.LastWindowWidth)
@@ -469,6 +646,7 @@ namespace ApexVisIns
                                     {
                                         ApexAngleCorrectionFlags.WidthStable = 0;
                                         ApexAngleCorrectionFlags.Steps += 0b01;
+
                                         Cv2.DestroyWindow("ApexCorrectionCanny");
                                     }
                                 }
@@ -480,14 +658,26 @@ namespace ApexVisIns
                                 // 到此粗定位結束
                                 Cv2.DestroyWindow("ApexCorrectionCanny");
                             }
-                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width; 
+                            ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
                             break;
                         default:
                             break;
                     }
                 }
-
+                //else
+                //{
+                //    // 判斷為 確認方向的步驟中
+                //    if (ApexAngleCorrectionFlags.Steps == 0b0000)
+                //    {
+                //        // 找不到窗戶，直接正轉
+                //        ApexAngleCorrectionFlags.Direction = 1;
+                //        // 啟動馬達
+                //        ServoMotion.Axes[1].PosMove(5000);
+                //        // 開始找窗戶.
+                //        ApexAngleCorrectionFlags.Steps = 0b0001;
+                //    }
+                //}
                 Debug.WriteLine($"Width: {width} Last: {ApexAngleCorrectionFlags.LastWindowWidth} Max: {ApexAngleCorrectionFlags.MaxWindowWidth}");
             }
 
@@ -546,7 +736,6 @@ namespace ApexVisIns
                 Cv2.Circle(filter, (int)c.X, (int)c.Y, 5, Scalar.Green, 2);
                 Cv2.Circle(filter, (int)c.X, (int)c.Y, (int)rad, Scalar.Cyan, 2);
 
-
                 #region 可刪
                 Cv2.ImShow("Ear filter", filter);
                 Cv2.ImShow("Ear Canny", canny);
@@ -563,71 +752,74 @@ namespace ApexVisIns
                 #endregion
 
                 Debug.WriteLine($"L: {l}; R: {r}, {c}");
-
-                switch (ApexAngleCorrectionFlags.Steps)
+                if (ApexAngleCorrectionFlags.Steps >= 6)
                 {
-                    case 0b0101:    // 5 // L = R
-                        if (l > r)
-                        {
-                            _ = ServoMotion.Axes[1].TryPosMove(-1);
-                        }
-                        else if (l < r)
-                        {
-                            _ = ServoMotion.Axes[1].TryPosMove(1);
-                        }
-                        else
-                        {
-                            if (ApexAngleCorrectionFlags.CircleStable++ > 3)
+                    switch (ApexAngleCorrectionFlags.Steps)
+                    {
+                        case 0b0110:    // 6 // 判斷 L = R 
+                            #region 0b0110 // 6 // 判斷 L = R
+                            if (l > r)
                             {
-                                ApexAngleCorrectionFlags.CircleStable = 0;
+                                _ = ServoMotion.Axes[1].TryPosMove(-1);
+                            }
+                            else if (l < r)
+                            {
+                                _ = ServoMotion.Axes[1].TryPosMove(1);
+                            }
+                            else
+                            {
+                                if (ApexAngleCorrectionFlags.CircleStable++ > 3)
+                                {
+                                    ApexAngleCorrectionFlags.CircleStable = 0;
+                                    ApexAngleCorrectionFlags.Steps += 0b01;
+                                    break;
+                                }
+                            }
+                            #endregion
+                            break;
+                        case 0b0111:    // 7
+                                        //if (l + r == 1) // 剩一個大輪廓
+                                        //{
+                                        //    if (ApexAngleCorrectionFlags.CircleStable++ > 10)
+                                        //    {
+                                        //        ApexAngleCorrectionFlags.CircleStable = 0;
+                                        //        ApexAngleCorrectionFlags.Steps += 0b01;
+                                        //        break;
+                                        //    }
+                                        //}
+                            if (l > r)
+                            {
+                                _ = ServoMotion.Axes[1].TryPosMove(-1);
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                            }
+                            else if (l < r)
+                            {
+                                _ = ServoMotion.Axes[1].TryPosMove(1);
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                            }
+                            else
+                            {
+                                //if (ApexAngleCorrectionFlags.CircleStable++ > 3)
+                                //{
+                                //    ApexAngleCorrectionFlags.CircleStable = 0;
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                                 break;
                             }
-                            //ApexAngleCorrectionFlags.Steps += 0b01;
-                        }
-                        break;
-                    case 0b0110:    // 6
-                        //if (l + r == 1) // 剩一個大輪廓
-                        //{
-                        //    if (ApexAngleCorrectionFlags.CircleStable++ > 10)
-                        //    {
-                        //        ApexAngleCorrectionFlags.CircleStable = 0;
-                        //        ApexAngleCorrectionFlags.Steps += 0b01;
-                        //        break;
-                        //    }
-                        //}
-                        if (l > r)
-                        {
-                            _ = ServoMotion.Axes[1].TryPosMove(-1);
-                            ApexAngleCorrectionFlags.Steps += 0b01;
-                        }
-                        else if (l < r)
-                        {
-                            _ = ServoMotion.Axes[1].TryPosMove(1);
-                            ApexAngleCorrectionFlags.Steps += 0b01;
-                        }
-                        else
-                        {
-                            //if (ApexAngleCorrectionFlags.CircleStable++ > 3)
-                            //{
-                            //    ApexAngleCorrectionFlags.CircleStable = 0;
-                            ApexAngleCorrectionFlags.Steps += 0b01;
+                            // 到此精定位結束
                             break;
-                        }
-                        // 到此精定位結束
-                        break;
-                    case 0b0111:    // 7
-                        // 重置 POS
-                        if (ServoMotion.Axes[1].TryResetPos() == (uint)Advantech.Motion.ErrorCode.SUCCESS)
-                        {
-                            ApexAngleCorrectionFlags.Steps += 0b01;
-                            // Cv2.DestroyAllWindows();
+                        case 0b1000:    // 8
+                                        // 重置 POS
+                            if (ServoMotion.Axes[1].TryResetPos() == (uint)Advantech.Motion.ErrorCode.SUCCESS)
+                            {
+                                ApexAngleCorrectionFlags.Steps += 0b01;
+                                // Cv2.DestroyAllWindows();
 
-                            Cv2.DestroyWindow("ZOOM");
-                        }
-                        break;
-                    default:
-                        break;
+                                Cv2.DestroyWindow("ZOOM");
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -1407,7 +1599,8 @@ namespace ApexVisIns
         /// <param name="bottom">窗戶下緣</param>
         public void GetWindowInspectionTopBottomEdge(Mat src, out double top, out double bottom)
         {
-            Rect roi = new(450, 240, 250, 1400);
+            //Rect roi = new(450, 240, 250, 1400);
+            Rect roi = WindowTopBotEdgeRoi;
 
             Methods.GetRoiOtsu(src, roi, 0, 255, out Mat otsu, out byte threshold);
             // 埢積核
@@ -1437,7 +1630,8 @@ namespace ApexVisIns
         /// </summary>
         public void GetWindowInspectionRoi(Mat src, out double[] xPos, out Rect roiL, out Rect roiR)
         {
-            Rect roi = new(100, 840, 1000, 240);
+            //Rect roi = new(100, 840, 1000, 240);
+            Rect roi = WindowLeftRightRoi;
 
             Methods.GetRoiVerticalFilter2D(src, roi, 1.8, -0.6, out Mat filter);
             Methods.GetCanny(filter, 60, 100, out Mat canny);
@@ -1926,7 +2120,8 @@ namespace ApexVisIns
         public bool EarHoleInspection(Mat src)
         {
             //Rect roi = new(510, 870, 180, 180);
-            Rect roi = new(510, 860, 180, 180);
+            //Rect roi = new(510, 860, 180, 180);
+            Rect roi = EarHoleRoi;
 
             Methods.GetRoiFilter2D(src, roi, 2.7, -0.3, out Mat filter);
             //Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
@@ -2027,7 +2222,8 @@ namespace ApexVisIns
         /// <param name="roi">(out) ROI Rect</param>
         public void GetEarInspectionRoiL(Mat src, out Rect roiL, out Rect roiR)
         {
-            Rect roi = new(350, 900, 500, 200);
+            //Rect roi = new(350, 900, 500, 200);
+            Rect roi = EarLeftRightRoi;
 
             Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
             Methods.GetHoughVerticalXPos(canny, roi.X, out _, out double[] xPos, 3, 30);
@@ -2120,7 +2316,8 @@ namespace ApexVisIns
         /// <param name="roi">(out) ROI Rect</param>
         public void GetEarInspectionRoiR(Mat src, out Rect roiL, out Rect roiR)
         {
-            Rect roi = new(350, 900, 500, 200);
+            //Rect roi = new(350, 900, 500, 200);
+            Rect roi = EarLeftRightRoi;
 
             Methods.GetRoiCanny(src, roi, 60, 100, out Mat canny);
             Methods.GetHoughVerticalXPos(canny, roi.X, out _, out double[] xPos, 3, 30);

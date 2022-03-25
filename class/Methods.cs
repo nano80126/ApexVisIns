@@ -726,6 +726,7 @@ namespace ApexVisIns
         /// <param name="src">canny 影</param>
         /// <param name="lineCount">(out) 線數量</param>
         /// <param name="width">(out) 窗戶 Width</param>
+        /// <param name="dir">(ref) 方向</param>
         /// <param name="Xgap">垂直線 X 跨度</param>
         /// <param name="lineLength">線長度閾值</param>
         /// <param name="minWindowWidth">最小窗戶 Width</param>
@@ -748,7 +749,30 @@ namespace ApexVisIns
                     {
                         lineCount = groupings.Length;
                         width = groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
-                        
+
+                        //if (dir == 5)
+                        //{
+                        //    // 這邊確認旋轉方向
+                        //    double L = groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[0].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
+                        //    double R = groupings[3].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
+                        //    double abs = Math.Abs(L - R);
+
+                        //    Debug.WriteLine($"L: {L} R: {R} ABS: {abs}");
+
+                        //    if (3 < abs && abs < 50)
+                        //    {
+                        //        dir = L > R ? (byte)0 : (byte)1;
+                        //    }
+                        //    else if (50 <= abs)
+                        //    {
+                        //        dir = L > R ? (byte)2 : (byte)3;
+                        //    }
+                        //    else
+                        //    {
+                        //        dir = 4;
+                        //    }
+                        //}
+
                         if (width < minWindowWidth)
                         {
                             return false;

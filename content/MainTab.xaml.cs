@@ -120,16 +120,16 @@ namespace ApexVisIns.content
             else // else for 測試用
             {
                 // 測試 Motion 用
-                //InitMotion(_cancellationTokenSource.Token).Wait();
+                InitMotion(_cancellationTokenSource.Token).Wait();
 
-                //// 測試光源用
-                //InitLightCtrls(_cancellationTokenSource.Token).Wait();
+                // 測試光源用
+                InitLightCtrls(_cancellationTokenSource.Token).Wait();
 
-                //// 測試 IO 用
-                //// InitIOCtrl(_cancellationTokenSource.Token).Wait();
+                // 測試 IO 用
+                InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-                //// 測試相機用
-                //InitCamera(_cancellationTokenSource.Token).Wait();
+                //測試相機用
+                InitCamera(_cancellationTokenSource.Token).Wait();
             }
 
 
@@ -1141,7 +1141,6 @@ namespace ApexVisIns.content
             return false;
         }
 
-
         private void Basler_StartStreamGrabber(BaslerCam cam)
         {
             try
@@ -1385,8 +1384,6 @@ namespace ApexVisIns.content
 
             // baslerCam.Camera.StreamGrabber.UserData = baslerCam.
             baslerCam.PropertyChange();
-
-            Debug.WriteLine($"UserData : " + baslerCam.Camera.StreamGrabber.UserData + ", LINE: 671");
         }
 
         private void Camera_CameraClosing(object sender, EventArgs e)
@@ -1427,7 +1424,7 @@ namespace ApexVisIns.content
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
-            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 8)
+            if (MainWindow.ApexAngleCorrectionFlags.Steps > 8)
             {
                 EndAngleCorrection();
                 return;
@@ -1450,19 +1447,23 @@ namespace ApexVisIns.content
                     case DeviceConfigBase.TargetFeatureType.Window:
                         MainWindow.Dispatcher.Invoke(() =>
                         {
-                            if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0100)
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0101)
                             {
                                 MainWindow.AngleCorrection(mat, null);
                             }
+                            //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                            //Cv2.ImShow("cam1", mat);
                             MainWindow.ImageSource1 = mat.ToImageSource();
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Ear:
                         MainWindow.Dispatcher.Invoke(() => {
-                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101 && MainWindow.ApexAngleCorrectionFlags.Steps < 8)
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0110 && MainWindow.ApexAngleCorrectionFlags.Steps <= 8)
                             {
                                 MainWindow.AngleCorrection(null, mat);
                             }
+                            //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                            //Cv2.ImShow("cam2", mat);
                             MainWindow.ImageSource2 = mat.ToImageSource();
                         });
                         break;

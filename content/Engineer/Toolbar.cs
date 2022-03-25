@@ -713,24 +713,47 @@ namespace ApexVisIns.content
                     {
                         //Cv2.DestroyAllWindows();
                         #region Coding custom ROI Method here
-                        //Mat sharp = new();
+                        //Mat filter= new();
+                        //Mat filter2= new();
                         //InputArray kernel = InputArray.Create(new double[3, 3] {
-                        //    { -0.8, 2.4, -0.8 },
-                        //    { -0.8, 2.4, -0.8 },
-                        //    { -0.8, 2.4, -0.8 }
+                        //    { -0.2, 0.8, -0.2 },
+                        //    { -0.2, 0.8, -0.2 },
+                        //    { -0.2, 0.8, -0.2 }
                         //});
-                        //Cv2.Filter2D(mat, sharp, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
+                        //Cv2.Filter2D(mat, filter, MatType.CV_8U, kernel, new OpenCvSharp.Point(-1, -1), 0);
 
+                        //InputArray kernel2 = InputArray.Create(new double[3, 3] {
+                        //    { 1.5, -0.2, -0.8 },
+                        //    { 1.5, -0.2, -0.8 },
+                        //    { 1.5, -0.2, -0.8 }
+                        //});
+                        //Cv2.Filter2D(mat, filter2, MatType.CV_8U, kernel2, new OpenCvSharp.Point(-1, -1), 0);
 
-                        //Methods.GetRoiOtsu(sharp, AssistRect.GetRect(), 0, 50, out Mat Otsu, out byte value);
-                        Methods.GetRoiVerticalFilter2D(mat, AssistRect.GetRect(), 1.8, -0.6, out Mat filter);                        
+                        //Cv2.Resize(filter, filter, new OpenCvSharp.Size(filter.Width / 2, filter.Height / 2));
+                        //Cv2.Resize(filter2, filter2, new OpenCvSharp.Size(filter2.Width / 2, filter2.Height / 2));
+
+                        //Methods.GetRoiFilter2D(mat, AssistRect.GetRect(), 1.8, -0.6, out Mat filter);
+                        Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat Otsu, out byte value);
+                        //Methods.GetRoiVerticalFilter2D(mat, AssistRect.GetRect(), 1.8, -0.6, out Mat filter);
+                        //Methods.GetOtsu(filter, 0, 255, out Mat otsu, out byte threshold);
+                        //Methods.GetCanny(otsu, (byte)(threshold - 10), (byte)(threshold * 1.8), out Mat canny);
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 10, 20, out Mat Canny);
 
                         //Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
                         // 這邊要過濾過短 contours 
 
-                        Cv2.ImShow("ROI canny", filter);
-                        Cv2.MoveWindow("ROI canny", 20, 20);
+                        //Cv2.ImShow("ROI Filter", filter);
+                        Cv2.ImShow("ROI Otsu", Otsu);
+                        //Cv2.MoveWindow("ROI Filter2D", 20, 20);
+
+                        //Cv2.ImShow("ROI Filter2D_2", filter2);
+                        //Cv2.MoveWindow("ROI Filter2D_2", 500, 20);
+
+                        //Cv2.ImShow("ROI otsu", otsu);
+                        //Cv2.MoveWindow("ROI otsu", 500, 20);
+
+                        //Cv2.ImShow("ROI canny", canny);
+                        //Cv2.MoveWindow("ROI canny", 980, 20);
                         #endregion
                     }
                     #endregion

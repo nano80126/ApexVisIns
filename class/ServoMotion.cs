@@ -2375,6 +2375,7 @@ namespace ApexVisIns
             {
                 throw new InvalidOperationException($"伺服馬達控制位置失敗: Code[0x{result:X}]");
             }
+            // Motion.macm_axmove
         }
 
         /// <summary>
@@ -2460,6 +2461,30 @@ namespace ApexVisIns
         public uint TryChangeVel(double vel)
         {
             return Motion.mAcm_AxChangeVel(AxisHandle, vel);
+        }
+
+
+        /// <summary>
+        /// 速度控制
+        /// </summary>
+        /// <param name="direction">0: 正, 1: 反</param>
+        public void VelMove(ushort direction)
+        {
+            uint result = Motion.mAcm_AxMoveVel(AxisHandle, direction);
+            if (result != (uint)ErrorCode.SUCCESS)
+            {
+                throw new InvalidOperationException($"伺服馬達速度控制失敗: Code[0x{result:X}]");
+            }
+        }
+
+        /// <summary>
+        /// (try) 定速控制
+        /// </summary>
+        /// <param name="direction">0: 正, 1: 反</param>
+        /// <returns></returns>
+        public uint TryVelMove(ushort direction)
+        {
+            return Motion.mAcm_AxMoveVel(AxisHandle, direction);
         }
 
         /// <summary>
