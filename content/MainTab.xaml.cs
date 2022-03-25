@@ -119,6 +119,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
+#if false
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -129,7 +130,8 @@ namespace ApexVisIns.content
                 InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
                 //測試相機用
-                InitCamera(_cancellationTokenSource.Token).Wait();
+                InitCamera(_cancellationTokenSource.Token).Wait(); 
+#endif
             }
 
 

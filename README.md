@@ -45,7 +45,6 @@ Apex 外觀瑕疵檢測
 
 * 新增插入第一步，判斷初始旋轉方向
 
-
 ### Tab
 
 * Main Tab
@@ -239,7 +238,7 @@ Apex 外觀瑕疵檢測
 
 * [ ] Camera Close 增加相機就算啟動中也可以 Close 的功能
 
-* [ ] Motion Panel 新增速度控制
+* [ ] Motion Tab 新增速度控制
 
 ### Config Logic
 

@@ -665,6 +665,31 @@ namespace ApexVisIns.content
             }
         }
 
+
+        private void VelMoveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
+                if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
+                {
+                    int dir = Convert.ToInt32((sender as Button).CommandParameter);
+                    MainWindow.ServoMotion.SelectedMotionAxis.PosMove(dir);
+
+                    //bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
+                    //MainWindow.ServoMotion.SelectedMotionAxis.PosMove(abs);
+                }
+                else
+                {
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"裝置未開啟或未選擇可用軸");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
         /// <summary>
         /// 運動停止
         /// </summary>
@@ -829,6 +854,6 @@ namespace ApexVisIns.content
             Debug.WriteLine($"123");
         }
 
-       
+      
     }
 }
