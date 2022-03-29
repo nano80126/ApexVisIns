@@ -346,6 +346,40 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 繪製 Gray Scale Chart
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="width"></param>
+        /// <param name="createChart"></param>
+        /// <param name="chart"></param>
+        public static unsafe void GetHorizontalGrayScale(Mat src, int width, out byte[] grayArr, bool createChart, out Mat chart)
+        {
+            chart = createChart ? new Mat(new Size(src.Width, 300), MatType.CV_8UC3, Scalar.White) : new Mat();
+            byte* b = src.DataPointer;
+
+            grayArr = new byte[src.Width];
+
+            for (int i = 0; i < src.Width; i++)
+            {
+                ushort gray = 0;
+                for (int j = 0; j < src.Height; j++)
+                {
+                    gray += b[width * j];
+                }
+                grayArr[i] = (byte)(gray / src.Height);
+
+                if (createChart)
+                {
+                    if (i != 0)
+                    {
+                        Cv2.Line(chart, i - 1, 300 - grayArr[i - 1], i, 300 - grayArr[i], Scalar.Red, 1);
+                    }
+                }
+                b++;
+            }
+        }
+
+        /// <summary>
         /// 取得輪廓點陣列
         /// </summary>
         /// <param name="src">來源影像</param>
@@ -867,5 +901,6 @@ namespace ApexVisIns
                 throw;
             }
         }
+
     }
 }

@@ -649,7 +649,7 @@ namespace ApexVisIns.content
         {
             try
             {
-                //MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
+                // MainWindow.ServoMotion.SltMotionAxis.ChangeVel();
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
                     MainWindow.ServoMotion.SelectedMotionAxis.ChangeVel();
@@ -673,11 +673,14 @@ namespace ApexVisIns.content
                 //MainWindow.ServoMotion.SltMotionAxis.PosMove(false);
                 if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedAxis != -1)
                 {
-                    int dir = Convert.ToInt32((sender as Button).CommandParameter);
-                    MainWindow.ServoMotion.SelectedMotionAxis.PosMove(dir);
-
-                    //bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
-                    //MainWindow.ServoMotion.SelectedMotionAxis.PosMove(abs);
+                    if (MainWindow.ServoMotion.SelectedMotionAxis.IO_SVON.BitOn)
+                    {
+                        ushort dir = Convert.ToUInt16((sender as Button).CommandParameter);
+                        MainWindow.ServoMotion.SelectedMotionAxis.VelMove(dir);
+                    } else
+                    {
+                        MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, $"伺服軸狀態為 Servo Off");
+                    }
                 }
                 else
                 {

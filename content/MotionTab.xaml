@@ -868,84 +868,25 @@
                 </DockPanel>
             </materialDesign:Card>
             <!--#endregion-->
-
-            <!--#region 速度控制 -->
-            <materialDesign:Card x:Name="VelsControlCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
-                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <DockPanel x:Name="VelControlHeader" DockPanel.Dock="Top">
-                        <materialDesign:PackIcon Kind="ArrowLeftRightBold" Width="30" Height="26"></materialDesign:PackIcon>
-
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="速度控制" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                    </DockPanel>
-                    <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
-                    <!--//-->
-                    <Grid DockPanel.Dock="Top">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                        </Grid.ColumnDefinitions>
-                        <!--//-->
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <!--//-->
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="TextAlignment" Value="Center"/>
-                                <Setter Property="FontWeight" Value="Semibold"/>
-                            </Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <Setter Property="Margin" Value="0 4"/>
-                                <Setter Property="TextAlignment" Value="Center"/>
-                            </Style>
-                        </Grid.Resources>
-                        <!--//-->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="啟動速度"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding VelLow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                        <TextBlock Grid.Row="0" Grid.Column="2" Text="運行速度" />
-                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding VelHigh, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="加速度"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding Acc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="減速度"/>
-                        <TextBox Grid.Row="1" Grid.Column="3" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
-                                 Text="{Binding Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <Button Grid.Row="2" Grid.Column="3" MaxWidth="120" Height="26" Margin="0 3" Content="寫入" Click="AxisVelParamSetBtn_Click" 
-                                Style="{StaticResource CustomPressedOutlineWriteButton}"/>
-                        <!--//-->
-                        
-                        
-                
-
-                    </Grid>
-                </DockPanel>
-            </materialDesign:Card>
-            <!--#endregion-->
         </StackPanel>
         <!--#endregion-->
 
         <!--#region 2nd column, 2nd row, EMG STOP, 急停 -->
         <StackPanel Grid.Column="4" Grid.Row="1" VerticalAlignment="Bottom" Background="{x:Null}">
-            <Button Margin="2 0" Height="100" Content="緊急停止" Click="MotionEmgStop_Click" materialDesign:ButtonAssist.CornerRadius="50"
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedSecondaryButton}" x:Key="CustomPressedOutlineStopButton">
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorIndigo}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
+            <Button Grid.Row="11" Grid.ColumnSpan="100" Margin="10 8" Height="26" Content="停止" Click="MotionStop_Click"
+                                    Style="{StaticResource CustomPressedOutlineStopButton}"/>
+
+            <Button Margin="10 0" Height="100" Content="緊急停止" Click="MotionEmgStop_Click" materialDesign:ButtonAssist.CornerRadius="50"
                     Foreground="{StaticResource ColorError}" BorderBrush="{StaticResource ColorError}" 
                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
         </StackPanel>
