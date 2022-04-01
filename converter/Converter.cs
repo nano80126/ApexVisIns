@@ -135,6 +135,43 @@ namespace ApexVisIns.Converter
         }
     }
 
+
+    /// <summary>
+    /// 字串比較
+    /// </summary>
+    [ValueConversion(typeof(string), typeof(bool))]
+    public class StringEqualConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null && value.ToString().Equals(parameter.ToString());
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    /// <summary>
+    /// 字串比較(反向)
+    /// </summary>
+    [ValueConversion(typeof(string), typeof(bool))]
+    public class StringNotEqualConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value == null || !value.ToString().Equals(parameter.ToString());
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     /// <summary>
     ///  數學加法 轉換器
     /// </summary>
@@ -313,6 +350,8 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+
+
 
     /// <summary>
     /// 字串不為Null或Empty

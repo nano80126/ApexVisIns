@@ -426,7 +426,7 @@ namespace ApexVisIns
         /// Grabber 是否開啟
         /// </summary>
         public bool IsGrabbing => Camera != null && Camera.StreamGrabber.IsGrabbing;
-        
+
         /// <summary>
         /// 是否連續拍攝
         /// </summary>
@@ -442,7 +442,7 @@ namespace ApexVisIns
                 }
             }
         }
-        
+
         /// <summary>
         /// 是否只開啟Grabber不拍照，拍照使用 RetrieveResult 觸發
         /// </summary>
@@ -765,6 +765,16 @@ namespace ApexVisIns
         private bool _centerX;
         private bool _centerY;
         private bool _online;
+        //
+        private string[] _gainAutoEnum;
+        private string _gainAuto;
+        private int _gain;
+        private int _blackLevel;
+        private bool _gammaEnable;
+        private string[] _gammaSelectorEnum;
+        private string _gammaSelector;
+        private double _gamma;
+        // 
 
         /// <summary>
         /// .xaml 使用 (一般不使用)
@@ -795,7 +805,7 @@ namespace ApexVisIns
                 if (value != _online)
                 {
                     _online = value;
-                    OnPropertyChanged(nameof(Online));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -810,7 +820,7 @@ namespace ApexVisIns
                 if (value != _deviceVersion)
                 {
                     _deviceVersion = value;
-                    OnPropertyChanged(nameof(DeviceVersion));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -823,7 +833,7 @@ namespace ApexVisIns
                 if (value != _firmwareVersion)
                 {
                     _firmwareVersion = value;
-                    OnPropertyChanged(nameof(FirmwareVersion));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -887,7 +897,7 @@ namespace ApexVisIns
                 if (value != _sensorWidth)
                 {
                     _sensorWidth = value;
-                    OnPropertyChanged(nameof(SensorWidth));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -903,7 +913,7 @@ namespace ApexVisIns
                 if (value != _sensorHeight)
                 {
                     _sensorHeight = value;
-                    OnPropertyChanged(nameof(SensorHeight));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -933,7 +943,7 @@ namespace ApexVisIns
                             OffsetX = _maxWidth - _width;
                         }
                     }
-                    OnPropertyChanged(nameof(Width));
+                    OnPropertyChanged();
                     OnPropertyChanged(nameof(OffsetX));
                 }
             }
@@ -964,7 +974,7 @@ namespace ApexVisIns
                             OffsetY = _maxHeight - _height;
                         }
                     }
-                    OnPropertyChanged(nameof(Height));
+                    OnPropertyChanged();
                     OnPropertyChanged(nameof(OffsetY));
                 }
             }
@@ -981,7 +991,7 @@ namespace ApexVisIns
                 if (value != _maxWidth)
                 {
                     _maxWidth = value;
-                    OnPropertyChanged(nameof(MaxWidth));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -997,7 +1007,7 @@ namespace ApexVisIns
                 if (value != _maxHeight)
                 {
                     _maxHeight = value;
-                    OnPropertyChanged(nameof(MaxHeight));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1013,7 +1023,7 @@ namespace ApexVisIns
                 if (value != _offsetX)
                 {
                     _offsetX = value < 0 ? 0 : value > _maxWidth - _width ? _maxWidth - _width : value;
-                    OnPropertyChanged(nameof(OffsetX));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1029,7 +1039,7 @@ namespace ApexVisIns
                 if (value != _offsetY)
                 {
                     _offsetY = value < 0 ? 0 : value > _maxHeight - _height ? _maxHeight - _height : value;
-                    OnPropertyChanged(nameof(OffsetY));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1052,8 +1062,9 @@ namespace ApexVisIns
                     }
                     _centerX = value;
 
+
+                    OnPropertyChanged();
                     OnPropertyChanged(nameof(OffsetX));
-                    OnPropertyChanged(nameof(CenterX));
                 }
             }
         }
@@ -1076,8 +1087,8 @@ namespace ApexVisIns
                     }
                     _centerY = value;
 
+                    OnPropertyChanged();
                     OnPropertyChanged(nameof(OffsetY));
-                    OnPropertyChanged(nameof(CenterY));
                 }
             }
         }
@@ -1090,7 +1101,7 @@ namespace ApexVisIns
             set
             {
                 _acquisitionModeEnum = value;
-                OnPropertyChanged(nameof(AcquisitionModeEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1105,7 +1116,7 @@ namespace ApexVisIns
                 if (value != _acquisitionMode)
                 {
                     _acquisitionMode = value;
-                    OnPropertyChanged(nameof(AcquisitionMode));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1119,7 +1130,7 @@ namespace ApexVisIns
             set
             {
                 _triggerSelectorEnum = value;
-                OnPropertyChanged(nameof(TriggerSelectorEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1131,7 +1142,7 @@ namespace ApexVisIns
                 if (value != _triggerSelector)
                 {
                     _triggerSelector = value;
-                    OnPropertyChanged(nameof(TriggerSelector));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1145,7 +1156,7 @@ namespace ApexVisIns
             set
             {
                 _triggerModeEnum = value;
-                OnPropertyChanged(nameof(TriggerModeEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1157,7 +1168,7 @@ namespace ApexVisIns
                 if (value != _triggerMode)
                 {
                     _triggerMode = value;
-                    OnPropertyChanged(nameof(TriggerMode));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1171,7 +1182,7 @@ namespace ApexVisIns
             set
             {
                 _triggerSourceEnum = value;
-                OnPropertyChanged(nameof(TriggerSourceEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1183,7 +1194,7 @@ namespace ApexVisIns
                 if (value != _triggerSource)
                 {
                     _triggerSource = value;
-                    OnPropertyChanged(nameof(TriggerSource));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1199,7 +1210,7 @@ namespace ApexVisIns
                 if (value != _fixedFPS)
                 {
                     _fixedFPS = value;
-                    OnPropertyChanged(nameof(FixedFPS));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1215,7 +1226,7 @@ namespace ApexVisIns
                 if (value != _fps)
                 {
                     _fps = value;
-                    OnPropertyChanged(nameof(FPS));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1229,7 +1240,7 @@ namespace ApexVisIns
             set
             {
                 _exposureModeEnum = value;
-                OnPropertyChanged(nameof(ExposureModeEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1241,7 +1252,7 @@ namespace ApexVisIns
                 if (value != _exposureMode)
                 {
                     _exposureMode = value;
-                    OnPropertyChanged(nameof(ExposureMode));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1255,7 +1266,7 @@ namespace ApexVisIns
             set
             {
                 _exposureAutoEnum = value;
-                OnPropertyChanged(nameof(ExposureAutoEnum));
+                OnPropertyChanged();
             }
         }
 
@@ -1267,7 +1278,7 @@ namespace ApexVisIns
                 if (value != _exposureAuto)
                 {
                     _exposureAuto = value;
-                    OnPropertyChanged(nameof(ExposureAuto));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1283,10 +1294,135 @@ namespace ApexVisIns
                 if (value != _exposureTime)
                 {
                     _exposureTime = value;
-                    OnPropertyChanged(nameof(ExposureTime));
+                    OnPropertyChanged();
                 }
             }
         }
+        #endregion
+
+
+        #region Analog Controls
+        /// <summary>
+        /// 自動增益列舉
+        /// </summary>
+        public string[] GainAutoEnum
+        {
+            get => _gainAutoEnum;
+            set
+            {
+                _gainAutoEnum = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 自動增益
+        /// </summary>
+        public string GainAuto
+        {
+            get => _gainAuto;
+            set
+            {
+                if (value != _gainAuto)
+                {
+                    _gainAuto = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 增益
+        /// </summary>
+        public int Gain
+        {
+            get => _gain;
+            set
+            {
+                if (value != _gain)
+                {
+                    _gain = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        public int BlackLevel
+        {
+            get => _blackLevel;
+            set
+            {
+                if (value != _blackLevel)
+                {
+                    _blackLevel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 啟用 Gamma
+        /// </summary>
+        public bool GammaEnable
+        {
+            get => _gammaEnable;
+            set
+            {
+                if (value != _gammaEnable)
+                {
+                    _gammaEnable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gamma 選擇列舉
+        /// </summary>
+        public string[] GammaSelectorEnum
+        {
+            get => _gammaSelectorEnum;
+            set
+            {
+                _gammaSelectorEnum = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gamma 選擇
+        /// </summary>
+        public string GammaSelector
+        {
+            get => _gammaSelector;
+            set
+            {
+                if (value != _gammaSelector)
+                {
+                    _gammaSelector = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gamma
+        /// </summary>
+        public double Gamma
+        {
+            get => _gamma;
+            set
+            {
+                if (value != _gamma)
+                {
+                    _gamma = value;
+                    OnPropertyChanged();
+                }
+            }
+        } 
         #endregion
 
 #if false
@@ -1338,7 +1474,7 @@ namespace ApexVisIns
         public DeviceConfigBase.TargetFeatureType TargetFeature { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -1353,6 +1489,7 @@ namespace ApexVisIns
         }
         #endregion
     }
+
 
     //public enum CharacterType
     //{

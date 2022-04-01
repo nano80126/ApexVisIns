@@ -292,6 +292,116 @@ namespace ApexVisIns.Product
         }
     }
 
+    /// <summary>
+    /// Apex 檢驗特徵
+    /// </summary>
+    public class ApexFeatures
+    {
+        public class DefectsBase
+        {
+            #region 耳朵瑕疵
+            /// <summary>
+            /// 耳朵內側毛邊
+            /// </summary>
+            public bool EarInnerBurr { get; set; }
+            /// <summary>
+            /// 耳朵外側毛邊
+            /// </summary>
+            public bool EarOuterBurr { get; set; }
+            /// <summary>
+            /// 耳朵孔毛邊
+            /// </summary>
+            public bool EarHoleBurr { get; set; }
+            #endregion
+
+            #region 窗戶瑕疵
+            /// <summary>
+            /// 窗戶毛邊
+            /// </summary>
+            public bool WindowBurr { get; set; }
+            /// <summary>
+            /// 窗戶撞傷
+            /// </summary>
+            public bool WindowBump { get; set; }
+            #endregion
+
+            #region 表面瑕疵
+            /// <summary>
+            /// 殘留
+            /// </summary>
+            public bool Residual { get; set; }
+            /// <summary>
+            /// 刮傷
+            /// </summary>
+            public bool Scraches { get; set; }
+            /// <summary>
+            /// 亮紋
+            /// </summary>
+            public bool Brights { get; set; }
+            /// <summary>
+            /// 表面撞傷
+            /// </summary>
+            public bool Bump { get; set; }
+            /// <summary>
+            /// 不均
+            /// </summary>
+            public bool Uneven { get; set; }
+            /// <summary>
+            /// 車刀紋
+            /// </summary>
+            public bool LatheToolScraches { get; set; }
+            #endregion
+
+            #region 原材瑕疵
+            /// <summary>
+            /// 凹洞
+            /// </summary>
+            public bool RawTubePit { get; set; }
+            /// <summary>
+            /// 原材模痕
+            /// </summary>
+            public bool RawTubeScar { get; set; }
+            #endregion
+        }
+
+        /// <summary>
+        /// 瑕疵旗標
+        /// </summary>
+        public DefectsBase Defects { get; set; }
+        /// <summary>
+        /// 開始時間
+        /// </summary>
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 檢驗時間
+        /// </summary>
+        public TimeSpan Duration { get; set; }
+
+        /// <summary>
+        /// 灰度值 (Camera1)
+        /// </summary>
+        public byte GrayScale1 { get; set; }
+        /// <summary>
+        /// 灰度值 (Camera2)
+        /// </summary>
+        public byte GrayScale2 { get; set; }
+
+        /// <summary>
+        /// 等高圖
+        /// </summary>
+        public OpenCvSharp.Mat FullMat { get; set; }
+
+        ///// <summary>
+        ///// 平均灰階陣列 1
+        ///// </summary>
+        public byte[] MeanGrayArray1 { get; set; }
+
+        /// <summary>
+        /// 標準差陣列 1
+        /// </summary>
+        public double[] StdGrayArray1 { get; set; }
+    }
+
 
     /// <summary>
     /// Apex Defect Testing Status to Color

@@ -78,19 +78,41 @@ namespace ApexVisIns
         /// <summary>
         /// 角度校正窗戶ROI
         /// </summary>
-        private Rect WindowLeftRightRoi = new(100, 840, 1000, 240);
+        private readonly Rect WindowLeftRightRoi = new(100, 840, 1000, 240);
         /// <summary>
         /// 窗戶抓取上下邊緣Roi
         /// </summary>
-        private Rect WindowTopBotEdgeRoi = new(450, 240, 250, 1400);
+        private readonly Rect WindowTopBotEdgeRoi = new(450, 240, 250, 1400);
         /// <summary>
         /// 耳朵孔ROI
         /// </summary>
-        private Rect EarHoleRoi = new(510, 860, 180, 180);
+        private readonly Rect EarHoleRoi = new(510, 860, 180, 180);
         /// <summary>
         /// 耳朵抓取左右邊緣Roi
         /// </summary>
-        private Rect EarLeftRightRoi  = new(350, 900, 500, 200);
+        private readonly Rect EarLeftRightRoi = new(350, 900, 500, 200);
+        #endregion
+
+        #region Apex 表面 ROI (Camera 1)
+        private readonly Rect[] Surface1ROIs = new Rect[] {
+            new Rect(720, 130, 850, 20),   // 中心左
+            new Rect(1570, 130, 780, 20),   // 中心
+            new Rect(2350, 130, 400, 20),   // 窗戶
+            new Rect(2750, 130, 350, 20),   // 窗戶右
+            new Rect(3105, 130, 30, 20),    // 頸縮
+            new Rect(3145, 130, 55, 20),    // 尾端
+        };
+        #endregion
+
+        #region Apex 表面 ROI (Camera 2)
+        private readonly Rect[] Surface2ROIs = new Rect[] {
+            new Rect(720, 130, 850, 20),   // 中心左
+            new Rect(1570, 130, 780, 20),   // 中心
+            new Rect(2350, 130, 400, 20),   // 窗戶
+            new Rect(2750, 130, 350, 20),   // 窗戶右
+            new Rect(3105, 130, 30, 20),    // 頸縮
+            new Rect(3145, 130, 55, 20),    // 尾端
+        };
         #endregion
 
         /// <summary>
@@ -144,7 +166,7 @@ namespace ApexVisIns
         public struct ApexDefectInspectionSteps
         {
             /// <summary>
-            /// 窗戶步驟
+            /// 窗戶步驟 (單步測試用)
             /// 0b0000(0): 
             /// 0b0001(1): 
             /// 0b0010(2): 
@@ -153,11 +175,11 @@ namespace ApexVisIns
             /// 0b0101(5): 
             /// 0b0110(6): 
             /// </summary>
-            [Obsolete("deprecated")]
+            [Obsolete("單步測試用")]
             public byte WindowSteps { get; set; }
 
             /// <summary>
-            /// 耳朵檢驗步驟
+            /// 耳朵檢驗步驟 (單步測試用)
             /// 0b0000(0): (L)抓取 ROI 打光 & 馬達旋轉；
             /// 0b0001(1): (L)抓取 ROI；
             /// 0b0010(2): (L)抓取 瑕疵 打光；
@@ -171,7 +193,7 @@ namespace ApexVisIns
             /// 0b1010(10): (R)抓取瑕疵 打側光；
             /// 0b1011(11): (R)抓取 瑕疵(側光)；
             /// </summary>
-            [Obsolete("deprecated")]
+            [Obsolete("單步測試用")]
             public byte EarSteps { get; set; }
 
             /// <summary>
@@ -836,7 +858,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         #region 窗戶耳朵同時檢驗
         public async void ApexWindowEarInspectionSequence(BaslerCam cam1, BaslerCam cam2)
         {
@@ -909,7 +930,7 @@ namespace ApexVisIns
                             // 抓取窗戶上下緣
                             GetWindowInspectionTopBottomEdge(mat1, out top, out bot);
                             // 抓取窗戶、耳朵 ROI
-                            GetEarWindowRoi(mat1, mat2, out xPos, out winRoiL, out winRoiR, 0,out earRoiL, out earRoiR);
+                            GetEarWindowRoi(mat1, mat2, out xPos, out winRoiL, out winRoiR, 0, out earRoiL, out earRoiR);
 
                             if (xPos.Length == 7)
                             {
@@ -1090,7 +1111,7 @@ namespace ApexVisIns
                             mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
 
 
-                            GetEarWindowRoi(null, mat2, out xPos, out winRoiL, out winRoiR, 1,out earRoiL, out earRoiR);
+                            GetEarWindowRoi(null, mat2, out xPos, out winRoiL, out winRoiR, 1, out earRoiL, out earRoiR);
 
                             Cv2.Rectangle(mat2, earRoiL, Scalar.Gray, 2);
                             Cv2.Rectangle(mat2, earRoiR, Scalar.Gray, 2);
@@ -1288,7 +1309,6 @@ namespace ApexVisIns
 
         }
         #endregion
-
 
         #region 窗戶瑕疵檢驗, Window Defect，窗戶瑕疵檢驗, Window Defect，窗戶瑕疵檢驗, Window Defect
         /// <summary>
@@ -2396,6 +2416,67 @@ namespace ApexVisIns
             LightCtrls[0].ResetAllChannel();
             // 變更光源 2
             LightCtrls[1].ResetAllChannel();
+        }
+        #endregion
+
+        // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+        // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+        // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+
+        #region 表面瑕疵檢驗
+        public void SurfaceIns(Mat src)
+        {
+            foreach (Rect roi in Surface1ROIs)
+            {
+                Methods.GetRoiGaussianBlur(src, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
+
+                Mat hist = new();
+                Cv2.CalcHist(new Mat[] { blur }, new int[] { 0 }, new Mat(), hist, 1, new int[] { 256 }, new Rangef[] { new Rangef(0.0f, 256.0f) });
+
+                int[] maxArr = new int[1];
+                int[] minArr = new int[1];
+                Cv2.MinMaxIdx(hist, out double min, out double max, minArr, maxArr);
+
+                Debug.WriteLine($"Max: {max}, Min: {min}, {string.Join(",", maxArr)}, {string.Join(",", minArr)}");
+
+                Mat histChart = new(new OpenCvSharp.Size(256, 300), MatType.CV_8UC3, Scalar.White);
+                for (int i = 0; i < 256; i++)
+                {
+                    int len = (int)(hist.Get<float>(i) / (1.2 * max) * histChart.Rows);
+                    Cv2.Line(histChart, i, histChart.Rows, i, histChart.Rows - len, Scalar.Blue, 1);
+                }
+                Cv2.Line(histChart, maxArr[0], histChart.Rows, maxArr[0], histChart.Rows - (int)(max / (1.2 * max) * histChart.Rows), Scalar.Red, 1);
+
+                // 計算平均值和標準差
+                Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stddev);
+                // 平均值 & 標準差
+                Debug.WriteLine($"Mat mean: {mean}, Stddev: {stddev}");
+
+                Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
+                Methods.CalLocalOutliers(chart, grayArr, 50, 15, null, out Point[] peaks, out Point[] valleys);
+
+                // 眾數線
+                Cv2.Line(chart, 0, 300 - maxArr[0], chart.Width, 300 - maxArr[0], Scalar.Orange, 1);
+                // 平均數
+                Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
+                // 一個標準差內
+                Cv2.Line(chart, 0, 300 - (int)(mean[0] + stddev[0]), chart.Width, 300 - (int)(mean[0] + stddev[0]), Scalar.DarkCyan, 1);
+                Cv2.Line(chart, 0, 300 - (int)(mean[0] - stddev[0]), chart.Width, 300 - (int)(mean[0] - stddev[0]), Scalar.DarkCyan, 1);
+                
+                
+                Cv2.CvtColor(blur, blur, ColorConversionCodes.GRAY2BGR);
+                Cv2.VConcat(new Mat[] { chart, blur }, chart);
+
+
+                Dispatcher.Invoke(() =>
+                {
+                    Cv2.ImShow($"GrayScale{roi.X}", chart);
+                    Cv2.MoveWindow($"GrayScale{roi.X}", roi.X - 720, 100);
+                    Cv2.ImShow($"Hist Diagram{roi.X}", histChart);
+                    Cv2.MoveWindow($"Hist Diagram{roi.X}", roi.X - 720, 100 + 300);
+                    //Cv2.MoveWindow("GrayScale", 100, 100);
+                });
+            }
         }
         #endregion
     }

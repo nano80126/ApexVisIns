@@ -240,7 +240,7 @@ namespace ApexVisIns
 
             //SpinWait.SpinUntil(() => false, 1000);
 
-            //  CreateIOWindow();
+            CreateIOWindow();
 
             ModeWindow modeWindow = new()
             {
@@ -319,6 +319,17 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 顯示 IO 視窗
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowIOWindow_Click(object sender, RoutedEventArgs e)
+        {
+            IOWindow.Show();
+            IOWindow.Activate();
+        }
+
+        /// <summary>
         /// 程式完整關閉 
         /// </summary>
         /// <param name="sender"></param>
@@ -343,7 +354,7 @@ namespace ApexVisIns
             }
 
             // 重製 & 關閉所有光源
-            //foreach (LightController ctrl in LightCtrls_old)
+            // foreach (LightController ctrl in LightCtrls_old)
             foreach (LightSerial ctrl in LightCtrls)
             {
                 if (ctrl.IsComOpen)
@@ -355,7 +366,7 @@ namespace ApexVisIns
 
             _ = SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
             _ = SpinWait.SpinUntil(() => !ServoMotion.DeviceOpened, 3000);
-            //SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
+            // SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
             _ = SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
             Close();
@@ -502,6 +513,7 @@ namespace ApexVisIns
         }
         #endregion
 
+     
     }
 
     /// <summary>

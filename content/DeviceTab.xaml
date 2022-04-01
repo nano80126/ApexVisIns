@@ -37,7 +37,7 @@
         </Grid.ColumnDefinitions>
 
         <!--#region 1st Col -->
-        <StackPanel Grid.Column="0" Width="300" Background="{x:Null}">
+        <StackPanel Grid.Column="0" Width="300" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
             <!--<StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                     --><!--900 - 120--><!--
@@ -233,7 +233,6 @@
         <!-- Separator -->
         <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" 
                    Background="{StaticResource ColorSecondaryTransparent}"/>
-
 
         <!--#region 2nd Col -->
         <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
@@ -566,12 +565,12 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/><!--separetor-->
                             <ColumnDefinition/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/><!--separetor-->
                             <ColumnDefinition/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition/> 
                         </Grid.ColumnDefinitions >
 
                         <Grid.RowDefinitions>
@@ -671,9 +670,49 @@
                         <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
                                  GotFocus="TextBox_GotFocus"
                                  Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
-
-                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        
+                        <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
+                        <!--//===============================================================================================================//-->
+                        <!--#region Analog Control -->
+                        <TextBlock Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Text="Analog Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        <Separator Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="6" Text="Gain Auto"/>
+                        <TextBlock Grid.Row="3" Grid.Column="6" Text="Gain"/>
+                        
+                        <TextBlock Grid.Row="4" Grid.Column="6" Text="Black Level"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="6" Text="Gamma Enable"/>
+                        <TextBlock Grid.Row="6" Grid.Column="6" Text="Gamma Selector"/>
+                        <TextBlock Grid.Row="7" Grid.Column="6" Text="Gamma"/>
+
+                        <!--標記上下限-->
+                        <ComboBox Grid.Row="2" Grid.Column="7" SelectedItem="{Binding GainAuto}" ItemsSource="{Binding GainAutoEnum}"/>
+                        <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3"
+                                 GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                 IsEnabled="{Binding GainAuto, Converter={StaticResource StringEqualConverter}, ConverterParameter=Off}"
+                                 Text="{Binding Gain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}"/>
+
+
+                        <!--標記上下限-->
+                        <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3"
+                                 GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                 Text="{Binding BlackLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}"/>
+
+                        <CheckBox Grid.Row="5" Grid.Column="7" IsChecked="{Binding GammaEnable}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
+
+                        <ComboBox Grid.Row="6" Grid.Column="7" SelectedItem="{Binding GammaSelector}" ItemsSource="{Binding GammaSelectorEnum}"/>
+
+                        <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3"
+                                 GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                 IsEnabled="{Binding GammaSelector, Converter={StaticResource StringEqualConverter}, ConverterParameter=User}"
+                                 Text="{Binding Gamma, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:f1}}"/>
+                        <!--#endregion-->
+                        <!--//===============================================================================================================//-->
+                        <!--//-->
+                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
@@ -697,5 +736,8 @@
             </materialDesign:Card>
         </StackPanel>
         <!--#endregion-->
+        
+        
+        
     </Grid>
 </StackPanel>

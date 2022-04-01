@@ -28,7 +28,8 @@
         Topmost="False"
         Title="IO Window" Width="310" Height="750"
         Loaded="Window_Loaded"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        IsVisibleChanged="Window_IsVisibleChanged">
     <Border HorizontalAlignment="Stretch" Style="{StaticResource MainWindowBorder}">
         <Grid Width="300">
             <Grid.RowDefinitions>
@@ -39,11 +40,18 @@
             </Grid.RowDefinitions>
             <!--//-->
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="0 3" Background="Transparent" MouseLeftButtonDown="TitleGrid_MouseLeftButtonDown" >
-                <!--<Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>-->
+                </Grid.ColumnDefinitions>
+                <!--//-->
                 <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
+                <StackPanel HorizontalAlignment="Right" Grid.Column="1">
+                    <Button x:Name="Minbtn"  Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Style="{StaticResource WindowButton}" 
+                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                            IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                            Click="Minbtn_Click"/>
+                </StackPanel>
             </Grid>
             <!--//-->
             <uc:DigitalIOPanel Grid.Row="1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>

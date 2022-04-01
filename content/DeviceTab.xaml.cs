@@ -672,8 +672,21 @@ namespace ApexVisIns.content
             config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
             #endregion
 
+            #region FPS
             config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
             config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+            #endregion
+
+            #region Anglog Control
+            config.GainAutoEnum = camera.Parameters[PLGigECamera.GainAuto].GetAllValues().ToArray();
+            config.GainAuto = camera.Parameters[PLGigECamera.GainAuto].GetValue();
+            config.Gain = (int)camera.Parameters[PLGigECamera.GainRaw].GetValue();
+            config.BlackLevel = (int)camera.Parameters[PLGigECamera.BlackLevelRaw].GetValue();
+            config.GammaEnable = camera.Parameters[PLGigECamera.GammaEnable].GetValue();
+            config.GammaSelectorEnum = camera.Parameters[PLGigECamera.GammaSelector].GetAllValues().ToArray();
+            config.GammaSelector = camera.Parameters[PLGigECamera.GammaSelector].GetValue();
+            config.Gamma = camera.Parameters[PLGigECamera.Gamma].GetValue();
+            #endregion
 
             string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
 
@@ -717,6 +730,17 @@ namespace ApexVisIns.content
 
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].SetValue(config.FixedFPS);
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(config.FPS);
+
+                camera.Parameters[PLGigECamera.GainAuto].SetValue(config.GainAuto);
+                // 是否標示上下限 ?
+                camera.Parameters[PLGigECamera.GainRaw].SetValue(config.Gain);
+                // 是否標示上下限 ?
+                camera.Parameters[PLGigECamera.BlackLevelRaw].SetValue(config.BlackLevel);
+                camera.Parameters[PLGigECamera.GammaEnable].SetValue(config.GammaEnable);
+                camera.Parameters[PLGigECamera.GammaSelector].SetValue(config.GammaSelector);
+                // 是否標示上下限 ?
+                camera.Parameters[PLGigECamera.Gamma].SetValue(config.Gamma);
+
             }
             catch (ArgumentOutOfRangeException A)
             {

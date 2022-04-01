@@ -74,6 +74,8 @@
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:EqualConverter x:Key="EqualConverter"/>
             <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
+            <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
+            <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>

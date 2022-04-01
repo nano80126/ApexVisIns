@@ -371,13 +371,24 @@
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
                             <StackPanel Orientation="Vertical" MinWidth="180">
+                                <Button x:Name="ShowIOWindow" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
+                                        Click="ShowIOWindow_Click">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <materialDesign:PackIcon Width="24" Height="18" Kind="AlarmPanel" VerticalAlignment="Center"/>
+                                            <TextBlock Margin="8 0 0 0 " Text="顯示ＩＯ" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+
                                 <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
                                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
                                         Click="AppFullClose_Click">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center"/>
-                                            <TextBlock Text="關閉程式" VerticalAlignment="Center" />
+                                            <TextBlock Margin="8 0 0 0" Text="關閉程式" VerticalAlignment="Center" />
                                         </StackPanel>
                                     </Button.Content>
                                 </Button>

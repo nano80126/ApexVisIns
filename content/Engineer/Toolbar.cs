@@ -238,6 +238,8 @@ namespace ApexVisIns.content
 
                     cam.Camera.ExecuteSoftwareTrigger();
                     _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
+
+                    // Cv2.DestroyAllWindows();
                 }
             }
             catch (TimeoutException T)
@@ -306,7 +308,6 @@ namespace ApexVisIns.content
             MainWindow.ApexEarInspectionSequence(cam);
             // 窗戶檢驗
             // MainWindow.ApexWindpwInspectionSequence(cam);
-
 
             return;
             try
@@ -618,9 +619,9 @@ namespace ApexVisIns.content
             camera.Parameters[PLGigECamera.TriggerSource].SetValue(PLGigECamera.TriggerSource.Software);
 
             // Anaglog Control
-            camera.Parameters[PLGigECamera.GainRaw].SetValue(50);
-            camera.Parameters[PLGigECamera.GammaEnable].SetValue(true);
-            camera.Parameters[PLGigECamera.Gamma].SetValue(0.8);
+            //camera.Parameters[PLGigECamera.GainRaw].SetValue(50);
+            //camera.Parameters[PLGigECamera.GammaEnable].SetValue(false);
+            //camera.Parameters[PLGigECamera.Gamma].SetValue(1);
             #endregion
 
             #region Grabber Event
@@ -684,8 +685,8 @@ namespace ApexVisIns.content
 
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
 
-            c = 0;
-            vconcat = null;
+
+            FullMat = null;
             Cv2.DestroyAllWindows();
         }
 
@@ -697,8 +698,7 @@ namespace ApexVisIns.content
             //MainWindow.BaslerCam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
         }
 
-        Mat vconcat;
-        int c = 0;
+        Mat FullMat;
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
@@ -714,200 +714,128 @@ namespace ApexVisIns.content
 
                 Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
-                //if (MainWindow.ApexAngleCorrectionFlags.Steps != 0b1111)
-                //{
-                //    MainWindow.AngleCorrection(mat);
-                //}
-                // MainWindow.WindowInspection(mat);
-
-                #region Assist Rect
-                if (AssistRect.Enable && AssistRect.Area > 0)
+                #region Assist Rect && AssistRect.Area > 0
+                if (AssistRect.Enable)
                 {
                     //Cv2.DestroyAllWindows();
                     #region Coding custom ROI Method here
-                    Debug.WriteLine($"start: {DateTime.Now:ss.fff}");
 
-                    Mat roiMat = new(mat, AssistRect.GetRect());
+                    //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(2200, 130, 1000, 20);
+                    //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(1150, 130, 1200, 20);
+                    OpenCvSharp.Rect roi = new(1570, 130, 780, 20);
 
-                    Methods.GetRoiGaussianBlur(mat, AssistRect.GetRect(), new OpenCvSharp.Size(5, 5), 0.808, 1, out Mat blur);
-                    //if (c < 120)
-                    //{
-                    //    if (vconcat == null)
-                    //    {
-                    //        vconcat = roiMat;
-                    //    }
-                    //    else
-                    //    {
-                    //        Cv2.VConcat(vconcat, roiMat, vconcat);
-                    //        c++;
+                    //Cv2.Rectangle(mat, roi, Scalar.Black, 2);
+                    //Mat roiMat = new(mat, AssistRect.GetRect());
+                    Mat roiMat = new(mat, roi);
 
-                    //        if (c == 120)
-                    //        {
-                    //            Cv2.ImWrite("C.jpg", vconcat);
-                    //        }
-                    //    }
-                    //} 
+                    // 高斯模糊
+                    Methods.GetRoiGaussianBlur(mat, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
 
                     Mat hist = new();
                     Cv2.CalcHist(new Mat[] { blur }, new int[] { 0 }, new Mat(), hist, 1, new int[] { 256 }, new Rangef[] { new Rangef(0.0f, 256.0f) });
-                    //Cv2.Normalize(hist, hist);
+                    // Cv2.Normalize(hist, hist);
 
-                    Cv2.MinMaxLoc(hist, out double min, out double max);
-                    int[] maxArr = new int[3];
-                    int[] minArr = new int[3];
+                    int[] maxArr = new int[1];
+                    int[] minArr = new int[1];
+                    Cv2.MinMaxIdx(hist, out double min, out double max, minArr, maxArr);
+                    Debug.WriteLine($"Max: {max}, Min: {min}, {string.Join(",", maxArr)} {string.Join(",", minArr)}");
 
-                    Cv2.MinMaxIdx(hist, out double min2, out double max2, maxArr, minArr);
-
-                    Debug.WriteLine($"Max: {max}, Min: {min}");
-                    Debug.WriteLine($"Max: {max2}, Min: {min2}, {string.Join(",", maxArr)} {string.Join(",", minArr)}");
-
-
-                    Mat result = new(new OpenCvSharp.Size(256, 300), MatType.CV_8UC1, Scalar.White);
+                    Mat histChart = new(new OpenCvSharp.Size(256, 300), MatType.CV_8UC3, Scalar.White);
                     for (int i = 0; i < 256; i++)
                     {
                         // float v = hist.Get<float>(i) / 10000;
                         // int len = (int)(v * result.Rows);
-                        int len = (int)(hist.Get<float>(i) / 500 * result.Rows);
-                        Cv2.Line(result, i, 300, i, 300 - len, Scalar.Red, 1);
+                        int len = (int)(hist.Get<float>(i) / (1.2 * max) * histChart.Rows);
+                        Cv2.Line(histChart, i, histChart.Rows, i, histChart.Rows - len, Scalar.Blue, 1);
                     }
+                    Cv2.Line(histChart, maxArr[0], histChart.Rows, maxArr[0], histChart.Rows - (int)(max / (1.2 * max) * histChart.Rows), Scalar.Red, 1);
 
-                    Debug.WriteLine($"255: {hist.Get<float>(255)}");
-                    Debug.WriteLine($"Sum: {hist.Sum()} {hist.Width} {hist.Height}");
+                    // 計算平均值和標準差
+                    Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stddev);
 
-                    if (hist.Get<float>(255) / 300 * result.Rows > 50)
-                    {
-                        Debug.WriteLine($"255: {hist.Get<float>(255)}");
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            //Cv2.ImShow($"亮點過多 {DateTime.Now:ss.fff}", roiMat);
-                        });
-                    }
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        Cv2.ImShow("hist", result);
-                    });
-                    // Methods.GetRoiVerticalFilter2D(mat, AssistRect.GetRect(), 1.2, -0.4, out Mat roiMat);
-
-                    Cv2.MeanStdDev(roiMat, out Scalar mean, out Scalar stddev);
-
+                    // 平均值 & 標準差 (gray)
                     Debug.WriteLine($"Mat Mean: {mean}, Stddev: {stddev}");
+                    // byte[] arr = new byte[roiMat.Width];
 
-                    if (stddev[0] > 20)
+                    // 取得 X 座標對灰度值圖
+                    Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
+                    Methods.CalLocalOutliers(chart, grayArr, 50, 15, null, out OpenCvSharp.Point[] peaks, out OpenCvSharp.Point[] valleys);
+
+                    Debug.WriteLine($"Peaks: {peaks.Length}, Valleys: {valleys.Length}");
+
+                    // 眾數線
+                    Cv2.Line(chart, 0, 300 - maxArr[0], chart.Width, 300 - maxArr[0], Scalar.Orange, 1);
+                    // 平均數
+                    Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
+                    // 一個標準差內
+                    Cv2.Line(chart, 0, 300 - (int)(mean[0] + stddev[0]), chart.Width, 300 - (int)(mean[0] + stddev[0]), Scalar.DarkCyan, 1);
+                    Cv2.Line(chart, 0, 300 - (int)(mean[0] - stddev[0]), chart.Width, 300 - (int)(mean[0] - stddev[0]), Scalar.DarkCyan, 1);
+
+                    //Mat chart2 = new(new OpenCvSharp.Size(chart.Width, 300), MatType.CV_8UC3, Scalar.White);
+                    for (int i = 1; i < grayArrDiff.Length; i++)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            // Cv2.ImShow($"標準差過大 {DateTime.Now:ss.fff} {stddev[0]}", roiMat);
-                        });
+                        Cv2.Line(chart, i - 1, 150 + (grayArrDiff[i - 1] * 10), i, 150 + (grayArrDiff[i] * 10), Scalar.LightGreen, 1);
                     }
 
-                    //byte[] arr = new byte[roiMat.Width];
+                    Cv2.CvtColor(roiMat, roiMat, ColorConversionCodes.GRAY2BGR);
+                    Cv2.CvtColor(blur, blur, ColorConversionCodes.GRAY2BGR);
+                    Cv2.VConcat(new Mat[] { chart, roiMat, blur }, chart);
 
-                    Debug.WriteLine($"start: {DateTime.Now:ss.fff}");
-
-                    Methods.GetHorizontalGrayScale(roiMat, mat.Width, out byte[] grayArr, true, out Mat chart);
-
+                    //if (FullMat.Height < 900)
+                    //{
+                    //    Cv2.VConcat(FullMat, line, FullMat);
+                    //}
+                    //else
+                    //{
+                    //    Dispatcher.Invoke(() =>
+                    //    {
+                    //        Cv2.ImShow("Full", FullMat);
+                    //    });
+                    //}
+                    #region 標記
+#if false
                     unsafe
                     {
                         byte* b = roiMat.DataPointer;
 
                         for (int i = 0; i < roiMat.Width; i++)
                         {
-                            if (grayArr[i] < mean[0] - (stddev[0] * 2))
+                            // 0.8 個標準差
+                            if (grayArr[i] < mean[0] - (stddev[0] * 0.8) && ((grayArr[i] < maxArr[0] - 10) || (grayArr[i] > maxArr[0] + 10)))
                             {
                                 b[i + (mat.Width * roiMat.Height / 2)] = 255;
-                                b[i + (mat.Width * roiMat.Height / 2) - 1] = 255;
-                                b[i + (mat.Width * roiMat.Height / 2) + 1] = 255;
                             }
-                            else if (grayArr[i] > mean[0] + (stddev[0] * 2))
+                            // 0.8 個標準差
+                            else if (grayArr[i] > mean[0] + (stddev[0] * 0.8) && ((grayArr[i] < maxArr[0] - 10) || (grayArr[i] > maxArr[0] + 10)))
                             {
                                 b[i + (mat.Width * roiMat.Height / 2)] = 0;
-                                b[i + (mat.Width * roiMat.Height / 2) - 1] = 0;
-                                b[i + (mat.Width * roiMat.Height / 2) + 1] = 0;
                             }
                         }
-                    }
+                    } 
+#endif
+                    #endregion
 
-                    // Mat grayScale= new(new OpenCvSharp.Size(roiMat.Width, 300), MatType.CV_8UC1, Scalar.White);
-                    // for (int i = 1; i < roiMat.Width; i++)
-                    // {
-                    //     //int len = arr[i];
-                    //     Cv2.Line(grayScale, i - 1, 300 - arr[i - 1], i, 300 - arr[i], Scalar.Black, 1);
-                    // }
-
-                    //Debug.WriteLine($"{string.Join(",", arr)}");
-                    // Debug.WriteLine($"Avg: {arr.Average(x => x)}");
-
-                    Debug.WriteLine($"start: {DateTime.Now:ss.fff}");
-
-                    //Cv2.FindContours(Canny, out OpenCvSharp.Point[][] cons, out _, RetrievalModes.CComp, ContourApproximationModes.ApproxSimple, AssistRect.GetRect().Location);
-                    // 這邊要過濾過短 contours 
-
-                    //Cv2.ImShow("ROI Filter", filter);
+                    #region UI Thread here
                     Dispatcher.Invoke(() =>
                     {
                         Cv2.ImShow("GrayScale", chart);
-                        Cv2.ImShow("ROI", roiMat);
-                        //Cv2.ImShow("ROI Otsu", Otsu);
+                        Cv2.MoveWindow("GrayScale", 100, 100);
+                        //Cv2.ImShow("GrayScale'", chart2);
+                        //Cv2.MoveWindow("GrayScale'", 100, 100 + chart.Height + 32);
+
+                        // Cv2.ImShow("ROI", roiMat);
+                        // Cv2.MoveWindow("ROI", 100, 100 + chart.Height * 2 + 64);
+                        // Cv2.ImShow("ROI Blur", blur);
+                        // Cv2.MoveWindow("ROI Blur", 100, 100 + chart.Height * 2 + 48 + roiMat.Height * 2 + 32);
+
+                        Cv2.ImShow("Hist Diagram", histChart);
+                        Cv2.MoveWindow("Hist Diagram", 100 + chart.Width + 2, 100);
                     });
-                    //Cv2.MoveWindow("ROI Filter2D", 20, 20);
+                    #endregion
 
-                    //Cv2.ImShow("ROI Filter2D_2", filter2);
-                    //Cv2.MoveWindow("ROI Filter2D_2", 500, 20);
-
-                    //Cv2.ImShow("ROI otsu", otsu);
-                    //Cv2.MoveWindow("ROI otsu", 500, 20);
-
-                    //Cv2.ImShow("ROI canny", canny);
-                    //Cv2.MoveWindow("ROI canny", 980, 20);
                     #endregion
                 }
                 #endregion
-
-#if false
-                #region 耳朵檢驗
-                    switch (MainWindow.ApexDefectInspectionStepsFlags.EarSteps)
-                    {
-                        // 取得 ROI (單邊)
-                        case 0b0000:
-                            MainWindow.GetEarInspectionRoi(mat, out OpenCvSharp.Rect LeftROI, out OpenCvSharp.Rect RightROI);
-                            break;
-                        // 檢驗瑕疵
-                        case 0b0001:
-                            //MainWindow.EarInspection(mat, LeftROI, RightROI);
-                            break;
-                        // 取得 ROI (另一邊)
-                        case 0b0010:
-
-                            break;
-                        // 檢驗瑕疵
-                        case 0b0011:
-                            break;
-                    }
-                #endregion
-
-                    //Methods.GetRoiOtsu(mat, LeftROI, 0, 255, out Mat Otsu1, out double th1);
-                    //Methods.GetRoiOtsu(mat, RightROI, 0, 255, out Mat Otsu2, out double th2);
-
-                    //Methods.GetRoiCanny(mat, LeftROI, 75, 150, out Mat Canny1);
-                    //Methods.GetRoiCanny(mat, RightROI, 75, 150, out Mat Canny2);
-
-                    //Debug.WriteLine($"th1: {th1}, th2: {th2}");
-
-                    //Cv2.Rectangle(mat, LeftROI, Scalar.Gray, 2);
-                    //Cv2.Rectangle(mat, RightROI, Scalar.Gray, 2);
-
-                    //Cv2.ImShow("Otsu1", Otsu1);
-                    //Cv2.MoveWindow("Otsu1", 100, 0);
-                    //Cv2.ImShow("Otsu2", Otsu2);
-                    //Cv2.MoveWindow("Otsu2", 300, 0);
-
-                    //Cv2.ImShow("Canny1", Canny1);
-                    //Cv2.MoveWindow("Canny1", 500, 0);
-                    //Cv2.ImShow("Canny2", Canny2);
-                    //Cv2.MoveWindow("Canny2", 700, 0);
-#endif
 
                 //Cv2.CvtColor(mat, mat, ColorConversionCodes.GRAY2BGR);
                 //Cv2.Circle(mat, new OpenCvSharp.Point(500, 500), 5, Scalar.Red, 3);

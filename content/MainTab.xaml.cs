@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ApexVisIns.Product;
+using System.Collections.ObjectModel;
 
 namespace ApexVisIns.content
 {
@@ -53,6 +54,12 @@ namespace ApexVisIns.content
         /// 初始化工作 CancellationTokenSource
         /// </summary>
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        #endregion
+
+        #region Property
+        public ApexFeatures ApexFeatures { get; set; }
+
+        public ObservableCollection<ApexFeatures> ApexFeturesCollection { get; set; }
         #endregion
 
         #region Local Object (方便呼叫)
@@ -134,14 +141,14 @@ namespace ApexVisIns.content
 #endif
             }
 
-
             if (!loaded)
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
                 loaded = true;
             }
-            //MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
-            //MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
+
+            // MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
+            // MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }
 
         /// <summary>
@@ -520,8 +527,8 @@ namespace ApexVisIns.content
                                     throw new Exception("連接軸數量錯誤");
                                 }
 
-                                // 啟動 Timer 
-                                ServoMotion.EnableAllTimer(100);
+                                // 啟動 Timer // 50 ms
+                                ServoMotion.EnableAllTimer(50);
 
                                 // 重置全部軸錯誤
                                 ServoMotion.ResetAllError();
@@ -769,7 +776,6 @@ namespace ApexVisIns.content
             {
                 if (SpinWait.SpinUntil(() => ServoMotion.Axes.All(axis => axis.CurrentStatus == "READY"), 3000))
                 {
-
                     if (!ServoMotion.Axes[0].ZeroReturned)
                     {
                         // 確認 IO (光電開關)
@@ -792,12 +798,14 @@ namespace ApexVisIns.content
 
         private void ZeroReturnButton_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 //if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 //{
+                MainWindow.ApexDefect.CurrentStep = 1;
                 ServoMotion.Axes[0].ChangeZeroReturned(false);
                 await MotionReturnZero();
+                MainWindow.ApexDefect.CurrentStep = 2;
                 //}
             });
         }
@@ -960,7 +968,7 @@ namespace ApexVisIns.content
             MainWindow.CameraEnumer.WorkerResume();
             MainWindow.LightEnumer.WorkerResume();
         }
-
+        
         /// <summary>
         /// 切換相機抓取
         /// </summary>
@@ -1470,6 +1478,7 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
+                        MainWindow.SurfaceIns(mat);
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface2:
@@ -1489,7 +1498,6 @@ namespace ApexVisIns.content
 
             // throw new NotImplementedException();
         }
-
         #endregion
 
 

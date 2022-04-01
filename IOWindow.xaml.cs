@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Automation.BDaq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -31,7 +32,7 @@ namespace ApexVisIns
         public IOWindow()
         {
             InitializeComponent();
-            MainWindow = this.Owner as MainWindow;
+            MainWindow = Owner as MainWindow;
         }
 
         public IOWindow(MainWindow mw)
@@ -40,19 +41,29 @@ namespace ApexVisIns
             MainWindow = mw;
         }
 
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //MainWindow = Owner as MainWindow;
+            Debug.WriteLine($"IO Loaded");
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+
+        }
+        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
         }
 
         private void TitleGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void Minbtn_Click(object sender, RoutedEventArgs e)
+        {
+            Hide();
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
@@ -66,8 +77,8 @@ namespace ApexVisIns
             {
                 MainWindow.ServoMotion.ResetAllError();
 
-
-
+                // 重新 Servo On
+                MainWindow.ServoMotion.SetAllServoOn();
             }
             catch (Exception ex)
             {
@@ -78,6 +89,8 @@ namespace ApexVisIns
         private void EmgButton_Click(object sender, RoutedEventArgs e)
         {
             // 即停按鈕 (軟體)
+            // 
+
             try
             {
 
@@ -88,6 +101,14 @@ namespace ApexVisIns
             }
         }
 
+        private void RefreshIO()
+        {
+            for (int i = 0; i < MainWindow.IOController.DiArrayColl.Count; i++)
+            {
+                ErrorCode err = MainWindow.IOController.ReadDI(i);
+                Debug.WriteLine($"ErrorCode: {err}");
+            }
+        }
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -99,7 +120,8 @@ namespace ApexVisIns
         public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
+
         #endregion
     }
 }

@@ -34,7 +34,7 @@
                     </Canvas>-->
 
                 <!--<TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}" Text="規格選擇 (長、中、短)"/>-->
-                
+
                 <!--<TextBlock Text="規格選擇" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="{StaticResource  ColorPrimary}"/>-->
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="原點復歸" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignToolButton}" 
                         IsEnabled="{Binding HardwarePrepared, Source={StaticResource ApexDefect}, UpdateSourceTrigger=PropertyChanged}"
@@ -47,6 +47,8 @@
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Source="{StaticResource ServoMotion}" Path="Axes[0].IsAxisOpen" FallbackValue="false"/>
                             <Binding Source="{StaticResource ServoMotion}" Path="Axes[0].ZeroReturned" FallbackValue="false"/>
+                            <Binding Source="{StaticResource ApexDefect}" Path="CurrentStep" 
+                                     Converter="{StaticResource EqualConverter}" ConverterParameter="2"/>
                         </MultiBinding>
                         <!--1. 確認 Servo Motion 連線狀態-->
                         <!--2. 確認 是否有原點復歸-->
@@ -98,27 +100,32 @@
                 <!--#endregion-->
 
                 <!--測試用-->
-                <!--<Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>-->
+                <!--<Button Margin="250 0 0 0" VerticalAlignment="Center" Content="確認 (測試用)" 
+                Style="{StaticResource MaterialDesignToolButton}" Click="CheckHwStatus_Click"/>-->
 
                 <!--#region 測試用 -->
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="角度校正" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="AngleCorrectionButton_Click">
-                    <Button.ToolTip>啟動角度校正</Button.ToolTip>
+                    <Button.ToolTip>
+                        <TextBlock Text="啟動角度校正"/>
+                    </Button.ToolTip>
                 </Button>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="停止相機" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopCamera_Click">
-                    <Button.ToolTip>停止相機連續拍攝，角度校正失敗時可用來關閉相機</Button.ToolTip>
+                    <Button.ToolTip>
+                        <TextBlock Text="停止相機連續拍攝，角度校正失敗時可用來關閉相機"/>
+                    </Button.ToolTip>
                 </Button>
 
                 <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="順序檢測" Foreground="{StaticResource ColorIndigo}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="SequenceInspection_Click">
-                    <Button.ToolTip>開始窗戶、耳朵瑕疵檢測</Button.ToolTip>
+                    <Button.ToolTip>
+                        <TextBlock Text="開始窗戶、耳朵瑕疵檢測"/>
+                    </Button.ToolTip>
                 </Button>
                 <!--#endregion-->
-
-
-
+                
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->

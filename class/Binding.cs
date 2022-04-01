@@ -551,7 +551,7 @@ namespace ApexVisIns
         private readonly List<Action> ProgressAnimation = new();
         #endregion
 
-       
+
         /// <summary>
         /// 當前 Progress Value
         /// </summary>
@@ -787,10 +787,10 @@ namespace ApexVisIns
         /// <summary>
         /// Stack Source of Message
         /// </summary>
-        public ObserableStack<Message> InfoSource { get; set; } = new ObserableStack<Message>();
+        public ObservableStack<Message> InfoSource { get; set; } = new ObservableStack<Message>();
 
-        public ObserableStack<Message> ErrSource { get; set; } = new ObserableStack<Message>();
-        
+        public ObservableStack<Message> ErrSource { get; set; } = new ObservableStack<Message>();
+
         /// <summary>
         /// Message 訊息
         /// </summary>
@@ -917,7 +917,7 @@ namespace ApexVisIns
             public int NewValue { get; }
 
             public TimeSpan Duration { get; }
-        } 
+        }
         #endregion
 
         #region PropertyChanged
@@ -925,7 +925,7 @@ namespace ApexVisIns
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
         #endregion
     }
 
@@ -933,13 +933,15 @@ namespace ApexVisIns
     /// Observable Stack
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ObserableStack<T> : Stack<T>, ICollection<T>, INotifyPropertyChanged, INotifyCollectionChanged
+    public class ObservableStack<T> : Stack<T>, ICollection<T>, INotifyPropertyChanged, INotifyCollectionChanged
     {
-        public ObserableStack() : base() { }
 
-        public ObserableStack(IEnumerable<T> collection) : base(collection) { }
+        public ObservableStack() : base() { }
 
-        public ObserableStack(int capacity) : base(capacity) { }
+        public ObservableStack(IEnumerable<T> collection) : base(collection) { }
+
+        public ObservableStack(int capacity) : base(capacity) { }
+        public bool IsReadOnly => throw new NotImplementedException();
 
         public new virtual T Pop()
         {
@@ -961,13 +963,12 @@ namespace ApexVisIns
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         private void OnCollectionChanged(NotifyCollectionChangedAction action, T item)
         {
@@ -975,13 +976,70 @@ namespace ApexVisIns
             OnPropertyChanged(nameof(Count));
         }
 
-        public bool IsReadOnly => throw new NotImplementedException();
-
+        [Obsolete("don't use this")]
         public void Add(T item)
         {
             throw new NotImplementedException();
         }
 
+        [Obsolete("don't use this")]
+        public bool Remove(T item)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public class ObservablaQueue<T> : Queue<T>, ICollection<T>, INotifyPropertyChanged, INotifyCollectionChanged
+    {
+        public ObservablaQueue() : base() { }
+
+        public ObservablaQueue(IEnumerable<T> collection) : base(collection) { }
+
+        public ObservablaQueue(int capacity) : base(capacity) { }
+
+        public bool IsReadOnly => throw new NotImplementedException();
+
+        public new virtual T Dequeue()
+        {
+            T item = base.Dequeue();
+            OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
+            return item;
+        }
+
+        public new virtual void Enqueue(T item)
+        {
+            base.Enqueue(item);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+        }
+
+        public new virtual void Clear()
+        {
+            base.Clear();
+            OnCollectionChanged(NotifyCollectionChangedAction.Reset, default);
+        }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, T item)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, item, item == null ? -1 : 0));
+            OnPropertyChanged(nameof(Count));
+        }
+
+        [Obsolete("don't use this")]
+        public void Add(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        [Obsolete("don't use this")]
         public bool Remove(T item)
         {
             throw new NotImplementedException();
