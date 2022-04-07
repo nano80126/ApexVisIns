@@ -78,7 +78,7 @@ namespace ApexVisIns
         #region I/O Controller
         public static IOController IOController { get; set; }
 
-        public  IOWindow IOWindow { get; set; }
+        public IOWindow IOWindow { get; set; }
 
 
         [Obsolete("待確認")]
@@ -178,11 +178,6 @@ namespace ApexVisIns
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             #region Find Resource
-            // Crosshair = FindResource(nameof(Crosshair)) as Crosshair;
-            // AssistRect = FindResource(nameof(AssistRect)) as AssistRect;
-            // Indicator = FindResource(nameof(Indicator)) as Indicator;
-            // AssistPoints = FindResource(nameof(AssistPoints)) as AssistPoint[];
-
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             MsgInformer.EnableCollectionBinding();
             // 綁定 ProgressBar Value Changed 事件
@@ -207,15 +202,15 @@ namespace ApexVisIns
 #if DEBUG
             LightController = FindResource(nameof(LightController)) as LightController;
 #endif
-            //LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[]; // depricated
+            // LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[]; // depricated
             LightCtrls = FindResource(nameof(LightCtrls)) as LightSerial[];
             #endregion
 
             #region EtherCAT Motion
-            //MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
+            // MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
             ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
-            //ServoMotion.ListAvailableDevices(true);
+            // ServoMotion.ListAvailableDevices(true);
             #endregion
 
             #region IO Controller
@@ -251,12 +246,6 @@ namespace ApexVisIns
             {
                 Debug.WriteLine($"Init Mode: {InitMode}");
             }
-
-            // BackgroundWorker.RunWorkerAsync();
-            // MsgInformer.BackgroundWorker.RunWorkerAsync();
-            // MsgInformer.BackgroundWorker.DoWork += Worker_DoWork;
-            // MsgInformer.BackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged; ;
-            // MsgInformer.BackgroundWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
 
         /// <summary>
@@ -315,7 +304,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closed(object sender, EventArgs e)
         {
-         
+
         }
 
         /// <summary>
@@ -512,8 +501,6 @@ namespace ApexVisIns
             MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.APP, "Success");
         }
         #endregion
-
-     
     }
 
     /// <summary>

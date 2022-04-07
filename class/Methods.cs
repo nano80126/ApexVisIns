@@ -80,8 +80,7 @@ namespace ApexVisIns
             try
             {
                 otsu = new Mat();
-                //using Mat clone = new(src, roi);
-
+                // using Mat clone = new(src, roi);
                 threshHold = (byte)Cv2.Threshold(src, otsu, th, max, ThresholdTypes.Otsu);
             }
             catch (OpenCVException)

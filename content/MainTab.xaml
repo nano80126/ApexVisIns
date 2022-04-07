@@ -124,8 +124,15 @@
                         <TextBlock Text="開始窗戶、耳朵瑕疵檢測"/>
                     </Button.ToolTip>
                 </Button>
+
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="表面檢測" Foreground="{StaticResource ColorTeal}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="StartSurfaceIns_Click">
+                    <Button.ToolTip>
+                        <TextBlock Text="開始管件表面檢測"/>
+                    </Button.ToolTip>
+                </Button>
                 <!--#endregion-->
-                
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->

@@ -458,29 +458,29 @@ namespace ApexVisIns.content
                                 MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
-                                #region 待刪除
+                #region 待刪除
                                 Mat m1 = new();
                                 Cv2.Resize(mat, m1, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat1", m1);
                                 Cv2.MoveWindow("mat1", 0, 0);
-                                #endregion
+                #endregion
                                 break;
                             case 0b1001:    // 9
                                 MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
-                                #region 待刪除
+                #region 待刪除
                                 Mat m2 = new();
                                 Cv2.Resize(mat, m2, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat2", m2);
                                 Cv2.MoveWindow("mat2", 600, 0);
-                                #endregion
+                #endregion
                                 break;
                             case 0b1011:    // 11
                                 MainWindow.WindowInspection(mat, xArray, roiL, roiR);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
-                                #region 待刪除
+                #region 待刪除
                                 Mat m3 = new();
 
                                 Cv2.Rectangle(mat, roiL, Scalar.Gray, 2);
@@ -489,35 +489,35 @@ namespace ApexVisIns.content
                                 Cv2.Resize(mat, m3, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("mat3", m3);
                                 Cv2.MoveWindow("mat3", 1200, 0);
-                                #endregion
+                #endregion
                                 break;
                             case 0b1101:    // 13 // 側光
                                 OpenCvSharp.Rect roiTop = new((int)xArray[2], (int)(top - 80), (int)(xArray[4] - xArray[2]), 120);
                                 MainWindow.WindowInspectionSideLight(mat, roiTop, 0);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
-                                #region 待刪除
+                #region 待刪除
                                 Mat otsu1 = new();
 
                                 Cv2.Rectangle(mat, roiTop, Scalar.Gray, 2);
                                 Cv2.Resize(mat, otsu1, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("Otsu1", otsu1);
                                 Cv2.MoveWindow("Otsu1", 300, 0);
-                                #endregion
+                #endregion
                                 break;
                             case 0b1111:    // 15 // 側光
                                 OpenCvSharp.Rect roiBot = new((int)xArray[2], (int)bottom - 40, (int)(xArray[4] - xArray[2]), 120);
                                 MainWindow.WindowInspectionSideLight(mat, roiBot, 1);
                                 MainWindow.ApexDefectInspectionStepsFlags.WindowSteps += 0b01;
 
-                                #region 待刪除
+                #region 待刪除
                                 Mat otsu2 = new();
 
                                 Cv2.Rectangle(mat, roiBot, Scalar.Gray, 2);
                                 Cv2.Resize(mat, otsu2, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
                                 Cv2.ImShow("Otsu2", otsu2);
                                 Cv2.MoveWindow("Otsu2", 900, 0);
-                                #endregion
+                #endregion
                                 break;
                             default:
                                 break;
@@ -528,7 +528,7 @@ namespace ApexVisIns.content
 
                 Debug.WriteLine($"Stop: {DateTime.Now:ss.fff}"); 
 #endif
-      
+
             }
             catch (TimeoutException T)
             {
@@ -685,8 +685,7 @@ namespace ApexVisIns.content
 
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
 
-
-            FullMat = null;
+            // FullMat = null;
             Cv2.DestroyAllWindows();
         }
 
@@ -697,8 +696,6 @@ namespace ApexVisIns.content
             MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsGrabbing));
             //MainWindow.BaslerCam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
         }
-
-        Mat FullMat;
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
@@ -720,6 +717,9 @@ namespace ApexVisIns.content
                     //Cv2.DestroyAllWindows();
                     #region Coding custom ROI Method here
 
+                    Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat otsu, out byte th);
+                    Debug.WriteLine($"Otsu th: {th}");
+#if false
                     //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(2200, 130, 1000, 20);
                     //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(1150, 130, 1200, 20);
                     OpenCvSharp.Rect roi = new(1570, 130, 780, 20);
@@ -791,7 +791,10 @@ namespace ApexVisIns.content
                     //    {
                     //        Cv2.ImShow("Full", FullMat);
                     //    });
-                    //}
+                    //}  
+#endif
+
+
                     #region 標記
 #if false
                     unsafe
@@ -818,8 +821,8 @@ namespace ApexVisIns.content
                     #region UI Thread here
                     Dispatcher.Invoke(() =>
                     {
-                        Cv2.ImShow("GrayScale", chart);
-                        Cv2.MoveWindow("GrayScale", 100, 100);
+                        //Cv2.ImShow("GrayScale", chart);
+                        //Cv2.MoveWindow("GrayScale", 100, 100);
                         //Cv2.ImShow("GrayScale'", chart2);
                         //Cv2.MoveWindow("GrayScale'", 100, 100 + chart.Height + 32);
 
@@ -828,8 +831,10 @@ namespace ApexVisIns.content
                         // Cv2.ImShow("ROI Blur", blur);
                         // Cv2.MoveWindow("ROI Blur", 100, 100 + chart.Height * 2 + 48 + roiMat.Height * 2 + 32);
 
-                        Cv2.ImShow("Hist Diagram", histChart);
-                        Cv2.MoveWindow("Hist Diagram", 100 + chart.Width + 2, 100);
+                        //Cv2.ImShow("Hist Diagram", histChart);
+                        //Cv2.MoveWindow("Hist Diagram", 100 + chart.Width + 2, 100);
+
+                        Cv2.ImShow("Ostu", otsu);
                     });
                     #endregion
 
@@ -845,14 +850,13 @@ namespace ApexVisIns.content
                     MainWindow.ImageSource = mat.ToImageSource();
                     //Debug.WriteLine($"width: {width} maxWindowWidth: {maxWindowWidth}");
                     //Debug.WriteLine($"1st {step1done}, 2nd {step2done} 3rd {step3done} 4th {step4done}");
-              
+
                 });
                 Debug.WriteLine($"End: {DateTime.Now:ss.fff}");
                 Debug.WriteLine("------------------------------------------------");
             }
         }
         #endregion
-
 
         #endregion
     }

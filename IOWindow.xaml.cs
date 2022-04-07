@@ -51,6 +51,7 @@ namespace ApexVisIns
         {
 
         }
+
         private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
 

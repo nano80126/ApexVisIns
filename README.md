@@ -70,38 +70,11 @@ Apex 外觀瑕疵檢測
 
 ### TO DO LIST
 
-* [x] Change color of scoll bar
-* [x] 移除 UVC / COIL 內容 
+
 * [ ] 載入初始 Camera config from .json
 	* 需要建立 class for json object
-* [x] 建立樹狀圖 (draw.io) 
-	* DataContext
-* [x] Camera Enumer Debug
-* [x] DeviceConfig 清除空儲存按鈕不能隱藏
-* [x] DeviceConfig 多台 Camera 測試 (等工業電腦到廠)
-* [x] 確認 Device Tab 和 Enginner Tab 不會衝突
-	* 
-* [x] Add custom event for DI interrupt
-* [x] 中斷器有可能啟用失敗
-	* 情境 CH0 啟用後再啟用CH1
-	* 反之亦然
-* [x] Digital IO Debounce
-* [x] 組態列表儲存 JSON
-	* Model
-	* S/N
-	* Character
-	* IP (之後IP要設定為固定)
-* [x] Jog 使用 Popupbox
-* [x] Motion Tab Unload 的處置
-	* 暫停 Timer
-* [x] Device Tab
-	* Device List 儲存IP，相機IP需要綁定
 * [ ] 原點復歸
 	* 待測試
-* [x] 測試 MoveAbs & ModeRel
-* [x] 簡化控制板 UI
-* [x] Handle 遺失問題待處理
-* [x] 新增光源控制器 (MainTab)
 * [ ] MainTab.xaml
 	* 光源控制器 初始化
 	* 相機 初始化
@@ -123,13 +96,8 @@ Apex 外觀瑕疵檢測
 * [ ] ProgressBar UI 會卡
 	* 待測試，若無辦法則改 Infinity
 
-* [x] 確認 Motion GetDevices 會不會讓 Handle 遺失 
-	※ 要等 220V
 
 * [ ] Motion Config 載入/儲存
-* [x] ImageSource Array
-* [x] 轉移 DeviceConfig 到物件上
-	* 方便直接比對
 * [ ] 測試 EngineerTab
 * [ ] IO Control 重複初始化
 	* DigitalIOPanel 和 MainTab.xaml
@@ -144,59 +112,17 @@ Apex 外觀瑕疵檢測
 	* 隱藏 Close Button
 	* 關閉程式 = 關機
 
-* [x] IO Control Panel 改為按鈕建立實例
-	* 避免和 MainTab 衝突
-	
-* [x] 除了 MainTab 以外，需要 admin 權限才可操作其他 Tab
-	* 新增登出 ?
-
-* [x] 新增 Interface of CustomCam
-	* 待測試
-
-* [x] 更新 ServoMotion HomeModes
-	* 多測試幾次
-
-* [x] 確認 OOP 命名規則
-	* SltMotionAxis (ServoMotion)
-	* 待測試
-
 * [ ] 相機連線失敗 Retry
 	* 預設三次
 	* 測試中
 	* 有機率連線失敗
 
-* [x] Test Hotkey
-	* Engineer Tab
-
 * [ ] ~MotionTab 有些 Button 需要綁定 servo on~
 
 * [ ] 原點復歸若在原點上不會觸發重置位置
 
-* [x] 確認 ProgressBar 可以 100%
-
-* [x] 初始化 Motion
-	* 確認 MotionEnumer 是否使用 => 可移除
-	* 確認 ServoMotion.ListAvailableDevices() 觸發時機 (必須避免重複觸發)
-
-* [x] Motion Status Pack Icon
-	* ALM 時顯示驚嘆號 (exclamation)
-
 * [ ] ServoMotion.Axes.Clear() 時會導致 Binding 產生 Error
 	* 設置BindingOperation
-
-* [x] 測試原點復歸中是否可以進行其他操作
-	* Ans: 會發出警報
-
-* [x] MotionTab 尋找軸卡改為按鈕觸發
-
-* [x] 原點復歸前確認 IO
-
-* [x] 整理初始化流程 methods
-	* try... catch
-	* MsgInformer Error Type
-	* SpinWait Flag
-
-* [x] 初始化改 Task with token
 
 * [ ] Motion Reset Error 若即停開關按下則會 delay 
 	* 重置錯誤失敗會導致 Delay
@@ -205,20 +131,11 @@ Apex 外觀瑕疵檢測
 	* 即時更新
 	* 
 
-* [x] 光源控制器待轉移
-
 * [ ] Initializer 需要等待 Enumer
-
-* [x] 新增 Hardware Status Block
 
 * [ ] 新增 CRC 計算
 
-* [x] 即停按下後關閉程式會當掉
-
 * [ ] Add _cancellation to camera retry methods 
-
-* [x] 新增暖機 mode
-	* 增加模式切換視窗
 
 * [ ] 新增 Database 連線 Block
 	* 若未連線也可測量，但是紀錄不會留下 
@@ -226,8 +143,6 @@ Apex 外觀瑕疵檢測
 * [ ] 軟體即停處置
 
 * [ ] Reset 處置
-
-* [x] Servo On All in MotionTab
 
 * [ ] 重構 Alogorithm
 

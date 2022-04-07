@@ -53,7 +53,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 初始化工作 CancellationTokenSource
         /// </summary>
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
         #endregion
 
         #region Property
@@ -119,14 +119,13 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             // Initializer();
-
             if (MainWindow.InitMode != MainWindow.InitModes.EDIT)
             {
                 Initializer();
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -137,7 +136,7 @@ namespace ApexVisIns.content
                 InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
                 //測試相機用
-                InitCamera(_cancellationTokenSource.Token).Wait(); 
+                InitCamera(_cancellationTokenSource.Token).Wait();
 #endif
             }
 
@@ -203,8 +202,7 @@ namespace ApexVisIns.content
 
                         MainWindow.CameraEnumer.WorkerPause();
                         MainWindow.LightEnumer.WorkerPause();
-
-                        //MainWindow.CreateIOWindow();
+                        // MainWindow.CreateIOWindow();
 
                         // 硬體準備完成旗標
                         MainWindow.ApexDefect.HardwarePrepared = true;
@@ -1434,7 +1432,7 @@ namespace ApexVisIns.content
 
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
-            if (MainWindow.ApexAngleCorrectionFlags.Steps > 8)
+            if (MainWindow.ApexAngleCorrectionFlags.Steps > 8 && ((DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData) == DeviceConfigBase.TargetFeatureType.Ear)
             {
                 EndAngleCorrection();
                 return;
@@ -1478,10 +1476,14 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
-                        MainWindow.SurfaceIns(mat);
-                        MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
+                        //MainWindow.SurfaceIns1(mat);
+                        MainWindow.Dispatcher.Invoke(() => {
+                            Cv2.ImShow("cam3", mat.Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
+                            MainWindow.ImageSource3 = mat.ToImageSource();
+                        });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface2:
+                        //MainWindow.SurfaceIns2(mat);
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                         break;
                     default:

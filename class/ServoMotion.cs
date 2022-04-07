@@ -719,6 +719,7 @@ namespace ApexVisIns
             {
                 //Debug.WriteLine($"Axis-{i}");
                 GetMotionState(i);
+                GetMotionPos(i);
                 GetMotionIO(i);
             }
         }
@@ -768,6 +769,23 @@ namespace ApexVisIns
                 Axes[axis].PropertyChange("IO_LMTN");
                 Axes[axis].PropertyChange("IO_EMG");
                 Axes[axis].PropertyChange("IO_ORG");
+            }
+        }
+
+        /// <summary>
+        /// 取得 Motion Actual Position
+        /// </summary>
+        /// <param name="axis"></param>
+        public void GetMotionPos(int axis)
+        {
+            //double cmd = 0;
+            double pos = 0;
+
+            uint result = Motion.mAcm_AxGetActualPosition(AxisHandles[axis], ref pos);
+
+            if (result == (uint)ErrorCode.SUCCESS)
+            {
+                Axes[axis].PosActual = pos;
             }
         }
 
@@ -1273,7 +1291,7 @@ namespace ApexVisIns
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -1546,7 +1564,7 @@ namespace ApexVisIns
                 if (value != _posCmd)
                 {
                     _posCmd = value;
-                    OnPropertyChanged(nameof(PosCommand));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -1562,7 +1580,7 @@ namespace ApexVisIns
                 if (value != _posAct)
                 {
                     _posAct = value;
-                    OnPropertyChanged(nameof(PosActual));
+                    OnPropertyChanged();
                 }
             }
         }
