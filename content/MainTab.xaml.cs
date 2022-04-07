@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if true
+#if false
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -1430,7 +1430,7 @@ namespace ApexVisIns.content
             baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
         }
 
-        private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
+        public void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
             if (MainWindow.ApexAngleCorrectionFlags.Steps > 8 && ((DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData) == DeviceConfigBase.TargetFeatureType.Ear)
             {

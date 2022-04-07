@@ -55,12 +55,14 @@ namespace ApexVisIns.content
             StartSurfaceIns();
         }
 
-        #region Methods
+        #region Methods，方法
         /// <summary>
         /// 開始窗戶、耳朵相機連續拍攝
         /// </summary>
         private void StartWindowEarCameraContinous()
         {
+            MainWindow.StartWindowEarCameraContinous();
+#if false
             // 窗戶
             if (!BaslerCam1.IsContinuousGrabbing && !BaslerCam1.IsGrabberOpened)
             {
@@ -77,11 +79,42 @@ namespace ApexVisIns.content
                 BaslerCam2.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                 BaslerCam2.IsContinuousGrabbing = true;
-            }
+            } 
+#endif
         }
 
+        /// <summary>
+        /// 停止窗戶、耳朵相機連續拍攝
+        /// </summary>
+        private void StopWindowEarCameraContinous()
+        {
+            MainWindow.StopWindowEarCameraContinous();
+#if false
+            if (BaslerCam1.Camera.StreamGrabber.IsGrabbing && BaslerCam1.IsContinuousGrabbing)
+            {
+                BaslerCam1.Camera.StreamGrabber.Stop();
+                BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                BaslerCam1.IsContinuousGrabbing = false;
+            }
+
+            if (BaslerCam2.Camera.StreamGrabber.IsGrabbing && BaslerCam2.IsContinuousGrabbing)
+            {
+                BaslerCam2.Camera.StreamGrabber.Stop();
+                BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                BaslerCam2.IsContinuousGrabbing = false;
+            } 
+#endif
+        }
+
+        /// <summary>
+        /// 開始管件表面連續拍攝
+        /// </summary>
         private void StartSurfaceCameraContinous()
         {
+            MainWindow.StartSurfaceCameraContinous();
+#if false
             // 表面 1 
             if (!BaslerCam3.IsContinuousGrabbing && !BaslerCam3.IsGrabberOpened)
             {
@@ -98,36 +131,17 @@ namespace ApexVisIns.content
                 BaslerCam4.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                 BaslerCam4.IsContinuousGrabbing = true;
-            }
+            } 
+#endif
         }
 
         /// <summary>
-        /// 停止窗戶、耳朵相機連續拍攝
-        /// </summary>
-        private void StopWindowEarCameraContinous()
-        {
-            if (BaslerCam1.Camera.StreamGrabber.IsGrabbing && BaslerCam1.IsContinuousGrabbing)
-            {
-                BaslerCam1.Camera.StreamGrabber.Stop();
-                BaslerCam1.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCam1.IsContinuousGrabbing = false;
-            }
-
-            if (BaslerCam2.Camera.StreamGrabber.IsGrabbing && BaslerCam2.IsContinuousGrabbing)
-            {
-                BaslerCam2.Camera.StreamGrabber.Stop();
-                BaslerCam2.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCam2.IsContinuousGrabbing = false;
-            }
-        }
-
-        /// <summary>
-        /// 停止窗戶、耳朵相機連續拍攝
+        /// 停止管件表面連續拍攝
         /// </summary>
         private void StopSurfaceCameraContinous()
         {
+            MainWindow.StopSurfaceCameraContinous();
+#if false
             if (BaslerCam3.Camera.StreamGrabber.IsGrabbing && BaslerCam3.IsContinuousGrabbing)
             {
                 BaslerCam3.Camera.StreamGrabber.Stop();
@@ -142,7 +156,8 @@ namespace ApexVisIns.content
                 BaslerCam4.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 
                 BaslerCam4.IsContinuousGrabbing = false;
-            }
+            } 
+#endif
         }
 
         /// <summary>
@@ -327,7 +342,6 @@ namespace ApexVisIns.content
 
             // StopWindowEarCameraContinous();
         }
-
 
         private void StartSurfaceIns()
         {
