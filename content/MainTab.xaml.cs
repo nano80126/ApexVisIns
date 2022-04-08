@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -1083,7 +1083,10 @@ namespace ApexVisIns.content
             // retry 連線
             while (!cam.IsOpen)
             {
-                if (ct.IsCancellationRequested) break;
+                if (ct.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 if (retryCount > 3)
                 {
@@ -1207,7 +1210,6 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
         }
-
 
         private void Basler_SingleGrab(BaslerCam cam)
         {
@@ -1432,11 +1434,11 @@ namespace ApexVisIns.content
 
         public void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
-            if (MainWindow.ApexAngleCorrectionFlags.Steps > 8 && ((DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData) == DeviceConfigBase.TargetFeatureType.Ear)
-            {
-                EndAngleCorrection();
-                return;
-            }
+            //if (MainWindow.ApexAngleCorrectionFlags.Steps > 8 && ((DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData) == DeviceConfigBase.TargetFeatureType.Ear)
+            //{
+            //    EndAngleCorrection();
+            //    return;
+            //}
 
             IGrabResult grabResult = e.GrabResult;
 
@@ -1465,7 +1467,8 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Ear:
-                        MainWindow.Dispatcher.Invoke(() => {
+                        MainWindow.Dispatcher.Invoke(() =>
+                        {
                             if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0110 && MainWindow.ApexAngleCorrectionFlags.Steps <= 8)
                             {
                                 MainWindow.AngleCorrection(null, mat);
@@ -1476,8 +1479,10 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
-                        //MainWindow.SurfaceIns1(mat);
-                        MainWindow.Dispatcher.Invoke(() => {
+                        MainWindow.SurfaceIns1(mat);
+                        MainWindow.Dispatcher.Invoke(() =>
+                        {
+                            // Resize
                             Cv2.ImShow("cam3", mat.Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
                             MainWindow.ImageSource3 = mat.ToImageSource();
                         });
@@ -1501,7 +1506,5 @@ namespace ApexVisIns.content
             // throw new NotImplementedException();
         }
         #endregion
-
-
     }
 }

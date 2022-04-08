@@ -15,6 +15,9 @@ using System.Runtime.InteropServices;
 
 namespace ApexVisIns.content
 {
+    /*
+    與 MainTab.xaml 相同 Class
+     */
     public partial class MainTab : StackPanel
     {
         /// <summary>
@@ -24,9 +27,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void AngleCorrectionButton_Click(object sender, RoutedEventArgs e)
         {
-
             StartAngleCorrection();
-            //CheckRotateDirection();
         }
 
         /// <summary>
@@ -165,6 +166,8 @@ namespace ApexVisIns.content
         /// </summary>
         private void StartWindowEarGrabber()
         {
+            MainWindow.StartWindowEarGrabber();
+#if false
             if (!BaslerCam1.IsGrabberOpened && !BaslerCam1.IsGrabbing)
             {
                 // 啟動 StreamGrabber 連續拍攝
@@ -189,7 +192,8 @@ namespace ApexVisIns.content
 
                 //
                 BaslerCam2.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
-            }
+            } 
+#endif
         }
 
         /// <summary>
@@ -197,6 +201,8 @@ namespace ApexVisIns.content
         /// </summary>
         private void StopWindowEarGrabber()
         {
+            MainWindow.StopWindowEarGrabber();
+#if false
             if (BaslerCam1.IsGrabbing)
             {
                 // 啟動 StreamGrabber 連續拍攝
@@ -215,34 +221,34 @@ namespace ApexVisIns.content
 
                 // 
                 BaslerCam2.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
-            }
+            } 
+#endif
         }
 
         /// <summary>
-        /// 管件角度校正，
-        /// 
+        /// 開始管件角度校正
         /// </summary>
         private void StartAngleCorrection()
         {
             Cv2.DestroyAllWindows();
 
-            // 變更光源
-            MainWindow.PreCheckRatationWay();
-
-            #region Flags
+            #region 重置 Flags
             MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 7;     // 未定
             MainWindow.ApexAngleCorrectionFlags.OtsuThreshlod = 0;      // Otsu 閾值
             MainWindow.ApexAngleCorrectionFlags.Steps = 1;              // 當前步序
-            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;    // 窗戶寬度不會超過 400 // 一般約 380
+            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;  // 窗戶寬度不會超過 400 // 一般約 380
             MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;     // 窗戶最大值
             #endregion
+
+            // 變更光源
+            MainWindow.PreCheckCorrectionMode();
 
             // 啟動 Grabber
             StartWindowEarGrabber();
 
             // 確認校正模式 & Otsu值
-            MainWindow.CheckRatationWay(BaslerCam1, out byte direction);
-            MainWindow.ApexAngleCorrectionFlags.CorrectionMode = direction;
+            MainWindow.CheckCorrectionMode(BaslerCam1, out byte mode);
+            MainWindow.ApexAngleCorrectionFlags.CorrectionMode = mode;
 
             Debug.WriteLine($"Direction: {MainWindow.ApexAngleCorrectionFlags.CorrectionMode}");
 
@@ -254,52 +260,54 @@ namespace ApexVisIns.content
 
             switch (MainWindow.ApexAngleCorrectionFlags.CorrectionMode)
             {
-                case 0: // 快正
+                case 0:     // 快正轉
                     ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
                     ServoMotion.Axes[1].VelMove(0);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 1;
                     break;
-                case 1: // 快逆
+                case 1:     // 快逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
                     ServoMotion.Axes[1].VelMove(1);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 1;
                     break;
-                case 2: // 慢正
+                case 2:     // 慢正轉
                     ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
                     ServoMotion.Axes[1].VelMove(0);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 2;
                     break;
-                case 3: // 慢逆
+                case 3:     // 慢逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
                     ServoMotion.Axes[1].VelMove(1);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 2;
                     break;
-                case 4: // 低速正
+                case 4:     // 低速正轉
                     ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
                     ServoMotion.Axes[1].VelMove(0);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 3;
                     break;
-                case 5: // 低速逆
+                case 5:     // 低速逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
                     ServoMotion.Axes[1].VelMove(1);
                     MainWindow.ApexAngleCorrectionFlags.Steps = 3;
                     break;
-                case 6: // 正接近
+                case 6:     // 正接近
                     MainWindow.ApexAngleCorrectionFlags.Steps = 4;
                     break;
-                case 7: // 逆接近
+                case 7:     // 逆接近
                     MainWindow.ApexAngleCorrectionFlags.Steps = 4;
                     break;
                 default:    // 8 未定
                     break;
             }
 
+            // 開始相機連續拍攝
             StartWindowEarCameraContinous();
         }
 
         /// <summary>
-        /// 角度校正開始
+        /// 開始角度校正
         /// </summary>
+        [Obsolete("Old methods")]
         private void StartAngleCorrection_old()
         {
             Cv2.DestroyAllWindows();
@@ -320,7 +328,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 角度校正結束
+        /// 結束管件角度校正
         /// </summary>
         private void EndAngleCorrection()
         {
@@ -328,12 +336,13 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 開始序列檢測
+        /// 開始序列檢測，檢驗窗戶、耳朵毛邊
         /// </summary>
         private void StartSequenceIns()
         {
             Cv2.DestroyAllWindows();
 
+            // 重置 Flag
             MainWindow.ApexDefectInspectionStepsFlags.Steps = 0;
 
             StartWindowEarGrabber();
@@ -343,13 +352,19 @@ namespace ApexVisIns.content
             // StopWindowEarCameraContinous();
         }
 
+        /// <summary>
+        /// 開始管件表面檢驗
+        /// </summary>
         private void StartSurfaceIns()
         {
             Cv2.DestroyAllWindows();
 
-            MainWindow.PreSurfaceIns();
+            // 重置 Flag
+            MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps = 0;
 
-            StartSurfaceCameraContinous();
+            //StartSurfaceCameraContinous();
+
+            MainWindow.ApexSurfaceInspectionSequence(BaslerCam1, BaslerCam2, BaslerCam3, BaslerCam4);
         }
         #endregion
     }

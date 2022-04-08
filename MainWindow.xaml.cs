@@ -489,7 +489,6 @@ namespace ApexVisIns
         }
         #endregion
 
-
         #region 公用物件操作 (Apex 使用)
         /// <summary>
         /// 開始窗戶、耳朵相機連續拍攝
@@ -582,29 +581,79 @@ namespace ApexVisIns
             }
         }
 
-        /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+        // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
 
+        /// <summary>
+        /// 啟動窗戶、耳朵相機 Grabber
+        /// </summary>
         public void StartWindowEarGrabber()
         {
+            if (!BaslerCams[0].IsGrabberOpened && !BaslerCams[0].IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCams[0].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
 
+                BaslerCams[0].Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                BaslerCams[0].IsGrabberOpened = true;
+                BaslerCams[0].IsContinuousGrabbing = false;
 
-            BaslerCams[0].Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                // 
+                BaslerCams[0].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
+            }
+
+            if (!BaslerCams[1].IsGrabberOpened && !BaslerCams[1].IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCams[1].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+
+                BaslerCams[1].Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                BaslerCams[1].IsGrabberOpened = true;
+                BaslerCams[1].IsContinuousGrabbing = false;
+
+                // 
+                BaslerCams[1].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
+            }
         }
-      
 
+        /// <summary>
+        /// 停止窗戶、耳朵相機 Grabber
+        /// </summary>
         public void StopWindowEarGrabber()
         {
+            if (BaslerCams[0].IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCams[0].Camera.StreamGrabber.Stop();
+                BaslerCams[0].IsGrabberOpened = false;
 
+                // 
+                BaslerCams[0].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
+            }
 
-            BaslerCams[1].Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+            if (BaslerCams[1].IsGrabbing)
+            {
+                // 啟動 StreamGrabber 連續拍攝
+                BaslerCams[1].Camera.StreamGrabber.Stop();
+                BaslerCams[1].IsGrabberOpened = false;
+
+                // 
+                BaslerCams[1].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
+            }
         }
 
+        // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
+
+        /// <summary>
+        /// 無用處，但先保留
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        //public void 
+        // public void 
         #endregion
     }
 
@@ -695,7 +744,6 @@ namespace ApexVisIns
         }
         #endregion
     }
-
 
     public static class ProgressBarExtension
     {

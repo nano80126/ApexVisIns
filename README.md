@@ -155,7 +155,10 @@ Apex 外觀瑕疵檢測
 
 * [ ] Camera Close 增加相機就算啟動中也可以 Close 的功能
 
-* [ ] Motion Tab 新增速度控制
+* [x] Motion Tab 新增速度控制
+
+* [ ] MotionTab Textbox UX 糟糕
+	* 負號會有問題
 
 ### Config Logic
 
