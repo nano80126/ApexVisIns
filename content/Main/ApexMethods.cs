@@ -235,19 +235,29 @@ namespace ApexVisIns.content
             #region 重置 Flags
             MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 7;     // 未定
             MainWindow.ApexAngleCorrectionFlags.OtsuThreshlod = 0;      // Otsu 閾值
-            MainWindow.ApexAngleCorrectionFlags.Steps = 1;              // 當前步序
-            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 400;  // 窗戶寬度不會超過 400 // 一般約 380
+            MainWindow.ApexAngleCorrectionFlags.CheckModeStep = 0;      // 確認校正模式
+            MainWindow.ApexAngleCorrectionFlags.Steps = 0;              // 當前步序
+            MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;    // 窗戶寬度不會超過 400 // 一般約 380
             MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;     // 窗戶最大值
             #endregion
 
-            // 變更光源
-            MainWindow.PreCheckCorrectionMode();
+            //// 變更光源，啟動馬達
+            //MainWindow.PreCheckCorrectionMode();
 
             // 啟動 Grabber
             StartWindowEarGrabber();
 
+            MainWindow.ApexAngleCorrectionSequence(BaslerCam1);
+
+            // 停止Grabber
+            // StopWindowEarGrabber();
+
+            return;
+
             // 確認校正模式 & Otsu值
             MainWindow.CheckCorrectionMode(BaslerCam1, out byte mode);
+
+            // 
             MainWindow.ApexAngleCorrectionFlags.CorrectionMode = mode;
 
             Debug.WriteLine($"Direction: {MainWindow.ApexAngleCorrectionFlags.CorrectionMode}");
@@ -299,6 +309,12 @@ namespace ApexVisIns.content
                 default:    // 8 未定
                     break;
             }
+
+            Debug.WriteLine($"{MainWindow.ApexAngleCorrectionFlags.Steps}");
+            Debug.WriteLine($"{MainWindow.ApexAngleCorrectionFlags.LastWindowWidth}");
+            Debug.WriteLine($"{MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth}");
+
+            // return;
 
             // 開始相機連續拍攝
             StartWindowEarCameraContinous();

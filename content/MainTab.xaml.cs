@@ -1457,7 +1457,7 @@ namespace ApexVisIns.content
                     case DeviceConfigBase.TargetFeatureType.Window:
                         MainWindow.Dispatcher.Invoke(() =>
                         {
-                            if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0101)
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0100)
                             {
                                 MainWindow.AngleCorrection(mat, null);
                             }
@@ -1469,7 +1469,7 @@ namespace ApexVisIns.content
                     case DeviceConfigBase.TargetFeatureType.Ear:
                         MainWindow.Dispatcher.Invoke(() =>
                         {
-                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0110 && MainWindow.ApexAngleCorrectionFlags.Steps <= 8)
+                            if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101 && MainWindow.ApexAngleCorrectionFlags.Steps <= 7)
                             {
                                 MainWindow.AngleCorrection(null, mat);
                             }
