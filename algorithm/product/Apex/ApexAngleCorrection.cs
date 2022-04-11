@@ -39,8 +39,7 @@ namespace ApexVisIns
                     switch (ApexAngleCorrectionFlags.CheckModeStep)
                     {
                         case 0b0000:
-                            #region 0b0000  // 0 // 
-                            // 變更光源、馬達速度
+                            #region 0b0000  // 0 // 變更光源、馬達速度
                             PreCheckCorrectionMode();
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
@@ -64,11 +63,9 @@ namespace ApexVisIns
                             #endregion
                             break;
                         case 0b0100:
-                            #region 0b0100 // 4 // 計算校正模式
-                            // 停止 Grabber
-                            StopWindowEarGrabber();
-                            // 計算出校正模式
-                            CalCorrectionMode(width1, width2, out mode);
+                            #region 0b0100 // 4 // 停止Grabber，計算校正模式
+                            StopWindowEarGrabber(); // 停止 Grabber
+                            CalCorrectionMode(width1, width2, out mode); // 計算出校正模式
                             ApexAngleCorrectionFlags.CorrectionMode = mode;
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
@@ -76,16 +73,13 @@ namespace ApexVisIns
                         case 0b0101:
                             #region 0b0101 // 5 //
                             StartCorrectionMotor(mode);
-                            // Debug.WriteLine($"width1: {width1}, width2: {width2}");
-                            // Debug.WriteLine($"mode: {mode}");
-
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0110:
                             #region 0b0110 // 6 //
-                            Debug.WriteLine($"width1: {width1}, width2: {width2}");
-                            Debug.WriteLine($"mode: {mode}");
+                            //Debug.WriteLine($"width1: {width1}, width2: {width2}");
+                            //Debug.WriteLine($"mode: {mode}");
                             StartWindowEarCameraContinous();
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
@@ -231,38 +225,38 @@ namespace ApexVisIns
                 case 0: // 快正轉
                     ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
                     ServoMotion.Axes[1].VelMove(0);
-                    ApexAngleCorrectionFlags.Steps = 1;
+                    ApexAngleCorrectionFlags.Steps = 0;
                     break;
                 case 1: // 快逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
                     ServoMotion.Axes[1].VelMove(1);
-                    ApexAngleCorrectionFlags.Steps = 1;
+                    ApexAngleCorrectionFlags.Steps = 0;
                     break;
                 case 2: // 慢正轉
                     ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
                     ServoMotion.Axes[1].VelMove(0);
-                    ApexAngleCorrectionFlags.Steps = 2;
+                    ApexAngleCorrectionFlags.Steps = 1;
                     break;
                 case 3: // 慢逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
                     ServoMotion.Axes[1].VelMove(1);
-                    ApexAngleCorrectionFlags.Steps = 2;
+                    ApexAngleCorrectionFlags.Steps = 1;
                     break;
                 case 4: // 低速正轉
                     ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
                     ServoMotion.Axes[1].VelMove(0);
-                    ApexAngleCorrectionFlags.Steps = 3;
+                    ApexAngleCorrectionFlags.Steps = 2;
                     break;
                 case 5: // 低速逆轉
                     ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
                     ServoMotion.Axes[1].VelMove(1);
-                    ApexAngleCorrectionFlags.Steps = 3;
+                    ApexAngleCorrectionFlags.Steps = 2;
                     break;
                 case 6: // 正接近
-                    ApexAngleCorrectionFlags.Steps = 4;
+                    ApexAngleCorrectionFlags.Steps = 3;
                     break;
                 case 7: // 逆接近
-                    ApexAngleCorrectionFlags.Steps = 4;
+                    ApexAngleCorrectionFlags.Steps = 3;
                     break;
                 default:    // 8 未定
                     break;
