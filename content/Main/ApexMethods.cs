@@ -51,6 +51,11 @@ namespace ApexVisIns.content
             StartSequenceIns();
         }
 
+        /// <summary>
+        /// 開始表面檢測
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartSurfaceIns_Click(object sender, RoutedEventArgs e)
         {
             StartSurfaceIns();
@@ -233,7 +238,7 @@ namespace ApexVisIns.content
             Cv2.DestroyAllWindows();
 
             #region 重置 Flags
-            MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 7;     // 未定
+            MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 8;     // 未定
             MainWindow.ApexAngleCorrectionFlags.OtsuThreshlod = 0;      // Otsu 閾值
             MainWindow.ApexAngleCorrectionFlags.CheckModeStep = 0;      // 確認校正模式
             MainWindow.ApexAngleCorrectionFlags.Steps = 0;              // 當前步序
@@ -253,13 +258,14 @@ namespace ApexVisIns.content
             // StopWindowEarGrabber();
 
             return;
-
+#if false
             // 確認校正模式 & Otsu值
             MainWindow.CheckCorrectionMode(BaslerCam1, out byte mode);
 
             // 
             MainWindow.ApexAngleCorrectionFlags.CorrectionMode = mode;
 
+            // 
             Debug.WriteLine($"Direction: {MainWindow.ApexAngleCorrectionFlags.CorrectionMode}");
 
             // 停止Grabber
@@ -317,7 +323,8 @@ namespace ApexVisIns.content
             // return;
 
             // 開始相機連續拍攝
-            StartWindowEarCameraContinous();
+            StartWindowEarCameraContinous(); 
+#endif
         }
 
         /// <summary>

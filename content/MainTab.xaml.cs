@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -409,7 +409,7 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
-                                                if (Basler_Conntect(BaslerCam1, device.SerialNumber, device.TargetFeature, ct))
+                                                if (Basler_Connect(BaslerCam1, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
@@ -419,7 +419,7 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
-                                                if (Basler_Conntect(BaslerCam2, device.SerialNumber, device.TargetFeature, ct))
+                                                if (Basler_Connect(BaslerCam2, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
@@ -429,7 +429,7 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[2].IsConnected)
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
-                                                if (Basler_Conntect(BaslerCam3, device.SerialNumber, device.TargetFeature, ct))
+                                                if (Basler_Connect(BaslerCam3, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
@@ -439,7 +439,7 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[3].IsConnected)
                                             {
                                                 BaslerCam4 = MainWindow.BaslerCams[3];
-                                                if (Basler_Conntect(BaslerCam4, device.SerialNumber, device.TargetFeature, ct))
+                                                if (Basler_Connect(BaslerCam4, device.SerialNumber, device.TargetFeature, ct))
                                                 {
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
@@ -1076,7 +1076,7 @@ namespace ApexVisIns.content
         /// <param name="serialNumber"></param>
         /// <param name="userData"></param>
         /// <returns></returns>
-        private bool Basler_Conntect(BaslerCam cam, string serialNumber, object userData, CancellationToken ct)
+        private bool Basler_Connect(BaslerCam cam, string serialNumber, object userData, CancellationToken ct)
         {
             int retryCount = 0;
 
