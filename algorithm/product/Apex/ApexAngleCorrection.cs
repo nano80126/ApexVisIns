@@ -23,6 +23,7 @@ namespace ApexVisIns
             {
                 double width1 = -1;
                 double width2 = -1;
+                byte mode = 8;  // 未定
 
                 byte endStep = 0b0101;
                 int cycleCount = 0;
@@ -47,7 +48,6 @@ namespace ApexVisIns
                         case 0b0001:
                             #region 0b0001 // 1 // 狀態 1 width 
                             CheckCorrectionGetWidth(cam1.Camera, out width1);
-                            
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
@@ -60,63 +60,25 @@ namespace ApexVisIns
                         case 0b0011:
                             #region 0b0011 // 3 // 狀態 2 width 
                             CheckCorrectionGetWidth(cam1.Camera, out width2);
-
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0100:
                             #region 0b0100 // 4 // 計算校正模式
                             Debug.WriteLine($"width1: {width1}, width2: {width2}");
-
-
-                            if (width1 == 0 && width2 == 0)
-                            {
-                                mode = 0;      // 快正轉
-                            }
-                            else
-                            {
-                                if (width2 > width1)    // 正轉
-                                {
-                                    if (width2 < 200)   // Vel = 200
-                                    {
-                                        mode = 0;  // 快正轉
-                                    }
-                                    else if (width2 < 300)
-                                    {
-                                        mode = 2;  // 慢正轉
-                                    }
-                                    else if (width2 < 350)
-                                    {
-                                        mode = 4;  // 低速正轉
-                                    }
-                                    else
-                                    {
-                                        mode = 6;  // 正接近
-                                    }
-                                }
-                                else
-                                {
-                                    if (width1 < 200)
-                                    {
-                                        mode = 1;  // 快逆轉
-                                    }
-                                    else if (width1 < 300)
-                                    {
-                                        mode = 3;  // 慢逆傳
-                                    }
-                                    else if (width1 < 350)
-                                    {
-                                        mode = 5;  // 低速逆轉
-                                    }
-                                    else
-                                    {
-                                        mode = 7;  // 逆接近
-                                    }
-                                }
-                            }
-
-                            //StopWindowEarGrabber();
+                            // 計算出校正模式
+                            CalCorrectionMode(width1, width2, out mode);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
+                            #endregion
+                            break;
+                        case 0b0101:
+                            #region 0b0101 // 5 //
+
+                            #endregion
+                            break;
+                        case 0b0110:
+                            #region 0b0110 // 6 //
+
                             #endregion
                             break;
                         default:
@@ -201,9 +163,103 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="width1"></param>
         /// <param name="width2"></param>
-        public void CalCorrectionMode(double width1, double width2)
+        public void CalCorrectionMode(double width1, double width2, out byte mode)
         {
 
+            if (width1 == 0 && width2 == 0)
+            {
+                mode = 0;      // 快正轉
+            }
+            else
+            {
+                if (width2 > width1)    // 正轉
+                {
+                    if (width2 < 200)   // Vel = 200
+                    {
+                        mode = 0;  // 快正轉
+                    }
+                    else if (width2 < 300)
+                    {
+                        mode = 2;  // 慢正轉
+                    }
+                    else if (width2 < 350)
+                    {
+                        mode = 4;  // 低速正轉
+                    }
+                    else
+                    {
+                        mode = 6;  // 正接近
+                    }
+                }
+                else
+                {
+                    if (width1 < 200)
+                    {
+                        mode = 1;  // 快逆轉
+                    }
+                    else if (width1 < 300)
+                    {
+                        mode = 3;  // 慢逆傳
+                    }
+                    else if (width1 < 350)
+                    {
+                        mode = 5;  // 低速逆轉
+                    }
+                    else
+                    {
+                        mode = 7;  // 逆接近
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根據校正模式(mode)啟動馬達
+        /// </summary>
+        public void ActMotorByMode(byte mode)
+        {
+            switch (mode)
+            {
+                case 0:
+                    ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
+                    ServoMotion.Axes[1].VelMove(0);
+                    ApexAngleCorrectionFlags.Steps = 1;
+                    break;
+                case 1:
+                    ServoMotion.Axes[1].SetAxisVelParam(50, 500, 10000, 10000);
+                    ServoMotion.Axes[1].VelMove(1);
+                    ApexAngleCorrectionFlags.Steps = 1;
+                    //ServoMotion.Axes[1].SetAxisVelParam(0,);
+                    break;
+                case 2:
+                    ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
+                    ServoMotion.Axes[1].VelMove(0);
+                    ApexAngleCorrectionFlags.Steps = 2;
+                    break;
+                case 3:
+                    ServoMotion.Axes[1].SetAxisVelParam(20, 200, 4000, 4000);
+                    ServoMotion.Axes[1].VelMove(1);
+                    ApexAngleCorrectionFlags.Steps = 2;
+                    break;
+                case 4:
+                    ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
+                    ServoMotion.Axes[1].VelMove(0);
+                    ApexAngleCorrectionFlags.Steps = 3;
+                    break;
+                case 5:
+                    ServoMotion.Axes[1].SetAxisVelParam(5, 50, 1000, 1000);
+                    ServoMotion.Axes[1].VelMove(1);
+                    ApexAngleCorrectionFlags.Steps = 3;
+                    break;
+                case 6:
+                    ApexAngleCorrectionFlags.Steps = 4;
+                    break;
+                case 7:
+                    ApexAngleCorrectionFlags.Steps = 4;
+                    break;
+                default:    // 8 未定
+                    break;
+            }
         }
 
         /// <summary>
