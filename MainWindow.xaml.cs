@@ -236,6 +236,19 @@ namespace ApexVisIns
 
             //CreateIOWindow();
 
+#if false
+            //Dictionary<int, OpenCvSharp.Rect> rrr = new Dictionary<int, OpenCvSharp.Rect>() {
+            //    { 120, new OpenCvSharp.Rect(10,10,10,10)},
+            //    { 240, new OpenCvSharp.Rect(20,10,10,10)},
+            //    { 360, new OpenCvSharp.Rect(30,10,10,10)},
+            //};
+
+            //foreach (int item in rrr.Keys)
+            //{
+            //    Debug.WriteLine($"{item}, {rrr[item]}");
+            //}  
+#endif
+
             ModeWindow modeWindow = new()
             {
                 Owner = this

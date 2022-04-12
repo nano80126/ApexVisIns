@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if true
+#if false
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -1473,8 +1473,8 @@ namespace ApexVisIns.content
                             {
                                 MainWindow.AngleCorrection(null, mat);
                             }
-                            //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                            //Cv2.ImShow("cam2", mat);
+                            // Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                            // Cv2.ImShow("cam2", mat);
                             MainWindow.ImageSource2 = mat.ToImageSource();
                         });
                         break;
@@ -1496,7 +1496,6 @@ namespace ApexVisIns.content
                 }
 
                 // Debug.WriteLine($"{userData}");
-
                 // MainWindow.Dispatcher.Invoke(() =>
                 // {
                 //     MainWindow.ImageSource = mat.ToImageSource();

@@ -162,10 +162,7 @@ namespace ApexVisIns
             // APEX尾端用
             double[] tempArr = new double[3];
 
-            // for (int i = 0; i < Surface1ROIs.Length; i++)
-            // {
-            //     Rect roi = Surface1ROIs[i];
-            // }
+
 
             for (int i = 0; i < Surface1ROIs.Length; i++)
             {
