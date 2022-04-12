@@ -391,7 +391,7 @@ namespace ApexVisIns
         /// <param name="mask">遮罩點，這些點附近會被填入平均值不做計算</param>
         /// <param name="peaks">峰值陣列</param>
         /// <param name="valleys">谷值陣列</param>
-        public static void CalLocalOutliers(Mat img, byte[] array, int regionPoints, byte slope, int[] mask, out Point[] peaks, out Point[] valleys)
+        public static void CalLocalOutliers(Mat img, byte[] array, int regionPoints, byte slope, double std, out Point[] peaks, out Point[] valleys)
         {
             List<Point> ptsP = new();
             List<Point> ptsV = new();
@@ -406,13 +406,13 @@ namespace ApexVisIns
                 byte max = arr.Max();
                 byte min = arr.Min();
 
-                if (max - avg > slope)
+                if (max - avg > slope || max - avg > std)
                 {
                     Point pt = new(Array.IndexOf(arr, max) + i, img.Height - max);
                     Cv2.Circle(img, pt, 5, Scalar.DarkRed, 2);
                     ptsP.Add(pt);
                 }
-                else if (avg - min > slope)
+                else if (avg - min > slope || avg - min > std)
                 {
                     Point pt = new(Array.IndexOf(arr, min) + i, img.Height - min);
                     Cv2.Circle(img, pt, 5, Scalar.DarkBlue, 2);

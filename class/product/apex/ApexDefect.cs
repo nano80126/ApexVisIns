@@ -394,7 +394,7 @@ namespace ApexVisIns.Product
         ///// <summary>
         ///// 平均灰階陣列 1
         ///// </summary>
-        public byte[] MeanGrayArray1 { get; set; }
+        public double[] MeanGrayArray1 { get; set; }
 
         /// <summary>
         /// 標準差陣列 1

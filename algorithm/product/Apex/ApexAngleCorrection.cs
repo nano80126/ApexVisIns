@@ -25,14 +25,14 @@ namespace ApexVisIns
                 double width2 = -1;
                 byte mode = 8;  // 未定
 
-                byte endStep = 0b0111;
+                byte endStep = 0b1000;
                 int cycleCount = 0;
 
                 while (ApexAngleCorrectionFlags.CheckModeStep != endStep)
                 {
                     Debug.WriteLine($"Step: {ApexAngleCorrectionFlags.CheckModeStep}");
 
-                    if (cycleCount++ > endStep + 1) break;
+                    if (cycleCount++ > endStep) break;
 
                     Debug.WriteLine($"Cycle Count: {cycleCount}");
 
@@ -68,16 +68,28 @@ namespace ApexVisIns
                             CalCorrectionMode(width1, width2, out mode); // 計算出校正模式
                             ApexAngleCorrectionFlags.CorrectionMode = mode;
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
+                            Debug.WriteLine($"Width1: {width1}, Width2: {width2}");
                             #endregion
                             break;
-                        case 0b0101:
-                            #region 0b0101 // 5 //
+                        case 0b101:
+                            if (mode == 5)
+                            {
+                                await CheckCorrectionMotorMove(-40);
+                            }
+                            else if (mode == 7)
+                            {
+                                await CheckCorrectionMotorMove(-50);
+                            }
+                            ApexAngleCorrectionFlags.CheckModeStep += 0b01;
+                            break;
+                        case 0b0110:
+                            #region 0b0110 // 6 //
                             StartCorrectionMotor(mode);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
-                        case 0b0110:
-                            #region 0b0110 // 6 //
+                        case 0b0111:
+                            #region 0b0111 // 7 //
                             //Debug.WriteLine($"width1: {width1}, width2: {width2}");
                             //Debug.WriteLine($"mode: {mode}");
                             StartWindowEarCameraContinous();
@@ -116,7 +128,7 @@ namespace ApexVisIns
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
             // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(10, 100, 2000, 2000);
+            ServoMotion.Axes[1].SetAxisVelParam(10, 100, 1000, 1000);
             // 啟動定速旋轉
             //_ = ServoMotion.Axes[1].TryVelMove(0);
         }
@@ -156,7 +168,12 @@ namespace ApexVisIns
 
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 50, 100);
 
-            //Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
+            Cv2.ImShow("src", new Mat(mat, roi));
+            Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
+
+            // 釋放資源
+            //canny.Dispose();
+
             //Debug.WriteLine($"width: {width}");
         }
 
@@ -680,7 +697,9 @@ namespace ApexVisIns
                             break;
                     }
                 }
+#if false
                 Debug.WriteLine($"Width: {width} Last: {ApexAngleCorrectionFlags.LastWindowWidth} Max: {ApexAngleCorrectionFlags.MaxWindowWidth}");
+#endif
             }
 
             if (src2 != null && !src2.Empty())
@@ -838,7 +857,9 @@ namespace ApexVisIns
                 }
             }
 
-            Debug.WriteLine($"Steps: {ApexAngleCorrectionFlags.Steps}");
+#if false
+            Debug.WriteLine($"Steps: {ApexAngleCorrectionFlags.Steps}"); 
+#endif
         }
         #endregion
     }
