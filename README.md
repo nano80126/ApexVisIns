@@ -160,6 +160,9 @@ Apex 外觀瑕疵檢測
 * [ ] MotionTab Textbox UX 糟糕
 	* 負號會有問題
 
+* [ ] I/O Panel
+	* 定時刷新 I/O 狀態
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

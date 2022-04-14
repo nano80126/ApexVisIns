@@ -41,8 +41,7 @@ namespace ApexVisIns
                 #endregion
 
                 int CycleCount = 0;
-
-                byte endStep = 0b0111;
+                byte endStep = 0b0111;  // 7
 
                 while (ApexDefectInspectionStepsFlags.SurfaceSteps != 0b1000)
                 {
@@ -67,21 +66,50 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         case 0b0010:    // 2
-                            // to 550 (窗戶邊緣) // 
+                            // to 550 (窗戶邊緣) // 到點後開始驗窗戶 
                             await PreSurfaceIns2();
-                            _ = SpinWait.SpinUntil(() => false, 100);
+                            // 這邊開始驗窗戶
+                            ApexDefectInspectionStepsFlags.WindowInsOn = 0b1;
+                            //_ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
+                        #region 窗戶表面
                         case 0b0011:    // 3
-                            // to 1250 () // 開始驗窗戶
-                            await PreSurfaceIns3();
-                            _ = SpinWait.SpinUntil(() => false, 100);
+                            //// to 1120 (窗戶側邊正對 cam1) //
+                            //await PreSurfaceWindow1();
+                            //// 這邊停止驗窗戶
+                            //ApexDefectInspectionStepsFlags.WindowInsOn = 0b0;
+                            //// 等待光源
+                            //_ = SpinWait.SpinUntil(() => false, 50);
+                            ////_ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         case 0b0100:    // 4
-                            // to 
+                            //// 檢驗窗戶毛邊
+                            //cam1.Camera.ExecuteSoftwareTrigger();
+                            //grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            //mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+                            //WindowBurrIns(mat1);
+                            //// 這邊開始驗窗戶
+                            //ApexDefectInspectionStepsFlags.WindowInsOn = 0b1;
+                            ////_ = SpinWait.SpinUntil(() => false, 3000);
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            break;
+                        #endregion
+                        case 0b0101:    // 5
+                            // to 1250 (窗戶邊緣) // 到點後結束驗窗戶 
+                            await PreSurfaceIns3();
+                            // 這邊停止驗窗戶
+                            ApexDefectInspectionStepsFlags.WindowInsOn = 0b0;
+                            //_ = SpinWait.SpinUntil(() => false, 100);
+                            //_ = SpinWait.SpinUntil(() => false, 3000);
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            break;
+                        case 0b0110:    // 6
+                            // to 2065 () // 
                             await PreSurfaceIns4();
-                            _ = SpinWait.SpinUntil(() => false, 100);
+                            //_ = SpinWait.SpinUntil(() => false, 100);
+                            //_ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         default:
@@ -130,11 +158,30 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// Motor Move to 1120 (窗戶側邊正對 Cam1，檢驗毛邊)
+        /// </summary>
+        /// <returns></returns>
+        public async Task PreSurfaceWindow1()
+        {
+            // 旋轉至目標位置
+            await ServoMotion.Axes[1].PosMoveAsync(1120, true);
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(0, 0, 128, 128);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+        }
+
+        /// <summary>
         /// Motor Move to 1250 (進入窗戶邊緣)
         /// </summary>
         /// <returns></returns>
         public async Task PreSurfaceIns3()
         {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(96, 0, 0, 0);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+            // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(1250, true);
         }
 
@@ -144,7 +191,18 @@ namespace ApexVisIns
         /// <returns></returns>
         public async Task PreSurfaceIns4()
         {
+            // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(2065, true);
+        }
+
+        /// <summary>
+        /// 窗戶毛邊檢驗 (pulse 1120 & 1120 + 2250)
+        /// </summary>
+        /// <param name="cam"></param>
+        public void WindowBurrIns(Mat src)
+        {
+            Rect roi = WindowSurfaceRoi;
+            Cv2.ImShow($"Window 1120", new Mat(src, roi).Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
         }
 
         /// <summary>
@@ -153,8 +211,7 @@ namespace ApexVisIns
         /// <param name="src">來源影像</param>
         public void SurfaceIns1(Mat src)
         {
-            Mat LargeChart = new Mat();
-
+            Mat LargeChart = new();
             // 灰階均值 Arr
             double[] meanArr = new double[6];
             // 標準差 Arr
@@ -162,18 +219,25 @@ namespace ApexVisIns
             // APEX尾端用
             double[] tempArr = new double[3];
 
+            // foreach (string key in Surface1ROIsDic.Keys)
+            // { //     Rect roi = Surface1ROIsDic[key]; //     Debug.WriteLine($"{key} {roi}"); // }
 
-
-            for (int i = 0; i < Surface1ROIs.Length; i++)
+            foreach (string key in Surface1ROIsDic.Keys)
             {
-                Rect roi = Surface1ROIs[i];
+                Rect roi = Surface1ROIsDic[key];
                 // Pos：550 ~ 1250
-                if (roi.X == 2350 && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
+                //if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
+                if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
                 {
-                    // roi.X = 2350 (窗戶) // Surface = 3，時要檢驗窗戶
-                    // 否則跳過
                     continue;
                 }
+
+                // if (roi.X == 2350 && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
+                // {
+                //     // roi.X = 2350 (窗戶) // Surface = 3，時要檢驗窗戶
+                //     // 否則跳過
+                //     // continue;
+                // }
 
                 Methods.GetRoiGaussianBlur(src, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
 
@@ -196,6 +260,7 @@ namespace ApexVisIns
 
                 // 計算平均值和標準差
                 Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stddev);
+
                 // 平均值 & 標準差
                 Debug.WriteLine($"Mat mean: {mean}, Stddev: {stddev}");
 
@@ -225,14 +290,13 @@ namespace ApexVisIns
                 {
                     Cv2.HConcat(LargeChart, chart, LargeChart);
                 }
-                //Dispatcher.Invoke(() =>
-                //{
-                //    Cv2.ImShow($"GrayScale{roi.X}", chart);
-                //    Cv2.MoveWindow($"GrayScale{roi.X}", (roi.X - 720) / 2, 100 + roi.X / 10);
-                //    Cv2.ImShow($"Hist Diagram{roi.X}", histChart);
-                //    Cv2.MoveWindow($"Hist Diagram{roi.X}", (roi.X - 720) / 2, 100 + 300 + roi.X / 10);
-                //    // Cv2.MoveWindow("GrayScale", 100, 100);
-                //});
+
+                // Dispatcher.Invoke(() =>
+                // {
+                //     Cv2.ImShow($"GrayScale{roi.X}", chart); //     Cv2.MoveWindow($"GrayScale{roi.X}", (roi.X - 720) / 2, 100 + roi.X / 10);
+                //     Cv2.ImShow($"Hist Diagram{roi.X}", histChart); //     Cv2.MoveWindow($"Hist Diagram{roi.X}", (roi.X - 720) / 2, 100 + 300 + roi.X / 10);
+                //     // Cv2.MoveWindow("GrayScale", 100, 100);
+                // });
             }
             Cv2.Line(src, 1960, 20, 1960, src.Height - 40, Scalar.Black, 2);
             Cv2.Line(LargeChart, 1240, 20, 1240, LargeChart.Height - 40, Scalar.Red, 1);

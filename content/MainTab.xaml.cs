@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -1479,6 +1479,7 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
+                        //if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
                         MainWindow.SurfaceIns1(mat);
                         MainWindow.Dispatcher.Invoke(() =>
                         {

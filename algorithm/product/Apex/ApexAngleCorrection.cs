@@ -31,9 +31,10 @@ namespace ApexVisIns
                 while (ApexAngleCorrectionFlags.CheckModeStep != endStep)
                 {
                     Debug.WriteLine($"Step: {ApexAngleCorrectionFlags.CheckModeStep}");
-
-                    if (cycleCount++ > endStep) break;
-
+                    if (cycleCount++ > endStep)
+                    {
+                        break;
+                    }
                     Debug.WriteLine($"Cycle Count: {cycleCount}");
 
                     switch (ApexAngleCorrectionFlags.CheckModeStep)
@@ -149,7 +150,7 @@ namespace ApexVisIns
         /// <param name="width"></param>
         public void CheckCorrectionGetWidth(Camera camera, out double width)
         {
-            //width = 0;
+            // width = 0;
             camera.ExecuteSoftwareTrigger();
 
             using IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
@@ -168,13 +169,13 @@ namespace ApexVisIns
 
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 50, 100);
 
-            Cv2.ImShow("src", new Mat(mat, roi));
-            Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
+            // Cv2.ImShow("src", new Mat(mat, roi));
+            // Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
 
             // 釋放資源
-            //canny.Dispose();
+            // canny.Dispose();
 
-            //Debug.WriteLine($"width: {width}");
+            // Debug.WriteLine($"width: {width}");
         }
 
         /// <summary>
@@ -586,11 +587,9 @@ namespace ApexVisIns
                 //    Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
                 //    ApexAngleCorrectionFlags.OtsuThreshlod = th;
                 //}
-
                 byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;   // Otsu 閾值
                 // 需要開運算除毛邊?
                 Methods.GetRoiCanny(src, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
-
                 // 尋找窗戶
                 bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
 

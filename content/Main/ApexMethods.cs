@@ -384,9 +384,13 @@ namespace ApexVisIns.content
 
             // 重置 Flag
             MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps = 0;
+            // 停止驗窗戶
+            MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn = 0;
+
 
             //StartSurfaceCameraContinous();
-
+            StartWindowEarGrabber();
+            // 
             MainWindow.ApexSurfaceInspectionSequence(BaslerCam1, BaslerCam2, BaslerCam3, BaslerCam4);
         }
         #endregion

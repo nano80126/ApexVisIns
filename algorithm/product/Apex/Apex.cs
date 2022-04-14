@@ -123,6 +123,11 @@ namespace ApexVisIns
             { "頸", new Rect(3105, 130, 30, 20) },
             { "尾", new Rect(3145, 130, 55, 20) },
         };
+
+        /// <summary>
+        /// 窗戶
+        /// </summary>
+        private readonly Rect WindowSurfaceRoi = new Rect(100, 240, 1000, 1400);
         #endregion
 
         #region Apex 表面 ROI (Camera 2)
@@ -248,6 +253,12 @@ namespace ApexVisIns
             /// 0b0000:
             /// </summary>
             public byte SurfaceSteps { get; set; }  // 1 bit
+
+            /// <summary>
+            /// 窗戶檢驗啟動
+            /// </summary>
+            public byte WindowInsOn { get; set; }
+
         }
 
         /// <summary>
