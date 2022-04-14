@@ -349,6 +349,7 @@ namespace ApexVisIns.content
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             (sender as TextBox).SelectAll();
+            e.Handled = true;
         }
 
         /// <summary>
@@ -359,6 +360,7 @@ namespace ApexVisIns.content
         private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
         {
             (sender as TextBox).SelectAll();
+            e.Handled = true;
         }
 
         /// <summary>
@@ -857,6 +859,15 @@ namespace ApexVisIns.content
             Debug.WriteLine($"123");
         }
 
-      
+        //private void TextBox_MouseUp(object sender, MouseButtonEventArgs e)
+        //{
+        //    (sender as TextBox).SelectAll();
+        //}
+
+        private void TextBox_IsMouseCapturedChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Debug.WriteLine(e.NewValue);
+            Debug.WriteLine(e.OldValue);
+        }
     }
 }

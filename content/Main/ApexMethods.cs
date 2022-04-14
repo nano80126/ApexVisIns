@@ -387,7 +387,6 @@ namespace ApexVisIns.content
             // 停止驗窗戶
             MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn = 0;
 
-
             //StartSurfaceCameraContinous();
             StartWindowEarGrabber();
             // 

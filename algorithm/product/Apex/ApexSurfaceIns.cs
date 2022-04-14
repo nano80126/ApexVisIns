@@ -209,35 +209,41 @@ namespace ApexVisIns
         /// 管件表面檢驗
         /// </summary>
         /// <param name="src">來源影像</param>
-        public void SurfaceIns1(Mat src)
+        public bool SurfaceIns1(Mat src)
         {
             Mat LargeChart = new();
             // 灰階均值 Arr
-            double[] meanArr = new double[6];
+            double[] meanArr = new double[Surface1ROIsDic.Keys.Count];
             // 標準差 Arr
-            double[] stdArr = new double[6];
+            double[] stdArr = new double[Surface1ROIsDic.Keys.Count];
             // APEX尾端用
             double[] tempArr = new double[3];
 
             // foreach (string key in Surface1ROIsDic.Keys)
-            // { //     Rect roi = Surface1ROIsDic[key]; //     Debug.WriteLine($"{key} {roi}"); // }
+            // { //     Rect roi = Surface1ROIsDic[key]; 
+            //     Debug.WriteLine($"{key} {roi}"); // }
+
+            int k = 0;
 
             foreach (string key in Surface1ROIsDic.Keys)
             {
                 Rect roi = Surface1ROIsDic[key];
+                k++;
                 // Pos：550 ~ 1250
-                //if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
+                // if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
                 if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
                 {
                     continue;
                 }
 
+#if false
                 // if (roi.X == 2350 && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
                 // {
                 //     // roi.X = 2350 (窗戶) // Surface = 3，時要檢驗窗戶
                 //     // 否則跳過
                 //     // continue;
-                // }
+                // }  
+#endif
 
                 Methods.GetRoiGaussianBlur(src, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
 
@@ -259,23 +265,26 @@ namespace ApexVisIns
                 Cv2.Line(histChart, maxArr[0], histChart.Rows, maxArr[0], histChart.Rows - (int)(max / (1.2 * max) * histChart.Rows), Scalar.Red, 1);
 
                 // 計算平均值和標準差
-                Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stddev);
+                Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stdDev);
+
+                meanArr[k] = mean[0];
+                stdArr[k] = stdDev[0];
 
                 // 平均值 & 標準差
-                Debug.WriteLine($"Mat mean: {mean}, Stddev: {stddev}");
+                Debug.WriteLine($"Mat mean: {mean}, Stddev: {stdDev}");
 
                 Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
-                Methods.CalLocalOutliers(chart, grayArr, 50, 15, stddev[0], out Point[] peaks, out Point[] valleys);
+                Methods.CalLocalOutliers(chart, grayArr, 50, 15, stdDev[0], out Point[] peaks, out Point[] valleys);
 
                 // 眾數線
                 Cv2.Line(chart, 0, 300 - maxArr[0], chart.Width, 300 - maxArr[0], Scalar.Orange, 1);
                 // 平均數
                 Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
                 // 一個標準差內
-                Cv2.Line(chart, 0, 300 - (int)(mean[0] + stddev[0]), chart.Width, 300 - (int)(mean[0] + stddev[0]), Scalar.DarkCyan, 1);
-                Cv2.Line(chart, 0, 300 - (int)(mean[0] - stddev[0]), chart.Width, 300 - (int)(mean[0] - stddev[0]), Scalar.DarkCyan, 1);
+                Cv2.Line(chart, 0, 300 - (int)(mean[0] + stdDev[0]), chart.Width, 300 - (int)(mean[0] + stdDev[0]), Scalar.DarkCyan, 1);
+                Cv2.Line(chart, 0, 300 - (int)(mean[0] - stdDev[0]), chart.Width, 300 - (int)(mean[0] - stdDev[0]), Scalar.DarkCyan, 1);
 
-                Cv2.PutText(chart, $"{mean[0]:f2}, {stddev[0]:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Blue, 1);
+                Cv2.PutText(chart, $"{mean[0]:f2}, {stdDev[0]:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Blue, 1);
 
                 Cv2.Rectangle(src, roi, new Scalar(mean[0]), 1);
 
@@ -301,12 +310,31 @@ namespace ApexVisIns
             Cv2.Line(src, 1960, 20, 1960, src.Height - 40, Scalar.Black, 2);
             Cv2.Line(LargeChart, 1240, 20, 1240, LargeChart.Height - 40, Scalar.Red, 1);
 
+            #region test here
+            double std1 = new double[4] { stdArr[0], stdArr[5], stdArr[6], stdArr[7] }.Max();
+            double std2 = new double[2] { stdArr[1], stdArr[4] }.Max();
+            double std3 = new double[2] { stdArr[2], stdArr[3] }.Max();
+
+            double mean11 = Math.Abs(meanArr[0] - meanArr[5]);
+            if (mean11 > std1) return false;
+            double mean22 = Math.Abs(meanArr[0] - meanArr[6]);
+            if (mean22 > std1) return false;
+            double mean33 = Math.Abs(meanArr[0] - meanArr[7]);
+            if (mean33 > std1) return false;
+            double mean2 = Math.Abs(meanArr[1] - meanArr[4]);
+            if (mean2 > std2) return false;
+            double mean3 = Math.Abs(meanArr[2] - meanArr[3]);
+            if (mean3 < std3) return false; 
+            #endregion
+
             Dispatcher.Invoke(() =>
             {
                 LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
                 Cv2.ImShow($"GrayScale Chart", LargeChart);
                 // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
             });
+
+            return true;
         }
 
         /// <summary>

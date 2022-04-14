@@ -113,21 +113,22 @@ namespace ApexVisIns
         /// 管左灰階 = 窗
         /// 中左灰階 = 中右
         /// </summary>
-        private readonly Dictionary<string, Rect> Surface1ROIsDic = new Dictionary<string, Rect>() {
-            { "管中", new Rect( 720, 130, 450, 20) },
-            { "管左", new Rect(1170, 130, 400, 20) },
-            { "中左", new Rect(1570, 130, 390, 20) },
-            { "中右", new Rect(1960, 130, 390, 20) },
-            { "窗", new Rect(2350, 130, 400, 20) },
-            { "窗右", new Rect(2750, 130, 350, 20) },
-            { "頸", new Rect(3105, 130, 30, 20) },
-            { "尾", new Rect(3145, 130, 55, 20) },
+        private readonly Dictionary<string, Rect> Surface1ROIsDic = new()
+        {
+            { "管中", new Rect(720, 130, 450, 20) },  //// 0
+            { "管左", new Rect(1170, 130, 400, 20) }, ///  1
+            { "中左", new Rect(1570, 130, 390, 20) }, //   2
+            { "中右", new Rect(1960, 130, 390, 20) }, //   3
+            { "窗", new Rect(2350, 130, 400, 20) },   ///  4
+            { "窗右", new Rect(2750, 130, 350, 20) }, //// 5
+            { "頸", new Rect(3105, 130, 30, 20) },    //// 6
+            { "尾", new Rect(3145, 130, 55, 20) },    //// 7
         };
 
         /// <summary>
         /// 窗戶
         /// </summary>
-        private readonly Rect WindowSurfaceRoi = new Rect(100, 240, 1000, 1400);
+        private readonly Rect WindowSurfaceRoi = new(100, 240, 1000, 1400);
         #endregion
 
         #region Apex 表面 ROI (Camera 2)
