@@ -15,7 +15,6 @@ namespace ApexVisIns
 
     public partial class MainWindow : System.Windows.Window
     {
-
         #region 管件角度校正，最終使耳朵圓孔正對 Camera2，使用ImageGrabbed事件
         public async void ApexAngleCorrectionSequence(BaslerCam cam1)
         {
@@ -25,7 +24,7 @@ namespace ApexVisIns
                 double width2 = -1;
                 byte mode = 8;  // 未定
 
-                byte endStep = 0b1000;
+                byte endStep = 0b1001;
                 int cycleCount = 0;
 
                 while (ApexAngleCorrectionFlags.CheckModeStep != endStep)
@@ -72,7 +71,7 @@ namespace ApexVisIns
                             Debug.WriteLine($"Width1: {width1}, Width2: {width2}");
                             #endregion
                             break;
-                        case 0b101:
+                        case 0b0101: // 迴轉
                             if (mode == 5)
                             {
                                 await CheckCorrectionMotorMove(-40);
@@ -91,8 +90,12 @@ namespace ApexVisIns
                             break;
                         case 0b0111:
                             #region 0b0111 // 7 //
-                            //Debug.WriteLine($"width1: {width1}, width2: {width2}");
-                            //Debug.WriteLine($"mode: {mode}");
+                            PreCorrectionContinuous();
+                            ApexAngleCorrectionFlags.CheckModeStep += 0b01;
+                            #endregion
+                            break;
+                        case 0b1000:    // 8 
+                            #region 0b1000 // 8 //
                             StartWindowEarCameraContinous();
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
@@ -118,18 +121,35 @@ namespace ApexVisIns
 
         /// <summary>
         /// 確認旋轉方向前步驟；
-        /// Light1：160, 0, 128, 128；
+        /// Light1：0, 0, 128, 128；
         /// Light2：0, 0；
         /// Motor ：20, 200, 4000, 4000；
         /// </summary>
         public void PreCheckCorrectionMode()
         {
             // 變更光源 1
-            LightCtrls[0].SetAllChannelValue(160, 0, 128, 128);
+            LightCtrls[0].SetAllChannelValue(0, 0, 128, 128);
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
             // 變更馬達速度
             ServoMotion.Axes[1].SetAxisVelParam(10, 100, 1000, 1000);
+            // 啟動定速旋轉
+            //_ = ServoMotion.Axes[1].TryVelMove(0);
+        }
+
+        /// <summary>
+        /// 對位連續拍攝前步驟；
+        /// Light1：160, 0, 128, 128；
+        /// Light2：0, 0；
+        /// </summary>
+        public void PreCorrectionContinuous()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(160, 0, 128, 128);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+            // 變更馬達速度
+            //ServoMotion.Axes[1].SetAxisVelParam(10, 100, 1000, 1000);
             // 啟動定速旋轉
             //_ = ServoMotion.Axes[1].TryVelMove(0);
         }
@@ -150,7 +170,7 @@ namespace ApexVisIns
         /// <param name="width"></param>
         public void CheckCorrectionGetWidth(Camera camera, out double width)
         {
-            // width = 0;
+            // Width = 0;
             camera.ExecuteSoftwareTrigger();
 
             using IGrabResult grabResult = camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
@@ -169,12 +189,11 @@ namespace ApexVisIns
 
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 50, 100);
 
-            // Cv2.ImShow("src", new Mat(mat, roi));
-            // Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
+            Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
+            Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
 
             // 釋放資源
             // canny.Dispose();
-
             // Debug.WriteLine($"width: {width}");
         }
 
@@ -311,7 +330,6 @@ namespace ApexVisIns
                 // Cv2.ImShow("mat1", mat);
 
                 // 抓取第一次窗戶寬度
-                // byte dir = ApexAngleCorrectionFlags.CorrectionMode;
                 bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width1, 3, 50, 100);
 
                 Debug.WriteLine($"width 1: {width1}");

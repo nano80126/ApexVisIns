@@ -1480,7 +1480,9 @@ namespace ApexVisIns.content
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
                         //if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
-                        MainWindow.SurfaceIns1(mat);
+                        bool b =  MainWindow.SurfaceIns1(mat);
+                        Debug.WriteLine($"良品: {b}");
+
                         MainWindow.Dispatcher.Invoke(() =>
                         {
                             // Resize

@@ -847,12 +847,6 @@ namespace ApexVisIns.content
             }
         }
 
-        [Obsolete("測試完刪除")]
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            bool abs = MainWindow.ServoMotion.SelectedMotionAxis.Absolute;
-            Debug.WriteLine(abs);
-        }
 
         private void PackIcon_MouseDown(object sender, MouseButtonEventArgs e)
         {

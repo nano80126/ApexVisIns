@@ -809,12 +809,10 @@
                         <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
                             <RadioButton GroupName="MoveMode" HorizontalAlignment="Center" Cursor="Hand" Margin="12 3" Height="26"
                                          Style="{DynamicResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Content="Relative"
-                                         IsChecked="{Binding Absolute, Mode=TwoWay, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"
-                                         Checked="RadioButton_Checked"/>
+                                         IsChecked="{Binding Absolute, Mode=TwoWay, Converter={StaticResource BooleanInverter}, UpdateSourceTrigger=PropertyChanged}"/>
                             <RadioButton GroupName="MoveMode" HorizontalAlignment="Center" Cursor="Hand" Margin="12 3" Height="26" 
                                          Style="{DynamicResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Content="Absolute" 
-                                         IsChecked="{Binding Absolute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                         Checked="RadioButton_Checked"/>
+                                         IsChecked="{Binding Absolute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
 
                         <!--//-->

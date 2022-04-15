@@ -212,30 +212,38 @@ namespace ApexVisIns
         public bool SurfaceIns1(Mat src)
         {
             Mat LargeChart = new();
+
+            int peaks = 0;      // 峰值數量
+            int valleys = 0;    // 谷值數量
+
             // 灰階均值 Arr
-            double[] meanArr = new double[Surface1ROIsDic.Keys.Count];
-            // 標準差 Arr
-            double[] stdArr = new double[Surface1ROIsDic.Keys.Count];
+            //double[] meanArr = new double[Surface1ROIsDic.Keys.Count];
+            //// 標準差 Arr
+            //double[] stdArr = new double[Surface1ROIsDic.Keys.Count];
             // APEX尾端用
-            double[] tempArr = new double[3];
+            //double[] tempArr = new double[3];
 
             // foreach (string key in Surface1ROIsDic.Keys)
-            // { //     Rect roi = Surface1ROIsDic[key]; 
-            //     Debug.WriteLine($"{key} {roi}"); // }
+            // { 
+            //     Rect roi = Surface1ROIsDic[key]; 
+            //     Debug.WriteLine($"{key} {roi}"); 
+            // }
 
+            // 可以刪除
             int k = 0;
 
             foreach (string key in Surface1ROIsDic.Keys)
             {
                 Rect roi = Surface1ROIsDic[key];
-                k++;
+
                 // Pos：550 ~ 1250
                 // if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
                 if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
                 {
+                    // 可以刪除
+                    k++;
                     continue;
                 }
-
 #if false
                 // if (roi.X == 2350 && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
                 // {
@@ -267,22 +275,30 @@ namespace ApexVisIns
                 // 計算平均值和標準差
                 Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stdDev);
 
-                meanArr[k] = mean[0];
-                stdArr[k] = stdDev[0];
+                // meanArr[k] = mean[0];
+                // stdArr[k] = stdDev[0];
 
                 // 平均值 & 標準差
                 Debug.WriteLine($"Mat mean: {mean}, Stddev: {stdDev}");
 
-                Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
-                Methods.CalLocalOutliers(chart, grayArr, 50, 15, stdDev[0], out Point[] peaks, out Point[] valleys);
+                //Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
+                Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out double grayMean, true, out Mat chart, Scalar.Black);
+                //Methods.CalLocalOutliers(chart, grayArr, 50, 15, stdDev[0], out Point[] peaks, out Point[] valleys);
+                Methods.CalLocalOutliers(chart, grayArr, 50, 15, stdDev[0], out int p, out int v);
+
+                peaks += p;
+                valleys += v;
 
                 // 眾數線
                 Cv2.Line(chart, 0, 300 - maxArr[0], chart.Width, 300 - maxArr[0], Scalar.Orange, 1);
                 // 平均數
-                Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
+                //Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
+                Cv2.Line(chart, 0, 300 - (int)grayMean, chart.Width, 300 - (int)grayMean, Scalar.Blue, 1);
                 // 一個標準差內
-                Cv2.Line(chart, 0, 300 - (int)(mean[0] + stdDev[0]), chart.Width, 300 - (int)(mean[0] + stdDev[0]), Scalar.DarkCyan, 1);
-                Cv2.Line(chart, 0, 300 - (int)(mean[0] - stdDev[0]), chart.Width, 300 - (int)(mean[0] - stdDev[0]), Scalar.DarkCyan, 1);
+                Cv2.Line(chart, 0, 300 - (int)(grayMean + stdDev[0]), chart.Width, 300 - (int)(grayMean + stdDev[0]), Scalar.DarkCyan, 1);
+                //Cv2.Line(chart, 0, 300 - (int)(mean[0] + stdDev[0]), chart.Width, 300 - (int)(mean[0] + stdDev[0]), Scalar.DarkCyan, 1);
+                Cv2.Line(chart, 0, 300 - (int)(grayMean - stdDev[0]), chart.Width, 300 - (int)(grayMean - stdDev[0]), Scalar.DarkCyan, 1);
+                //Cv2.Line(chart, 0, 300 - (int)(mean[0] - stdDev[0]), chart.Width, 300 - (int)(mean[0] - stdDev[0]), Scalar.DarkCyan, 1);
 
                 Cv2.PutText(chart, $"{mean[0]:f2}, {stdDev[0]:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Blue, 1);
 
@@ -300,32 +316,18 @@ namespace ApexVisIns
                     Cv2.HConcat(LargeChart, chart, LargeChart);
                 }
 
-                // Dispatcher.Invoke(() =>
-                // {
-                //     Cv2.ImShow($"GrayScale{roi.X}", chart); //     Cv2.MoveWindow($"GrayScale{roi.X}", (roi.X - 720) / 2, 100 + roi.X / 10);
-                //     Cv2.ImShow($"Hist Diagram{roi.X}", histChart); //     Cv2.MoveWindow($"Hist Diagram{roi.X}", (roi.X - 720) / 2, 100 + 300 + roi.X / 10);
-                //     // Cv2.MoveWindow("GrayScale", 100, 100);
-                // });
+                // 可以刪除
+                k++;
             }
             Cv2.Line(src, 1960, 20, 1960, src.Height - 40, Scalar.Black, 2);
             Cv2.Line(LargeChart, 1240, 20, 1240, LargeChart.Height - 40, Scalar.Red, 1);
 
-            #region test here
-            double std1 = new double[4] { stdArr[0], stdArr[5], stdArr[6], stdArr[7] }.Max();
-            double std2 = new double[2] { stdArr[1], stdArr[4] }.Max();
-            double std3 = new double[2] { stdArr[2], stdArr[3] }.Max();
-
-            double mean11 = Math.Abs(meanArr[0] - meanArr[5]);
-            if (mean11 > std1) return false;
-            double mean22 = Math.Abs(meanArr[0] - meanArr[6]);
-            if (mean22 > std1) return false;
-            double mean33 = Math.Abs(meanArr[0] - meanArr[7]);
-            if (mean33 > std1) return false;
-            double mean2 = Math.Abs(meanArr[1] - meanArr[4]);
-            if (mean2 > std2) return false;
-            double mean3 = Math.Abs(meanArr[2] - meanArr[3]);
-            if (mean3 < std3) return false; 
-            #endregion
+            //Dispatcher.Invoke(() =>
+            //{
+            //    LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
+            //    Cv2.ImShow($"GrayScale Chart", LargeChart);
+            //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
+            //});
 
             Dispatcher.Invoke(() =>
             {
@@ -334,7 +336,58 @@ namespace ApexVisIns
                 // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
             });
 
-            return true;
+            #region test here
+#if false
+            double std1 = new double[4] { stdArr[0], stdArr[5], stdArr[6], stdArr[7] }.Max();
+            double std2 = new double[2] { stdArr[1], stdArr[4] }.Max();
+            double std3 = new double[2] { stdArr[2], stdArr[3] }.Max();
+
+            Debug.WriteLine($"mean: {string.Join(" , ", meanArr)}");
+            Debug.WriteLine($"std: {string.Join(" , ", stdArr)}");
+
+            double mean11Abs = Math.Abs(meanArr[0] - meanArr[5]);
+            Debug.WriteLine($"{mean11Abs} {std1}");
+            if (mean11Abs > std1 * 2) return false;
+
+            double mean22Abs = Math.Abs(meanArr[0] - meanArr[6]);
+            Debug.WriteLine($"{mean22Abs} {std1}");
+            if (mean22Abs > std1 * 2) return false;
+
+            double mean33Abs = Math.Abs(meanArr[0] - meanArr[7]);
+            Debug.WriteLine($"{mean33Abs} {std1}");
+            if (mean33Abs > std1 * 2) return false;
+
+            if (ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
+            {
+                double mean2Abs = Math.Abs(meanArr[1] - meanArr[4]);
+                if (mean2Abs > std2 * 2) return false;
+                Debug.WriteLine($"{mean2Abs} {std2}");
+            }
+            else
+            {
+
+            }
+
+            double mean3Abs = Math.Abs(meanArr[2] - meanArr[3]);
+            if (mean3Abs < std3 * 2) return false;
+            Debug.WriteLine($"{mean3Abs} {std3}"); 
+#endif
+            #endregion
+
+            //Dispatcher.Invoke(() =>
+            //{
+            //    LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
+            //    Cv2.ImShow($"GrayScale Chart", LargeChart);
+            //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
+            //});
+
+            //Dispatcher.Invoke(() =>
+            //{
+            //    LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
+            //    Cv2.ImShow($"GrayScale Chart", LargeChart);
+            //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
+            //});
+            return peaks + valleys == 0 ? true : false;
         }
 
         /// <summary>

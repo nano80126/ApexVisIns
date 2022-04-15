@@ -382,6 +382,52 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 繪製 Gray Scale Chart (X座標對灰度值曲線)，
+        /// 並標示超出標準差的點
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="width"></param>
+        /// <param name="createChart"></param>
+        /// <param name="chart"></param>
+        public static unsafe void GetHorizontalGrayScale(Mat src, out byte[] grayArr, out double mean, bool createChart, out Mat chart, Scalar scalar)
+        {
+            chart = createChart ? new Mat(new Size(src.Width, 300), MatType.CV_8UC3, Scalar.White) : new Mat();
+            //ptOutOfR = 0;
+            byte* b = src.DataPointer;
+
+            grayArr = new byte[src.Width];
+            //grayArrDiff = new short[src.Width];
+            for (int i = 0; i < src.Width; i++)
+            {
+                ushort gray = 0;
+                for (int j = 0; j < src.Height; j++)
+                {
+                    gray += b[src.Width * j];
+                }
+
+                // 計算平均
+                grayArr[i] = (byte)(gray / src.Height);
+                // grayArrDiff[i] = (short)(i > 0 ? grayArr[i] - grayArr[i - 1] : grayArr[i]);
+
+                if (createChart)
+                {
+                    if (i != 0)
+                    {
+                        Cv2.Line(chart, i - 1, chart.Height - grayArr[i - 1], i, chart.Height - grayArr[i], scalar, 1);
+                    }
+
+                    //if (Math.Abs(mean - grayArr[i]) > sigma * n_sigma)
+                    //{
+                    //    Cv2.Circle(chart, i, chart.Height - grayArr[i], 3, Scalar.Red, 1);
+                    //    ptOutOfR++;
+                    //}
+                }
+                b++;
+            }
+            mean = grayArr.Average(x => x);
+        }
+
+        /// <summary>
         /// 計算陣列局部離群點 (local outliers)
         /// </summary>
         /// <param name="img">Chart Mat</param>
@@ -451,6 +497,88 @@ namespace ApexVisIns
             valleys = ptsV.ToArray();
             ptsP.Clear();
             ptsV.Clear();
+        }
+
+
+        /// <summary>
+        /// 計算陣列局部離群點 (local outliers)
+        /// </summary>
+        /// <param name="img">Chart Mat</param>
+        /// <param name="array">來源陣列</param>
+        /// <param name="regionPoints">每個區域點數量</param>
+        /// <param name="slope">平均值與峰/谷值差異門檻</param>
+        /// <param name="peaks">峰值數量</param>
+        /// <param name="valleys">谷值數量</param>
+        public static void CalLocalOutliers(Mat img, byte[] array, int regionPoints, byte slope, double std, out int peaks, out int valleys)
+        {
+            //List<Point> ptsP = new();
+            //List<Point> ptsV = new();
+            peaks = 0;
+            valleys = 0;
+
+            // int offset = array.Length / regionPoints;
+            for (int i = 0; i < array.Length; i += regionPoints)
+            {
+                byte[] arr = i + regionPoints < array.Length
+                    ? new ArraySegment<byte>(array, i, regionPoints).ToArray()
+                    : new ArraySegment<byte>(array, i, array.Length - i).ToArray();
+
+                double avg = arr.Average(x => x);
+                byte max = arr.Max();
+                byte min = arr.Min();
+
+                // 大於門檻斜率 or 大於標準差
+                if (max - avg > slope || max - avg > std)
+                {
+                    Point pt = new(Array.IndexOf(arr, max) + i, img.Height - max);
+                    Cv2.Circle(img, pt, 5, Scalar.DarkRed, 2);
+                    //ptsP.Add(pt);
+                    peaks++;
+                }
+                // 大於門檻斜率 or 小於標準差
+                else if (avg - min > slope || avg - min > std)
+                {
+                    Point pt = new(Array.IndexOf(arr, min) + i, img.Height - min);
+                    Cv2.Circle(img, pt, 5, Scalar.DarkBlue, 2);
+                    //ptsV.Add(pt);
+                    valleys++;
+                }
+                Cv2.Line(img, i, 0, i, img.Height, Scalar.Gray, 1);
+
+                if (i + (regionPoints * 1.5) < array.Length)
+                {
+                    arr = new ArraySegment<byte>(array, i + (regionPoints / 2), regionPoints).ToArray();
+                    avg = arr.Average(x => x);
+                    max = arr.Max();
+                    min = arr.Min();
+
+                    // 大於門檻斜率 or 大於標準差
+                    if (max - avg > slope || max - avg > std)
+                    {
+                        Point pt = new(Array.IndexOf(arr, max) + i + (regionPoints / 2), img.Height - max);
+                        Cv2.Circle(img, pt, 5, Scalar.DarkRed, 2);
+                        //ptsP.Add(pt);
+                        peaks++;
+                    }
+                    else if (avg - min > slope)
+                    {
+                        Point pt = new(Array.IndexOf(arr, min) + i + (regionPoints / 2), img.Height - min);
+                        Cv2.Circle(img, pt, 5, Scalar.DarkBlue, 2);
+                        //ptsV.Add(pt);
+                        valleys++;
+                    }
+                    Cv2.Line(img, i + (regionPoints / 2), 0, i + (regionPoints / 2), img.Height, Scalar.Gray, 1);
+                }
+                else
+                {
+                    Cv2.Line(img, i + (regionPoints / 2), 0, i + (regionPoints / 2), img.Height, Scalar.Gray, 1);
+                }
+            }
+
+            //peaks = ptsP.ToArray();
+            //valleys = ptsV.ToArray();
+            //ptsP.Clear();
+            //ptsV.Clear();
         }
 
         /// <summary>

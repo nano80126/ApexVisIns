@@ -363,11 +363,14 @@ namespace ApexVisIns.Product
             public bool RawTubeScar { get; set; }
             #endregion
         }
+        /// /// ///
+        /// /// ///
+        /// /// ///
 
         /// <summary>
         /// 瑕疵旗標
         /// </summary>
-        public DefectsBase Defects { get; set; }
+        public DefectsBase DefectFlags { get; set; }
         /// <summary>
         /// 開始時間
         /// </summary>
@@ -376,6 +379,10 @@ namespace ApexVisIns.Product
         /// 檢驗時間
         /// </summary>
         public TimeSpan Duration { get; set; }
+        /// <summary>
+        /// 完成時間
+        /// </summary>
+        public DateTime EndTime => StartTime.AddSeconds(Duration.TotalSeconds);
 
         /// <summary>
         /// 灰度值 (Camera1)

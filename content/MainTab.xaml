@@ -368,13 +368,13 @@
                             </TextBlock>
 
                             <!--
-                            <StackPanel Grid.Column="1" Grid.Row="0">
-                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
-                                           FontSize="20" FontWeight="Bold"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
-                                    <Run>檢驗數量: 0</Run>
-                                </TextBlock>    
-                            </StackPanel>
+                                <StackPanel Grid.Column="1" Grid.Row="0">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="Consolas" LineHeight="32"
+                                               FontSize="20" FontWeight="Bold"
+                                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                        <Run>檢驗數量: 0</Run>
+                                    </TextBlock>    
+                                </StackPanel>
                             -->
                             
                             <!-- Row 1, Col 1, OK / NG 數量 -->
@@ -405,18 +405,19 @@
                                 </TextBlock>
 
                                 <!--
-                                <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                                           FontSize="20" FontWeight="Bold" 
-                                           FontFamily="Consolas" LineHeight="32" Foreground="{StaticResource ColorSecondary}"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
-                                    <Run Text="OK" Foreground="{StaticResource ColorSuccess}"/>
-                                    <Run Text="/"/>
-                                    <Run Text="NG" Foreground="{StaticResource ColorError}"/>
-                                    <LineBreak/>
-                                    <Run Text="200000" Foreground="{StaticResource ColorSuccess}"/>
-                                    <Run Text="/"/>
-                                    <Run Text="10" Foreground="{StaticResource ColorError}"/>
-                                </TextBlock>-->
+                                    <TextBlock DockPanel.Dock="Right" Margin="0 0 16 0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                                               FontSize="20" FontWeight="Bold" 
+                                               FontFamily="Consolas" LineHeight="32" Foreground="{StaticResource ColorSecondary}"
+                                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextAlignment="Center">
+                                        <Run Text="OK" Foreground="{StaticResource ColorSuccess}"/>
+                                        <Run Text="/"/>
+                                        <Run Text="NG" Foreground="{StaticResource ColorError}"/>
+                                        <LineBreak/>
+                                        <Run Text="200000" Foreground="{StaticResource ColorSuccess}"/>
+                                        <Run Text="/"/>
+                                        <Run Text="10" Foreground="{StaticResource ColorError}"/>
+                                    </TextBlock>
+                                -->
                             </DockPanel>
                         </Grid>
                     </DockPanel>
@@ -442,15 +443,15 @@
                            Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                 </Viewbox>
                 <!--
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
-                           Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="Camera 2&#x0d;&#x0a;{0} x {1}">
-                            <Binding ElementName="Image2Border" Path="ActualWidth" Mode="OneWay"/>
-                            <Binding ElementName="Image2Border" Path="ActualHeight" Mode="OneWay"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"
+                               Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Camera 2&#x0d;&#x0a;{0} x {1}">
+                                <Binding ElementName="Image2Border" Path="ActualWidth" Mode="OneWay"/>
+                                <Binding ElementName="Image2Border" Path="ActualHeight" Mode="OneWay"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 -->
             </Border>
 
@@ -590,14 +591,85 @@
                     Background="{StaticResource ColorBlueGrayTranparent}">
                 <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>-->
 
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}"> 
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="Record List&#x0d;&#x0a;{0} x {1}">
-                            <Binding ElementName="RecordListBorder"  Path="ActualWidth" Mode="OneWay"/>
-                            <Binding ElementName="RecordListBorder" Path="ActualHeight" Mode="OneWay"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                <ScrollViewer>
+
+
+                    <StackPanel Orientation="Vertical">
+
+                        <materialDesign:Card Background="{StaticResource ColorBrownTransparent}" Style="{StaticResource PanelTopCard}">
+                            <DockPanel Background="Transparent">
+                                <DockPanel.Resources>
+                                    <Style TargetType="materialDesign:PackIcon" x:Key="GoodStatus">
+                                        <Setter Property="Width" Value="16"/>
+                                        <Setter Property="Height" Value="16"/>
+                                        <Setter Property="Canvas.Right" Value="0"/>
+                                        <Setter Property="Canvas.Bottom" Value="0"/>
+
+                                        <Setter Property="Kind" Value="CloseThick"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Connected), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                                <Setter Property="Kind" Value="CheckThick"/>
+                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DockPanel.Resources>
+
+                                <DockPanel DockPanel.Dock="top" Background="Transparent">
+                                    <TextBlock DockPanel.Dock="Left" Margin="12 0 0 0" FontWeight="Bold" VerticalAlignment="Center" FontSize="18">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Text" Value="OK"/>
+                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <Border DockPanel.Dock="Right" BorderBrush="Transparent" BorderThickness="1" CornerRadius="2" VerticalAlignment="Center" Padding="0 2"
+                                        Width="32" Height="32" HorizontalAlignment="Right">
+                                        <Canvas ToolTip="X 軸驅動器" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                                            <materialDesign:PackIcon Style="{StaticResource GoodStatus}" />
+                                        </Canvas>
+                                    </Border>
+                                </DockPanel>
+                                <!--//-->
+                                <Separator Margin="0 4" DockPanel.Dock="Top"/>
+                                <!--//-->
+
+
+
+                                <!--//-->
+                                <Separator Margin="0 4" DockPanel.Dock="Top"/>
+                                <!--//-->
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+
+                                    <TextBlock Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBox Margin="8 0 0 0" Width="30" Text="" Padding="0 3 " Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                                    <TextBlock Text="完成時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBox Margin="8 0 0 0" Width="30" Text="" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                </StackPanel>
+
+                                <!--<Canvas DockPanel.Dock="Right" Background="{StaticResource ColorIndigoTransparent}" Width="32" >
+                                    <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="CheckCircle" Style="{StaticResource GoodStatus}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                </Canvas>-->
+
+                            </DockPanel>
+                        </materialDesign:Card>
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Record List&#x0d;&#x0a;{0} x {1}">
+                                    <Binding ElementName="RecordListBorder"  Path="ActualWidth" Mode="OneWay"/>
+                                    <Binding ElementName="RecordListBorder" Path="ActualHeight" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
         <!--</StackPanel>-->
