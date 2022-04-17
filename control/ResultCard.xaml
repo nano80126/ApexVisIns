@@ -1,0 +1,116 @@
+﻿<materialDesign:Card x:Class="ApexVisIns.Control.ResultCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ApexVisIns.Control"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel Background="Transparent" 
+               DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+               d:DataContext="{d:DesignInstance Type={x:Type local:ResultCard}}">
+        <DockPanel.Resources>
+            <Style TargetType="materialDesign:PackIcon" x:Key="GoodStatus">
+                <Setter Property="Width" Value="16"/>
+                <Setter Property="Height" Value="16"/>
+                <Setter Property="Canvas.Right" Value="0"/>
+                <Setter Property="Canvas.Bottom" Value="0"/>
+
+                <Setter Property="Kind" Value="CloseThick"/>
+                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding (local:RCHelper.OK), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                        <Setter Property="Kind" Value="CheckThick"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Resources>
+
+
+        <DockPanel DockPanel.Dock="Top" Background="Transparent">
+            <TextBlock DockPanel.Dock="Left" Margin="8 0 0 0" FontWeight="Bold" VerticalAlignment="Center" FontSize="24" 
+                       local:RCHelper.OK="{Binding Result}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="NG" />
+                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding (local:RCHelper.OK), RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Text" Value="OK" />
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Border DockPanel.Dock="Right" BorderBrush="Transparent" BorderThickness="1" CornerRadius="2" VerticalAlignment="Center" Padding="0 2"
+                    Width="32" Height="32" HorizontalAlignment="Right">
+                <Canvas Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" Foreground="{StaticResource ColorBlueGray}"/>
+                    <materialDesign:PackIcon local:RCHelper.OK="{Binding Result}" Style="{StaticResource GoodStatus}" />
+                </Canvas>
+            </Border>
+        </DockPanel>
+        <!--//-->
+        <Separator Margin="0 4" DockPanel.Dock="Top"/>
+        <!--//-->
+
+        <GroupBox Header="窗戶" Margin="0" DockPanel.Dock="Top" FontWeight="Bold"
+                  materialDesign:ColorZoneAssist.Mode="Custom"
+                  materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfoTransparent}" 
+                  materialDesign:ColorZoneAssist.Foreground="Black" 
+                  Style="{DynamicResource MaterialDesignGroupBox}">
+            <TextBlock Text="My Content" />
+        </GroupBox>
+
+        <GroupBox Header="耳朵" Margin="0" DockPanel.Dock="Top" FontWeight="Bold"
+                  materialDesign:ColorZoneAssist.Mode="Custom"
+                  materialDesign:ColorZoneAssist.Background="{StaticResource ColorPrimaryTransparent}" 
+                  materialDesign:ColorZoneAssist.Foreground="Black" 
+                  Style="{DynamicResource MaterialDesignGroupBox}">
+            <TextBlock Text="My Content" />
+        </GroupBox>
+
+        <GroupBox Header="表面" Margin="0" DockPanel.Dock="Top" FontWeight="Bold"
+                  materialDesign:ColorZoneAssist.Mode="Custom"
+                  materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigoTransparent}" 
+                  materialDesign:ColorZoneAssist.Foreground="Black" 
+                  Style="{DynamicResource MaterialDesignGroupBox}">
+            <TextBlock Text="My Content" />
+        </GroupBox>
+
+        <!--//-->
+        <Separator Margin="0 4" DockPanel.Dock="Top"/>
+        <!--//-->
+
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+            <!--//-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!--//-->
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="1" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
+                     Text="{Binding Duration, StringFormat={}{0:HH:mm:ss}}"
+                            IsReadOnly="True" Cursor="Arrow" Focusable="False"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+            <TextBlock Grid.Column="3" Grid.Row="0" Text="完成時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="4" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
+                     Text="{Binding EndTime, StringFormat={}{0:HH:mm:ss}}" IsReadOnly="True" Cursor="Arrow" Focusable="False" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+        </Grid>
+    </DockPanel>
+</materialDesign:Card>

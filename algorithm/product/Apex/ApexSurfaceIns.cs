@@ -27,6 +27,7 @@ namespace ApexVisIns
         {
             try
             {
+#if false
                 IGrabResult grabResult1 = null;
                 IGrabResult grabResult2 = null;
                 IGrabResult grabResult3 = null;
@@ -34,7 +35,8 @@ namespace ApexVisIns
                 Mat mat1 = null;
                 Mat mat2 = null;
                 Mat mat3 = null;
-                Mat mat4 = null;
+                Mat mat4 = null; 
+#endif
 
                 #region 保留 
 

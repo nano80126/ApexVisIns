@@ -284,6 +284,7 @@
             </Grid.Style>
             <!--//-->
             <Grid.ColumnDefinitions>
+                <!--// 34 -->
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="4*"/>
@@ -292,8 +293,10 @@
             <!--//-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="4*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+                <!--<RowDefinition Height="3*"/>-->
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <!--#region Control Panel-->
@@ -427,7 +430,6 @@
             <!--#endregion-->
 
             <!--#region Images -->
-            
             <!-- Image 1 -->
             <Border Grid.Row="0" Grid.Column="1" x:Name="Image1Border" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <Viewbox x:Name="Image1Viewbox">
@@ -494,8 +496,28 @@
             </Border>
             <!--#endregion-->
 
+            <!--#region Chart  -->
+            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ChartBorder" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <!--//-->
+                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Record List&#x0d;&#x0a;{0} x {1}">
+                                <Binding ElementName="ChartBorder"  Path="ActualWidth" Mode="OneWay"/>
+                                <Binding ElementName="ChartBorder" Path="ActualHeight" Mode="OneWay"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </Border>
+            <!--#endregion-->
+
             <!--#region 方塊流程圖 -->
-            <Border Grid.Row="3" Grid.ColumnSpan="3" x:Name="ProcedureBorder" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
+            <Border Grid.Row="4" Grid.ColumnSpan="3" x:Name="ProcedureBorder" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}">
                 <!--<ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">-->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 8">
                     <StackPanel.Resources>
@@ -587,16 +609,20 @@
             <!--#endregion-->
 
             <!--Record List-->
-            <Border Grid.RowSpan="4" Grid.Column="3" x:Name="RecordListBorder" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}"
+            <Border Grid.RowSpan="100" Grid.Column="3" x:Name="RecordListBorder" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}"
                     Background="{StaticResource ColorBlueGrayTranparent}">
                 <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">Record List</TextBlock>-->
 
-                <ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer.Style>
+                        <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource ScrollViewerPrimary}">
+                            <!--<Setter Property=""-->
+                        </Style>
+                    </ScrollViewer.Style>
+                    
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" MinHeight="1080">
 
-
-                    <StackPanel Orientation="Vertical">
-
-                        <materialDesign:Card Background="{StaticResource ColorBrownTransparent}" Style="{StaticResource PanelTopCard}">
+                        <materialDesign:Card Background="AntiqueWhite" Style="{StaticResource PanelTopCard}" Visibility="Collapsed">
                             <DockPanel Background="Transparent">
                                 <DockPanel.Resources>
                                     <Style TargetType="materialDesign:PackIcon" x:Key="GoodStatus">
@@ -628,8 +654,8 @@
 
                                     <Border DockPanel.Dock="Right" BorderBrush="Transparent" BorderThickness="1" CornerRadius="2" VerticalAlignment="Center" Padding="0 2"
                                         Width="32" Height="32" HorizontalAlignment="Right">
-                                        <Canvas ToolTip="X 軸驅動器" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                                        <Canvas Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" Foreground="{StaticResource ColorBlueGray}"/>
                                             <materialDesign:PackIcon Style="{StaticResource GoodStatus}" />
                                         </Canvas>
                                     </Border>
@@ -638,27 +664,39 @@
                                 <Separator Margin="0 4" DockPanel.Dock="Top"/>
                                 <!--//-->
 
-
-
                                 <!--//-->
                                 <Separator Margin="0 4" DockPanel.Dock="Top"/>
                                 <!--//-->
-                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                                <Grid DockPanel.Dock="Top" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                        <ColumnDefinition Width="5*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                        <ColumnDefinition Width="5*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                                    <TextBox Margin="8 0 0 0" Width="30" Text="" Padding="0 3 " Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                    <TextBlock Text="完成時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                                    <TextBox Margin="8 0 0 0" Width="30" Text="" Padding="0 3" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-                                </StackPanel>
 
-                                <!--<Canvas DockPanel.Dock="Right" Background="{StaticResource ColorIndigoTransparent}" Width="32" >
-                                    <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <materialDesign:PackIcon Kind="CheckCircle" Style="{StaticResource GoodStatus}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                </Canvas>-->
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBox Grid.Column="1" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
+                                             IsReadOnly="True" Cursor="Arrow" Focusable="False"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
+                                    <TextBlock Grid.Column="3" Grid.Row="0" Text="完成時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBox Grid.Column="4" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="00:00:00" Padding="0 3" TextAlignment="Center"
+                                             IsReadOnly="True" Cursor="Arrow" Focusable="False"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                </Grid>
                             </DockPanel>
                         </materialDesign:Card>
+
+
+                        <control:ResultCard Background="AntiqueWhite" Result="True" Style="{StaticResource PanelTopCard}"/>
+
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
                             <TextBlock.Text>
