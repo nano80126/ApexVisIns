@@ -119,8 +119,8 @@ namespace ApexVisIns
                             mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
                             // WindowBurrIns(mat1);
                             WindowSideBurrIns(mat1);
-
-
+                            // 
+                            PostSurfaceWindow1();
                             _ = SpinWait.SpinUntil(() => false, 50);
                             // 驗表面、窗戶
                             ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b11;
@@ -192,11 +192,14 @@ namespace ApexVisIns
         /// </summary>
         public async Task PreSurfaceIns2()
         {
+            // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(550, true);
         }
 
         /// <summary>
         /// Motor Move to 1120 (窗戶側邊正對 Cam1，檢驗毛邊)
+        /// Light 1：0, 0, 128, 128
+        /// Light 2：0, 0
         /// </summary>
         /// <returns></returns>
         public async Task PreSurfaceWindow1()
@@ -210,7 +213,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 窗戶正對 cam1 打側光
+        /// 窗戶正對 cam1 打側光；
+        /// Light 1：0, 0, 0, 0
+        /// Light 2：64, 0
         /// </summary>
         public void PreSurfaceWindowSide1()
         {
@@ -221,7 +226,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 回復光源
+        /// 回復光源；
+        /// Light 1：96, 0, 0, 0；
+        /// Light 2：0, 0；
         /// </summary>
         public void PostSurfaceWindow1()
         {
@@ -237,10 +244,6 @@ namespace ApexVisIns
         /// <returns></returns>
         public async Task PreSurfaceIns3()
         {
-            // 變更光源 1
-            LightCtrls[0].SetAllChannelValue(96, 0, 0, 0);
-            // 變更光源 2
-            LightCtrls[1].SetAllChannelValue(0, 0);
             // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(1250, true);
         }

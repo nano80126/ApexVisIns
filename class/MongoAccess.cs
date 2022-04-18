@@ -12,8 +12,6 @@ using MongoDB.Libmongocrypt;
 namespace ApexVisIns.MongoDB
 {
 
-
-
     /// <summary>
     /// 連結 Mongo 資料庫
     /// </summary>
@@ -22,9 +20,7 @@ namespace ApexVisIns.MongoDB
         private static MongoClient client;
         private bool _connected;
 
-
         public bool Connected => _connected;
-
 
         /// <summary>
         /// 連線資料庫

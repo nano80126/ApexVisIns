@@ -197,7 +197,7 @@
             
             <!-- Material Design Card -->
             <Style x:Key="GeneralCard" TargetType="materialDesign:Card">
-                <Setter Property="Margin" Value="0 0 8 8"/>
+                <Setter Property="Margin" Value="4"/>
                 <Setter Property="Padding" Value="8 8 8 8"/>
                 <Setter Property="Foreground" Value="Black"/>
                 <Setter Property="FontFamily" Value="consolas"/>
