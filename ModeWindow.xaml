@@ -27,7 +27,7 @@
         Unloaded="Window_Unloaded"
         KeyDown="Window_KeyDown"
         KeyUp="Window_KeyUp">
-    <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="Transparent" Style="{StaticResource MainWindowBorder}">
+    <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="WhiteSmoke" Style="{StaticResource MainWindowBorder}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

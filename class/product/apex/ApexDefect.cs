@@ -159,6 +159,9 @@ namespace ApexVisIns.Product
             }
         }
 
+        /// <summary>
+        /// 檢驗開始
+        /// </summary>
         public void Start()
         {
             _startTime = DateTime.Now;
@@ -176,6 +179,9 @@ namespace ApexVisIns.Product
             OnPropertyChanged(nameof(PassedTime));
         }
 
+        /// <summary>
+        /// 檢驗停止
+        /// </summary>
         public void Stop()
         {
             _timeUpdater.Stop();
@@ -292,6 +298,8 @@ namespace ApexVisIns.Product
         }
     }
 
+
+
     /// <summary>
     /// Apex 檢驗特徵
     /// </summary>
@@ -378,11 +386,11 @@ namespace ApexVisIns.Product
         /// <summary>
         /// 檢驗時間
         /// </summary>
-        public TimeSpan Duration { get; set; }
+        public TimeSpan Duration => EndTime - StartTime;
         /// <summary>
         /// 完成時間
         /// </summary>
-        public DateTime EndTime => StartTime.AddSeconds(Duration.TotalSeconds);
+        public DateTime EndTime { get; set; }
 
         /// <summary>
         /// 灰度值 (Camera1)
@@ -408,7 +416,6 @@ namespace ApexVisIns.Product
         /// </summary>
         public double[] StdGrayArray1 { get; set; }
     }
-
 
     /// <summary>
     /// Apex Defect Testing Status to Color

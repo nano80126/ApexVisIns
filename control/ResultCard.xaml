@@ -28,7 +28,6 @@
             </Style>
         </DockPanel.Resources>
 
-
         <DockPanel DockPanel.Dock="Top" Background="Transparent">
             <TextBlock DockPanel.Dock="Left" Margin="8 0 0 0" FontWeight="Bold" VerticalAlignment="Center" FontSize="24" 
                        local:RCHelper.OK="{Binding Result}">
@@ -50,7 +49,7 @@
             <Border DockPanel.Dock="Right" BorderBrush="Transparent" BorderThickness="1" CornerRadius="2" VerticalAlignment="Center" Padding="0 2"
                     Width="32" Height="32" HorizontalAlignment="Right">
                 <Canvas Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" Foreground="{StaticResource ColorBlueGray}"/>
+                    <materialDesign:PackIcon Kind="Cube" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" Foreground="{StaticResource ColorBlueGrayTranparent}"/>
                     <materialDesign:PackIcon local:RCHelper.OK="{Binding Result}" Style="{StaticResource GoodStatus}" />
                 </Canvas>
             </Border>
@@ -64,7 +63,7 @@
                   materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfoTransparent}" 
                   materialDesign:ColorZoneAssist.Foreground="Black" 
                   Style="{DynamicResource MaterialDesignGroupBox}">
-            <TextBlock Text="My Content" />
+            <TextBlock Text="毛邊、孔毛邊" Foreground="Gray" />
         </GroupBox>
 
         <GroupBox Header="耳朵" Margin="0" DockPanel.Dock="Top" FontWeight="Bold"
@@ -72,7 +71,7 @@
                   materialDesign:ColorZoneAssist.Background="{StaticResource ColorPrimaryTransparent}" 
                   materialDesign:ColorZoneAssist.Foreground="Black" 
                   Style="{DynamicResource MaterialDesignGroupBox}">
-            <TextBlock Text="My Content" />
+            <TextBlock Text="撞傷、毛邊" Foreground="Gray" />
         </GroupBox>
 
         <GroupBox Header="表面" Margin="0" DockPanel.Dock="Top" FontWeight="Bold"
@@ -80,7 +79,7 @@
                   materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigoTransparent}" 
                   materialDesign:ColorZoneAssist.Foreground="Black" 
                   Style="{DynamicResource MaterialDesignGroupBox}">
-            <TextBlock Text="My Content" />
+            <TextBlock Text="亮紋、撞傷、刮傷" Foreground="Gray" />
         </GroupBox>
 
         <!--//-->
@@ -103,14 +102,21 @@
 
             <TextBlock Grid.Column="0" Grid.Row="0" Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
             <TextBox Grid.Column="1" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
-                     Text="{Binding Duration, StringFormat={}{0:HH:mm:ss}}"
-                            IsReadOnly="True" Cursor="Arrow" Focusable="False"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                      IsReadOnly="True" Cursor="Arrow" Focusable="False" Style="{StaticResource MaterialDesignOutlinedTextBox}">
+                <!--Text="{Binding Duration, StringFormat={}{0:HH\\:mm\\:ss}}"-->
+                <TextBox.Text>
+                    <MultiBinding StringFormat="{}{0:00}:{1:00}:{2:00}">
+                        <Binding Path="Duration.Hours" Mode="OneWay"/>
+                        <Binding Path="Duration.Minutes" Mode="OneWay"/>
+                        <Binding Path="Duration.Seconds" Mode="OneWay"/>
+                    </MultiBinding>
+                </TextBox.Text>
+            </TextBox>
+
 
             <TextBlock Grid.Column="3" Grid.Row="0" Text="完成時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
             <TextBox Grid.Column="4" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
                      Text="{Binding EndTime, StringFormat={}{0:HH:mm:ss}}" IsReadOnly="True" Cursor="Arrow" Focusable="False" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
         </Grid>
     </DockPanel>
 </materialDesign:Card>

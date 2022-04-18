@@ -663,23 +663,24 @@
                                 <!--//-->
                                 <Separator Margin="0 4" DockPanel.Dock="Top"/>
                                 <!--//-->
-
+                                
+                                
+                                
                                 <!--//-->
                                 <Separator Margin="0 4" DockPanel.Dock="Top"/>
                                 <!--//-->
                                 <Grid DockPanel.Dock="Top" >
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"></ColumnDefinition>
-                                        <ColumnDefinition Width="5*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="auto"></ColumnDefinition>
-                                        <ColumnDefinition Width="5*"></ColumnDefinition>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="5*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-
 
                                     <TextBlock Grid.Column="0" Grid.Row="0" Text="檢驗時間" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
                                     <TextBox Grid.Column="1" Grid.Row="0" Margin="8 2 0 2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Padding="0 3" TextAlignment="Center"
@@ -694,9 +695,7 @@
                             </DockPanel>
                         </materialDesign:Card>
 
-
                         <control:ResultCard Background="AntiqueWhite" Result="True" Style="{StaticResource PanelTopCard}"/>
-
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}">
                             <TextBlock.Text>

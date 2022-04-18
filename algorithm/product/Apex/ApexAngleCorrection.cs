@@ -74,7 +74,7 @@ namespace ApexVisIns
                         case 0b0101: // 迴轉
                             if (mode == 5)
                             {
-                                await CheckCorrectionMotorMove(-40);
+                                await CheckCorrectionMotorMove(-50);
                             }
                             else if (mode == 7)
                             {
@@ -187,9 +187,10 @@ namespace ApexVisIns
 
             Methods.GetRoiCanny(mat, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
 
-            bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 50, 100);
+            bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 30, 100);
 
-            Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
+            Cv2.VConcat(new Mat(mat, roi), canny, canny);
+            //Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
             Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
 
             // 釋放資源
@@ -609,7 +610,7 @@ namespace ApexVisIns
                 // 需要開運算除毛邊?
                 Methods.GetRoiCanny(src, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
                 // 尋找窗戶
-                bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 50, 100);
+                bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out double width, 3, 30, 100);
 
                 if (FindWindow && ApexAngleCorrectionFlags.Steps != 0b0101) // 
                 {

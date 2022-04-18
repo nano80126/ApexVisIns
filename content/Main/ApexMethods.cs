@@ -385,7 +385,8 @@ namespace ApexVisIns.content
             // 重置 Flag
             MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps = 0;
             // 停止驗窗戶
-            MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn = 0;
+            MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn = 0;
+            //MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn = 0;
 
             //StartSurfaceCameraContinous();
             StartWindowEarGrabber();

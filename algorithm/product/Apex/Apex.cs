@@ -120,7 +120,7 @@ namespace ApexVisIns
             { "中左", new Rect(1570, 130, 390, 20) }, //   2
             { "中右", new Rect(1960, 130, 390, 20) }, //   3
             { "窗", new Rect(2350, 130, 400, 20) },   ///  4
-            { "窗右", new Rect(2750, 130, 350, 20) }, //// 5
+            { "窗右", new Rect(2750, 130, 345, 20) }, //// 5
             { "頸", new Rect(3105, 130, 30, 20) },    //// 6
             { "尾", new Rect(3145, 130, 55, 20) },    //// 7
         };
@@ -128,7 +128,8 @@ namespace ApexVisIns
         /// <summary>
         /// 窗戶
         /// </summary>
-        private readonly Rect WindowSurfaceRoi = new(100, 240, 1000, 1400);
+        private readonly Rect WindowSurfaceRoi = new(380, 360, 440, 1160);
+        private readonly Rect WindowSurfaceRoi2 = new(100, 240, 1000, 1400);
         #endregion
 
         #region Apex 表面 ROI (Camera 2)
@@ -190,7 +191,10 @@ namespace ApexVisIns
             /// 方向 (0: 快正轉, 1: 快逆轉, 2: 慢正轉, 3: 慢逆轉, 4: 低速正轉, 5: 低速逆轉, 6: 正接近, 7: 逆接近, 8: 未定)
             /// </summary>
             public byte CorrectionMode { get; set; }    // 1 bit
+
+            // 新增 window pos for 自動校正
         }
+
 
         /// <summary>
         /// Apex 瑕疵檢驗用步驟結構
@@ -208,7 +212,7 @@ namespace ApexVisIns
             /// 0b0110(6): 
             /// </summary>
             [Obsolete("單步測試用")]
-            public byte WindowSteps { get; set; }   // 1 bit
+            public byte WindowSteps { get; set; }   // 1 byte
 
             /// <summary>
             /// 耳朵檢驗步驟 (單步測試用)
@@ -226,7 +230,7 @@ namespace ApexVisIns
             /// 0b1011(11): (R)抓取 瑕疵(側光)；
             /// </summary>
             [Obsolete("單步測試用")]
-            public byte EarSteps { get; set; }      // 1 bit
+            public byte EarSteps { get; set; }      // 1 byte
 
             /// <summary>
             /// 耳朵窗戶同時檢驗步驟；
@@ -247,19 +251,26 @@ namespace ApexVisIns
             /// 0b1110(14):
             /// 0b1111(15):
             /// </summary>
-            public byte Steps { get; set; }         // 1 bit
+            public byte Steps { get; set; }         // 1 byte
 
             /// <summary>
             /// 表面兩個相機同時檢驗步驟；
             /// 0b0000:
             /// </summary>
-            public byte SurfaceSteps { get; set; }  // 1 bit
+            public byte SurfaceSteps { get; set; }  // 1 byte
+
+            /// <summary>
+            /// 表面檢驗旗標
+            /// 0b0000 0000
+            /// bit 0: surface
+            /// bit 1: window
+            /// </summary>
+            public byte SurfaceInsOn { get; set; }  // 1 byte
 
             /// <summary>
             /// 窗戶檢驗啟動
             /// </summary>
             public byte WindowInsOn { get; set; }
-
         }
 
         /// <summary>

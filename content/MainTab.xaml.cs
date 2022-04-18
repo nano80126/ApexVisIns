@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -1044,8 +1044,8 @@ namespace ApexVisIns.content
             {
                 MainWindow.ApexDefect.CurrentStep = 0;
             }
-            //MainWindow.IOWindow = new IOWindow(this);
-            //MainWindow.IOWindow.Show();
+            // MainWindow.IOWindow = new IOWindow(this);
+            // MainWindow.IOWindow.Show();
         }
 
         #region 啟動檢驗
@@ -1480,8 +1480,11 @@ namespace ApexVisIns.content
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
                         //if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
-                        bool b =  MainWindow.SurfaceIns1(mat);
-                        Debug.WriteLine($"良品: {b}");
+                        if ((MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b01) == 0b01)
+                        {
+                            bool b = MainWindow.SurfaceIns1(mat);
+                            Debug.WriteLine($"良品: {b}");
+                        }
 
                         MainWindow.Dispatcher.Invoke(() =>
                         {

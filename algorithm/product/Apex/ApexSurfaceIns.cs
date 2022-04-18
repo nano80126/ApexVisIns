@@ -27,12 +27,12 @@ namespace ApexVisIns
         {
             try
             {
-#if false
                 IGrabResult grabResult1 = null;
+                Mat mat1 = null;
+#if false
                 IGrabResult grabResult2 = null;
                 IGrabResult grabResult3 = null;
                 IGrabResult grabResult4 = null;
-                Mat mat1 = null;
                 Mat mat2 = null;
                 Mat mat3 = null;
                 Mat mat4 = null; 
@@ -40,12 +40,13 @@ namespace ApexVisIns
 
                 #region 保留 
 
+
                 #endregion
 
                 int CycleCount = 0;
-                byte endStep = 0b0111;  // 7
+                byte endStep = 0b1010;  // 8
 
-                while (ApexDefectInspectionStepsFlags.SurfaceSteps != 0b1000)
+                while (ApexDefectInspectionStepsFlags.SurfaceSteps < endStep)
                 {
                     Debug.WriteLine($"Surface Step: {ApexDefectInspectionStepsFlags.SurfaceSteps}");
                     if (CycleCount++ > endStep)
@@ -59,6 +60,8 @@ namespace ApexVisIns
                         case 0b0000:    // 0
                             // 表面檢驗前步驟
                             await PreSurfaceIns();
+                            // 開始表面檢驗 // 停止窗戶檢驗 
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b01;
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         case 0b0001:    // 1
@@ -70,49 +73,82 @@ namespace ApexVisIns
                         case 0b0010:    // 2
                             // to 550 (窗戶邊緣) // 到點後開始驗窗戶 
                             await PreSurfaceIns2();
-                            // 這邊開始驗窗戶
-                            ApexDefectInspectionStepsFlags.WindowInsOn = 0b1;
+                            // 開始驗窗戶
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn |= 0b10;
                             //_ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         #region 窗戶表面
                         case 0b0011:    // 3
                             //// to 1120 (窗戶側邊正對 cam1) //
-                            //await PreSurfaceWindow1();
+                            await PreSurfaceWindow1();
                             //// 這邊停止驗窗戶
                             //ApexDefectInspectionStepsFlags.WindowInsOn = 0b0;
+                            // 不驗表面、不驗窗戶
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b00;
                             //// 等待光源
-                            //_ = SpinWait.SpinUntil(() => false, 50);
+                            _ = SpinWait.SpinUntil(() => false, 50);
                             ////_ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         case 0b0100:    // 4
                             //// 檢驗窗戶毛邊
-                            //cam1.Camera.ExecuteSoftwareTrigger();
-                            //grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
-                            //mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
-                            //WindowBurrIns(mat1);
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+                            // 正光驗毛邊
+                            bool bur = WindowBurrIns(mat1);
+                            Debug.WriteLine($"---------------------------------- bur: {bur}");
                             //// 這邊開始驗窗戶
                             //ApexDefectInspectionStepsFlags.WindowInsOn = 0b1;
-                            ////_ = SpinWait.SpinUntil(() => false, 3000);
+                            // _ = SpinWait.SpinUntil(() => false, 3000);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
-                        #endregion
                         case 0b0101:    // 5
-                            // to 1250 (窗戶邊緣) // 到點後結束驗窗戶 
-                            await PreSurfaceIns3();
-                            // 這邊停止驗窗戶
-                            ApexDefectInspectionStepsFlags.WindowInsOn = 0b0;
-                            //_ = SpinWait.SpinUntil(() => false, 100);
-                            //_ = SpinWait.SpinUntil(() => false, 3000);
+                            #region 0b0101(5)
+                            PreSurfaceWindowSide1();
+                            // 等待光源
+                            _ = SpinWait.SpinUntil(() => false, 50);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            #endregion
                             break;
                         case 0b0110:    // 6
-                            // to 2065 () // 
-                            await PreSurfaceIns4();
-                            //_ = SpinWait.SpinUntil(() => false, 100);
-                            //_ = SpinWait.SpinUntil(() => false, 3000);
+                            #region 0b0110(6)
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
+                            // WindowBurrIns(mat1);
+                            WindowSideBurrIns(mat1);
+
+
+                            _ = SpinWait.SpinUntil(() => false, 50);
+                            // 驗表面、窗戶
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b11;
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            #endregion
+                            break;
+                        #endregion
+                        case 0b0111:    // 7
+                            #region 0b0111(7) // to 1250 (窗戶邊緣) // 到點後結束驗窗戶
+                            //_ = SpinWait.SpinUntil(() => false, 2000);
+                            await PreSurfaceIns3();
+                            // 停止驗窗戶
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn &= 0b01;
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            #endregion
+                            break;
+                        case 0b1000:    // 8
+                            // to 2065 () // 
+                            //_ = SpinWait.SpinUntil(() => false, 2000);
+                            await PreSurfaceIns4();
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            break;
+                        case 0b1001:    // 9
+                            #region 0b1001(9)
+                            StopWindowEarGrabber();
+                            StopSurfaceCameraContinous();
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            #endregion
                             break;
                         default:
                             break;
@@ -174,6 +210,28 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 窗戶正對 cam1 打側光
+        /// </summary>
+        public void PreSurfaceWindowSide1()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(0, 0, 0, 0);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(64, 0);
+        }
+
+        /// <summary>
+        /// 回復光源
+        /// </summary>
+        public void PostSurfaceWindow1()
+        {
+            // 變更光源 1
+            LightCtrls[0].SetAllChannelValue(96, 0, 0, 0);
+            // 變更光源 2
+            LightCtrls[1].SetAllChannelValue(0, 0);
+        }
+
+        /// <summary>
         /// Motor Move to 1250 (進入窗戶邊緣)
         /// </summary>
         /// <returns></returns>
@@ -201,10 +259,48 @@ namespace ApexVisIns
         /// 窗戶毛邊檢驗 (pulse 1120 & 1120 + 2250)
         /// </summary>
         /// <param name="cam"></param>
-        public void WindowBurrIns(Mat src)
+        public bool WindowBurrIns(Mat src)
         {
             Rect roi = WindowSurfaceRoi;
-            Cv2.ImShow($"Window 1120", new Mat(src, roi).Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
+            #region 開運算
+            //Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(5, 5), new Point(-1, -1));
+            //Cv2.MorphologyEx(otsu, otsu, MorphTypes.Close, ele, iterations: 3);
+            #endregion
+            //Rect l = new(380, 360, 80, 1160);
+            //Rect r = new(740, 360, 80, 1160);
+
+            // Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny);
+            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+
+            //Methods.GetContoursX(canny.Clone(), new Rect(0, 0, 80, roi.Height), out double avgLX, out int minLX, out int maxLX);
+            Methods.GetContoursX(canny, new Rect(0, 0, 80, roi.Height), out double avgLX, out int minLX, out int maxLX);
+            //Methods.GetContoursX(canny.Clone(), new Rect(roi.Width - 80, 0, 80, roi.Height), out double avgRX, out int minRX, out int maxRX);
+            Methods.GetContoursX(canny, new Rect(roi.Width - 80, 0, 80, roi.Height), out double avgRX, out int minRX, out int maxRX);
+
+            if (maxLX - minLX > 7 || avgLX - minLX > 5 || maxLX - avgLX > 5)
+            {
+                return false;
+            }
+            else if (maxRX - minRX > 7 || avgRX - minRX > 5 || maxRX - avgRX > 5)
+            {
+                return false;
+            }
+            return true;
+            //Cv2.ImShow($"Window 1120", new Mat(src, roi).Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
+        }
+
+        /// <summary>
+        /// 窗戶毛邊檢驗(側光) 
+        /// </summary>
+        public void WindowSideBurrIns(Mat src)
+        {
+            Rect roi = WindowSurfaceRoi2;
+
+            // Cv2.Rectangle(src, new Rect(100, 300, 1000, 1280), Scalar.Gray, 2);
+            // Cv2.Rectangle(src, new Rect(150, 300, 200, 1280), Scalar.Black, 1);
+            // Cv2.Rectangle(src, new Rect(850, 300, 200, 1280), Scalar.Black, 1);
+
+            Cv2.ImShow($"Window side 1120", new Mat(src, roi).Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
         }
 
         /// <summary>
@@ -240,7 +336,8 @@ namespace ApexVisIns
 
                 // Pos：550 ~ 1250
                 // if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
-                if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
+                //if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
+                if (key == "窗" && (ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b10) == 0b00)
                 {
                     // 可以刪除
                     k++;
@@ -389,7 +486,7 @@ namespace ApexVisIns
             //    Cv2.ImShow($"GrayScale Chart", LargeChart);
             //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
             //});
-            return peaks + valleys == 0 ? true : false;
+            return peaks + valleys == 0 ? true : false; 
         }
 
         /// <summary>

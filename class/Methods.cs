@@ -146,6 +146,39 @@ namespace ApexVisIns
             }
         }
 
+        public static void GetContoursX(Mat src, Rect roi, out double avg,out int minX, out int maxX)
+        {
+            try
+            {
+                using Mat clone = new(src, roi);
+
+                Cv2.FindContours(clone, out Point[][] cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
+                Point[] concatCon = cons.SelectMany(pts => pts).ToArray();
+
+                // Cv2.CvtColor(src, src, ColorConversionCodes.GRAY2BGR);
+                for (int i = 0; i < cons.Length; i++)
+                {
+                    Debug.WriteLine($"cons{i}: {cons[i].Length}");
+                    //Cv2.DrawContours(src, cons, i, Scalar.Red, 2);
+                }
+                //Cv2.ImShow($"clone{cons[0][0].X}", src.Resize(Size.Zero, 0.5, 0.5));
+                //Cv2.ImShow($"clone{cons[0][0].X}", );
+                avg = concatCon.Average(pt => pt.X);
+                minX = concatCon.Min(pt => pt.X);
+                maxX = concatCon.Max(pt => pt.X);
+
+                //foreach (IGrouping<int, Point> g in concatCon.GroupBy(pt => pt.X))
+                //{
+                //    Debug.WriteLine($"g: {g.Key} {g.Count()}");
+                //}
+                //Debug.WriteLine($"avg: {avg} min: {minX} max: {maxX}");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// 取得濾波影像
         /// </summary>

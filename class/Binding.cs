@@ -28,6 +28,8 @@ namespace ApexVisIns
 
         private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
 
+        private ImageSource _chartSource;
+
         private int _onTabIndex;
         private bool _loginFlag;
 
@@ -157,6 +159,19 @@ namespace ApexVisIns
             set
             {
                 _imgSrcArray[3] = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 灰階 Chart
+        /// </summary>
+        public ImageSource ChartSource
+        {
+            get => _chartSource;
+            set
+            {
+                _chartSource = value;
                 OnPropertyChanged();
             }
         }
