@@ -65,7 +65,7 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             break;
                         case 0b0001:    // 1
-                            StartSurfaceCameraContinous();
+                            StartSurfaceCameraContinous();  // 啟動表面相機連續拍攝
                             // 稍微等待，確保相機啟動
                             _ = SpinWait.SpinUntil(() => false, 50);
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
@@ -153,19 +153,24 @@ namespace ApexVisIns
                         case 0b1001:    // 9
                             #region 0b1001(9)
                             await PreSurfaceIns4(); // to 2065 (背面)
-                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01; 
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             #endregion
                             break;
                         case 0b1010:    // 10
-                            #region 0b1010(10)
-                            StopWindowEarGrabber();
-                            StopSurfaceCameraContinous();
+                            #region 0b1010(10) // 
+                            StopWindowEarGrabber();         // 停止窗戶、耳朵 Grabber
+                            StopSurfaceCameraContinous();   // 表面相機連續拍攝
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             #endregion
                             break;
                         default:
-                            break;
+                            throw new Exception("Code here must not be reached");
                     }
+
+                    #region Dispose 物件，釋放記憶體
+                    mat1?.Dispose();
+                    grabResult1?.Dispose();
+                    #endregion
                 }
             }
             catch (TimeoutException T)
@@ -477,21 +482,8 @@ namespace ApexVisIns
             Debug.WriteLine($"{mean3Abs} {std3}"); 
 #endif
             #endregion
-
-            //Dispatcher.Invoke(() =>
-            //{
-            //    LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
-            //    Cv2.ImShow($"GrayScale Chart", LargeChart);
-            //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
-            //});
-
-            //Dispatcher.Invoke(() =>
-            //{
-            //    LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
-            //    Cv2.ImShow($"GrayScale Chart", LargeChart);
-            //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
-            //});
             return peaks + valleys == 0;
+
         }
 
         /// <summary>

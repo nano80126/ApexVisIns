@@ -43,31 +43,31 @@ namespace ApexVisIns
                     switch (ApexAngleCorrectionFlags.CheckModeStep)
                     {
                         case 0b0000:
-                            #region 0b0000  // 0 // 變更光源、馬達速度
+                            #region 0b0000(0) // 變更光源、馬達速度
                             PreCheckCorrectionMode();
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0001:
-                            #region 0b0001 // 1 // 狀態 1 width 
+                            #region 0b0001(1) // 狀態 1 width 
                             CheckCorrectionGetWidth(cam1.Camera, out width1);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0010:
-                            #region 0b0010 // 2 // 啟動馬達旋轉 50 pulse
+                            #region 0b0010(2) // 啟動馬達旋轉 50 pulse
                             await CheckCorrectionMotorMove(50);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0011:
-                            #region 0b0011 // 3 // 狀態 2 width 
+                            #region 0b0011(3) // 狀態 2 width 
                             CheckCorrectionGetWidth(cam1.Camera, out width2);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b0100:
-                            #region 0b0100 // 4 // 停止Grabber，計算校正模式
+                            #region 0b0100(4) // 停止Grabber，計算校正模式
                             StopWindowEarGrabber(); // 停止 Grabber
                             CalCorrectionMode(width1, width2, out mode); // 計算出校正模式
                             ApexAngleCorrectionFlags.CorrectionMode = mode;
@@ -75,7 +75,8 @@ namespace ApexVisIns
                             Debug.WriteLine($"Width1: {width1}, Width2: {width2}");
                             #endregion
                             break;
-                        case 0b0101: // 迴轉
+                        case 0b0101:
+                            #region 0b0101(5) // 回轉 50 pulse
                             if (mode == 5)
                             {
                                 await CheckCorrectionMotorMove(-50);
@@ -84,10 +85,11 @@ namespace ApexVisIns
                             {
                                 await CheckCorrectionMotorMove(-45);
                             }
+                            #endregion
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             break;
                         case 0b0110:
-                            #region 0b0110 // 6 //
+                            #region 0b0110(6) // 根據 mode 啟動馬達
                             StartCorrectionMotor(mode);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion

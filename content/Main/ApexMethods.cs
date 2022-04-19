@@ -386,10 +386,11 @@ namespace ApexVisIns.content
             MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps = 0;
             // 停止驗窗戶
             MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn = 0;
+            // 保留一下
             //MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn = 0;
 
             //StartSurfaceCameraContinous();
-            StartWindowEarGrabber();
+            StartWindowEarGrabber();    // 啟動窗戶、耳朵相機 Grabber
             // 
             MainWindow.ApexSurfaceInspectionSequence(BaslerCam1, BaslerCam2, BaslerCam3, BaslerCam4);
         }

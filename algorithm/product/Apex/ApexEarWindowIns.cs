@@ -21,8 +21,6 @@ namespace ApexVisIns
         {
             try
             {
-                Debug.WriteLine($"st:{DateTime.Now:ss.fff}");
-
                 IGrabResult grabResult1 = null;
                 IGrabResult grabResult2 = null;
                 Mat mat1 = null;
@@ -63,8 +61,8 @@ namespace ApexVisIns
 
                     switch (ApexDefectInspectionStepsFlags.Steps)
                     {
-                        case 0b0000:    // 0 // 0.111 孔毛邊
-                            #region 0b0000 // 0 // 0.111 孔毛邊
+                        case 0b0000:
+                            #region 0b0000(0) // 0.111 孔毛邊
                             PreEarHoleIns();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -85,8 +83,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;
                             #endregion
                             break;
-                        case 0b0001:    // 1 // 窗戶 & 耳朵(L) ROI
-                            #region 0b0001 // 1 // 窗戶 & 耳朵(L) ROI
+                        case 0b0001:
+                            #region 0b0001(1) // 窗戶 & 耳朵(L) ROI
                             await PreEarLWindowRoi();
 
                             cam1.Camera.ExecuteSoftwareTrigger();
@@ -121,8 +119,8 @@ namespace ApexVisIns
                             }
                             #endregion
                             break;
-                        case 0b0010:    // 2 // 窗戶 & 耳朵(L) ROI
-                            #region 0b0010 // 2 // 窗戶 & 耳朵(L) ROI
+                        case 0b0010: 
+                            #region 0b0010(2) // 窗戶 & 耳朵(L) ROI
                             PreEarLWindowRoi2();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -170,8 +168,8 @@ namespace ApexVisIns
                             }
                             #endregion
                             break;
-                        case 0b0011:    // 3 // 窗戶 & 耳朵(L) 檢測
-                            #region 0b0011 // 3 // 窗戶 & 耳朵(L) 檢測
+                        case 0b0011:
+                            #region 0b0011(3) // 窗戶 & 耳朵(L) 檢測
                             PreEarWindowIns();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -181,35 +179,14 @@ namespace ApexVisIns
                             grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
                             grabResult2 = cam2.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
 
-                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
-                            mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
+                            mat1 = BaslerFunc.GrabResultToMatMono(grabResult1); // 窗戶影像
+                            mat2 = BaslerFunc.GrabResultToMatMono(grabResult2); // 耳朵影像
 
                             //Debug.WriteLine($"xPos :{xPos.Length}");
                             // 窗戶檢測
                             WindowInspection(mat1, xArray, winRoiL, winRoiR);
                             // 耳朵檢測
                             EarInsL(mat2, earRoiL, earRoiR);
-
-                            #region 孔周圍
-                            //Rect holeRoiL = new(earRoiL.Right, 850, earRoiR.Right - earRoiL.Right, 200);
-                            //Mat holeMatL = new(mat2, holeRoiL);   // 這個要清除
-
-                            //holeMask = new Mat(holeMatL.Height, holeMatL.Width, MatType.CV_8UC1, Scalar.Black);
-                            //Cv2.Circle(holeMask, (holeMask.Width / 2) + 10, (int)holeC.Y, (int)holeR, Scalar.White, -1);
-                            //// 耳朵孔檢測
-                            //EarHoleInsL(holeMatL, holeMask);
-                            //holeMatL.Dispose();
-                            #endregion
-
-                            #region 畫窗戶 ROI
-#if false
-                            Cv2.Rectangle(mat1, winRoiL, Scalar.Black, 2);
-                            Cv2.Rectangle(mat1, winRoiR, Scalar.Black, 2);
-                            Cv2.Resize(mat1, mat1, new OpenCvSharp.Size(mat1.Width / 2, mat1.Height / 2));
-                            Cv2.ImShow("mat1", mat1.Clone());
-                            Cv2.MoveWindow("mat1", 600, 20); 
-#endif
-                            #endregion
 
                             #region 畫耳朵 ROI
                             //Methods.GetOtsu(holeMatL, 0, 255, out Mat holeOtsu, out _);
@@ -235,8 +212,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01; // 1 
                             #endregion
                             break;
-                        case 0b0100:    // 4 // 窗戶 側光檢測
-                            #region 0b0100 // 4 // 窗戶 側光檢測
+                        case 0b0100:
+                            #region 0b0100(4) // 窗戶 側光檢測
                             PreWindowInsSide();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -255,8 +232,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;
                             #endregion
                             break;
-                        case 0b0101:    // 5 // 窗戶 側光檢測 2
-                            #region 0b0101 // 5 // 窗戶 側光檢測 2
+                        case 0b0101:
+                            #region 0b0101(5) // 窗戶 側光檢測 2
                             PreWindowInsSide2();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -274,8 +251,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;
                             #endregion
                             break;
-                        case 0b0110:    // 6
-                            #region 0b0110 // 6 // // 耳朵 (L) 側光檢測
+                        case 0b0110:
+                            #region 0b0110(6) // 耳朵 (L) 側光檢測
                             PreEarInsSide();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -308,8 +285,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;   // 1
                             #endregion
                             break;
-                        case 0b0111:    // 7
-                            #region 0b0111 // 7 // 窗戶 & 耳朵(L) ROI
+                        case 0b0111:
+                            #region 0b0111(7) // 窗戶 & 耳朵(L) ROI
                             await PreEarRWindowRoi();
 
                             cam2.Camera.ExecuteSoftwareTrigger();
@@ -324,8 +301,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;   // 1
                             #endregion
                             break;
-                        case 0b1000:    // 8 // 耳朵 (R) 檢測
-                            #region 0b1000 // 8 // 耳朵 (R) 檢測
+                        case 0b1000:
+                            #region 0b1000(8) // 耳朵 (R) 檢測
                             PreEarWindowIns();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -370,8 +347,8 @@ namespace ApexVisIns
                             ApexDefectInspectionStepsFlags.Steps += 0b01;   // 1
                             #endregion
                             break;
-                        case 0b1001:    // 9 // 耳朵 (R) 側光檢測
-                            #region 0b1001 // 9 // 耳朵 (R) 側光檢測
+                        case 0b1001:
+                            #region 0b1001(9) // 耳朵 (R) 側光檢測
                             PreEarInsSide();
                             _ = SpinWait.SpinUntil(() => false, 50);
 
@@ -429,9 +406,6 @@ namespace ApexVisIns
                 }
                 // 檢驗結束，關閉燈光
                 PostIns();
-
-
-                Debug.WriteLine($"end: {DateTime.Now:ss.fff}");
             }
             catch (TimeoutException T)
             {
@@ -575,6 +549,5 @@ namespace ApexVisIns
 
         }
         #endregion
-
     }
 }
