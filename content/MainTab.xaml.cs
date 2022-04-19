@@ -125,7 +125,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if false
+#if true
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -800,6 +800,7 @@ namespace ApexVisIns.content
             {
                 //if (ServoMotion.Axes[0].CurrentStatus == "READY")
                 //{
+                MainWindow.ApexDefect.StepError = false;
                 MainWindow.ApexDefect.CurrentStep = 1;
                 ServoMotion.Axes[0].ChangeZeroReturned(false);
                 await MotionReturnZero();
@@ -1480,10 +1481,19 @@ namespace ApexVisIns.content
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
                         //if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
+                        //  bit0: 檢表面
                         if ((MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b01) == 0b01)
                         {
                             bool b = MainWindow.SurfaceIns1(mat);
                             Debug.WriteLine($"良品: {b}");
+
+                            if (!b)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Cv2.ImShow($"cam3{DateTime.Now:ss.fff}:{MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps}", mat.Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
+                                });
+                            }
                         }
 
                         MainWindow.Dispatcher.Invoke(() =>

@@ -78,7 +78,8 @@ namespace ApexVisIns
         /// <summary>
         /// 角度校正窗戶ROI
         /// </summary>
-        private readonly Rect WindowLeftRightRoi = new(100, 840, 1000, 240);
+        //private readonly Rect WindowLeftRightRoi = new(100, 840, 1000, 240);
+        private readonly Rect WindowLeftRightRoi = new(100, 780, 1000, 360);    // 100 = 600 - 500; 780 = 960 - 180
         /// <summary>
         /// 窗戶抓取上下邊緣Roi
         /// </summary>
@@ -92,6 +93,9 @@ namespace ApexVisIns
         /// </summary>
         private readonly Rect EarLeftRightRoi = new(350, 900, 500, 200);
         #endregion
+
+        [Obsolete()]
+        public DateTime StartCorrection;
 
         #region Apex 表面 ROI (Camera 1)
         private readonly Rect[] Surface1ROIs = new Rect[] {
@@ -1368,6 +1372,8 @@ namespace ApexVisIns
             }
 
             Debug.WriteLine($"Right Con Length: {FilterR.Length}");
+
+            Cv2.ImShow("window", src.Clone().Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
 
             //Cv2.Resize(ConMatR, ConMatR, new OpenCvSharp.Size(roiR.Width / 2, roiR.Height / 2));
             //Cv2.ImShow("Right Con Mat", ConMatR);

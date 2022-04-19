@@ -27,6 +27,10 @@ namespace ApexVisIns
                 byte endStep = 0b1001;
                 int cycleCount = 0;
 
+
+                StartCorrection = DateTime.Now;
+                Debug.WriteLine($"粗對位: 1{DateTime.Now:mm:ss.fff}");
+
                 while (ApexAngleCorrectionFlags.CheckModeStep != endStep)
                 {
                     Debug.WriteLine($"Step: {ApexAngleCorrectionFlags.CheckModeStep}");
@@ -78,7 +82,7 @@ namespace ApexVisIns
                             }
                             else if (mode == 7)
                             {
-                                await CheckCorrectionMotorMove(-50);
+                                await CheckCorrectionMotorMove(-45);
                             }
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             break;
@@ -104,6 +108,8 @@ namespace ApexVisIns
                             break;
                     }
                 }
+
+                Debug.WriteLine($"粗對位: 2{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
             }
             catch (TimeoutException T)
             {
@@ -183,13 +189,21 @@ namespace ApexVisIns
                 Methods.GetRoiOtsu(mat, roi, 0, 255, out _, out byte th);
                 ApexAngleCorrectionFlags.OtsuThreshlod = th;
             }
+
             byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;
+            //Methods.GetRoiCanny(mat, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
+            // 二值
+            Methods.GetRoiBinarization(mat, roi, otsuTh, 255, out Mat bin);
+            // 閉運算
+            Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(3, 3), new Point(-1, -1));
+            Cv2.MorphologyEx(bin, bin, MorphTypes.Close, ele, null, 3);
+            // canny
+            Methods.GetCanny(bin, 75, 150, out Mat canny);
 
-            Methods.GetRoiCanny(mat, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
-
-            bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 30, 100);
+            bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 30, 50);
 
             Cv2.VConcat(new Mat(mat, roi), canny, canny);
+            Cv2.PutText(canny, $"{width:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Black, 1);
             //Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
             Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
 
@@ -698,8 +712,12 @@ namespace ApexVisIns
                                         ApexAngleCorrectionFlags.Steps += 0b01;
 
                                         Cv2.DestroyWindow("ApexCorrectionCanny");
+
+                                        Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                                     }
                                 }
+
+                                //Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                             }
                             else
                             {
@@ -707,6 +725,8 @@ namespace ApexVisIns
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                                 // 到此粗定位結束
                                 Cv2.DestroyWindow("ApexCorrectionCanny");
+
+                                Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                             }
                             ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
@@ -729,7 +749,7 @@ namespace ApexVisIns
                 int r = 0;  // 孔右輪廓計數
 
                 // 銳化垂直
-                Methods.GetRoiVerticalFilter2D(src2, roi, 1.5, -0.5, out Mat filter);
+                Methods.GetRoiVerticalFilter2D(src2, roi, 1.2, -0.4, out Mat filter);
                 Methods.GetCanny(filter, 75, 150, out Mat canny);
 
                 // 找輪廓
@@ -798,11 +818,6 @@ namespace ApexVisIns
                 #region 可刪
                 Cv2.ImShow("Ear filter", filter);
                 Cv2.ImShow("Ear Canny", canny);
-
-                //Mat small = new();
-                //Cv2.Resize(src2, small, new OpenCvSharp.Size(src2.Width / 2, src2.Height / 2));
-                //Cv2.ImShow("src2", small);
-
                 Cv2.ImShow($"ZOOM", new Mat(src2, roi));
 
                 Cv2.MoveWindow("Ear filter", 20, 20);
@@ -866,6 +881,8 @@ namespace ApexVisIns
                                 Cv2.DestroyWindow("ZOOM");
                                 // 終止連續拍攝
                                 StopWindowEarCameraContinous();
+
+                                Debug.WriteLine($"精定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                             }
                             break;
                         default:        // 0b1000 // 8

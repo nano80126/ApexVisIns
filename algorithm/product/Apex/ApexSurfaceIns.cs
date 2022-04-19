@@ -44,7 +44,7 @@ namespace ApexVisIns
                 #endregion
 
                 int CycleCount = 0;
-                byte endStep = 0b1010;  // 8
+                byte endStep = 0b1011;  // 11
 
                 while (ApexDefectInspectionStepsFlags.SurfaceSteps < endStep)
                 {
@@ -73,6 +73,8 @@ namespace ApexVisIns
                         case 0b0010:    // 2
                             // to 550 (窗戶邊緣) // 到點後開始驗窗戶 
                             await PreSurfaceIns2();
+                            // 等待 50ms 重新拍攝
+                            _ = SpinWait.SpinUntil(() => false, 50);
                             // 開始驗窗戶
                             ApexDefectInspectionStepsFlags.SurfaceInsOn |= 0b10;
                             //_ = SpinWait.SpinUntil(() => false, 3000);
@@ -120,31 +122,42 @@ namespace ApexVisIns
                             // WindowBurrIns(mat1);
                             WindowSideBurrIns(mat1);
                             // 
-                            PostSurfaceWindow1();
-                            _ = SpinWait.SpinUntil(() => false, 50);
+                            //PostSurfaceWindow1();
+                            // 等待 50ms 重新拍攝 
+                            //_ = SpinWait.SpinUntil(() => false, 50);
                             // 驗表面、窗戶
-                            ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b11;
+                            //ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b11;
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             #endregion
                             break;
                         #endregion
                         case 0b0111:    // 7
-                            #region 0b0111(7) // to 1250 (窗戶邊緣) // 到點後結束驗窗戶
-                            //_ = SpinWait.SpinUntil(() => false, 2000);
-                            await PreSurfaceIns3();
+                            #region 0b0111  // 窗毛毛邊驗完 // 回復光源
+                            PostSurfaceWindow1();
+
+                            _ = SpinWait.SpinUntil(() => false, 500);
+                            ApexDefectInspectionStepsFlags.SurfaceInsOn = 0b11;
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
+                            #endregion
+                            break;
+                        case 0b1000:    // 8
+                            #region 0b1000(8) // to 1250 (窗戶邊緣) // 到點後結束驗窗戶
+                            await PreSurfaceIns3(); // to 1250 (窗戶邊緣)
+                            // 等待 50 ms 確定有拍攝
+                            _ = SpinWait.SpinUntil(() => false, 50);
                             // 停止驗窗戶
                             ApexDefectInspectionStepsFlags.SurfaceInsOn &= 0b01;
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
                             #endregion
                             break;
-                        case 0b1000:    // 8
-                            // to 2065 () // 
-                            //_ = SpinWait.SpinUntil(() => false, 2000);
-                            await PreSurfaceIns4();
-                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
-                            break;
                         case 0b1001:    // 9
                             #region 0b1001(9)
+                            await PreSurfaceIns4(); // to 2065 (背面)
+                            ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01; 
+                            #endregion
+                            break;
+                        case 0b1010:    // 10
+                            #region 0b1010(10)
                             StopWindowEarGrabber();
                             StopSurfaceCameraContinous();
                             ApexDefectInspectionStepsFlags.SurfaceSteps += 0b01;
@@ -182,7 +195,7 @@ namespace ApexVisIns
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
             // 變更馬達速度
-            ServoMotion.Axes[1].SetAxisVelParam(100, 1000, 4000, 4000);
+            ServoMotion.Axes[1].SetAxisVelParam(80, 800, 3200, 3200);
             // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(-185, true);
         }
@@ -207,7 +220,7 @@ namespace ApexVisIns
             // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(1120, true);
             // 變更光源 1
-            LightCtrls[0].SetAllChannelValue(0, 0, 128, 128);
+            LightCtrls[0].SetAllChannelValue(0, 0, 128, 0);
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
         }
@@ -269,8 +282,6 @@ namespace ApexVisIns
             //Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(5, 5), new Point(-1, -1));
             //Cv2.MorphologyEx(otsu, otsu, MorphTypes.Close, ele, iterations: 3);
             #endregion
-            //Rect l = new(380, 360, 80, 1160);
-            //Rect r = new(740, 360, 80, 1160);
 
             // Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny);
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
@@ -289,7 +300,6 @@ namespace ApexVisIns
                 return false;
             }
             return true;
-            //Cv2.ImShow($"Window 1120", new Mat(src, roi).Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
         }
 
         /// <summary>
@@ -317,19 +327,6 @@ namespace ApexVisIns
             int peaks = 0;      // 峰值數量
             int valleys = 0;    // 谷值數量
 
-            // 灰階均值 Arr
-            //double[] meanArr = new double[Surface1ROIsDic.Keys.Count];
-            //// 標準差 Arr
-            //double[] stdArr = new double[Surface1ROIsDic.Keys.Count];
-            // APEX尾端用
-            //double[] tempArr = new double[3];
-
-            // foreach (string key in Surface1ROIsDic.Keys)
-            // { 
-            //     Rect roi = Surface1ROIsDic[key]; 
-            //     Debug.WriteLine($"{key} {roi}"); 
-            // }
-
             // 可以刪除
             int k = 0;
 
@@ -339,7 +336,7 @@ namespace ApexVisIns
 
                 // Pos：550 ~ 1250
                 // if (key == "窗" && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
-                //if (key == "窗" && ApexDefectInspectionStepsFlags.WindowInsOn == 0b00)
+                // 判斷是否要驗窗戶
                 if (key == "窗" && (ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b10) == 0b00)
                 {
                     // 可以刪除
@@ -352,7 +349,7 @@ namespace ApexVisIns
                 //     // roi.X = 2350 (窗戶) // Surface = 3，時要檢驗窗戶
                 //     // 否則跳過
                 //     // continue;
-                // }  
+                // }   
 #endif
 
                 Methods.GetRoiGaussianBlur(src, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
@@ -436,6 +433,11 @@ namespace ApexVisIns
                 LargeChart = LargeChart.Resize(OpenCvSharp.Size.Zero, 0.75, 0.75);
                 Cv2.ImShow($"GrayScale Chart", LargeChart);
                 // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
+
+                if (peaks + valleys > 0)
+                {
+                    Cv2.ImShow($"Gray Chart{DateTime.Now:ss.fff}", LargeChart);
+                }
             });
 
             #region test here
@@ -489,7 +491,7 @@ namespace ApexVisIns
             //    Cv2.ImShow($"GrayScale Chart", LargeChart);
             //    // Cv2.MoveWindow($"GrayScale Chart", 20, 200);
             //});
-            return peaks + valleys == 0 ? true : false; 
+            return peaks + valleys == 0;
         }
 
         /// <summary>

@@ -49,10 +49,7 @@
                 <!--//-->
                 <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
                 <StackPanel HorizontalAlignment="Right" Grid.Column="1">
-                    <Button x:Name="Minbtn"  Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Style="{StaticResource WindowButton}" 
-                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}" 
-                            IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
-                            Click="Minbtn_Click"/>
+                    <Button x:Name="Minbtn"  Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Style="{StaticResource WindowButton}" Click="Minbtn_Click"/>
                 </StackPanel>
             </Grid>
             <!--IO Panel-->

@@ -21,6 +21,8 @@ namespace ApexVisIns
         {
             try
             {
+                Debug.WriteLine($"st:{DateTime.Now:ss.fff}");
+
                 IGrabResult grabResult1 = null;
                 IGrabResult grabResult2 = null;
                 Mat mat1 = null;
@@ -182,6 +184,7 @@ namespace ApexVisIns
                             mat1 = BaslerFunc.GrabResultToMatMono(grabResult1);
                             mat2 = BaslerFunc.GrabResultToMatMono(grabResult2);
 
+                            //Debug.WriteLine($"xPos :{xPos.Length}");
                             // 窗戶檢測
                             WindowInspection(mat1, xArray, winRoiL, winRoiR);
                             // 耳朵檢測
@@ -426,6 +429,9 @@ namespace ApexVisIns
                 }
                 // 檢驗結束，關閉燈光
                 PostIns();
+
+
+                Debug.WriteLine($"end: {DateTime.Now:ss.fff}");
             }
             catch (TimeoutException T)
             {

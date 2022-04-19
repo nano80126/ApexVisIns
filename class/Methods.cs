@@ -68,6 +68,54 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// 取得二值影像
+        /// </summary>
+        public static void GetBinarization(Mat src, byte th, byte max, out Mat binar)
+        {
+            try
+            {
+                binar = new Mat();
+
+                Cv2.Threshold(src, binar, 0, 255, ThresholdTypes.Binary);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得 ROI 二值化影像
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="roi"></param>
+        /// <param name="th"></param>
+        /// <param name="max"></param>
+        /// <param name="binar"></param>
+        public static void GetRoiBinarization(Mat src, Rect roi, byte th, byte max, out Mat binar)
+        {
+            try
+            {
+                binar = new Mat();
+                using Mat clone = new(src, roi);
+
+                Cv2.Threshold(clone, binar, th, max, ThresholdTypes.Binary);
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 取得 Otsu 影像、閾值
         /// </summary>
         /// <param name="src"></param>
@@ -1011,6 +1059,11 @@ namespace ApexVisIns
 
                 if (lineSeg != null && lineSeg.Length > 0)
                 {
+                    //foreach (LineSegmentPoint line in lineSeg)
+                    //{
+                    //    Debug.WriteLine($"{line.P1} {line.P2} {line.Length()}");
+                    //}
+
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) < Xgap);
                     IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
 
