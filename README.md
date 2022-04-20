@@ -34,6 +34,10 @@ Apex 外觀瑕疵檢測
 
 ## 定位有機率失敗
 
+* Bug fixed
+	* Methods.GetVertialWindowWidth 內分組後使用 4 捨 5 入
+
+
 ## APEX 檢測要保留項目
 	* 單步測試
 		1. 單相機單特徵

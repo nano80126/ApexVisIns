@@ -249,10 +249,14 @@ namespace ApexVisIns.content
             //// 變更光源，啟動馬達
             //MainWindow.PreCheckCorrectionMode();
 
+            //Task.Run(() =>
+            //{
+
             // 啟動 Grabber
             StartWindowEarGrabber();
-
+            // 
             MainWindow.ApexAngleCorrectionSequence(BaslerCam1);
+            //});
 
             // 停止Grabber
             // StopWindowEarGrabber();

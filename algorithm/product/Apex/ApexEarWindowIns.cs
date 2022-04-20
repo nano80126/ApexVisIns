@@ -119,7 +119,7 @@ namespace ApexVisIns
                             }
                             #endregion
                             break;
-                        case 0b0010: 
+                        case 0b0010:
                             #region 0b0010(2) // 窗戶 & 耳朵(L) ROI
                             PreEarLWindowRoi2();
                             _ = SpinWait.SpinUntil(() => false, 50);
@@ -382,20 +382,6 @@ namespace ApexVisIns
                         default:        // 10
                             throw new Exception("Code here must not be reached");
                     }
-
-                    // cam1.Camera.ExecuteSoftwareTrigger();
-                    // cam2.Camera.ExecuteSoftwareTrigger();
-
-                    // using IGrabResult grabResult1 = cam1.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
-                    // using IGrabResult grabResult2 = cam2.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
-
-                    // if (grabResult1.GrabSucceeded)
-                    // {
-                    // }
-
-                    // if (grabResult2.GrabSucceeded)
-                    // {
-                    // }
 
                     #region Dispose 物件，釋放記憶體
                     mat1?.Dispose();

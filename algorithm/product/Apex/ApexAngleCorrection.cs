@@ -27,18 +27,17 @@ namespace ApexVisIns
                 byte endStep = 0b1001;
                 int cycleCount = 0;
 
-
                 StartCorrection = DateTime.Now;
-                Debug.WriteLine($"粗對位: 1{DateTime.Now:mm:ss.fff}");
+                Debug.WriteLine($"粗對位1:{DateTime.Now:mm:ss.fff}");
 
-                while (ApexAngleCorrectionFlags.CheckModeStep != endStep)
+                while (ApexAngleCorrectionFlags.CheckModeStep < endStep)
                 {
-                    Debug.WriteLine($"Step: {ApexAngleCorrectionFlags.CheckModeStep}");
+                    Debug.WriteLine($"Step:{ApexAngleCorrectionFlags.CheckModeStep}");
                     if (cycleCount++ > endStep)
                     {
                         break;
                     }
-                    Debug.WriteLine($"Cycle Count: {cycleCount}");
+                    Debug.WriteLine($"Cycle Count:{cycleCount}");
 
                     switch (ApexAngleCorrectionFlags.CheckModeStep)
                     {
@@ -57,6 +56,7 @@ namespace ApexVisIns
                         case 0b0010:
                             #region 0b0010(2) // 啟動馬達旋轉 50 pulse
                             await CheckCorrectionMotorMove(50);
+                            //_ = SpinWait.SpinUntil(() => false, 500);
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
@@ -68,15 +68,16 @@ namespace ApexVisIns
                             break;
                         case 0b0100:
                             #region 0b0100(4) // 停止Grabber，計算校正模式
-                            StopWindowEarGrabber(); // 停止 Grabber
-                            CalCorrectionMode(width1, width2, out mode); // 計算出校正模式
+                            StopWindowEarGrabber();                         // 停止 Grabber
+                            CalCorrectionMode(width1, width2, out mode);    // 計算出校正模式
+                            //Debug.WriteLine($"Width1: {width1}, Width2: {width2}");
                             ApexAngleCorrectionFlags.CorrectionMode = mode;
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
-                            Debug.WriteLine($"Width1: {width1}, Width2: {width2}");
                             #endregion
                             break;
                         case 0b0101:
                             #region 0b0101(5) // 回轉 50 pulse
+                            Debug.WriteLine($"Mode: {mode}");
                             if (mode == 5)
                             {
                                 await CheckCorrectionMotorMove(-50);
@@ -85,6 +86,8 @@ namespace ApexVisIns
                             {
                                 await CheckCorrectionMotorMove(-45);
                             }
+                            // _ = SpinWait.SpinUntil(() =>  false, 500);
+                            ApexAngleCorrectionFlags.LastWindowWidth = ApexAngleCorrectionFlags.MaxWindowWidth = (ushort)Math.Max(width1, width2);
                             #endregion
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             break;
@@ -96,13 +99,14 @@ namespace ApexVisIns
                             break;
                         case 0b0111:
                             #region 0b0111 // 7 //
-                            PreCorrectionContinuous();
+                            // 保留，實際上光源沒有變更
+                            //PreCorrectionContinuous();    // pass
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
                         case 0b1000:    // 8 
                             #region 0b1000 // 8 //
-                            StartWindowEarCameraContinous();
+                            StartWindowEarCameraContinous();    // 開啟窗戶、耳朵相機連續拍攝
                             ApexAngleCorrectionFlags.CheckModeStep += 0b01;
                             #endregion
                             break;
@@ -111,7 +115,7 @@ namespace ApexVisIns
                     }
                 }
 
-                Debug.WriteLine($"粗對位: 2{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
+                Debug.WriteLine($"粗對位2:{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
             }
             catch (TimeoutException T)
             {
@@ -131,7 +135,7 @@ namespace ApexVisIns
         /// 確認旋轉方向前步驟；
         /// Light1：0, 0, 128, 128；
         /// Light2：0, 0；
-        /// Motor ：20, 200, 4000, 4000；
+        /// Motor ：10, 100, 1000, 1000；
         /// </summary>
         public void PreCheckCorrectionMode()
         {
@@ -146,8 +150,9 @@ namespace ApexVisIns
         }
 
         /// <summary>
+        /// (保留)
         /// 對位連續拍攝前步驟；
-        /// Light1：160, 0, 128, 128；
+        /// Light1：0, 0, 128, 128；
         /// Light2：0, 0；
         /// </summary>
         public void PreCorrectionContinuous()
@@ -198,20 +203,23 @@ namespace ApexVisIns
             Methods.GetRoiBinarization(mat, roi, otsuTh, 255, out Mat bin);
             // 閉運算
             Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(3, 3), new Point(-1, -1));
-            Cv2.MorphologyEx(bin, bin, MorphTypes.Close, ele, null, 3);
+            Cv2.MorphologyEx(bin, bin, MorphTypes.Close, ele, null, 5);
             // canny
             Methods.GetCanny(bin, 75, 150, out Mat canny);
 
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 30, 50);
 
-            Cv2.VConcat(new Mat(mat, roi), canny, canny);
+            Cv2.VConcat(new Mat(mat, roi), bin, bin);
+            Cv2.VConcat(bin, canny, canny);
             Cv2.PutText(canny, $"{width:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Black, 1);
             //Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
             Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
 
-            // 釋放資源
-            // canny.Dispose();
-            // Debug.WriteLine($"width: {width}");
+            #region 釋放資源
+            ele.Dispose();
+            //bin.Dispose();
+            //canny.Dispose();
+            #endregion
         }
 
         /// <summary>
@@ -672,13 +680,15 @@ namespace ApexVisIns
                             break;
                         case 0b0011:    // 3 // 每次 +5 pulse
                             #region 0b0011 // 3 // 每次 +5 pulse
+                            Debug.WriteLine($"Last {ApexAngleCorrectionFlags.LastWindowWidth} Max: {ApexAngleCorrectionFlags.MaxWindowWidth}");
+
                             if (width >= ApexAngleCorrectionFlags.LastWindowWidth)
                             {
-                                if ((ApexAngleCorrectionFlags.CorrectionMode & 0b0001) == 0b0000)   // 正向
+                                if ((ApexAngleCorrectionFlags.CorrectionMode & 0b01) == 0b00)   // 正向
                                 {
                                     _ = ServoMotion.Axes[1].TryPosMove(5);
                                 }
-                                else if ((ApexAngleCorrectionFlags.CorrectionMode & 0b0001) == 0b0001)  // 逆向
+                                else if ((ApexAngleCorrectionFlags.CorrectionMode & 0b01) == 0b01)  // 逆向
                                 {
                                     _ = ServoMotion.Axes[1].TryPosMove(-5);
                                 }
@@ -740,12 +750,17 @@ namespace ApexVisIns
 #if false
                 Debug.WriteLine($"Width: {width} Last: {ApexAngleCorrectionFlags.LastWindowWidth} Max: {ApexAngleCorrectionFlags.MaxWindowWidth}");
 #endif
+                #region 資源釋放
+                //src.Dispose();
+                //canny.Dispose();
+                #endregion
             }
 
             if (src2 != null && !src2.Empty())
             {
                 // X: 600 - 90, Y: 960 - 90
-                Rect roi = new(510, 860, 180, 180);
+                //Rect roi = new(510, 860, 180, 180);
+                Rect roi = new(EarHoleRoi.X - 10, EarHoleRoi.Y + 10, EarHoleRoi.Width + 20, EarHoleRoi.Height - 20);
 
                 int l = 0;  // 孔左輪廓計數
                 int r = 0;  // 孔右輪廓計數
@@ -791,17 +806,11 @@ namespace ApexVisIns
                         {
                             continue;
                         }
-                        else
-                        {
-                            //Debug.WriteLine($"Max Arc: {arc}");
-                        }
+                        //else
+                        //{
+                        //Debug.WriteLine($"Max Arc: {arc}");
+                        //}
                     }
-
-                    // else
-                    // {
-                    //     Cv2.DrawContours(src2, cons, i, Scalar.Black, 2);
-                    // }
-                    // Debug.WriteLine($"Length: {cons[i].Length} {Cv2.ArcLength(cons[i], false)}");
 
                     double cX = moments[i].M10 / moments[i].M00;
                     if (cX < c.X && Math.Abs(cX - c.X) > 10)
@@ -833,8 +842,8 @@ namespace ApexVisIns
                 {
                     switch (ApexAngleCorrectionFlags.Steps)
                     {
-                        case 0b0101:    // 5 // 判斷 L = R 
-                            #region 0b0110 // 5 // 判斷 L = R
+                        case 0b0101:
+                            #region 0b0110(5) // 判斷 L = R
                             if (l > r)
                             {
                                 _ = ServoMotion.Axes[1].TryPosMove(-1);
@@ -854,8 +863,8 @@ namespace ApexVisIns
                             }
                             #endregion
                             break;
-                        case 0b0110:    // 6 // 
-                            #region 0b0110 // 6 // 判斷 L、R
+                        case 0b0110:
+                            #region 0b0110(6) // 判斷 L、R
                             if (l > r)
                             {
                                 _ = ServoMotion.Axes[1].TryPosMove(-1);
@@ -874,7 +883,8 @@ namespace ApexVisIns
                             // 到此精定位結束 
                             #endregion
                             break;
-                        case 0b0111:    // 7 // 重置 POS
+                        case 0b0111:
+                            #region 0b00111(7) // 重置 pos
                             if (ServoMotion.Axes[1].TryResetPos() == (uint)Advantech.Motion.ErrorCode.SUCCESS)
                             {
                                 ApexAngleCorrectionFlags.Steps += 0b01;
@@ -883,15 +893,22 @@ namespace ApexVisIns
                                 Cv2.DestroyWindow("ZOOM");
                                 // 終止連續拍攝
                                 StopWindowEarCameraContinous();
-
                                 Debug.WriteLine($"精定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
-                            }
+                            } 
+                            #endregion
                             break;
                         default:        // 0b1000 // 8
                             //StopWindowEarCameraContinous();
                             break;
                     }
                 }
+
+                #region 資源釋放
+                //src2.Dispose();
+                //filter.Dispose();
+                //canny.Dispose();
+                #endregion
+
             }
 
 #if false

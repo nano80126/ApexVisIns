@@ -1064,8 +1064,22 @@ namespace ApexVisIns
                     //    Debug.WriteLine($"{line.P1} {line.P2} {line.Length()}");
                     //}
 
-                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) < Xgap);
-                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) <= Xgap);
+
+                    foreach (LineSegmentPoint item in filter.OrderBy(line => (line.P1.X + line.P2.X) / 2))
+                    {
+                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+                    }
+                    Debug.WriteLine($"----------------------------------------------------------------------------------------------");
+
+                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Round((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
+
+                    foreach (IGrouping<double, LineSegmentPoint> item in groupings)
+                    {
+                        Debug.WriteLine($"{item.Key} {item.Average(a => (a.P1.X + a.P2.X) / 2)}");
+                    }
+                    Debug.WriteLine($"==============================================================================================");
+
 
                     if (groupings.Length == 4)
                     {

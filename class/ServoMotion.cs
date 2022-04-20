@@ -2427,7 +2427,7 @@ namespace ApexVisIns
                 }
 
                 // 等待一次 Timer Tick
-                SpinWait.SpinUntil(() => false, 150);
+                SpinWait.SpinUntil(() => false, 120);
 
                 // 等待軸狀態變為READY
                 SpinWait.SpinUntil(() => CurrentStatus == "READY");
