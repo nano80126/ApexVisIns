@@ -1486,14 +1486,15 @@ namespace ApexVisIns.content
                             bool b = MainWindow.SurfaceIns1(mat);
                             Debug.WriteLine($"良品: {b}");
 
-                            //if (!b)
-                            //{
-                            //    Dispatcher.Invoke(() =>
-                            //    {
-                            //        Cv2.ImShow($"cam3{DateTime.Now:ss.fff}:{MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps}", mat.Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
-                            //    });
-                            //}
+                            if (!b)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    Cv2.ImShow($"cam3{DateTime.Now:ss.fff}:{MainWindow.ApexDefectInspectionStepsFlags.SurfaceSteps}", mat.Resize(OpenCvSharp.Size.Zero, 0.5, 0.5));
+                                });
+                            }
                         }
+
 
                         MainWindow.Dispatcher.Invoke(() =>
                         {

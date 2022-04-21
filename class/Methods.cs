@@ -1063,51 +1063,88 @@ namespace ApexVisIns
                     //{
                     //    Debug.WriteLine($"{line.P1} {line.P2} {line.Length()}");
                     //}
+                    //Debug.WriteLine($"{DateTime.Now:ss.fff}");
 
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) <= Xgap);
 
-                    foreach (LineSegmentPoint item in filter.OrderBy(line => (line.P1.X + line.P2.X) / 2))
+                    //Debug.WriteLine($"{DateTime.Now:ss.fff}");
+
+                    // 排序 => 取出 X => 過濾重複 => ToArray()
+                    double[] distinct = filter.OrderBy(line => line.P1.X + line.P2.X).Select(l => (double)((l.P1.X + l.P2.X) / 2)).Distinct().ToArray();
+                    Debug.WriteLine($"distinct: {string.Join(",", distinct)}");
+
+                    if (distinct.Length >= 4)
                     {
-                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+                        double center = (distinct[0] + distinct[^1]) / 2;
+
+                        double winL = distinct.Last(x => x < center);
+                        double winR = distinct.First(x => x > center);
+                        lineCount = distinct.Length;
+                        width = winR - winL;
                     }
-                    Debug.WriteLine($"----------------------------------------------------------------------------------------------");
-
-                    IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Round((double)(line.P1.X * line.P2.X) / 10000)).ToArray();
-
-                    foreach (IGrouping<double, LineSegmentPoint> item in groupings)
+                    else
                     {
-                        Debug.WriteLine($"{item.Key} {item.Average(a => (a.P1.X + a.P2.X) / 2)}");
+                        lineCount = distinct.Length;
+                        return false;
                     }
-                    Debug.WriteLine($"==============================================================================================");
+#if false
+                    //List<double> a1 = new();
+                    //List<double> a2 = new();
+
+                    //for (int i = 0; i < distinct.Length; i++)
+                    //{
+                    //    if (i == 0)
+                    //    {
+                    //        a1.Add(distinct[i]);
+                    //        a2.Add(distinct[^(i + 1)]);
+                    //    }
+                    //    else
+                    //    {
+                    //        if (distinct[i] > distinct[i - 1] + 5 && a1.Count < 2)
+                    //        {
+                    //            a1.Add(distinct[i]);
+                    //        }
+
+                    //        if (distinct[^(i + 1)] < distinct[^(i)] - 5 && a2.Count < 2)
+                    //        {
+                    //            a2.Add(distinct[^(i + 1)]);
+                    //        }
+                    //    }
+                    //}
+                    //groupings = a1.Concat(a2.Reverse());
+
+                    //Debug.WriteLine($"arr: {string.Join(",", arr)}");
+                    //Debug.WriteLine($"a1: {string.Join(",", a1)}");
+                    //Debug.WriteLine($"a2: {string.Join(",", a2)}");
+
+                    //foreach (LineSegmentPoint item in filter.OrderBy(line => (line.P1.X + line.P2.X) / 2))
+                    //{
+                    //    Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+                    //}
+                    //Debug.WriteLine($"--------------------------------------------------------------------------------------------------------------------");
+
+                    //Debug.WriteLine($"{DateTime.Now:ss.fff}");
+
+                    //IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X + line.P2.X) / 10)).ToArray();
+
+                    //Debug.WriteLine($"{DateTime.Now:ss.fff}");
 
 
-                    if (groupings.Length == 4)
+                    //foreach (IGrouping<double, LineSegmentPoint> item in groupings)
+                    //{
+                    //    Debug.WriteLine($"{item.Key} {item.Average(a => (a.P1.X + a.P2.X) / 2)}");
+                    //}
+                    //Debug.WriteLine($"====================================================================================================================");
+
+                    //a2.Reverse(); // 反轉
+                    //double[] concat = a1.Concat(a2).ToArray();
+
+                    Debug.WriteLine($"groupings {string.Join(",", concat)}");
+                    if (concat.Length == 4)
                     {
-                        lineCount = groupings.Length;
-                        width = groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
-
-                        //if (dir == 5)
-                        //{
-                        //    // 這邊確認旋轉方向
-                        //    double L = groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[0].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
-                        //    double R = groupings[3].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
-                        //    double abs = Math.Abs(L - R);
-
-                        //    Debug.WriteLine($"L: {L} R: {R} ABS: {abs}");
-
-                        //    if (3 < abs && abs < 50)
-                        //    {
-                        //        dir = L > R ? (byte)0 : (byte)1;
-                        //    }
-                        //    else if (50 <= abs)
-                        //    {
-                        //        dir = L > R ? (byte)2 : (byte)3;
-                        //    }
-                        //    else
-                        //    {
-                        //        dir = 4;
-                        //    }
-                        //}
+                        lineCount = concat.Length;
+                        //width = groupings[2].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2) - groupings[1].Average(a => Math.Round((double)a.P1.X + a.P2.X) / 2);
+                        width = concat[2] - concat[1];
 
                         if (width < minWindowWidth)
                         {
@@ -1116,9 +1153,10 @@ namespace ApexVisIns
                     }
                     else
                     {
-                        lineCount = groupings.Length;
+                        lineCount = concat.Length;
                         return false;
-                    }
+                    } 
+#endif
                 }
                 return true;
             }

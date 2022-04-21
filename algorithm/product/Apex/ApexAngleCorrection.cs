@@ -209,8 +209,9 @@ namespace ApexVisIns
 
             bool FindWindow = Methods.GetVertialWindowWidth(canny, out _, out width, 3, 30, 50);
 
-            Cv2.VConcat(new Mat(mat, roi), bin, bin);
-            Cv2.VConcat(bin, canny, canny);
+            Cv2.VConcat(new Mat(mat, roi), canny, canny);
+            //Cv2.VConcat(new Mat(mat, roi), bin, bin);
+            //Cv2.VConcat(bin, canny, canny);
             Cv2.PutText(canny, $"{width:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Black, 1);
             //Cv2.ImShow($"src{DateTime.Now:ss.fff}", new Mat(mat, roi));
             Cv2.ImShow($"canny{DateTime.Now:ss.fff}", canny);
@@ -894,7 +895,7 @@ namespace ApexVisIns
                                 // 終止連續拍攝
                                 StopWindowEarCameraContinous();
                                 Debug.WriteLine($"精定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
-                            } 
+                            }
                             #endregion
                             break;
                         default:        // 0b1000 // 8
