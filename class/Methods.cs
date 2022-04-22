@@ -1067,8 +1067,6 @@ namespace ApexVisIns
 
                     IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => line.Length() > lineLength && Math.Abs(line.P2.X - line.P1.X) <= Xgap);
 
-                    //Debug.WriteLine($"{DateTime.Now:ss.fff}");
-
                     // 排序 => 取出 X => 過濾重複 => ToArray()
                     double[] distinct = filter.OrderBy(line => line.P1.X + line.P2.X).Select(l => (double)((l.P1.X + l.P2.X) / 2)).Distinct().ToArray();
                     Debug.WriteLine($"distinct: {string.Join(",", distinct)}");
@@ -1088,8 +1086,8 @@ namespace ApexVisIns
                         return false;
                     }
 #if false
-                    //List<double> a1 = new();
-                    //List<double> a2 = new();
+                    // List<double> a1 = new();
+                    // List<double> a2 = new();
 
                     //for (int i = 0; i < distinct.Length; i++)
                     //{
@@ -1128,7 +1126,6 @@ namespace ApexVisIns
                     //IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.X).GroupBy(line => Math.Floor((double)(line.P1.X + line.P2.X) / 10)).ToArray();
 
                     //Debug.WriteLine($"{DateTime.Now:ss.fff}");
-
 
                     //foreach (IGrouping<double, LineSegmentPoint> item in groupings)
                     //{

@@ -80,7 +80,7 @@ namespace ApexVisIns
                             // to 550 (窗戶邊緣) // 到點後開始驗窗戶 
                             await PreSurfaceIns2();
                             // 等待 50ms 重新拍攝
-                            _ = SpinWait.SpinUntil(() => false, 100);
+                            _ = SpinWait.SpinUntil(() => false, 50);
                             // 開始驗窗戶
                             ApexDefectInspectionStepsFlags.SurfaceInsOn |= 0b10;
                             // _ = SpinWait.SpinUntil(() => false, 3000);
@@ -239,8 +239,10 @@ namespace ApexVisIns
         /// </summary>
         public async Task PreSurfaceIns2()
         {
+            Debug.WriteLine($"pos: {ServoMotion.Axes[1].PosActual}");
             // 旋轉至目標位置
             await ServoMotion.Axes[1].PosMoveAsync(550, true);
+            Debug.WriteLine($"pos: {ServoMotion.Axes[1].PosActual}");
         }
 
         /// <summary>
@@ -312,17 +314,18 @@ namespace ApexVisIns
         public bool WindowBurrIns(Mat src)
         {
             Rect roi = WindowSurfaceRoi;
+
             #region 開運算
-            //Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(5, 5), new Point(-1, -1));
-            //Cv2.MorphologyEx(otsu, otsu, MorphTypes.Close, ele, iterations: 3);
+            // Mat ele = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(5, 5), new Point(-1, -1));
+            // Cv2.MorphologyEx(otsu, otsu, MorphTypes.Close, ele, iterations: 3);
             #endregion
 
             // Methods.GetRoiCanny(src, roi2, 75, 150, out Mat canny);
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
 
-            //Methods.GetContoursX(canny.Clone(), new Rect(0, 0, 80, roi.Height), out double avgLX, out int minLX, out int maxLX);
+            // Methods.GetContoursX(canny.Clone(), new Rect(0, 0, 80, roi.Height), out double avgLX, out int minLX, out int maxLX);
             Methods.GetContoursX(canny, new Rect(0, 0, 80, roi.Height), out double avgLX, out int minLX, out int maxLX);
-            //Methods.GetContoursX(canny.Clone(), new Rect(roi.Width - 80, 0, 80, roi.Height), out double avgRX, out int minRX, out int maxRX);
+            // Methods.GetContoursX(canny.Clone(), new Rect(roi.Width - 80, 0, 80, roi.Height), out double avgRX, out int minRX, out int maxRX);
             Methods.GetContoursX(canny, new Rect(roi.Width - 80, 0, 80, roi.Height), out double avgRX, out int minRX, out int maxRX);
 
             if (maxLX - minLX > 7 || avgLX - minLX > 5 || maxLX - avgLX > 5)
@@ -387,6 +390,7 @@ namespace ApexVisIns
                     k++;
                     continue;
                 }
+
 #if false
                 // if (roi.X == 2350 && ApexDefectInspectionStepsFlags.SurfaceSteps != 3)
                 // {
@@ -444,7 +448,6 @@ namespace ApexVisIns
                 //Cv2.Line(chart, 0, 300 - (int)(mean[0] - stdDev[0]), chart.Width, 300 - (int)(mean[0] - stdDev[0]), Scalar.DarkCyan, 1);
 
                 Cv2.PutText(chart, $"{mean[0]:f2}, {stdDev[0]:f2}", new Point(20, 20), HersheyFonts.HersheySimplex, 0.5, Scalar.Blue, 1);
-
                 //Cv2.Rectangle(src, roi, new Scalar(mean[0]), 1);
 
                 Cv2.CvtColor(blur, blur, ColorConversionCodes.GRAY2BGR);
