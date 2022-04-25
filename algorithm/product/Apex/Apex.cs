@@ -215,7 +215,6 @@ namespace ApexVisIns
             /// 0b0101(5): 
             /// 0b0110(6): 
             /// </summary>
-            [Obsolete("單步測試用")]
             public byte WindowSteps { get; set; }   // 1 byte
 
             /// <summary>
@@ -233,7 +232,6 @@ namespace ApexVisIns
             /// 0b1010(10): (R)抓取瑕疵 打側光；
             /// 0b1011(11): (R)抓取 瑕疵(側光)；
             /// </summary>
-            [Obsolete("單步測試用")]
             public byte EarSteps { get; set; }      // 1 byte
 
             /// <summary>
