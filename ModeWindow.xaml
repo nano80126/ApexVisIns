@@ -45,9 +45,9 @@
                 -->
                 <Image Grid.Column="0" UseLayoutRounding="True" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
             </Grid>
-
+            <!--//-->
             <Separator Grid.Row="1" />
-
+            <!--//-->
             <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
                 <StackPanel.Resources>
                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">

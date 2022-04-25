@@ -28,7 +28,7 @@ namespace ApexVisIns
                 int cycleCount = 0;
 
                 StartCorrection = DateTime.Now;
-                Debug.WriteLine($"粗對位1:{DateTime.Now:mm:ss.fff}");
+                Debug.WriteLine($"方向判定開始:{DateTime.Now:mm:ss.fff}");
 
                 while (ApexAngleCorrectionFlags.CheckModeStep < endStep)
                 {
@@ -114,8 +114,7 @@ namespace ApexVisIns
                             break;
                     }
                 }
-
-                Debug.WriteLine($"粗對位2:{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
+                Debug.WriteLine($"方向判定結束:{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
             }
             catch (TimeoutException T)
             {
@@ -140,7 +139,7 @@ namespace ApexVisIns
         public void PreCheckCorrectionMode()
         {
             // 變更光源 1
-            LightCtrls[0].SetAllChannelValue(0, 0, 128, 128);
+            LightCtrls[0].SetAllChannelValue(0, 0, 128, 144);
             // 變更光源 2
             LightCtrls[1].SetAllChannelValue(0, 0);
             // 變更馬達速度
@@ -626,11 +625,12 @@ namespace ApexVisIns
                 // Rect roi = new(100, 840, 1000, 240);
                 Rect roi = WindowLeftRightRoi;
 
-                //if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
-                //{
-                //    Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
-                //    ApexAngleCorrectionFlags.OtsuThreshlod = th;
-                //}
+                // if (ApexAngleCorrectionFlags.OtsuThreshlod == 0)
+                // {
+                //     Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte th);
+                //     ApexAngleCorrectionFlags.OtsuThreshlod = th;
+                // }
+
                 byte otsuTh = ApexAngleCorrectionFlags.OtsuThreshlod;   // Otsu 閾值
                 // 需要開運算除毛邊?
                 Methods.GetRoiCanny(src, roi, (byte)(otsuTh - 30), (byte)(otsuTh * 1.2), out Mat canny);
@@ -642,6 +642,8 @@ namespace ApexVisIns
                     // Cv2.ImShow("Canny", new Mat(src, roi));
                     Cv2.ImShow("ApexCorrectionCanny", canny);
                     Cv2.MoveWindow("ApexCorrectionCanny", 20, 500);
+
+                    Debug.WriteLine($"粗定位開始: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
 
                     switch (ApexAngleCorrectionFlags.Steps)
                     {

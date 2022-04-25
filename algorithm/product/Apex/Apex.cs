@@ -94,7 +94,7 @@ namespace ApexVisIns
         private readonly Rect EarLeftRightRoi = new(350, 900, 500, 200);
         #endregion
 
-        [Obsolete()]
+        [Obsolete("開始定位時間，待刪除")]
         public DateTime StartCorrection;
 
         #region Apex 表面 ROI (Camera 1)

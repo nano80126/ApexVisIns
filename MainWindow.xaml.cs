@@ -248,16 +248,13 @@ namespace ApexVisIns
             //    Debug.WriteLine($"{item}, {rrr[item]}");
             //}  
 #endif
-
-            ModeWindow modeWindow = new()
-            {
-                Owner = this
-            };
-
+            #region 開啟 Mode Dialog
+            ModeWindow modeWindow = new() { Owner = this };
             if (modeWindow.ShowDialog() == true)
             {
                 Debug.WriteLine($"Init Mode: {InitMode}");
             }
+            #endregion
         }
 
         /// <summary>

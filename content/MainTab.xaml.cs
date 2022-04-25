@@ -75,7 +75,6 @@ namespace ApexVisIns.content
         /// 6V 光源控制器
         /// </summary>
         private LightSerial Light_6V;
-
         /// <summary>
         /// 相機 1
         /// </summary>
@@ -522,15 +521,13 @@ namespace ApexVisIns.content
                             {
                                 if (ServoMotion.MaxAxisCount < 2)
                                 {
-                                    throw new Exception("連接軸數量錯誤");
+                                    throw new MotorException("連接軸數量錯誤");
                                 }
 
                                 // 啟動 Timer // 50 ms
                                 ServoMotion.EnableAllTimer(50);
-
                                 // 重置全部軸錯誤
                                 ServoMotion.ResetAllError();
-
                                 // 全部軸 Servo ON
                                 ServoMotion.SetAllServoOn();
 
@@ -563,13 +560,15 @@ namespace ApexVisIns.content
                                 }
                                 else
                                 {
-                                    throw new Exception("馬達設定檔為空");
+                                    throw new MotorException("馬達設定檔為空");
+                                    //throw new Exception("馬達設定檔為空");
                                 }
                                 #endregion
                             }
                             else
                             {
-                                throw new Exception("軸卡開啟失敗");
+                                throw new MotorException("軸卡開啟失敗");
+                                //throw new Exception("軸卡開啟失敗");
                             }
                         }   // End of OpenDevice
 
@@ -583,17 +582,23 @@ namespace ApexVisIns.content
                         }
                         else
                         {
-                            throw new Exception("此區塊不應該到達");
+                            throw new ShouldNotBeReachedException("此區塊不應該到達");
                         }
                     }
                     else
                     {
-                        throw new Exception("找不到控制軸卡");
+                        //throw new Exception("找不到控制軸卡");
+                        throw new MotorException("找不到控制軸卡");
                     }
+                }
+                catch (MotorException M)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"運動控制初始化失敗: {M.Message}");
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"運動控制初始化失敗: {ex.Message}");
+                    //MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, $"運動控制初始化失敗: {ex.Message}");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"運動控制初始化失敗: {ex.Message}");
                 }
             }, ct);
         }
@@ -794,6 +799,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 原點復歸按鈕事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ZeroReturnButton_Click(object sender, RoutedEventArgs e)
         {
             _ = Task.Run(async () =>
@@ -912,7 +922,6 @@ namespace ApexVisIns.content
                 #endregion
             }
         }
-
         /// <summary>
         /// 規格選擇變更
         /// </summary>
@@ -1461,8 +1470,8 @@ namespace ApexVisIns.content
                             {
                                 MainWindow.AngleCorrection(mat, null);
                             }
-                            //Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
-                            //Cv2.ImShow("cam1", mat);
+                            // Cv2.Resize(mat, mat, new OpenCvSharp.Size(mat.Width / 2, mat.Height / 2));
+                            // Cv2.ImShow("cam1", mat);
                             MainWindow.ImageSource1 = mat.ToImageSource();
                         });
                         break;
@@ -1479,8 +1488,8 @@ namespace ApexVisIns.content
                         });
                         break;
                     case DeviceConfigBase.TargetFeatureType.Surface1:
-                        //if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
-                        //  bit0: 檢表面
+                        // if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
+                        // bit0: 檢表面
                         if ((MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b01) == 0b01)
                         {
                             bool b = MainWindow.SurfaceIns1(mat);

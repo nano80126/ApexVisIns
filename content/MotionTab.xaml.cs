@@ -57,7 +57,10 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            InitMotionsConfigsRoot();
+            // 初始化 Configs 路徑
+            InitMotionsConfigsPath();
+            // 確認軸卡連線狀態
+            CheckMotionCardStatus();
 
             // 若D eviceOpened，始能 Timer
             if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedMotionAxis != null)
@@ -71,7 +74,6 @@ namespace ApexVisIns.content
                 loaded = true;
             }
         }
-
         /// <summary>
         /// Motion Tab 卸載
         /// </summary>
@@ -87,14 +89,13 @@ namespace ApexVisIns.content
         /// 初始化 Motion Config 路徑，
         /// 
         /// </summary>
-        private void InitMotionsConfigsRoot()
+        private void InitMotionsConfigsPath()
         {
             // Directory 不存在則新增
             if (!Directory.Exists(MotionDirectory))
             {
                 _ = Directory.CreateDirectory(MotionDirectory);
             }
-
 #if false
             string path = $@"{MotionDirectory}/motion.json";
 
@@ -122,6 +123,31 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
+        /// 確認軸卡連線狀態，
+        /// 
+        /// </summary>
+        private void CheckMotionCardStatus()
+        {
+            // 若 DeviceSelector，選擇第一個 Device
+            if (DeviceSelector.SelectedIndex == -1)
+            {
+                if (MainWindow.ServoMotion.MotionDevices.Count > 0)
+                {
+                    DeviceSelector.SelectedIndex = 0;
+                }
+            }
+
+            // 若 AxisSelector，選擇第一個 Axis
+            if (AxisSelector.SelectedIndex == -1)
+            {
+                if (MainWindow.ServoMotion.Axes.Count > 0)
+                {
+                    AxisSelector.SelectedIndex = 0;
+                }
+            }
+        }
+
+        /// <summary>
         /// Clear Focus 用
         /// </summary>
         /// <param name="sender"></param>
@@ -131,23 +157,6 @@ namespace ApexVisIns.content
             Keyboard.ClearFocus();
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
-
-        //public void GetAvaiDevs()
-        //{
-        //    // Board Count == 0 時才尋找
-        //    // 重新尋找會導致 Handle 參考出問題
-
-        //    if (MainWindow.ServoMotion.BoardCount == 0)
-        //    {
-        //        uint count = MainWindow.ServoMotion.GetAvailableDevices();
-
-        //        if (count > 0)
-        //        {
-        //            // 選擇 第一個 Device
-        //            DeviceSelector.SelectedIndex = 0;
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// 重載入 EtherCAT Card
@@ -192,7 +201,7 @@ namespace ApexVisIns.content
                     MainWindow.ServoMotion.OpenDevice((DeviceSelector.SelectedItem as ServoMotion.MotionDevice).DeviceNumber);
                     // 重置各軸錯誤
                     MainWindow.ServoMotion.ResetAllError();
-                    // 
+                    // 軸數量 > 0，選擇第一軸
                     if (AxisSelector.Items.Count > 0) AxisSelector.SelectedIndex = 0;
                 }
                 else

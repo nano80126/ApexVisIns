@@ -45,7 +45,7 @@ namespace ApexVisIns
                 #endregion
 
                 int CycleCount = 0;
-                byte endStep = 0b1011;  // 11
+                byte endStep = 0b1001;  // 9
 
                 while (ApexDefectInspectionStepsFlags.SurfaceSteps < endStep)
                 {
@@ -191,7 +191,8 @@ namespace ApexVisIns
                             #endregion
                             break;
                         default:
-                            throw new Exception("Code here must not be reached");
+                            throw new ShouldNotBeReachedException("Code here should not be reached.");
+                            //throw new Exception("Code here must not be reached");
                     }
 
                     #region Dispose 物件，釋放記憶體
