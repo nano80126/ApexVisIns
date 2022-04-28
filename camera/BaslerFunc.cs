@@ -10,6 +10,7 @@ using Basler.Pylon;
 using OpenCvSharp;
 using System.Windows.Media;
 using ApexVisIns.content;
+using System.Threading;
 
 namespace ApexVisIns
 {
@@ -128,14 +129,14 @@ namespace ApexVisIns
         {
             Camera cam = sender as Camera;
 
-            #region HeartBeat Timeout 30 Seconds (程式中斷後 Timeount 秒數)
+        #region HeartBeat Timeout 30 Seconds (程式中斷後 Timeount 秒數)
             cam.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(1000 * 30);
-            #endregion
+        #endregion
 
-            #region Camera Info
+        #region Camera Info
             string modelName = cam.CameraInfo[CameraInfoKey.ModelName];
             string serialNumber = cam.CameraInfo[CameraInfoKey.SerialNumber];
-            #endregion
+        #endregion
 
             /// Find camera of specific serial number
             BaslerCam baslerCam = Array.Find(MainWindow.BaslerCams, item => item.SerialNumber == serialNumber);
@@ -143,7 +144,7 @@ namespace ApexVisIns
             baslerCam.WidthMax = (int)cam.Parameters[PLGigECamera.WidthMax].GetValue();
             baslerCam.HeightMax = (int)cam.Parameters[PLGigECamera.HeightMax].GetValue();
 
-            #region Adjustable parameters
+        #region Adjustable parameters
             cam.Parameters[PLGigECamera.OffsetX].SetToMinimum();
             baslerCam.OffsetX = (int)cam.Parameters[PLGigECamera.OffsetX].GetValue();
             cam.Parameters[PLGigECamera.OffsetY].SetToMinimum();
@@ -189,16 +190,16 @@ namespace ApexVisIns
             cam.Parameters[PLGigECamera.TriggerSelector].SetValue(PLGigECamera.TriggerSelector.FrameStart);
             cam.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
             cam.Parameters[PLGigECamera.TriggerSource].SetValue(PLGigECamera.TriggerSource.Software);
-            #endregion
+        #endregion
 
-            #region Grabber Event
+        #region Grabber Event
             baslerCam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
             baslerCam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
             //baslerCam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
             //baslerCam.Camera.StreamGrabber.ImageGrabbed += content.DebugTab.StreamGrabber_ImageGrabbed;
 
             baslerCam.Camera.StreamGrabber.UserData = "abc";
-            #endregion
+        #endregion
 
             // 觸發 PropertyChange
             baslerCam.PropertyChange();
@@ -255,9 +256,9 @@ namespace ApexVisIns
             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.C, "Grabber started");
             //DebugTab.Cam.PropertyChange("IsGrabbing");
 
-            #region Reset Struct
+        #region Reset Struct
 
-            #endregion
+        #endregion
         }
 
         private static void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
@@ -315,7 +316,6 @@ namespace ApexVisIns
             return bitmap;
         }
 
-
         /// <summary>
         /// Convert Basler Camera Data to Mat Mono
         /// </summary>
@@ -329,7 +329,6 @@ namespace ApexVisIns
             return mat;
         }
 
-
         /// <summary>
         /// Convert Basler Camera Data to Mat Color
         /// </summary>
@@ -341,6 +340,247 @@ namespace ApexVisIns
             pxConverter.OutputPixelFormat = PixelType.RGB8packed;
             pxConverter.Convert(mat.Ptr(0), result.Width * result.Height * 3, result);
             return mat;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public partial class MainWindow : System.Windows.Window
+    {
+
+        /// <summary>
+        /// 相機連線
+        /// </summary>
+        /// <param name="cam"></param>
+        /// <param name="serialNumber"></param>
+        /// <param name="userData"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public bool Basler_Connect(BaslerCam cam, string serialNumber, object userData, CancellationToken ct)
+        {
+            int retryCount = 0;
+
+            while (!cam.IsOpen)
+            {
+                if (ct.IsCancellationRequested) { break; }
+
+                if (retryCount > 3) { break; }
+
+                try
+                {
+                    // 建立相機
+                    cam.CreateCam(serialNumber);
+                    // 先更新 SerialNumer，CameraOpened 事件比對時須用到
+                    cam.SerialNumber = serialNumber;
+
+                    // 綁定事件
+                    cam.Camera.CameraOpened += Camera_CameraOpened; ;
+                    cam.Camera.CameraClosing += Camera_CameraClosing; ;
+                    cam.Camera.CameraClosed += Camera_CameraClosed; ;
+
+
+                }
+                catch (Exception ex)
+                {
+                    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                    // 重試次數++
+                    retryCount++;
+                    // 等待 200 ms
+                    _ = SpinWait.SpinUntil(() => false, 200);
+                }
+            }
+            return cam.IsOpen;
+        }
+
+        /// <summary>
+        /// 相機關閉
+        /// </summary>
+        /// <param name="cam"></param>
+        /// <returns></returns>
+        public bool Basler_Disconnect(BaslerCam cam)
+        {
+            try
+            {
+                if (cam != null)
+                {
+                    cam.Camera.CameraOpened -= Camera_CameraOpened;
+                    cam.Camera.CameraClosing -= Camera_CameraClosing;
+                    cam.Camera.CameraClosed -= Camera_CameraClosed;
+                    cam.Close();
+                }
+
+                // GC 回收
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+            catch (Exception ex)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                //throw;
+            }
+
+            return false;
+        }
+
+
+
+        /// <summary>
+        /// 啟動 Grabber
+        /// </summary>
+        /// <param name="cam"></param>
+        public void Basler_StartStreamGrabber(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    // 啟動 StreamGrabber 連續拍攝
+                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                    //
+                    cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                    cam.IsContinuousGrabbing = true;
+                    cam.IsContinuousGrabbing = false;
+                    //
+                    cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+
+                    Debug.WriteLine($"{cam.Camera.StreamGrabber.UserData} {cam.Camera.StreamGrabber.UserData.GetType()}");
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+        /// <summary>
+        /// 停止 Grabber
+        /// </summary>
+        /// <param name="cam"></param>
+        public void Basler_StopStreamGrabber(BaslerCam cam)
+        {
+            try
+            {
+                if (cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    cam.Camera.StreamGrabber.Stop();
+                    cam.IsGrabberOpened = false;
+
+                    cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// 單張拍攝
+        /// </summary>
+        /// <param name="cam"></param>
+        public void Basler_SingleGrab(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    // 啟動 StreamGrabber 拍攝一張
+                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                    // 
+                    cam.Camera.ExecuteSoftwareTrigger();
+                    _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+        public void Basler_ContinousGrab(BaslerCam cam)
+        {
+            try
+            {
+                if (!cam.Camera.StreamGrabber.IsGrabbing)
+                {
+                    // 關閉 Trigger Mode
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    // 開始拍攝
+                    cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
+                    // 變更 Flag 連續拍攝
+                    cam.IsContinuousGrabbing = true;
+                }
+                else
+                {
+                    // 停止開設
+                    cam.Camera.StreamGrabber.Stop();
+                    // 開啟 Trigger Mode
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+
+                    // 變更 Flag
+                    cam.IsContinuousGrabbing = false;
+                }
+            }
+            catch (TimeoutException T)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, T.Message);
+            }
+            catch (InvalidOperationException I)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, I.Message);
+            }
+            catch (Exception E)
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, E.Message);
+            }
+        }
+
+
+        private void Camera_CameraOpened(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Camera_CameraClosing(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Camera_CameraClosed(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

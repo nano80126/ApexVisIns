@@ -371,7 +371,14 @@ namespace ApexVisIns
             [Description("表面 1")]
             Surface1 = 3,
             [Description("表面 2")]
-            Surface2 = 4
+            Surface2 = 4,
+
+            [Description("MCA Jaw 前部攝影機")]
+            MCA_Front = 11,
+            [Description("MCA Jaw 底部攝影機")]
+            MCA_Bottom = 12,
+            [Description("MCA Jaw 側部攝影機")]
+            MCA_SIDE = 13,
         }
 
         /// <summary>

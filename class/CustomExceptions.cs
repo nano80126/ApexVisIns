@@ -35,4 +35,29 @@ namespace ApexVisIns
         public MotorException(string message, Exception inner) : base(message, inner) { }
         protected MotorException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
+
+
+
+    [Serializable]
+    public class WISE4050Exception : Exception
+    {
+        public WISE4050Exception() { }
+        public WISE4050Exception(string message) : base(message) { }
+        public WISE4050Exception(string message, Exception inner) : base(message, inner) { }
+        protected WISE4050Exception(
+          SerializationInfo info,
+          StreamingContext context) : base(info, context) { }
+    }
+
+
+    [Serializable]
+    public class CameraException : Exception
+    {
+        public CameraException() { }
+        public CameraException(string message) : base(message) { }
+        public CameraException(string message, Exception inner) : base(message, inner) { }
+        protected CameraException(
+          SerializationInfo info,
+          StreamingContext context) : base(info, context) { }
+    }
 }

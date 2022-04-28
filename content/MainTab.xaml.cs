@@ -26,37 +26,17 @@ namespace ApexVisIns.content
 
         #region Variables
         /// <summary>
-        /// 主視窗物件
-        /// </summary>
-        public MainWindow MainWindow { get; set; }
-
-        /// <summary>
-        /// 相機初始化 Flag
-        /// </summary>
-        private bool CameraInitialized { get; set; }
-
-        /// <summary>
-        /// 運動初始化 Flag
-        /// </summary>
-        private bool MotionInitialized { get; set; }
-
-        /// <summary>
-        /// 光源控制器初始化 Flag
-        /// </summary>
-        private bool LightCtrlsInitiliazed { get; set; }
-
-        /// <summary>
-        /// IO 卡初始化 Flag
-        /// </summary>
-        private bool IoInitialized { get; set; }
-
-        /// <summary>
         /// 初始化工作 CancellationTokenSource
         /// </summary>
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         #endregion
 
         #region Property
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
+        public MainWindow MainWindow { get; set; }
+
         public ApexFeatures ApexFeatures { get; set; }
 
         public ObservableCollection<ApexFeatures> ApexFeturesCollection { get; set; }
@@ -102,6 +82,26 @@ namespace ApexVisIns.content
         /// 已載入旗標
         /// </summary>
         private bool loaded;
+
+        /// <summary>
+        /// 相機初始化 Flag
+        /// </summary>
+        private bool CameraInitialized { get; set; }
+
+        /// <summary>
+        /// 運動初始化 Flag
+        /// </summary>
+        private bool MotionInitialized { get; set; }
+
+        /// <summary>
+        /// 光源控制器初始化 Flag
+        /// </summary>
+        private bool LightCtrlsInitiliazed { get; set; }
+
+        /// <summary>
+        /// IO 卡初始化 Flag
+        /// </summary>
+        private bool IoInitialized { get; set; }
         #endregion
 
         public MainTab()
@@ -124,7 +124,7 @@ namespace ApexVisIns.content
             }
             else // else for 測試用
             {
-#if true
+#if false
                 // 測試 Motion 用
                 InitMotion(_cancellationTokenSource.Token).Wait();
 
@@ -462,17 +462,20 @@ namespace ApexVisIns.content
                             }
                             else
                             {
-                                throw new Exception("相機未完全初始化");
+                                throw new CameraException("相機未完全初始化");
+                                //throw new Exception("相機未完全初始化");
                             }
                         }
                         else
                         {
-                            throw new Exception("相機設定檔為空");
+                            throw new CameraException("相機設定檔為空");
+                            //throw new Exception("相機設定檔為空");
                         }
                     }
                     else
                     {
-                        throw new Exception("相機設定檔不存在");
+                        throw new CameraException("相機設定檔不存在");
+                        //throw new Exception("相機設定檔不存在");
                     }
                 }
                 catch (Exception ex)

@@ -29,7 +29,7 @@
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
-                <TextBlock Margin="12 0 0 0" Text="INTAI 小 Jaw 檢測系統" FontSize="20" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas"
+                <TextBlock Margin="12 0 0 0" Text="小 Jaw 檢測系統" FontSize="20" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas"
                            Foreground="{StaticResource ColorInfo}"/>
 
                 <TextBlock Margin="12 8 0 0" Text="Ver. 1.0.0" FontSize="12" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas" 
@@ -208,6 +208,7 @@
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
                             <!--#region 1st row  -->
@@ -303,6 +304,16 @@
 
                             <!--#region 3rd row -->
                             <Button Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="開始檢測"
+                                    VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+
+                            <Button Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Content="連線" Click="TcpConnect_Click"
+                                    VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+
+
+                            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Content="斷線" Click="TcpDisconnect_Click"
                                     VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
                             <!--#endregion-->

@@ -24,12 +24,10 @@ namespace ApexVisIns.content
         #endregion
 
         #region Varibles
-        public MainWindow MainWindow { get; set; }
         /// <summary>
         /// Device組態路徑, Device Configs Directory
         /// </summary>
         private string DevicesDirectory { get; } = @"./devices";
-
         /// <summary>
         /// Cameras for DeviceTab, only useing in this tab. 
         /// </summary>
@@ -40,11 +38,18 @@ namespace ApexVisIns.content
         private int _devInUse = -1;
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
+        public MainWindow MainWindow { get; set; }
+        #endregion
+
         #region Flags
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded; 
+        private bool loaded;
         #endregion
 
         public DeviceTab()

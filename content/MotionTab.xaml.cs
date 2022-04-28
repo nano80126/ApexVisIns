@@ -28,13 +28,19 @@ namespace ApexVisIns.content
     /// </summary>
     public partial class MotionTab : StackPanel
     {
+        #region Resources
+
+        #endregion
+
         #region Variables
-        /// <summary>
-        /// Dll 是否正確安裝
-        /// </summary>
-        [Obsolete("待刪除")]
-        private bool DllIsValid;
         private string MotionDirectory { get; } = @"./motions";
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
+        public MainWindow MainWindow { get; set; }
         #endregion
 
         #region Flags

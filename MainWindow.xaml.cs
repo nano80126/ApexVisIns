@@ -78,8 +78,9 @@ namespace ApexVisIns
         #region I/O Controller
         public static IOController IOController { get; set; }
 
-        public IOWindow IOWindow { get; set; }
+        public static ModbusTCPIO ModbusTCPIO { get; set; }
 
+        public IOWindow IOWindow { get; set; }
 
         [Obsolete("待確認")]
         public Thread IOThread { get; set; }
@@ -160,6 +161,8 @@ namespace ApexVisIns
             MainTab.MainWindow = this;
             // Config Tab
             DeviceTab.MainWindow = this;
+
+            
             // Engineer Tab
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
@@ -179,8 +182,7 @@ namespace ApexVisIns
             #region Find Resource
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             MsgInformer.EnableCollectionBinding();
-            // 綁定 ProgressBar Value Changed 事件
-            MsgInformer.ProgressValueChanged += MsgInformer_ProgressValueChanged;
+            MsgInformer.ProgressValueChanged += MsgInformer_ProgressValueChanged;   // 綁定 ProgressBar Value Changed 事件
             MsgInformer.EnableProgressBar();
             #endregion
 
@@ -213,8 +215,11 @@ namespace ApexVisIns
             #endregion
 
             #region IO Controller
+            // PCI Card
             IOController = FindResource(nameof(IOController)) as IOController;
             IOController.EnableCollectionBinding(); // 啟用 Collection Binding，避免跨執行緒錯誤
+            // IO Module (WISE-4050/LAN)
+            ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as ModbusTCPIO;
             #endregion
 
             #region Device Configs
@@ -652,18 +657,6 @@ namespace ApexVisIns
         }
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
-
-        /// <summary>
-        /// 無用處，但先保留
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        // public void 
         #endregion
     }
 
