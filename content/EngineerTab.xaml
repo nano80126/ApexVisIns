@@ -14,14 +14,6 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-        <!--#region Toolbar -->
-        <!--<RoutedUICommand x:Key="OpenDevice" Text="Open Device"/>
-        <RoutedUICommand x:Key="SingleShot" Text="Single Shot"/>
-        <RoutedUICommand x:Key="ContinuousShot" Text="Continuous Shot"/>
-        <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
-        <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>-->
-        <!--#endregion-->
-        
         <!-- Crosshair -->
         <app:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
         <!-- 輔助 Rect -->
@@ -29,26 +21,6 @@
         <!-- 輔助標示器 -->
         <app:Indicator x:Key="Indicator"/>
     </StackPanel.Resources>
-
-    <StackPanel.InputBindings>
-        <!--#region Toobar Input Bindings -->
-        <!--<KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource OpenDevice}"/>
-        <KeyBinding Key="F5" Command="{StaticResource SingleShot}"/>
-        <KeyBinding Key="F6" Command="{StaticResource ContinuousShot}"/>
-        <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
-        <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>-->
-        <!--#endregion-->
-    </StackPanel.InputBindings>
-
-    <StackPanel.CommandBindings>
-        <!--#region Toolbar Commnad Bindings -->
-        <!--<CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
-        <CommandBinding Command="{StaticResource SingleShot}" CanExecute="SingleShotCanExecute" Executed="SingleShotCommand"/>
-        <CommandBinding Command="{StaticResource ContinuousShot}" CanExecute="ContinousShotCanExecute" Executed="ContinousShotCommand"/>
-        <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="CanExcute" Executed="CrosshairOnCommnad"/>
-        <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="CanExcute" Executed="AssisRectOnCommand"/>-->
-        <!--#endregion-->
-    </StackPanel.CommandBindings>
 
     <!--#region Toolbar -->
     <DockPanel x:Name="ToolbarPanel"  HorizontalAlignment="Stretch" Background="#22969696">

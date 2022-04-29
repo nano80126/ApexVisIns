@@ -117,7 +117,6 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // Initializer();
             if (MainWindow.InitMode != MainWindow.InitModes.EDIT)
             {
                 Initializer();
@@ -1420,8 +1419,9 @@ namespace ApexVisIns.content
 
         private void Camera_CameraClosed(object sender, EventArgs e)
         {
-
+            // nothing to do
         }
+
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
         {

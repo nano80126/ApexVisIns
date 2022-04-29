@@ -87,7 +87,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            MainWindow.ServoMotion.DisableTimer();
+            //MainWindow.ServoMotion.DisableTimer();
         }
         #endregion
 

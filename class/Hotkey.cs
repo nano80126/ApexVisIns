@@ -46,17 +46,17 @@ namespace ApexVisIns
             // EngineerTab is focused
             e.CanExecute = OnTabIndex == 4;
         }
-        
+
         private void MinCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-        
+
         private void MaxCommand(object sender, ExecutedRoutedEventArgs e)
         {
             Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-        
+
         private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = DebugMode && !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
@@ -118,7 +118,7 @@ namespace ApexVisIns
             //        break;
             //}
         }
-        
+
         [Obsolete("不須另外啟動")]
         private void StartGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -153,7 +153,7 @@ namespace ApexVisIns
             //}
             //SingleShot.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-        
+
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = OnTabIndex switch
@@ -218,7 +218,7 @@ namespace ApexVisIns
             //        break;
             //}
         }
-       
+
         private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
             EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
@@ -280,30 +280,5 @@ namespace ApexVisIns
             Debug.WriteLine($"{EngineerTab.CamSelector.Visibility}");
             Debug.WriteLine($"{EngineerTab.SingleShot.Visibility}");
         }
-
-#if false
-        private void PopupboxCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = ConfigPopupBox.IsPopupOpen;  // Popupbox 是否開啟
-        }
-
-        private void ConfigSave(object sender, ExecutedRoutedEventArgs e)
-        {
-            ConfigWriteBtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-            ConfigPopupBox.IsPopupOpen = false;     // 需要下命令關閉 Popupbox
-        }
-
-        private void ConfigCancel(object sender, ExecutedRoutedEventArgs e)
-        {
-            ConfigCancelBtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-            ConfigPopupBox.IsPopupOpen = false;     // 需要下命令關閉 Popupbox
-        }
-
-
-        private void ApexAnalyzeCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            ApexAnalyzeBtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        } 
-#endif
     }
 }

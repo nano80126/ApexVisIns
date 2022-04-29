@@ -14,7 +14,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
             <!--Header Grid-->
@@ -52,94 +52,101 @@
             <!--//-->
             <Separator Grid.Row="1" Margin="0 2 0 0"/>
             <!--Body Grid-->
-            <ScrollViewer x:Name="Scroller" Grid.Row="2" VerticalScrollBarVisibility="Auto" Style="{Binding ScrollViewerStyle}"
-                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                      Loaded="Scroller_Loaded">
-                <ItemsControl ItemsSource="{Binding ItemsSource}" AlternationCount="100">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+            <ScrollViewer x:Name="Scroller" Grid.Row="2" VerticalScrollBarVisibility="auto" Style="{Binding ScrollViewerStyle}"
+                          VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+                          Height="{Binding ScrollViewerHeight, Mode=OneWay}"
+                          Loaded="Scroller_Loaded">
+                <!--#region NewRegion -->
+                
+                <!--<Grid Height="1000">-->
+                    <ItemsControl ItemsSource="{Binding ItemsSource}" AlternationCount="100">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" MinHeight="300"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
-                                <Grid.Resources>
-                                    <Style TargetType="Rectangle">
-                                        <Setter Property="Fill" Value="Transparent"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource NumberIsOddConverter}}" Value="True">
-                                                <Setter Property="Fill" Value="{StaticResource ColorSuccessTransparent}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                    <!--//-->
-                                    <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                        <Setter Property="FontSize" Value="16"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                    <!--//-->
-                                    <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                        <Setter Property="Width" Value="16"/>
-                                        <Setter Property="Height" Value="16"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="Kind" Value="Close"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
-                                                <Setter Property="Kind" Value="Check"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Resources>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
+                                    <Grid.Resources>
+                                        <Style TargetType="Rectangle">
+                                            <Setter Property="Fill" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource NumberIsOddConverter}}" Value="True">
+                                                    <Setter Property="Fill" Value="{StaticResource ColorSuccessTransparent}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!--//-->
+                                        <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
+                                            <Setter Property="FontSize" Value="16"/>
+                                            <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <!--//-->
+                                        <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
+                                            <Setter Property="Width" Value="16"/>
+                                            <Setter Property="Height" Value="16"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="Kind" Value="Close"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
+                                                    <Setter Property="Kind" Value="Check"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Resources>
 
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="col1"/>
-                                    <ColumnDefinition SharedSizeGroup="col2"/>
-                                    <ColumnDefinition SharedSizeGroup="col3"/>
-                                    <ColumnDefinition SharedSizeGroup="col4"/>
-                                    <ColumnDefinition SharedSizeGroup="col5"/>
-                                    <ColumnDefinition SharedSizeGroup="col6"/>
-                                    <!--<ColumnDefinition SharedSizeGroup="col7"/>-->
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="col1"/>
+                                        <ColumnDefinition SharedSizeGroup="col2"/>
+                                        <ColumnDefinition SharedSizeGroup="col3"/>
+                                        <ColumnDefinition SharedSizeGroup="col4"/>
+                                        <ColumnDefinition SharedSizeGroup="col5"/>
+                                        <ColumnDefinition SharedSizeGroup="col6"/>
+                                        <!--<ColumnDefinition SharedSizeGroup="col7"/>-->
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- Backgroud -->
-                                <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+                                    <!-- Backgroud -->
+                                    <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 
-                                <TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
-                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterLine}"/>
-                                <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
-                                <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
-                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result}"/>
+                                    <TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+                                    <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterLine}"/>
+                                    <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
+                                    <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
+                                    <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result}"/>
 
-                                <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
+                                    <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
                                                  IsEnabled="False" Grid.Column="5" Margin="0 3">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock>
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="不良"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding OK}" Value="True">
-                                                            <Setter Property="Text" Value="良品"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
-                                    </StackPanel>
-                                </materialDesign:Chip>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="不良"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding OK}" Value="True">
+                                                                <Setter Property="Text" Value="良品"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
+                                        </StackPanel>
+                                    </materialDesign:Chip>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                <!--</Grid>-->
+                <!--#endregion-->
             </ScrollViewer>
         </Grid>
     </StackPanel>

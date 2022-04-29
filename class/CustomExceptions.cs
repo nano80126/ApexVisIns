@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-
 /*
     新增 Camera Exception
     新增 Motion Exception
     新增 IOCard Exception
     新增 Light  Exception
 */
-
 
 namespace ApexVisIns
 {
@@ -36,28 +34,39 @@ namespace ApexVisIns
         protected MotorException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 
-
-
-    [Serializable]
-    public class WISE4050Exception : Exception
-    {
-        public WISE4050Exception() { }
-        public WISE4050Exception(string message) : base(message) { }
-        public WISE4050Exception(string message, Exception inner) : base(message, inner) { }
-        protected WISE4050Exception(
-          SerializationInfo info,
-          StreamingContext context) : base(info, context) { }
-    }
-
-
+    /// <summary>
+    /// 相機相關例外
+    /// </summary>
     [Serializable]
     public class CameraException : Exception
     {
         public CameraException() { }
         public CameraException(string message) : base(message) { }
         public CameraException(string message, Exception inner) : base(message, inner) { }
-        protected CameraException(
-          SerializationInfo info,
-          StreamingContext context) : base(info, context) { }
+        protected CameraException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
+
+    /// <summary>
+    /// WISE-4050 IO 控制相關例外
+    /// </summary>
+    [Serializable]
+    public class WISE4050Exception : Exception
+    {
+        public WISE4050Exception() { }
+        public WISE4050Exception(string message) : base(message) { }
+        public WISE4050Exception(string message, Exception inner) : base(message, inner) { }
+        protected WISE4050Exception(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    }
+
+    /// <summary>
+    /// 光源控制相關例外
+    /// </summary>
+    [Serializable]
+    public class LightCtrlException : Exception
+    {
+        public LightCtrlException() { }
+        public LightCtrlException(string message) : base(message) { }
+        public LightCtrlException(string message, Exception inner) : base(message, inner) { }
+        protected LightCtrlException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

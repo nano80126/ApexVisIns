@@ -28,7 +28,9 @@ namespace ApexVisIns.content
     public partial class MCAJaw : StackPanel
     {
         #region Resources
-        public JawSpecGroup JawSpecGroup { get; set; }
+        public JawSpecGroup JawSpecGroup1 { get; set; }
+
+        public JawSpecGroup JawSpecGroup2 { get; set; }
         #endregion
 
         #region Variables
@@ -47,7 +49,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 24V 光源控制器
         /// </summary>
-        private LightSerial Light24V;
+        private LightSerial LightCOM2;
         /// <summary>
         /// Basler Camera 相機 1
         /// </summary>
@@ -76,18 +78,33 @@ namespace ApexVisIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
+            #region 新增假資料
+            JawSpecGroup1 = FindResource("SpecGroup") as JawSpecGroup;
+            JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
 
-            if (JawSpecGroup.SpecCollection.Count == 0)
+            if (JawSpecGroup1.SpecCollection.Count == 0)
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    JawSpecGroup.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                    JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
                 }
             }
 
+            if (JawSpecGroup2.SpecCollection.Count == 0)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    JawSpecGroup2.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
+                }
+            } 
+            #endregion
 
-            InitIOCtrl(_cancellationTokenSource.Token).Wait();
+            //InitLightCtrl(_cancellationTokenSource.Token).Wait();
+            //InitIOCtrl(_cancellationTokenSource.Token).Wait();
+            //Light24V.SetAllChannelValue(128, 128);
+
+            // 硬體初始化
+            InitHardware();
 
             if (!loaded)
             {
@@ -144,12 +161,11 @@ namespace ApexVisIns.content
         /// </summary>
         private void DisableHardware()
         {
-
-
+            LightCOM2?.ComClose();
+            LightCOM2?.Dispose();
 
             ModbusTCPIO?.Disconnect();
             ModbusTCPIO?.Dispose();
-
         }
 
         /// <summary>
@@ -190,7 +206,8 @@ namespace ApexVisIns.content
                             // 排序 Devices
                             Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
 
-                            Parallel.ForEach(devices, (dev) => {
+                            Parallel.ForEach(devices, (dev) =>
+                            {
                                 // 確認 Device 為在線上之 Camera 
                                 if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                                 {
@@ -200,24 +217,30 @@ namespace ApexVisIns.content
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
-
-
+                                                if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
+                                                {
+                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                }
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.MCA_Bottom:
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
-
-
+                                                if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
+                                                {
+                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                }
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.MCA_SIDE:
                                             if (!MainWindow.BaslerCams[2].IsConnected)
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
-
-
+                                                if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
+                                                {
+                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                }
                                             }
                                             break;
                                         case DeviceConfigBase.TargetFeatureType.Null:
@@ -230,12 +253,23 @@ namespace ApexVisIns.content
                                 }
                             });
 
+
+                            if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
+                            {
+                                // 設置初始化完成旗標
+                                CameraInitialized = true;
+                                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+                            }
+                            else
+                            {
+                                throw new CameraException("相機未完全初始化");
+                            }
                         }
                         else
                         {
                             throw new CameraException("相機設定檔為空");
                         }
-                    }
+                    } 
                     else
                     {
                         throw new CameraException("相機設定檔不存在");
@@ -273,21 +307,21 @@ namespace ApexVisIns.content
                     {
                         switch (ctrl.ComPort)
                         {
-                            case "COM1":
-                                Light24V = ctrl;
-                                Light24V.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                            case "COM2":
+                                LightCOM2 = ctrl;
+                                LightCOM2.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
 
-                                if (!Light24V.Test(out result))
+                                if (!LightCOM2.Test(out result))
                                 {
                                     // 關閉 COM 
-                                    Light24V.ComClose();
+                                    LightCOM2.ComClose();
                                     // 拋出異常
                                     throw new Exception($"24V {result}");
                                 }
                                 else
                                 {
                                     // 重置所有通道
-                                    Light24V.ResetAllChannel();
+                                    LightCOM2.ResetAllChannel();
                                     // 更新 Progress Bar
                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                 }
@@ -297,15 +331,14 @@ namespace ApexVisIns.content
                         }
                     }
 
-                    LightCtrlInitilized = true;
-
-                    if (Light24V.IsComOpen)
+                    if (LightCOM2.IsComOpen)
                     {
+                        LightCtrlInitilized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
                     }
                     else
                     {
-                        throw new ShouldNotBeReachedException("此區塊不應該到達");
+                        throw new LightCtrlException("光源控制器連線失敗");
                     }
                 }
                 catch (Exception ex)
@@ -338,10 +371,16 @@ namespace ApexVisIns.content
                     ModbusTCPIO.Connect();
                     ModbusTCPIO.IOChanged += ModbusTCPIO_IOChanged;
 
+                    MainWindow.MsgInformer.TargetProgressValue += 10;
+
                     if (ModbusTCPIO.Conneected)
                     {
                         IOCtrlInitialized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
+                    }
+                    else
+                    {
+                        throw new WISE4050Exception("IO 控制器連線失敗");
                     }
                 }
                 catch (Exception ex)

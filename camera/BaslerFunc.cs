@@ -424,7 +424,6 @@ namespace ApexVisIns
         }
 
 
-
         /// <summary>
         /// 啟動 Grabber
         /// </summary>
@@ -523,6 +522,10 @@ namespace ApexVisIns
             }
         }
 
+        /// <summary>
+        /// 連續拍攝
+        /// </summary>
+        /// <param name="cam"></param>
         public void Basler_ContinousGrab(BaslerCam cam)
         {
             try
@@ -562,25 +565,122 @@ namespace ApexVisIns
             }
         }
 
-
+        /// <summary>
+        /// 相機開啟事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Camera_CameraOpened(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Camera camera = sender as Camera;
+
+            #region HeartBeat Timeout 30 sec
+            camera.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(30 * 1000);
+            #endregion
+
+            #region Get basic camera info
+            string modelName = camera.CameraInfo[CameraInfoKey.ModelName];
+            string serialNumber = camera.CameraInfo[CameraInfoKey.SerialNumber];
+            #endregion
+
+            BaslerCam baslerCam = BaslerCams.First(e => e.SerialNumber == serialNumber);
+
+            if (baslerCam != null)
+            {
+                baslerCam.ModelName = modelName;
+
+                #region 相機組態同步
+                baslerCam.WidthMax = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
+                baslerCam.HeightMax = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+
+                baslerCam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+                baslerCam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+
+                baslerCam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                baslerCam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+
+                baslerCam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
+                baslerCam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
+
+                baslerCam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+
+                baslerCam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+                #endregion
+
+                #region 事件綁定
+                baslerCam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted; ;
+                baslerCam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped; ;
+                // 可能需要轉為客製
+                baslerCam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+                #endregion
+
+                baslerCam.PropertyChange();
+            }
+            else
+            {
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, "相機 S/N 設置有誤");
+            }
         }
 
         private void Camera_CameraClosing(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Camera camera = sender as Camera;
+
+            camera.StreamGrabber.ImageGrabbed -= StreamGrabber_GrabStarted;
+            camera.StreamGrabber.GrabStopped -= StreamGrabber_GrabStopped;
+            camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
         }
 
         private void Camera_CameraClosed(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            // nothing to do;
         }
 
+        private void StreamGrabber_GrabStarted(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Grabber Started");
+            string userData = (sender as IStreamGrabber).UserData.ToString();
+            Debug.WriteLine($"{userData}");
+
+            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
+        }
+
+        private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
+        {
+            Debug.WriteLine("Grabber Stopped");
+            string userData = (sender as IStreamGrabber).UserData.ToString();
+            Debug.WriteLine($"{userData}");
+
+            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
+            //throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// StreamGrabber 擷取事件(測試使用，不上線使用)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StreamGrabber_ImageGrabbed(object sender, ImageGrabbedEventArgs e)
         {
-            throw new NotImplementedException();
+            IGrabResult grabResult = e.GrabResult;
+
+            if (grabResult.GrabSucceeded)
+            {
+                Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                DeviceConfigBase.TargetFeatureType targetFeatureType = (DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
+
+                switch (targetFeatureType)
+                {
+                    case DeviceConfigBase.TargetFeatureType.MCA_Front:
+
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -138,13 +139,13 @@ namespace ApexVisIns
                 if (value != _value)
                 {
                     _value = value;
-                    OnPropertyChanged(nameof(Value));
+                    OnPropertyChanged();
                 }
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -677,7 +678,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 一次設置所有通道
         /// </summary>
@@ -690,10 +690,10 @@ namespace ApexVisIns
             string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
             Write(cmd);
             _ = ReadLine();
-            if (Channels.Count > 0) Channels[0].Value = ch1;
-            if (Channels.Count > 1) Channels[1].Value = ch2;
-            if (Channels.Count > 2) Channels[2].Value = ch3;
-            if (Channels.Count > 3) Channels[3].Value = ch4;
+            if (Channels.Count > 0) { Channels[0].Value = ch1; }
+            if (Channels.Count > 1) { Channels[1].Value = ch2; }
+            if (Channels.Count > 2) { Channels[2].Value = ch3; }
+            if (Channels.Count > 3) { Channels[3].Value = ch4; }
         }
 
         /// <summary>
@@ -719,12 +719,9 @@ namespace ApexVisIns
 
             if (disposing)
             {
-                if (_serialPort.IsOpen)
-                {
-                    _serialPort.Close();
-                    _serialPort.Dispose();
-                    _serialPort = null;
-                }
+                if (_serialPort.IsOpen) { _serialPort.Close(); }
+                _serialPort.Dispose();
+                _serialPort = null;
             }
             _disposed = true;
         }

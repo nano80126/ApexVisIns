@@ -36,12 +36,13 @@ namespace ApexVisIns.Control
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-
+            Debug.WriteLine($"Actual Height: {this.ActualHeight}");
         }
 
         private void Scroller_Loaded(object sender, RoutedEventArgs e)
         {
-            Scroller.SetBinding(HeightProperty, new Binding(nameof(ScrollViewerHeight)));
+            // 這邊 Binding 錯誤
+            //_ = Scroller.SetBinding(HeightProperty, new Binding(nameof(ScrollViewerHeight)));
         }
 
 

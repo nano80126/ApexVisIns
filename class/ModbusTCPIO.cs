@@ -84,9 +84,15 @@ namespace ApexVisIns
         {
             if (_tcpClient == null)
             {
-                _tcpClient = new TcpClient(IP, Port);
-                _networkStream = _tcpClient.GetStream();
+                // _tcpClient = new TcpClient(IP, Port);
+                _tcpClient = new TcpClient();
+                _tcpClient.Connect(IP, Port);
+                //if (!_tcpClient.ConnectAsync(IP, Port).Wait(1500))
+                //{
+                //    throw new TimeoutException("與 IO 控制器連線逾時");
+                //}
 
+                _networkStream = _tcpClient.GetStream();
                 _pollingTimer = new System.Timers.Timer()
                 {
                     AutoReset = true,

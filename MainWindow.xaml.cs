@@ -94,11 +94,6 @@ namespace ApexVisIns
         #endregion
 
         #region EtherCAT Motion
-        /// <summary>
-        /// Motion Device 列舉器，綁在 MainWindow
-        /// </summary>
-        public MotionEnumer MotionEnumer { get; set; }
-
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
@@ -159,10 +154,12 @@ namespace ApexVisIns
             #region Set Tabs's and Panels's MainWindows ref
             // MainTab
             MainTab.MainWindow = this;
-            // Config Tab
+            // MCA Jaw Tab
+            JawTab.MainWindow = this;
+            // Device Tab
             DeviceTab.MainWindow = this;
-
-            
+            // Motion Tab
+            MotionTab.MainWindow = this;
             // Engineer Tab
             EngineerTab.MainWindow = this;
             EngineerTab.ConfigPanel.MainWindow = this;
@@ -268,7 +265,7 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
             MsgInformer.DisableCollectionBinding();
             MsgInformer.DisposeProgressTask();

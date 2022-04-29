@@ -103,6 +103,10 @@ Apex 外觀瑕疵檢測
 * [ ] I/O Panel
 	* 定時刷新 I/O 狀態
 
+* [ ] 修正各 Tab 物件錯誤
+
+* [ ] 各 Tab 改動態載入
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

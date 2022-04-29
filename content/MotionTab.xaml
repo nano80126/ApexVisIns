@@ -6,7 +6,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content" 
-            mc:Ignorable="d" 
+            mc:Ignorable="d"
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
             d:DataContext="{d:DesignInstance Type=app:ServoMotion}"

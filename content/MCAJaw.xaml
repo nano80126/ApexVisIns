@@ -16,9 +16,13 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     <StackPanel.Resources>
-        <!--<app:StatusColorConverter x:Key="StatusColorConverter"/>--> 
+        <!--<app:StatusColorConverter x:Key="StatusColorConverter"/>-->
+
+        <!--檢驗物件，綁定批號-->
         <pd:JawInspection x:Key="JawInspection"/>
+        <!--規格群組-->
         <pd:JawSpecGroup x:Key="SpecGroup"/>
+        <pd:JawSpecGroup x:Key="SpecGroup2"/>
     </StackPanel.Resources>
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
@@ -40,7 +44,8 @@
 
         <!--#region Toolbar 2 -->
         <ToolBarTray DockPanel.Dock="Right" FlowDirection="RightToLeft" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
-            <ToolBar Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
+            <ToolBar Style="{StaticResource MaterialDesignToolBar}" FlowDirection="RightToLeft" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                     Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False">
                 <ToolBar.Resources>
                     <!--//-->
                     <Style TargetType="{x:Type Border}">
@@ -56,7 +61,7 @@
                         <Setter Property="Margin" Value="8 0"/>
                         <Setter Property="Background" Value="Transparent"/>
                     </Style>
-                    <!--// Hardware Status-->
+                    <!-- Hardware Status-->
                     <Style TargetType="materialDesign:PackIcon" x:Key="HWStatus">
                         <Setter Property="Width" Value="16"/>
                         <Setter Property="Height" Value="16"/>
@@ -72,7 +77,7 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                    <!--// Camera Status-->
+                    <!-- Camera Status-->
                     <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus" BasedOn="{StaticResource HWStatus}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding (ctProperty:StatusHelper.IsGrabbing), RelativeSource={RelativeSource Mode=Self}}" Value="True">
@@ -83,13 +88,26 @@
                     </Style>
                 </ToolBar.Resources>
 
+
+                <!--#region IO Ctrl Status -->
+                <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
+                    <StackPanel Orientation="Horizontal">
+                        <Canvas ToolTip="IO 控制器">
+                            <materialDesign:PackIcon Kind="LightningBolt" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                                                     ctProperty:StatusHelper.Connected="{Binding Conneected, Source={StaticResource ModbusTCPIO}, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Canvas>
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+
                 <!--#region Light Ctrl Status -->
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="光源控制器">
                             <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -178,6 +196,7 @@
                 <RowDefinition Height="7*"/>
                 <!--<RowDefinition Height="2*"></RowDefinition>-->
             </Grid.RowDefinitions>
+            
             <!--#region Control Panel -->
             <Border Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Background="{x:Null}">
                 <materialDesign:Card Style="{StaticResource GeneralCard}">
@@ -324,17 +343,18 @@
             <!--#endregion-->
 
             <!--#region Camera 1 -->
-            <GroupBox x:Name="ImageGroupBox1" Header="下部攝影機"  Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
+            <GroupBox x:Name="ImageGroupBox1" Header="下部攝影機"  Grid.Row="0" Grid.Column="1"
+                      materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                      FontSize="16" FontWeight="SemiBold" Padding="8" VerticalAlignment="Stretch"
+                      FontSize="16" FontWeight="SemiBold" Padding="8" VerticalAlignment="Top"
                       Background="Transparent">
-                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <!--Image 1-->
                     <Border x:Name="Border1" Grid.Row="0" Width="400" Height="300" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image1Viewbox">
@@ -346,67 +366,31 @@
                     <!--標示視窗尺寸用，待刪除 -->
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
+                            <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
+                                <!--<Binding Path="ActualHeight" ElementName="ImageGroupBox1" Mode="OneWay"/>-->
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
 
+                    <!--標示視窗尺寸用，待刪除 -->
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 32 0 0">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
+                                <Binding Path="ActualWidth" ElementName="Border1" Mode="OneWay"/>
+                                <Binding Path="ActualHeight" ElementName="Border1" Mode="OneWay"/>
+                                <!--<Binding Path="ActualHeight" ElementName="ImageGroupBox1" Mode="OneWay"/>-->
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
                     <!--規格列表 1-->
-                    <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
-                                          ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"
+                    <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 8 0 0" VerticalAlignment="Top" Height="300"
+                                          ScrollViewerHeight="120"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
-                    
-                    <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Stretch" Visibility="Collapsed">
-                        <StackPanel.Resources>
-                            <Style TargetType="ScrollViewer">
-                                
-                            </Style>
-                        </StackPanel.Resources>
-                        
-                        
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Headers hear" FontSize="16"/>
-                            <TextBlock Text="Headers hear" FontSize="16"/>
-                            <TextBlock Text="Headers hear" FontSize="16"/>
-                            <TextBlock Text="Headers hear" FontSize="16"/>
-                        </StackPanel>
-
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ScrollViewerSuccess}" 
-                                      Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}}">
-                            <ItemsControl ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Vertical"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemContainerStyle>
-                                    <Style TargetType="ContentPresenter">
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                        <Setter Property="MinHeight" Value="32"/>
-                                    </Style>
-                                </ItemsControl.ItemContainerStyle>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding Item}" />
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding CenterLine}"/>
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding LowerCtrlLimit}"/>
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding LowerCtrlLimit}"/>
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding Result}"/>
-                                            <TextBlock VerticalAlignment="Center" MinWidth="80" Text="{Binding OK}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </StackPanel>
-                    
                 </Grid>
             </GroupBox>
             <!--#endregion-->
@@ -415,7 +399,7 @@
             <GroupBox Header="前部攝影部" Grid.Row="0" Grid.Column="2" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                       materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" 
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                      FontSize="16" FontWeight="SemiBold" Padding="8"
+                      FontSize="16" FontWeight="SemiBold" Padding="8" VerticalAlignment="Top"
                       Background="Transparent">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                     <Grid.RowDefinitions>
@@ -441,9 +425,12 @@
                         </TextBlock.Text>
                     </TextBlock>
 
+                    <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
+                    
+                    <!--height = 120 + 137 -->
                     <!--規格列表 2-->
                     <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
-                                          ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"
+                                          ScrollViewerHeight="237"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
 
@@ -514,8 +501,6 @@
                         </DataGrid>
                     </ScrollViewer>
                     <!--#endregion-->
-
-
                 </Grid>
             </GroupBox>
             <!--#endregion-->

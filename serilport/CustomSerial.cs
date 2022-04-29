@@ -43,6 +43,7 @@ namespace ApexVisIns
         #region Variables
         protected SerialPort _serialPort;
         protected int _timeout = 200;
+        private bool _disposed;
         #endregion
 
         public string ComPort { get; set; }
@@ -160,7 +161,16 @@ namespace ApexVisIns
 
         protected virtual void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (_disposed) { return; }
+
+            if (disposing)
+            {
+                _serialPort.Close();
+                _serialPort.Dispose();
+                _serialPort = null;
+            }
+
+            _disposed = true;
         }
     }
 }
