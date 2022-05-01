@@ -154,6 +154,7 @@ namespace ApexVisIns
     /// <summary>
     /// 光源控制器物件
     /// </summary>
+    [Obsolete("deprecate object")]
     public class LightController : INotifyPropertyChanged
     {
         private int _channelNumber;

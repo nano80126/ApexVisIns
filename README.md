@@ -50,29 +50,27 @@ Apex 外觀瑕疵檢測
 	* 整合測試
 		1. 多相機同步進行
 
-## 修正初始化 Binding 失敗
+## Tabs
 
-### Tab
+	* Main Tab
+		* Control Region
+		* Image Region
+		* Chart Region
+		* Procedure Region
+		* Record Region
+	* Config Tab
+		* 新增相機
+		* 相機Config
+	* Motion Tab
+		* 設定馬達參數
+	* Database Tab
+		* 紀錄查詢
 
-* Main Tab
-	* Control Region
-	* Image Region
-	* Chart Region
-	* Procedure Region
-	* Record Region
-* Config Tab
-	* 新增相機
-	* 相機Config
-* Motion Tab
-	* 設定馬達參數
-* Database Tab
-	* 紀錄查詢
+	* Debug Tab
+		* For Programming
 
-* Debug Tab
-	* For Programming
-
-* MCA Jaw Tab
-	* For MCA Jaw 檢驗
+	* MCA Jaw Tab
+		* For MCA Jaw 檢驗
 
 ### TO DO LIST
 
@@ -103,9 +101,23 @@ Apex 外觀瑕疵檢測
 * [ ] I/O Panel
 	* 定時刷新 I/O 狀態
 
-* [ ] 修正各 Tab 物件錯誤
+* [x] 修正各 Tab 物件錯誤
 
-* [ ] 各 Tab 改動態載入
+* [x] 各 Tab 改動態載入
+
+* [x] ~各 Tab  MsgInformer = MainWindow.MsgInformer~
+
+* [ ] 標示器新增 RGB 
+
+* [ ] 測試 CameraEnumer 更改為 static
+
+* [ ] LightEumer 改 SerialPortEumer 
+
+* [ ] LightPanel 內建 LightControl
+	* 測試 LightControl 移到 LightPanel 後的功能
+
+* [ ] SpecListView 直接用固定Height
+
 
 ### Config Logic
 

@@ -31,11 +31,15 @@ namespace ApexVisIns.content
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         #endregion
 
-        #region Property
+        #region Properties
         /// <summary>
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
+        ///// <summary>
+        ///// Informer 物件
+        ///// </summary>
+        //public MsgInformer MsgInformer { get; set; }
 
         public ApexFeatures ApexFeatures { get; set; }
 
@@ -107,6 +111,8 @@ namespace ApexVisIns.content
         public MainTab()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         #region Load & UnLoad
@@ -117,7 +123,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.InitMode != MainWindow.InitModes.EDIT)
+            if (MainWindow?.InitMode != MainWindow.InitModes.EDIT)
             {
                 Initializer();
             }
@@ -140,12 +146,9 @@ namespace ApexVisIns.content
 
             if (!loaded)
             {
-                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
                 loaded = true;
             }
-
-            // MainWindow.MainProgress.SetPercent(90, TimeSpan.FromSeconds(8));
-            // MainWindow.MainProgressText.SetPercent(10, TimeSpan.FromSeconds(8));
         }
 
         /// <summary>
@@ -304,8 +307,11 @@ namespace ApexVisIns.content
             }
             catch (Exception ex)
             {
-                // 新增 Message
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: {ex.Message}");
+                if (MainWindow != null)
+                {
+                    // 新增 Message
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: {ex.Message}");
+                }
             }
         }
 

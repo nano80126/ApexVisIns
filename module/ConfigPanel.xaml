@@ -81,15 +81,12 @@
                     <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Padding" Value="4 0"/>
-                        <!--<Setter Property="Background" Value="Blue"/>-->
                     </Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                         <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2"/>
                         <Setter Property="TextAlignment" Value="Center"/>
                         <Setter Property="Margin" Value="8 8 8 8" />
                         <Setter Property="Width" Value="80"/>
-                        <!--<Setter Property="MinWidth" Value="80"/>-->
-                        <!--<Setter Property="MaxWidth" Value="100"/>-->
                     </Style>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
                         <Setter Property="Margin" Value="8 8 8 8"/>

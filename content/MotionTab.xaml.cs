@@ -33,7 +33,11 @@ namespace ApexVisIns.content
         #endregion
 
         #region Variables
-        private string MotionDirectory { get; } = @"./motions";
+        /// <summary>
+        /// Motion Setting 路徑
+        /// </summary>
+        private string MotionDirectory { get; } = @"motions";
+        //private string MotionPath { get; } = @"motion.json";
         #endregion
 
         #region Properties
@@ -53,6 +57,10 @@ namespace ApexVisIns.content
         public MotionTab()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
+            // 初始化路徑
+            InitMotionsConfigsPath();
         }
 
         #region Load & Unload
@@ -63,12 +71,10 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // 初始化 Configs 路徑
-            InitMotionsConfigsPath();
             // 確認軸卡連線狀態
             CheckMotionCardStatus();
 
-            // 若D eviceOpened，始能 Timer
+            // 若 DeviceOpened，始能 Timer
             if (MainWindow.ServoMotion.DeviceOpened && MainWindow.ServoMotion.SelectedMotionAxis != null)
             {
                 MainWindow.ServoMotion.EnableTimer(100);
@@ -76,7 +82,7 @@ namespace ApexVisIns.content
 
             if (!loaded)
             {
-                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "運動頁面已載入");
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "運動控制頁面已載入");
                 loaded = true;
             }
         }
@@ -92,45 +98,20 @@ namespace ApexVisIns.content
         #endregion
 
         /// <summary>
-        /// 初始化 Motion Config 路徑，
-        /// 
+        /// 初始化 Motion Config 路徑
         /// </summary>
         private void InitMotionsConfigsPath()
         {
+            string directory = $@"{Directory.GetCurrentDirectory()}\{MotionDirectory}";
             // Directory 不存在則新增
-            if (!Directory.Exists(MotionDirectory))
+            if (!Directory.Exists(directory))
             {
-                _ = Directory.CreateDirectory(MotionDirectory);
+                _ = Directory.CreateDirectory(directory);
             }
-#if false
-            string path = $@"{MotionDirectory}/motion.json";
-
-            if (!Directory.Exists(MotionDirectory))
-            {
-                // 新增路徑
-                _ = Directory.CreateDirectory(MotionDirectory);
-                //// 新增檔案
-                //_ = File.CreateText(path);
-            }
-            else if (!File.Exists(path))
-            {
-                //_ = File.CreateText(path);
-            }
-            else
-            {
-                //using StreamReader reader = File.OpenText(path);
-                //string jsonStr = reader.ReadToEnd();
-                //if (jsonStr != string.Empty)
-                //{
-                //    // 反序列化
-                //}
-            } 
-#endif
         }
 
         /// <summary>
-        /// 確認軸卡連線狀態，
-        /// 
+        /// 確認軸卡連線狀態
         /// </summary>
         private void CheckMotionCardStatus()
         {
@@ -770,7 +751,8 @@ namespace ApexVisIns.content
                 FileName = string.Empty,
                 Filter = "JSON File(*.json)|*.json",
                 Title = "載入 json 檔",
-                InitialDirectory = Environment.CurrentDirectory + @"\motions"
+                //InitialDirectory = Environment.CurrentDirectory + @"\motions"
+                InitialDirectory = $@"{Directory.GetCurrentDirectory()}\{MotionDirectory}"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -822,7 +804,8 @@ namespace ApexVisIns.content
             {
                 FileName = string.Empty,
                 Filter = "JSON File(*.json)|*.json",
-                InitialDirectory = Environment.CurrentDirectory + @"\motions"
+                //InitialDirectory = Environment.CurrentDirectory + @"\motions"
+                InitialDirectory = $@"{Directory.GetCurrentDirectory()}\{MotionDirectory}"
             };
 
             if (saveFileDialog.ShowDialog() == true)

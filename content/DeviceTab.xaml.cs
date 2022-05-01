@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,9 +26,11 @@ namespace ApexVisIns.content
 
         #region Varibles
         /// <summary>
-        /// Device組態路徑, Device Configs Directory
+        /// Device 組態路徑, Device Configs Directory
         /// </summary>
-        private string DevicesDirectory { get; } = @"./devices";
+        private string DevicesDirectory { get; } = @"devices";
+        private string DevicesPath { get; } = @"device.json";
+
         /// <summary>
         /// Cameras for DeviceTab, only useing in this tab. 
         /// </summary>
@@ -43,6 +46,10 @@ namespace ApexVisIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
+        /// <summary>
+        /// Informer 物件
+        /// </summary>
+        //public MsgInformer MsgInformer { get; set; }
         #endregion
 
         #region Flags
@@ -55,6 +62,10 @@ namespace ApexVisIns.content
         public DeviceTab()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
+            // 初始化路徑
+            InitDeviceConfigsPath();
         }
 
         /// <summary>
@@ -64,20 +75,12 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region 綁定事件、載入 Configs
-            // 綁定 Collection 變更事件
-            //if (!EventHasBound) // 避免重複綁定
-            //{
-            //    MainWindow.CameraEnumer.CamsSource.CollectionChanged += CamsSource_CollectionChanged;
-            //    EventHasBound = true;
-            //}
-            // 載入 Config
+            // 載入 device configs
             LoadDeviceConfigs();
-            #endregion
 
             if (!loaded)
             {
-                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
                 loaded = true;
             }
         }
@@ -97,18 +100,18 @@ namespace ApexVisIns.content
             // }
         }
 
-
         /// <summary>
-        /// 載入 device.json
+        /// 初始化 Device Configs 路徑
         /// </summary>
-        private void LoadDeviceConfigs()
+        private void InitDeviceConfigsPath()
         {
-            string path = $@"{DevicesDirectory}/device.json";
+            string directory = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}";
+            string path = $@"{directory}\{DevicesPath}";
 
-            if (!Directory.Exists(DevicesDirectory))
+            if (!Directory.Exists(directory))
             {
                 // 新增路徑
-                _ = Directory.CreateDirectory(DevicesDirectory);
+                _ = Directory.CreateDirectory(directory);
                 // 新增檔案
                 _ = File.CreateText(path);
             }
@@ -117,89 +120,73 @@ namespace ApexVisIns.content
                 // 新增檔案
                 _ = File.CreateText(path);
             }
-            else
+        }
+
+        /// <summary>
+        /// 載入 device.json
+        /// </summary>
+        private void LoadDeviceConfigs()
+        {
+            ////string path = $@"{Assembly.GetExecutingAssembly().Location}/{DevicesDirectory}";
+            string path = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}\{DevicesPath}";
+            //string path = $@"{directory}\{DevicesPath}";
+            ////return;
+
+            //Debug.WriteLine($"dir: {directory}");
+            //Debug.WriteLine($"path: {path}");
+
+            //if (!Directory.Exists(directory))
+            //{
+            //    // 新增路徑
+            //    _ = Directory.CreateDirectory(directory);
+            //    // 新增檔案
+            //    _ = File.CreateText(path);
+            //}
+            //else if (!File.Exists(path))
+            //{
+            //    // 新增檔案
+            //    _ = File.CreateText(path);
+            //}
+            //else
+            //{
+            using StreamReader reader = File.OpenText(path);
+            string jsonStr = reader.ReadToEnd();
+
+            if (jsonStr != string.Empty)
             {
-                using StreamReader reader = File.OpenText(path);
-                string jsonStr = reader.ReadToEnd();
+                // 反序列化，載入JSON FILE
+                DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
 
-                if (jsonStr != string.Empty)
+                // 目前有連線的相機
+                BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+
+                // JSON FILE 儲存之 DeviceConfig
+                DeviceConfig[] deviceConfig = MainWindow?.CameraEnumer.DeviceConfigs.ToArray();
+
+                if (devices.Length > deviceConfig.Length)
                 {
-                    // 反序列化，載入JSON FILE
-                    DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
-
-                    // 目前有連線的相機
-                    //List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-                    BaslerCamInfo[] cams = MainWindow.CameraEnumer.CamsSource.ToArray();
-
-                    // JSON FILE 儲存之 DeviceConfig
-                    DeviceConfig[] deviceConfig = MainWindow.CameraEnumer.DeviceConfigs.ToArray();
-
-                    if (devices.Length > deviceConfig.Length)
+                    foreach (DeviceConfigBase d in devices)
                     {
-                        foreach (DeviceConfigBase d in devices)
+                        if (!deviceConfig.Any(e => e.SerialNumber == d.SerialNumber))
                         {
-                            //Debug.WriteLine(deviceConfig.Any(e => e.SerialNumber == d.SerialNumber));
-
-                            if (!deviceConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                            DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
                             {
-                                DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
-                                {
-                                    VendorName = d.VendorName,
-                                    CameraType = d.CameraType,
-                                    TargetFeature = d.TargetFeature,
-                                    // 
-                                    Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
-                                };
-                                MainWindow.CameraEnumer.DeviceConfigs.Add(config);
-                            }
+                                VendorName = d.VendorName,
+                                CameraType = d.CameraType,
+                                TargetFeature = d.TargetFeature,
+                                // 
+                                Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                            };
+                            MainWindow?.CameraEnumer.DeviceConfigs.Add(config);
                         }
                     }
-
-#if false
-                    #region 第一次才會比較
-                    // JSON FILE 讀取出來的陣列長度 > 目前 DeviceConfigs 的長度
-                    if (devices.Length > MainWindow.DeviceConfigs.Count)
-                    {
-                        foreach (DeviceConfigBase d in devices)
-                        {
-                            // 判斷 Json Config 尚未新增進 DeviceConfigs
-                            if (!MainWindow.DeviceConfigs.Any(e => e.SerialNumber == d.SerialNumber))
-                            {
-                                DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
-                                {
-                                    VendorName = d.VendorName,
-                                    CameraType = d.CameraType,
-                                    TargetFeature = d.TargetFeature,
-                                    // CameraEnumer CamsSource 有連線且有被新增過
-                                    Online = cams.Count > 0 && cams.Exists(e => e.SerialNumber == d.SerialNumber)
-                                };
-                                MainWindow.DeviceConfigs.Add(config);
-                            }
-                        }
-                    }
-                    #endregion
-
-                    #region 每次載入都會確認
-                    List<BaslerCamInfo> list = MainWindow.CameraEnumer.CamsSource.ToList();
-                    foreach (DeviceConfig cfg in MainWindow.DeviceConfigs)
-                    {
-                        if (list.Any(info => info.SerialNumber == cfg.SerialNumber))
-                        {
-                            Dispatcher.Invoke(() => cfg.Online = true);
-                        }
-                        else
-                        {
-                            Dispatcher.Invoke(() => cfg.Online = false);
-                        }
-                    }
-                    #endregion  
-#endif
-                }
-                else
-                {
-                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空 (DeviceTab)");
                 }
             }
+            else
+            {
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+            }
+            //}
         }
 
         /// <summary>
@@ -439,7 +426,8 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{DevicesDirectory}/device.json";
+            //string path = $@"{AppDomain.CurrentDomain.BaseDirectory}{DevicesDirectory}";
+            string path = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}\{DevicesPath}";
             // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
 
             // DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
@@ -581,8 +569,7 @@ namespace ApexVisIns.content
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-                    //throw;
+                    MainWindow.MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                 }
             }
             else
@@ -628,74 +615,81 @@ namespace ApexVisIns.content
         /// <param name="config">目標組態</param>
         private static void ReadConfig(Camera camera, DeviceConfig config)
         {
-            config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
-            config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
-            //config.IP = camera.Parameters[CameraInfoKey]
-            // 更新 IP
-            config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
-            config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
-            //Debug.WriteLine($"{config.DeviceVersion} {config.FirmwareVersion}");
+            try
+            {
+                config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
+                config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
+                //config.IP = camera.Parameters[CameraInfoKey]
+                // 更新 IP
+                config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
+                                                          //Debug.WriteLine($"{config.DeviceVersion} {config.FirmwareVersion}");
 
-            // UserSet
-            config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
-            config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+                // UserSet
+                config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+                config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
-            // // // // // // // // // // // // // // // // // // // // // // // //
-            // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
-            // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
-            #region AOI Control
-            config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
-            config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+                // // // // // // // // // // // // // // // // // // // // // // // //
+                // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
+                // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+                #region AOI Control
+                config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
+                config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
 
-            config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
-            config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
+                config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
+                config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
 
-            config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
-            config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+                config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
 
-            config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
-            config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+                config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+                config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
 
-            config.CenterX = camera.Parameters[PLGigECamera.CenterX].GetValue();    // UserSet 實際上不會記錄
-            config.CenterY = camera.Parameters[PLGigECamera.CenterY].GetValue();    // UserSet 實際上不會記錄 
-            #endregion
+                config.CenterX = camera.Parameters[PLGigECamera.CenterX].GetValue();    // UserSet 實際上不會記錄
+                config.CenterY = camera.Parameters[PLGigECamera.CenterY].GetValue();    // UserSet 實際上不會記錄 
+                #endregion
 
-            #region Trigger
-            config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
-            config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
-            config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
-            config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
-            config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
-            config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
-            #endregion
+                #region Trigger
+                config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
+                config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
+                config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
+                config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
+                config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
+                config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
+                #endregion
 
-            #region Exposure
-            config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
-            config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
-            config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
-            config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
-            config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
-            #endregion
+                #region Exposure
+                config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
+                config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
+                config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
+                config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
+                config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+                #endregion
 
-            #region FPS
-            config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
-            config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
-            #endregion
+                #region FPS
+                config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
+                config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                #endregion
 
-            #region Anglog Control
-            config.GainAutoEnum = camera.Parameters[PLGigECamera.GainAuto].GetAllValues().ToArray();
-            config.GainAuto = camera.Parameters[PLGigECamera.GainAuto].GetValue();
-            config.Gain = (int)camera.Parameters[PLGigECamera.GainRaw].GetValue();
-            config.BlackLevel = (int)camera.Parameters[PLGigECamera.BlackLevelRaw].GetValue();
-            config.GammaEnable = camera.Parameters[PLGigECamera.GammaEnable].GetValue();
-            config.GammaSelectorEnum = camera.Parameters[PLGigECamera.GammaSelector].GetAllValues().ToArray();
-            config.GammaSelector = camera.Parameters[PLGigECamera.GammaSelector].GetValue();
-            config.Gamma = camera.Parameters[PLGigECamera.Gamma].GetValue();
-            #endregion
+                #region Anglog Control
+                config.GainAutoEnum = camera.Parameters[PLGigECamera.GainAuto].GetAllValues().ToArray();
+                config.GainAuto = camera.Parameters[PLGigECamera.GainAuto].GetValue();
+                config.Gain = (int)camera.Parameters[PLGigECamera.GainRaw].GetValue();
+                config.BlackLevel = (int)camera.Parameters[PLGigECamera.BlackLevelRaw].GetValue();
+                config.GammaEnable = camera.Parameters[PLGigECamera.GammaEnable].GetValue();
+                config.GammaSelectorEnum = camera.Parameters[PLGigECamera.GammaSelector].GetAllValues().ToArray();
+                config.GammaSelector = camera.Parameters[PLGigECamera.GammaSelector].GetValue();
+                config.Gamma = camera.Parameters[PLGigECamera.Gamma].GetValue();
+                #endregion
 
-            string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
+                string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
 
-            Debug.WriteLine($"{userSet}");
+                Debug.WriteLine($"{userSet}");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -747,13 +741,14 @@ namespace ApexVisIns.content
                 camera.Parameters[PLGigECamera.Gamma].SetValue(config.Gamma);
 
             }
-            catch (ArgumentOutOfRangeException A)
+            //catch (ArgumentOutOfRangeException A)
+            //{
+            //    throw new ArgumentOutOfRangeException($"相機組態寫入失敗: {A.Message}");
+            //}
+            catch (Exception)
             {
-                throw new ArgumentOutOfRangeException($"相機組態寫入失敗: {A.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"相機組態寫入失敗: {ex.Message}");
+                //throw new Exception($"相機組態寫入失敗: {ex.Message}");
+                throw;
             }
         }
 
@@ -775,7 +770,6 @@ namespace ApexVisIns.content
             DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
             //Camera camera = MainWindow.BaslerCam.Camera;
             Camera camera = _deviceCams[_devInUse].Camera;
-
 
             camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
@@ -812,21 +806,18 @@ namespace ApexVisIns.content
             //Camera camera = MainWindow.BaslerCam.Camera;
             Camera camera = _deviceCams[_devInUse].Camera;
 
-            try
-            {
-                // 更新 Config
-                UpdateConfig(config, camera);
-                // UserSet 紀錄
-                camera.Parameters[PLGigECamera.UserSetSave].Execute();
-            }
-            catch (Exception ex)
-            {
-                // 這邊要修改 (Error 格式有問題)
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-            }
-
-            //camera.Parameters[PLGigECamera.UserSetSave].Execute();
-            Debug.WriteLine("Save UserSet");
+            //try
+            //{
+            // 更新 Config
+            UpdateConfig(config, camera);
+            // UserSet 紀錄
+            camera.Parameters[PLGigECamera.UserSetSave].Execute();
+            //}
+            //catch (Exception ex)
+            //{
+            //    // 這邊要修改 (Error 格式有問題)
+            //    MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+            //}
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)

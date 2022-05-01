@@ -29,7 +29,8 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         Topmost="False"
-        Title="MainWindow" Width="1600" Height="900">
+        Title="MainWindow" Width="1600" Height="900"
+        x:Name="MainWindow1">
     <Window.Resources>
         <!--#region Appbar -->
         <RoutedUICommand x:Key="QuitAction" Text="Quit"/>
@@ -50,11 +51,6 @@
         <RoutedUICommand x:Key="GlobalTest" Text="Test global command"/>
         <!--#endregion-->
 
-        <!--#region BackgroundWorker -->
-        <!--<componentModel:BackgroundWorker x:Name="Worker" x:Key="Worker" WorkerReportsProgress="True" WorkerSupportsCancellation="True"/>-->
-        <!--#endregion-->
-
-
         <!--#region Objects -->
         <!--Crosshair
         <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>-->
@@ -72,11 +68,6 @@
         <!--Footer Bar Message
             <local:MsgInformer x:Key="MsgInformer"/>-->
         <!--#endregion-->
-
-        <!--#region Module -->
-            <!--<local:Thermometer x:Key="Thermometer" Interval="100"/>-->
-        <!--#endregion-->
-        
         
     </Window.Resources> 
     <!--//-->
@@ -195,7 +186,7 @@
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
-
+                    <!--//-->
                     <content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
                 <!--#endregion-->
@@ -208,7 +199,7 @@
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!--//-->
-                    <content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
+                    <!--<content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
                 <!--//-->
@@ -220,7 +211,7 @@
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!--//-->
-                    <content:MotionTab x:Name="MotionTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
+                    <!--<content:MotionTab x:Name="MotionTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
                 <!--//-->
@@ -233,8 +224,7 @@
                         <materialDesign:PackIcon Kind="Database" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <content:DatabaseTab x:Name="DatabaseTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
-                    <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
+                    <!--<content:DatabaseTab x:Name="DatabaseTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 
@@ -243,12 +233,11 @@
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}"
                          IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <!--IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime}"-->
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}" />
+                    <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 
@@ -259,7 +248,7 @@
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
+                    <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 

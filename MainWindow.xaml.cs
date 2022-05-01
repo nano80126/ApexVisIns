@@ -25,6 +25,7 @@ using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Windows.Media.Animation;
 using ApexVisIns.Product;
+using ApexVisIns.content;
 
 namespace ApexVisIns
 {
@@ -63,12 +64,7 @@ namespace ApexVisIns
         /// </summary>
         public static LightController LightController { get; set; }
 
-        /// <summary>
-        /// 光源控制器陣列
-        /// </summary>
-        [Obsolete("待轉移")]
-        public static LightController[] LightCtrls_old { get; set; }
-
+        //public static LightSerial LightCtrl { get; set; }
         /// <summary>
         /// 光源控制器
         /// </summary>
@@ -119,11 +115,6 @@ namespace ApexVisIns
         /// </summary>
         public static bool IsProcessing { get; set; }
 
-        private readonly PixelDataConverter pxConverter = new()
-        {
-            OutputPixelFormat = PixelType.Mono8
-        };
-
         public enum InitModes
         {
             AUTO = 0,
@@ -137,35 +128,47 @@ namespace ApexVisIns
         public InitModes InitMode { get; set; } = InitModes.AUTO;
         #endregion
 
+        #region Tabs
+        private DeviceTab DeviceTab { get; set; }
+        private MotionTab MotionTab { get; set; }
+        private DatabaseTab DatabaseTab { get; set; }
+        private EngineerTab EngineerTab { get; set; }
+        #endregion
+
+
         public MainWindow()
         {
             InitializeComponent();
 
             InitializePanels();
 
-            //GetSystemPath();
+            LoadTabItems();
         }
 
         /// <summary>
         /// 初始化 Panel's MainWindow
         /// </summary>
+        [Obsolete]
         private void InitializePanels()
         {
             #region Set Tabs's and Panels's MainWindows ref
             // MainTab
-            MainTab.MainWindow = this;
+            //MainTab.MainWindow = this;
             // MCA Jaw Tab
-            JawTab.MainWindow = this;
+#if true
+            //JawTab.MainWindow = this;
             // Device Tab
-            DeviceTab.MainWindow = this;
+            //DeviceTab.MainWindow = this;
             // Motion Tab
-            MotionTab.MainWindow = this;
+            //MotionTab.MainWindow = this;
             // Engineer Tab
-            EngineerTab.MainWindow = this;
-            EngineerTab.ConfigPanel.MainWindow = this;
-            EngineerTab.LightPanel.MainWindow = this;
-            EngineerTab.DigitalIOPanel.MainWindow = this;
+            //EngineerTab.MainWindow = this;
+            //EngineerTab.ConfigPanel.MainWindow = this;
+            //EngineerTab.LightPanel.MainWindow = this;
+            //EngineerTab.DigitalIOPanel.MainWindow = this;
+#endif
             #endregion
+
         }
 
         /// <summary>
@@ -198,7 +201,7 @@ namespace ApexVisIns
             LightEnumer?.WorkerStart();
 
 #if DEBUG
-            LightController = FindResource(nameof(LightController)) as LightController;
+            //LightController = FindResource(nameof(LightController)) as LightController;
 #endif
             // LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[]; // depricated
             LightCtrls = FindResource(nameof(LightCtrls)) as LightSerial[];
@@ -237,6 +240,31 @@ namespace ApexVisIns
             //SpinWait.SpinUntil(() => false, 1000);
 
             //CreateIOWindow();
+
+            //AppTabControl.Items[]
+
+
+#if false
+            bool once = false;
+            foreach (TabItem item in AppTabControl.Items)
+            {
+                Debug.WriteLine(item.Header);
+                Debug.WriteLine(item.Content);
+                Debug.WriteLine(item.Content == null);
+
+                if (item.Content == null && !once)
+                {
+                    item.Content = new content.DeviceTab()
+                    {
+                        Name = "DeviceTab",
+                        Focusable = true,
+                        FocusVisualStyle = null
+                    };
+
+                    once = true;
+                }
+            } 
+#endif
 
 #if false
             //Dictionary<int, OpenCvSharp.Rect> rrr = new Dictionary<int, OpenCvSharp.Rect>() {
@@ -279,6 +307,61 @@ namespace ApexVisIns
             if (IOWindow != null)
             {
                 IOWindow.Close();
+            }
+        }
+
+        /// <summary>
+        /// 載入 TabItems
+        /// </summary>
+        private void LoadTabItems()
+        {
+            for (int i = 0; i < AppTabControl.Items.Count; i++)
+            {
+                TabItem tabItem = (TabItem)AppTabControl.Items[i];
+                Debug.WriteLine($"{tabItem.Header} {(tabItem.Header as PackIcon).Kind}");
+                if (tabItem.Content != null) { continue; }
+
+                switch (i)
+                {
+                    case 1:
+                        DeviceTab = new DeviceTab()
+                        {
+                            Name = "DeviceTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = DeviceTab;
+                        break;
+                    case 2:
+                        MotionTab = new MotionTab()
+                        {
+                            Name = "MotionTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = MotionTab;
+                        break;
+                    case 3:
+                        DatabaseTab = new DatabaseTab()
+                        {
+                            Name = "DatabaseTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = DatabaseTab;
+                        break;
+                    case 4:
+                        EngineerTab = new EngineerTab()
+                        {
+                            Name = "EngineerTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = EngineerTab;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 

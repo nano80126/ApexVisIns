@@ -104,7 +104,8 @@
             <!--ComPort 列舉-->
             <local:LightEnumer x:Key="LightEnumer"/>
             <!--光源控制器-->
-            <local:LightController x:Key="LightController" ChannelNumber="4"/>
+            <!--<local:LightController x:Key="LightController" ChannelNumber="4"/>-->
+            <local:LightSerial x:Key="LightCtrl" ChannelNumber="4"/>
             <!--光源控制器陣列-->
             <x:Array x:Key="LightCtrls" Type="local:LightSerial">
                 <local:LightSerial ComPort="COM1" ChannelNumber="4"/>

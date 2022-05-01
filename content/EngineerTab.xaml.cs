@@ -34,15 +34,21 @@ namespace ApexVisIns.content
         #endregion
 
         #region Varibles
-        public MainWindow MainWindow { get; set; }
-
-        //private static BaslerCam Cam;
-        //private static BaslerConfig Config;
-
         private static bool MoveImage;
         private static double TempX;
         private static double TempY;
         private ImageSource _imgSrc;
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
+        public MainWindow MainWindow { get; set; }
+        /// <summary>
+        /// Informer 物件
+        /// </summary>
+        //public MsgInformer MsgInformer { get; set; }
         #endregion
 
         #region Flags
@@ -55,26 +61,14 @@ namespace ApexVisIns.content
         public EngineerTab()
         {
             InitializeComponent();
-
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region Find Resource
-            if (Crosshair == null)
-            {
-                Crosshair = TryFindResource(nameof(Crosshair)) as Crosshair;
-            }
-
-            if (AssistRect == null)
-            {
-                AssistRect = TryFindResource(nameof(AssistRect)) as AssistRect;
-            }
-
-            if (Indicator == null)
-            {
-                Indicator = TryFindResource(nameof(Indicator)) as Indicator;
-            }
+            if (Crosshair == null) { Crosshair = TryFindResource(nameof(Crosshair)) as Crosshair; }
+            if (AssistRect == null) { AssistRect = TryFindResource(nameof(AssistRect)) as AssistRect; }
+            if (Indicator == null) { Indicator = TryFindResource(nameof(Indicator)) as Indicator; }
             #endregion
 
             InitializePanelObjects();
@@ -85,14 +79,14 @@ namespace ApexVisIns.content
 
             if (!loaded)
             {
-                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
                 loaded = true;
             }
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Engineer Tab Unload");
+            //Debug.WriteLine("Engineer Tab Unload");
         }
 
         /// <summary>
@@ -114,6 +108,7 @@ namespace ApexVisIns.content
         {
             try
             {
+#if false
                 OpenCvSharp.Cv2.DestroyAllWindows();
 
                 MainWindow.PreAngleCorrection();
@@ -123,11 +118,13 @@ namespace ApexVisIns.content
                 MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
                 MainWindow.ApexAngleCorrectionFlags.WidthStable = 0;
                 MainWindow.ApexAngleCorrectionFlags.CircleStable = 0;
-                MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 1;
+                MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 1; 
+#endif
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                //MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+                MainWindow.MsgInformer?.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
             }
         }
 

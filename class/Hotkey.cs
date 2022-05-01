@@ -5,6 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System;
+using ApexVisIns.content;
 
 namespace ApexVisIns
 {
@@ -91,7 +92,9 @@ namespace ApexVisIns
         }
         private void OpenDeviceCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            //EngineerTab tab = FindName("EngineerTab") as EngineerTab;
             EngineerTab.CamConnect.IsChecked = (bool)EngineerTab.CamConnect.IsChecked ? false : true;
+            //tab.CamConnect.IsChecked = (bool)EngineerTab.CamConnect.IsChecked ? false : true;
 
             //if ((bool)EngineerTab.CamConnect.IsChecked)
             //{

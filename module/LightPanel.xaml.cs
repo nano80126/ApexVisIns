@@ -34,16 +34,28 @@ namespace ApexVisIns.module
         /// </summary>
         public EngineerTab EngineerTab { get; set; }
 
+        /// <summary>
+        /// 光源控制器
+        /// </summary>
+        public LightSerial LightControl { get; set; }
+
         public LightPanel()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
+        }
+
+        private void Card_Loaded(object sender, RoutedEventArgs e)
+        {
+            LightControl = FindResource(nameof(LightControl)) as LightSerial;
         }
 
         private void ComPortConnect_Click(object sender, RoutedEventArgs e)
         {
             string comPort = ComPortSelector.SelectedValue as string;
 
-            if (!MainWindow.LightController.IsComOpen)
+            if (!LightControl.IsComOpen)
             {
                 try
                 {
@@ -53,9 +65,9 @@ namespace ApexVisIns.module
                     // #endregion
 
                     // 開啟 COM
-                    MainWindow.LightController.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                    LightControl.ComOpen(comPort, 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
                     // 歸零所有通道
-                    MainWindow.LightController.ResetAllValue();
+                    LightControl.ResetAllChannel();
                     // 暫停 LightEnummer
                     MainWindow.LightEnumer.WorkerPause();
                 }
@@ -64,13 +76,13 @@ namespace ApexVisIns.module
                     // 待新增光源 Error Code
                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.LIGHT, ex.Message);
                     // 例外產生，關閉通訊
-                    MainWindow.LightController.ComClose();
+                    LightControl.ComClose();
                 }
             }
             else
             {
                 // 關閉 COM
-                MainWindow.LightController.ComClose();
+                LightControl.ComClose();
                 // 啟動 LightEnumer
                 MainWindow.LightEnumer.WorkerResume();
             }
@@ -78,9 +90,9 @@ namespace ApexVisIns.module
 
         private void BulbOffBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.LightController.IsComOpen)
+            if (LightControl.IsComOpen)
             {
-                MainWindow.LightController.ResetAllValue();
+                LightControl.ResetAllChannel();
             }
             else
             {
@@ -90,57 +102,30 @@ namespace ApexVisIns.module
 
         private void CmdSendBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.LightController.IsComOpen)
+            if (LightControl.IsComOpen)
             {
                 string cmd = string.Empty;
-                for (int i = 0; i < MainWindow.LightController.ChannelNumber; i++)
+                for (int i = 0; i < LightControl.ChannelNumber; i++)
                 {
-                    LightChannel ch = MainWindow.LightController.Channels[i];
+                    LightChannel ch = LightControl.Channels[i];
                     cmd += $"{i + 1},{ch.Value},";
                 }
                 cmd = $"{cmd.TrimEnd(',')}\r\n";
 
-                string ret = MainWindow.LightController.Write(cmd);
+                LightControl.Write(cmd);
 
                 //// 新增至 MsgInformer 
                 //Debug.WriteLine(cmd);
                 //Debug.WriteLine(ret);
-
-                #region 自動化測試
-                //Task.Run(() =>
-                //{
-                //    for (int j = 0; j < 60; j++)
-                //    {
-                //        MainWindow.LightController.SetCannelValue(j % 4 + 1, 192);
-                //        MainWindow.LightController.SetCannelValue((j + 1) % 4 + 1, 0);
-                //        MainWindow.LightController.SetCannelValue((j + 2) % 4 + 1, 0);
-                //        MainWindow.LightController.SetCannelValue((j + 3) % 4 + 1, 0);
-
-                //        string cmd = string.Empty;
-                //        for (int i = 0; i < MainWindow.LightController.ChannelNumber; i++)
-                //        {
-                //            LightChannel ch = MainWindow.LightController.Channels[i];
-                //            cmd += $"{i + 1},{ch.Value},";
-                //        }
-                //        cmd = $"{cmd.TrimEnd(',')}\r\n";
-
-                //        string ret = MainWindow.LightController.Write(cmd);
-
-                //        // 新增 msg
-                //        Debug.WriteLine(cmd);
-                //        Debug.WriteLine(ret);
-
-                //        SpinWait.SpinUntil(() => false, 500);
-                //    }
-                //}); 
-                #endregion
             }
             else
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
             }
         }
-        
+
+      
+
 
         //private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         //{

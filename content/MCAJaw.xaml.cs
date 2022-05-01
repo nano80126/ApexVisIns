@@ -104,7 +104,7 @@ namespace ApexVisIns.content
             //Light24V.SetAllChannelValue(128, 128);
 
             // 硬體初始化
-            InitHardware();
+            //InitHardware();
 
             if (!loaded)
             {
