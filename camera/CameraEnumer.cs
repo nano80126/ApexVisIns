@@ -18,8 +18,8 @@ namespace ApexVisIns
     {
         #region private
         private readonly object _camsSourceLock = new();
-        private readonly object _deviceConfigsLock = new();
-        private bool _deviceConfigSaved; 
+        private readonly object _cameraConfigsLock = new();
+        private bool _cameraConfigSaved; 
         #endregion
 
         /// <summary>
@@ -29,16 +29,16 @@ namespace ApexVisIns
         /// <summary>
         /// JSON FILE 儲存之CONFIG
         /// </summary>
-        public ObservableCollection<DeviceConfig> DeviceConfigs { get; set; } = new ObservableCollection<DeviceConfig>();
+        public ObservableCollection<CameraConfig> CameraConfigs { get; set; } = new ObservableCollection<CameraConfig>();
 
-        public bool DeviceCofingSaved
+        public bool CameraCofingSaved
         {
-            get => _deviceConfigSaved;
+            get => _cameraConfigSaved;
             set
             {
-                if (value != _deviceConfigSaved)
+                if (value != _cameraConfigSaved)
                 {
-                    _deviceConfigSaved = value;
+                    _cameraConfigSaved = value;
                     OnPropertyChanged();
                 }
             }
@@ -82,51 +82,51 @@ namespace ApexVisIns
         }
         #endregion
 
-        #region DeviceConfigs 操作
+        #region CameraConfigs 操作
         /// <summary>
-        /// 新增 Config 至 DeviceConfig
+        /// 新增 Config 至 CameraConfig
         /// </summary>
         /// <param name="config"></param>
-        private void AddDeviceConfigs(DeviceConfig config)
+        private void AddCameraConfigs(CameraConfig config)
         {
-            lock (_deviceConfigsLock)
+            lock (_cameraConfigsLock)
             {
-                DeviceConfigs.Add(config);
+                CameraConfigs.Add(config);
             }
         }
         /// <summary>
-        /// 從 DeviceConfigs 移除指定物件
+        /// 從 CameraConfigs 移除指定物件
         /// </summary>
         /// <param name="config"></param>
-        private void RemoveDeviceConfigs(DeviceConfig config)
+        private void RemoveCameraConfigs(CameraConfig config)
         {
-            lock (_deviceConfigsLock)
+            lock (_cameraConfigsLock)
             {
-                DeviceConfigs.Remove(config);
+                CameraConfigs.Remove(config);
             }
         }
         /// <summary>
-        /// 清空 DeviceConfigs
+        /// 清空 CameraConfigs
         /// </summary>
-        private void ClearDeviceConfigs()
+        private void ClearCameraConfigs()
         {
-            lock (_deviceConfigsLock)
+            lock (_cameraConfigsLock)
             {
-                if (DeviceConfigs.Count > 0)
+                if (CameraConfigs.Count > 0)
                 {
-                    DeviceConfigs.Clear();
+                    CameraConfigs.Clear();
                 }
             }
         }
 
         /// <summary>
-        /// 變更 DeviceConfigs
+        /// 變更 CameraConfigs
         /// </summary>
-        private void ChangeDeviceConfigs(int idx, string propertyName, object value)
+        private void ChangeCameraConfigs(int idx, string propertyName, object value)
         {
-            lock (_deviceConfigsLock)
+            lock (_cameraConfigsLock)
             {
-                DeviceConfigs[idx].GetType().GetProperty(propertyName).SetValue(DeviceConfigs[idx], value);
+                CameraConfigs[idx].GetType().GetProperty(propertyName).SetValue(CameraConfigs[idx], value);
             }
         }
 
@@ -134,11 +134,11 @@ namespace ApexVisIns
         /// 全部相機設為 Online
         /// </summary>
         /// <param name="online"></param>
-        private void AllSetOnlineDeviceConfigs(bool online)
+        private void AllSetOnlineCameraConfigs(bool online)
         {
-            lock (_deviceConfigsLock)
+            lock (_cameraConfigsLock)
             {
-                foreach (DeviceConfig cfg in DeviceConfigs)
+                foreach (CameraConfig cfg in CameraConfigs)
                 {
                     cfg.Online = online;
                 }
@@ -146,10 +146,13 @@ namespace ApexVisIns
         }
         #endregion
 
+        /// <summary>
+        /// 工作開始
+        /// </summary>
         public override void WorkerStart()
         {
             BindingOperations.EnableCollectionSynchronization(CamsSource, _camsSourceLock);
-            BindingOperations.EnableCollectionSynchronization(DeviceConfigs, _deviceConfigsLock);
+            BindingOperations.EnableCollectionSynchronization(CameraConfigs, _cameraConfigsLock);
             CamsSource.CollectionChanged += CamsSource_CollectionChanged;
             base.WorkerStart();
         }
@@ -170,11 +173,11 @@ namespace ApexVisIns
                     //        //ChangeDeviceConfigs();
                     //    }
                     //}
-                    for (int i = 0; i < DeviceConfigs.Count; i++)
+                    for (int i = 0; i < CameraConfigs.Count; i++)
                     {
-                        if (list.Any(cam => cam.SerialNumber == DeviceConfigs[i].SerialNumber))
+                        if (list.Any(cam => cam.SerialNumber == CameraConfigs[i].SerialNumber))
                         {
-                            ChangeDeviceConfigs(i, "Online", true);
+                            ChangeCameraConfigs(i, "Online", true);
                         }
                     }
 
@@ -189,11 +192,11 @@ namespace ApexVisIns
                     //     {
                     //     }
                     // }
-                    for (int i = 0; i < DeviceConfigs.Count; i++)
+                    for (int i = 0; i < CameraConfigs.Count; i++)
                     {
-                        if (!list.Any(cam => cam.SerialNumber == DeviceConfigs[i].SerialNumber))
+                        if (!list.Any(cam => cam.SerialNumber == CameraConfigs[i].SerialNumber))
                         {
-                            ChangeDeviceConfigs(i, "Online", false);
+                            ChangeCameraConfigs(i, "Online", false);
                         }
                     }
                     break;
@@ -203,16 +206,19 @@ namespace ApexVisIns
                     // {
                     //     ChangeDeviceConfigs(i, "Online", false);
                     // }
-                    AllSetOnlineDeviceConfigs(false);
+                    AllSetOnlineCameraConfigs(false);
                     break;
             }
             // throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 工作結束
+        /// </summary>
         public override void WorkerEnd()
         {
             BindingOperations.DisableCollectionSynchronization(CamsSource);
-            BindingOperations.DisableCollectionSynchronization(DeviceConfigs);
+            BindingOperations.DisableCollectionSynchronization(CameraConfigs);
             CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
             base.WorkerEnd();
         }
@@ -285,7 +291,7 @@ namespace ApexVisIns
         protected override void Dispose(bool disposing)
         {
             CamsSource.Clear();
-            DeviceConfigs.Clear();
+            CameraConfigs.Clear();
             base.Dispose(disposing);
         }
 

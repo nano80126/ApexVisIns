@@ -89,13 +89,9 @@
                 </local:BaslerCam>
             </x:Array>
             
-            <!--裝置組態 (線上使用之組態)-->
-            <local:DeviceConfigList x:Key="DeviceConfigs">
-            </local:DeviceConfigList>
-            
             <!--EtherCAT for ServoMotion -->
             <!--Motion 列舉-->
-            <local:MotionEnumer x:Key="MotionEnumer"/>
+            <!--<local:MotionEnumer x:Key="MotionEnumer"/>-->
             <!--Motion 物件-->
             <local:ServoMotion x:Key="ServoMotion"/>
             <!--#endregion-->

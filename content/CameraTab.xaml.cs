@@ -16,9 +16,9 @@ using System.Windows.Input;
 namespace ApexVisIns.content
 {
     /// <summary>
-    /// DeviceTab.xaml 的互動邏輯
+    /// CameraTab.xaml 的互動邏輯
     /// </summary>
-    public partial class DeviceTab : StackPanel
+    public partial class CameraTab : StackPanel
     {
         #region Resources
 
@@ -26,15 +26,15 @@ namespace ApexVisIns.content
 
         #region Varibles
         /// <summary>
-        /// Device 組態路徑, Device Configs Directory
+        /// Camera 組態路徑, Camera Configs Directory
         /// </summary>
-        private string DevicesDirectory { get; } = @"devices";
-        private string DevicesPath { get; } = @"device.json";
+        private string CamerasDirectory { get; } = @"cameras";
+        private string CamerasPath { get; } = @"camera.json";
 
         /// <summary>
-        /// Cameras for DeviceTab, only useing in this tab. 
+        /// Cameras for CameraTab, only useing in this tab. 
         /// </summary>
-        private readonly List<BaslerCam> _deviceCams = new();
+        private readonly List<BaslerCam> _camerasList = new();
         /// <summary>
         /// Index of DeivceCam in use
         /// </summary>
@@ -59,13 +59,13 @@ namespace ApexVisIns.content
         private bool loaded;
         #endregion
 
-        public DeviceTab()
+        public CameraTab()
         {
             InitializeComponent();
 
             MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑
-            InitDeviceConfigsPath();
+            InitCamerasConfigPath();
         }
 
         /// <summary>
@@ -75,8 +75,8 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // 載入 device configs
-            LoadDeviceConfigs();
+            // 載入 cameras config
+            LoadCamerasConfig();
 
             if (!loaded)
             {
@@ -101,12 +101,12 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 初始化 Device Configs 路徑
+        /// 初始化 cameras Config 路徑
         /// </summary>
-        private void InitDeviceConfigsPath()
+        private void InitCamerasConfigPath()
         {
-            string directory = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}";
-            string path = $@"{directory}\{DevicesPath}";
+            string directory = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}";
+            string path = $@"{directory}\{CamerasPath}";
 
             if (!Directory.Exists(directory))
             {
@@ -123,13 +123,11 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 載入 device.json
+        /// 載入 camera.json
         /// </summary>
-        private void LoadDeviceConfigs()
+        private void LoadCamerasConfig()
         {
-            ////string path = $@"{Assembly.GetExecutingAssembly().Location}/{DevicesDirectory}";
-            string path = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}\{DevicesPath}";
-            //string path = $@"{directory}\{DevicesPath}";
+            string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
             ////return;
 
             //Debug.WriteLine($"dir: {directory}");
@@ -155,21 +153,21 @@ namespace ApexVisIns.content
             if (jsonStr != string.Empty)
             {
                 // 反序列化，載入JSON FILE
-                DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+                CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
 
                 // 目前有連線的相機
                 BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
 
-                // JSON FILE 儲存之 DeviceConfig
-                DeviceConfig[] deviceConfig = MainWindow?.CameraEnumer.DeviceConfigs.ToArray();
+                // JSON FILE 儲存之 CameraConfig
+                CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
 
-                if (devices.Length > deviceConfig.Length)
+                if (cameras.Length > cameraConfig.Length)
                 {
-                    foreach (DeviceConfigBase d in devices)
+                    foreach (CameraConfigBase d in cameras)
                     {
-                        if (!deviceConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                        if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
                         {
-                            DeviceConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                            CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
                             {
                                 VendorName = d.VendorName,
                                 CameraType = d.CameraType,
@@ -177,7 +175,7 @@ namespace ApexVisIns.content
                                 // 
                                 Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
                             };
-                            MainWindow?.CameraEnumer.DeviceConfigs.Add(config);
+                            MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                         }
                     }
                 }
@@ -204,99 +202,27 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeviceAdd_Click(object sender, RoutedEventArgs e)
+        private void CameraAdd_Click(object sender, RoutedEventArgs e)
         {
             if (CameraSelector.SelectedItem is BaslerCamInfo info)
             {
-                ObservableCollection<DeviceConfig> deviceConfigs = MainWindow.CameraEnumer.DeviceConfigs;
+                ObservableCollection<CameraConfig> cameraConfigs = MainWindow.CameraEnumer.CameraConfigs;
 
-                if (!deviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
-                // if (!MainWindow.DeviceConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
+                if (!cameraConfigs.Any(cfg => cfg.SerialNumber == info.SerialNumber))
                 {
-                    DeviceConfig config = new(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber)
+                    CameraConfig config = new(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber)
                     {
                         VendorName = info.VendorName,
                         CameraType = info.CameraType,
                         Online = true,
                         // TargetFeature = 0
-                        // DeviceVersion = info.DeviceVersion
                     };
 
-                    // MainWindow.DeviceConfigs.Add(new DeviceConfig(info.FullName, info.Model, info.IP, info.MAC, info.SerialNumber));
-                    // MainWindow.CameraEnumer.DeviceConfigs.Add(config);
-                    deviceConfigs.Add(config);
+                    cameraConfigs.Add(config);
                 }
-                deviceConfigs = null;   // 
-                // DeviceConfigSaved Flag set false
-                MainWindow.CameraEnumer.DeviceCofingSaved = false;
-            }
-        }
-
-        /// <summary>
-        /// 備份用 (待刪除)
-        /// </summary>
-        [Obsolete("備份用")]
-        private void FunctionBack()
-        {
-            BaslerCamInfo info = CameraSelector.SelectedItem as BaslerCamInfo;
-
-            if (info != null)
-            {
-                Debug.WriteLine($"{info.FullName} {info.Model} {info.IP}");
-
-                Debug.WriteLine($"{info.MAC} {info.SerialNumber}");
-
-                Camera camera = new(info.SerialNumber);
-
-                if (camera.Open(1000, TimeoutHandling.ThrowException))
-                {
-                    int MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
-                    int MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
-
-                    Debug.WriteLine($"{MaxWidth} {MaxHeight}");
-                    //Debug.WriteLine()
-
-                    camera.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(1000 * 30);
-
-                    Debug.WriteLine(camera.CameraInfo[CameraInfoKey.FriendlyName]);
-
-                    string str = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
-                    Debug.WriteLine($"當前 UserSet {str}");
-
-                    List<string> strs = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToList();
-
-                    foreach (string ss in strs)
-                    {
-                        Debug.WriteLine(ss);
-                    }
-
-                    camera.Parameters[PLGigECamera.UserSetSelector].SetValue(PLGigECamera.UserSetSelector.UserSet1);
-                    camera.Parameters[PLGigECamera.UserSetLoad].Execute();
-
-                    int width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
-                    int height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
-
-
-                    double fps = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
-                    double exposure = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
-
-                    camera.Parameters[PLGigECamera.ExposureMode].GetAllValues();
-                    camera.Parameters[PLGigECamera.ExposureMode].SetValue(PLGigECamera.ExposureMode.Off);
-
-                    Debug.WriteLine($"{width} {height}");
-                    Debug.WriteLine($"{fps} {exposure}");
-
-                    //camera.Parameters[PLGigECamera.Width].SetValue(2040);
-                    //camera.Parameters[PLGigECamera.Height].SetValue(2040);
-                    //camera.Parameters[PLGigECamera.UserSetSave].Execute();
-                }
-
-                //foreach (DeviceConfig config in MainWindow.DeviceConfigs)
-                //{
-                //    Debug.WriteLine($"{config.Name}");
-                //}
-
-                camera.Close();
+                cameraConfigs = null;   // 
+                // CameraConfigSaved Flag set false
+                MainWindow.CameraEnumer.CameraCofingSaved = false;
             }
         }
 
@@ -312,7 +238,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 變更選中之 Device
+        /// 變更選中之 Camera
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -321,45 +247,43 @@ namespace ApexVisIns.content
             RadioButton radioButton = sender as RadioButton;
             string serialNumber = radioButton.CommandParameter as string;
 
-            int idx = Array.FindIndex(MainWindow.CameraEnumer.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
+            int idx = Array.FindIndex(MainWindow.CameraEnumer.CameraConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
 
             if (idx > -1)
             {
-                // DeviceCard.DataContext = Array.Find(MainWindow.DeviceConfigs.ToArray(), cfg => cfg.SerialNumber == serialNumber);
-                // DeviceCard.DataContext = MainWindow.DeviceConfigs[idx];
-                DeviceCard.DataContext = MainWindow.CameraEnumer.DeviceConfigs[idx];
+                CameraCard.DataContext = MainWindow.CameraEnumer.CameraConfigs[idx];
 
-                if (MainWindow.CameraEnumer.DeviceConfigs[idx].Online)
+                if (MainWindow.CameraEnumer.CameraConfigs[idx].Online)
                 {
                     // serialNumber 已經在列表中
-                    if (_deviceCams.Exists(e => e.SerialNumber == serialNumber))
+                    if (_camerasList.Exists(e => e.SerialNumber == serialNumber))
                     {
-                        _devInUse = _deviceCams.FindIndex(0, _deviceCams.Count, e => e.SerialNumber == serialNumber);
+                        _devInUse = _camerasList.FindIndex(0, _camerasList.Count, e => e.SerialNumber == serialNumber);
                         #region 變更 DataContext
-                        CameraStatusBorder.DataContext = _deviceCams[_devInUse];
-                        CameraOpen.DataContext = _deviceCams[_devInUse];
-                        CameraClose.DataContext = _deviceCams[_devInUse];
-                        UserSetActionPanel.DataContext = _deviceCams[_devInUse];
+                        CameraStatusBorder.DataContext = _camerasList[_devInUse];
+                        CameraOpen.DataContext = _camerasList[_devInUse];
+                        CameraClose.DataContext = _camerasList[_devInUse];
+                        UserSetActionPanel.DataContext = _camerasList[_devInUse];
                         #endregion
                     }
                     else // 不在列表中，新增一台新物件
                     {
-                        BaslerCam deviceCam = new()
+                        BaslerCam baslerCam = new()
                         {
                             ConfigName = "Default",
                             Config = new BaslerConfig("Default"),
                             SerialNumber = serialNumber
                         };
-                        _deviceCams.Add(deviceCam);
+                        _camerasList.Add(baslerCam);
 
                         #region 變更 DataContext
-                        CameraStatusBorder.DataContext = deviceCam;
-                        CameraOpen.DataContext = deviceCam;
-                        CameraClose.DataContext = deviceCam;
-                        UserSetActionPanel.DataContext = deviceCam;
+                        CameraStatusBorder.DataContext = baslerCam;
+                        CameraOpen.DataContext = baslerCam;
+                        CameraClose.DataContext = baslerCam;
+                        UserSetActionPanel.DataContext = baslerCam;
                         #endregion
 
-                        _devInUse = _deviceCams.IndexOf(deviceCam);
+                        _devInUse = _camerasList.IndexOf(baslerCam);
                     }
                 }
                 else
@@ -371,52 +295,17 @@ namespace ApexVisIns.content
                     UserSetActionPanel.DataContext = null;
                     #endregion
                 }
-
-                // // // // // // // 以下待刪除 
-#if false 
-                //Binding binding = new("IsOpen")
-                //{
-                //    Source = MainWindow.BaslerCams[idx],
-                //    Mode = BindingMode.OneWay,
-                //    Converter = new Converter.BooleanInverter(),
-                //    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                //};
-
-                //Binding binding2 = new("SerialNumber")
-                //{
-                //    Mode = BindingMode.OneWay,
-                //    Converter = new Converter.StringNotNullOrEmptyConverter()
-                //};
-
-                //MultiBinding multiBinding = new()
-                //{
-                //    Converter = new Converter.BooleanAndGate(),
-                //};
-                //multiBinding.Bindings.Add(binding);
-                //multiBinding.Bindings.Add(binding2);
-
-                //CameraOpen.SetBinding(IsEnabledProperty, multiBinding);
-
-                //CameraClose.SetBinding(IsEnabledProperty, new Binding("IsOpen")
-                //{
-                //    Source = MainWindow.BaslerCams[idx],
-                //    Mode = BindingMode.OneWay,
-                //    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                //});  
-#endif
-                Debug.WriteLine($"DevieConfig Index: {idx}, Device In Use Index: {_devInUse}");
-                //Debug.WriteLine($"{TgtSelector.SelectedItem} {TgtSelector.SelectedIndex}");
             }
         }
 
         /// <summary>
-        /// DeviceCard DataContext Changed 事件
+        /// CameraCard DataContext Changed 事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeviceCard_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void CameraCard_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            MainWindow.CameraEnumer.DeviceCofingSaved = false;
+            MainWindow.CameraEnumer.CameraCofingSaved = false;
         }
 
         /// <summary>
@@ -424,14 +313,11 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeviceConfigSave_Click(object sender, RoutedEventArgs e)
+        private void CameraConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            //string path = $@"{AppDomain.CurrentDomain.BaseDirectory}{DevicesDirectory}";
-            string path = $@"{Directory.GetCurrentDirectory()}\{DevicesDirectory}\{DevicesPath}";
-            // string jsonStr = JsonSerializer.Serialize(MainWindow.DeviceConfigs, new JsonSerializerOptions { WriteIndented = true });
+            string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
-            // DeviceConfigBase[] infos = MainWindow.DeviceConfigs.Select(item => new DeviceConfigBase()
-            DeviceConfigBase[] infos = MainWindow.CameraEnumer.DeviceConfigs.Select(item => new DeviceConfigBase()
+            CameraConfigBase[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBase()
             {
                 VendorName = item.VendorName,
                 FullName = item.FullName,
@@ -446,7 +332,7 @@ namespace ApexVisIns.content
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);
-            MainWindow.CameraEnumer.DeviceCofingSaved = true;
+            MainWindow.CameraEnumer.CameraCofingSaved = true;
         }
 
         /// <summary>
@@ -459,11 +345,11 @@ namespace ApexVisIns.content
             Button button = sender as Button;
             string serialNumber = button.CommandParameter as string;
 
-            foreach (DeviceConfig config in MainWindow.CameraEnumer.DeviceConfigs)
+            foreach (CameraConfig config in MainWindow.CameraEnumer.CameraConfigs)
             {
                 if (config.SerialNumber == serialNumber)
                 {
-                    MainWindow.CameraEnumer.DeviceConfigs.Remove(config);
+                    MainWindow.CameraEnumer.CameraConfigs.Remove(config);
                     break;
                 }
             }
@@ -477,13 +363,13 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private async void CameraOpen_Click(object sender, RoutedEventArgs e)
         {
-            if (DeviceCard?.DataContext != null)
+            if (CameraCard?.DataContext != null)
             {
                 try
                 {
-                    DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+                    CameraConfig config = CameraCard.DataContext as CameraConfig;
                     string serialNumber = config.SerialNumber;
-                    BaslerCam baslerCam = _deviceCams[_devInUse];
+                    BaslerCam baslerCam = _camerasList[_devInUse];
 
                     // 優化 UX，不會卡住 UI 執行緒 (測試中)
                     string res = await Task.Run(() =>
@@ -522,60 +408,16 @@ namespace ApexVisIns.content
                     {
                         throw new Exception(res);
                     }
-
-#if false
-                    // config.VendorName = camera.CameraInfo[CameraInfoKey.VendorName];
-                    // config.CameraType = camera.CameraInfo[CameraInfoKey.DeviceType];
-                    config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
-                    config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
-
-                    // UserSet
-                    config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
-                    config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
-
-                    // // // // // // // // // // // // // /
-                    config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
-                    config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
-
-                    config.MaxWidth = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
-                    config.MaxHeight = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
-
-                    config.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
-                    config.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
-
-                    config.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
-                    config.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
-                    // // // // // // // // // // // // // /
-                    config.TriggerSelectorEnum = camera.Parameters[PLGigECamera.TriggerSelector].GetAllValues().ToArray();
-                    config.TriggerSelector = camera.Parameters[PLGigECamera.TriggerSelector].GetValue();
-                    config.TriggerModeEnum = camera.Parameters[PLGigECamera.TriggerMode].GetAllValues().ToArray();
-                    config.TriggerMode = camera.Parameters[PLGigECamera.TriggerMode].GetValue();
-                    config.TriggerSourceEnum = camera.Parameters[PLGigECamera.TriggerSource].GetAllValues().ToArray();
-                    config.TriggerSource = camera.Parameters[PLGigECamera.TriggerSource].GetValue();
-
-                    config.ExposureModeEnum = camera.Parameters[PLGigECamera.ExposureMode].GetAllValues().ToArray();
-                    config.ExposureMode = camera.Parameters[PLGigECamera.ExposureMode].GetValue();
-                    // // // // // // // // // // // // // /
-
-                    config.ExposureAutoEnum = camera.Parameters[PLGigECamera.ExposureAuto].GetAllValues().ToArray();
-                    config.ExposureAuto = camera.Parameters[PLGigECamera.ExposureAuto].GetValue();
-                    config.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
-
-                    config.FixedFPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateEnable].GetValue();
-                    config.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
-                    // // // // // // // // // // // // // /  
-#endif
-
                 }
                 catch (Exception ex)
                 {
                     MainWindow.MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
                 }
             }
-            else
-            {
-                Debug.WriteLine($"{DeviceCard.DataContext} : false");
-            }
+            //else
+            //{
+            //    Debug.WriteLine($"{CameraCard.DataContext} : false");
+            //}
         }
 
         /// <summary>
@@ -588,7 +430,6 @@ namespace ApexVisIns.content
             Camera camera = sender as Camera;
             // 斷線 Timeout 設定 30 秒
             camera.Parameters[PLGigECamera.GevHeartbeatTimeout].SetValue(1000 * 30);
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -598,7 +439,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void CameraClose_Click(object sender, RoutedEventArgs e)
         {
-            BaslerCam baslerCam = _deviceCams[_devInUse];
+            BaslerCam baslerCam = _camerasList[_devInUse];
 
             //MainWindow.BaslerCam.Close();
             //MainWindow.BaslerCam.PropertyChange(nameof(MainWindow.BaslerCam.IsOpen));
@@ -613,7 +454,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
-        private static void ReadConfig(Camera camera, DeviceConfig config)
+        private static void ReadConfig(Camera camera, CameraConfig config)
         {
             try
             {
@@ -698,7 +539,7 @@ namespace ApexVisIns.content
         /// </summary>
         /// <param name="config">來源組態</param>
         /// <param name="camera">目標相機</param>
-        private static void UpdateConfig(DeviceConfig config, Camera camera)
+        private static void UpdateConfig(CameraConfig config, Camera camera)
         {
             try
             {
@@ -765,11 +606,11 @@ namespace ApexVisIns.content
         private void ReadUserSet_Click(object sender, RoutedEventArgs e)
         {
             // Get UsetSet string and read from camera
-            string userSet = (DeviceCard.DataContext as DeviceConfig).UserSet;
+            string userSet = (CameraCard.DataContext as CameraConfig).UserSet;
 
-            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+            CameraConfig config = CameraCard.DataContext as CameraConfig;
             //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _deviceCams[_devInUse].Camera;
+            Camera camera = _camerasList[_devInUse].Camera;
 
             camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
             camera.Parameters[PLGigECamera.UserSetLoad].Execute();
@@ -788,9 +629,9 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void SetDefaultUserSet_Click(object sender, RoutedEventArgs e)
         {
-            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+            CameraConfig config = CameraCard.DataContext as CameraConfig;
             //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _deviceCams[_devInUse].Camera;
+            Camera camera = _camerasList[_devInUse].Camera;
 
             camera.Parameters[PLGigECamera.UserSetDefaultSelector].SetValue(config.UserSet);
         }
@@ -802,9 +643,9 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
-            DeviceConfig config = DeviceCard.DataContext as DeviceConfig;
+            CameraConfig config = CameraCard.DataContext as CameraConfig;
             //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _deviceCams[_devInUse].Camera;
+            Camera camera = _camerasList[_devInUse].Camera;
 
             //try
             //{
@@ -841,7 +682,7 @@ namespace ApexVisIns.content
         {
             //ComboBox combobox = sender as ComboBox;
             //Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
-            MainWindow.CameraEnumer.DeviceCofingSaved = false;
+            MainWindow.CameraEnumer.CameraCofingSaved = false;
         }
 
         //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

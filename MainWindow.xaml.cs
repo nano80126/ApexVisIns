@@ -138,7 +138,7 @@ namespace ApexVisIns
         #endregion
 
         #region Tabs
-        private DeviceTab DeviceTab { get; set; }
+        private CameraTab CameraTab { get; set; }
         private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }
         private EngineerTab EngineerTab { get; set; }
@@ -234,10 +234,6 @@ namespace ApexVisIns
             IOController.EnableCollectionBinding(); // 啟用 Collection Binding，避免跨執行緒錯誤
             // IO Module (WISE-4050/LAN)
             ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as ModbusTCPIO;
-            #endregion
-
-            #region Device Configs
-            //DeviceConfigs = FindResource(nameof(DeviceConfigs)) as ObservableCollection<DeviceConfig>;
             #endregion
 
             #region ApexDefect 上線檢驗用
@@ -340,13 +336,13 @@ namespace ApexVisIns
                 switch (i)
                 {
                     case 1:
-                        DeviceTab = new DeviceTab()
+                        CameraTab = new CameraTab()
                         {
                             Name = "DeviceTab",
                             Focusable = true,
                             FocusVisualStyle = null
                         };
-                        tabItem.Content = DeviceTab;
+                        tabItem.Content = CameraTab;
                         break;
                     case 2:
                         MotionTab = new MotionTab()

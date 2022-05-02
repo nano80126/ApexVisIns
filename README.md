@@ -112,6 +112,7 @@ Apex 外觀瑕疵檢測
 * [ ] ~測試 CameraEnumer 更改為 static~
 
 * [ ] LightEumer 改 SerialPortEumer 
+	* 待測試功能正常
 
 * [ ] LightPanel 內建 LightControl
 	* 測試 LightControl 移到 LightPanel 後的功能
@@ -119,8 +120,13 @@ Apex 外觀瑕疵檢測
 * [ ] SpecListView 直接用固定Height
 
 * [ ] DeviceTab 改 CameraTab
+	* 待測試功能正常
 
 * [ ] Enumer 的優先度往前拉
+
+* [ ] 測試所有功能是否正常
+
+* [ ] 回 APEX 時，TargetFeature 要變更
 
 ### Config Logic
 

@@ -669,11 +669,11 @@ namespace ApexVisIns
             {
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                DeviceConfigBase.TargetFeatureType targetFeatureType = (DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
+                CameraConfigBase.TargetFeatureType targetFeatureType = (CameraConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
 
                 switch (targetFeatureType)
                 {
-                    case DeviceConfigBase.TargetFeatureType.MCA_Front:
+                    case CameraConfigBase.TargetFeatureType.MCA_Front:
 
                         break;
                     default:

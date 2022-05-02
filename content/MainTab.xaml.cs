@@ -387,7 +387,7 @@ namespace ApexVisIns.content
                         if (jsonStr != string.Empty)
                         {
                             // 組態反序列化
-                            DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(jsonStr);
+                            CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
 
                             // 等待相機列舉
                             if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException("相機列舉器逾時"); }
@@ -410,7 +410,7 @@ namespace ApexVisIns.content
                                     //Debug.WriteLine($"{device.FullName} {device.TargetFeature}");
                                     switch (device.TargetFeature)
                                     {
-                                        case DeviceConfigBase.TargetFeatureType.Window:
+                                        case CameraConfigBase.TargetFeatureType.Window:
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
@@ -420,7 +420,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Ear:
+                                        case CameraConfigBase.TargetFeatureType.Ear:
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
@@ -430,7 +430,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Surface1:
+                                        case CameraConfigBase.TargetFeatureType.Surface1:
                                             if (!MainWindow.BaslerCams[2].IsConnected)
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
@@ -440,7 +440,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Surface2:
+                                        case CameraConfigBase.TargetFeatureType.Surface2:
                                             if (!MainWindow.BaslerCams[3].IsConnected)
                                             {
                                                 BaslerCam4 = MainWindow.BaslerCams[3];
@@ -450,7 +450,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Null:
+                                        case CameraConfigBase.TargetFeatureType.Null:
                                         default:
                                             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                             break;
@@ -629,7 +629,8 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    if (!SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException("COM Port列舉器逾時"); }
+                    // 不用也可以
+                    //if (!SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException("COM Port列舉器逾時"); }
 
                     string result = string.Empty;
                     foreach (LightSerial ctrl in MainWindow.LightCtrls)
@@ -1306,20 +1307,20 @@ namespace ApexVisIns.content
                 {
                     Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                    switch ((DeviceConfigBase.TargetFeatureType)grabResult.StreamGrabberUserData)
+                    switch ((CameraConfigBase.TargetFeatureType)grabResult.StreamGrabberUserData)
                     {
-                        case DeviceConfigBase.TargetFeatureType.Window:
+                        case CameraConfigBase.TargetFeatureType.Window:
                             //MainWindow.AngleCorrection(mat, null);
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource1 = mat.ToImageSource());
                             break;
-                        case DeviceConfigBase.TargetFeatureType.Ear:
+                        case CameraConfigBase.TargetFeatureType.Ear:
                             //MainWindow.AngleCorrection(null, mat);
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource2 = mat.ToImageSource());
                             break;
-                        case DeviceConfigBase.TargetFeatureType.Surface1:
+                        case CameraConfigBase.TargetFeatureType.Surface1:
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource3 = mat.ToImageSource());
                             break;
-                        case DeviceConfigBase.TargetFeatureType.Surface2:
+                        case CameraConfigBase.TargetFeatureType.Surface2:
                             MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                             break;
                         default:
@@ -1470,11 +1471,11 @@ namespace ApexVisIns.content
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
                 // Call PropertyChanged ? Frames
 
-                DeviceConfigBase.TargetFeatureType targetFeatureType = (DeviceConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
+                CameraConfigBase.TargetFeatureType targetFeatureType = (CameraConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
 
                 switch (targetFeatureType)
                 {
-                    case DeviceConfigBase.TargetFeatureType.Window:
+                    case CameraConfigBase.TargetFeatureType.Window:
                         MainWindow.Dispatcher.Invoke(() =>
                         {
                             if (MainWindow.ApexAngleCorrectionFlags.Steps <= 0b0100)
@@ -1486,7 +1487,7 @@ namespace ApexVisIns.content
                             MainWindow.ImageSource1 = mat.ToImageSource();
                         });
                         break;
-                    case DeviceConfigBase.TargetFeatureType.Ear:
+                    case CameraConfigBase.TargetFeatureType.Ear:
                         MainWindow.Dispatcher.Invoke(() =>
                         {
                             if (MainWindow.ApexAngleCorrectionFlags.Steps >= 0b0101 && MainWindow.ApexAngleCorrectionFlags.Steps <= 7)
@@ -1498,7 +1499,7 @@ namespace ApexVisIns.content
                             MainWindow.ImageSource2 = mat.ToImageSource();
                         });
                         break;
-                    case DeviceConfigBase.TargetFeatureType.Surface1:
+                    case CameraConfigBase.TargetFeatureType.Surface1:
                         // if (MainWindow.ApexDefectInspectionStepsFlags.WindowInsOn == 0b01)
                         // bit0: 檢表面
                         if ((MainWindow.ApexDefectInspectionStepsFlags.SurfaceInsOn & 0b01) == 0b01)
@@ -1522,7 +1523,7 @@ namespace ApexVisIns.content
                             MainWindow.ImageSource3 = mat.ToImageSource();
                         });
                         break;
-                    case DeviceConfigBase.TargetFeatureType.Surface2:
+                    case CameraConfigBase.TargetFeatureType.Surface2:
                         //MainWindow.SurfaceIns2(mat);
                         MainWindow.Dispatcher.Invoke(() => MainWindow.ImageSource4 = mat.ToImageSource());
                         break;

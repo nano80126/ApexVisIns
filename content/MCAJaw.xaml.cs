@@ -193,7 +193,7 @@ namespace ApexVisIns.content
                         if (json != string.Empty)
                         {
                             // json 反序列化
-                            DeviceConfigBase[] devices = JsonSerializer.Deserialize<DeviceConfigBase[]>(json);
+                            CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(json);
 
                             if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
                             {
@@ -213,7 +213,7 @@ namespace ApexVisIns.content
                                 {
                                     switch (dev.TargetFeature)
                                     {
-                                        case DeviceConfigBase.TargetFeatureType.MCA_Front:
+                                        case CameraConfigBase.TargetFeatureType.MCA_Front:
                                             if (!MainWindow.BaslerCams[0].IsConnected)
                                             {
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
@@ -223,7 +223,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.MCA_Bottom:
+                                        case CameraConfigBase.TargetFeatureType.MCA_Bottom:
                                             if (!MainWindow.BaslerCams[1].IsConnected)
                                             {
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
@@ -233,7 +233,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.MCA_SIDE:
+                                        case CameraConfigBase.TargetFeatureType.MCA_SIDE:
                                             if (!MainWindow.BaslerCams[2].IsConnected)
                                             {
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
@@ -243,7 +243,7 @@ namespace ApexVisIns.content
                                                 }
                                             }
                                             break;
-                                        case DeviceConfigBase.TargetFeatureType.Null:
+                                        case CameraConfigBase.TargetFeatureType.Null:
                                             MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                             break;
                                         default:
@@ -297,10 +297,10 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    if (!SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
-                    {
-                        throw new TimeoutException("COM Port 列舉逾時");
-                    }
+                    //if (!SpinWait.SpinUntil(() => MainWindow.LightEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
+                    //{
+                    //    throw new TimeoutException("COM Port 列舉逾時");
+                    //}
 
                     string result = string.Empty;
                     foreach (LightSerial ctrl in MainWindow.LightCtrls)

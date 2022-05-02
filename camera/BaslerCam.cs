@@ -70,12 +70,12 @@ namespace ApexVisIns
     }
 
     /// <summary>
-    /// DeviceConfigs 儲存用基底，
+    /// CameraConfigs 儲存用基底，
     /// 繼承 BaslerCamInfo，新增Target Feature Type
     /// </summary>
-    public class DeviceConfigBase : BaslerCamInfo
+    public class CameraConfigBase : BaslerCamInfo
     {
-        public DeviceConfigBase()
+        public CameraConfigBase()
         {
         }
 
@@ -308,8 +308,8 @@ namespace ApexVisIns
 
 
     /// <summary>
-    /// Basler 組態
-    /// 測試用
+    /// Basler 組態,
+    /// ConfigPanel 使用 (EngineerTab 內)
     /// </summary>
     public class BaslerConfig : INotifyPropertyChanged
     {
@@ -323,7 +323,6 @@ namespace ApexVisIns
         public BaslerConfig()
         {
         }
-
 
         public BaslerConfig(string name)
         {
@@ -452,9 +451,10 @@ namespace ApexVisIns
     }
 
     /// <summary>
-    /// Camera 組態, 較為 Detail, 正式流程使用
+    /// Camera 組態, 較為 Detail, 
+    /// CameraTab 內使用
     /// </summary>
-    public class DeviceConfig : BaslerCamInfo, INotifyPropertyChanged
+    public class CameraConfig : BaslerCamInfo, INotifyPropertyChanged
     {
         private string _userSet;
         private string[] _userSetEnum;
@@ -505,7 +505,7 @@ namespace ApexVisIns
         /// <summary>
         /// .xaml 使用 (一般不使用)
         /// </summary>
-        public DeviceConfig() { }
+        public CameraConfig() { }
 
         /// <summary>
         /// 正式建構子
@@ -515,7 +515,7 @@ namespace ApexVisIns
         /// <param name="ip">相機IP</param>
         /// <param name="mac">相機MAC</param>
         /// <param name="serialNumber">相機S/N</param>
-        public DeviceConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
         }
 
@@ -1148,7 +1148,7 @@ namespace ApexVisIns
                     OnPropertyChanged();
                 }
             }
-        } 
+        }
         #endregion
 
 #if false
@@ -1197,7 +1197,7 @@ namespace ApexVisIns
         /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
         /// </summary>
         //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
-        public DeviceConfigBase.TargetFeatureType TargetFeature { get; set; }
+        public CameraConfigBase.TargetFeatureType TargetFeature { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -1214,30 +1214,5 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-    }
-
-
-    //public enum CharacterType
-    //{
-    //    [Description("耳朵")]
-    //    Ear = 1,
-    //    [Description("窗戶")]
-    //    Window = 2,
-    //    [Description("表面 1")]
-    //    Surface1 = 3,
-    //    [Description("表面 2")]
-    //    Surface2 = 4
-    //}
-
-
-    /// <summary>
-    /// Config Tab Devices
-    /// </summary>
-    public class DeviceConfigList : ObservableCollection<DeviceConfig>
-    {
-        public DeviceConfigList()
-        {
-
-        }
     }
 }
