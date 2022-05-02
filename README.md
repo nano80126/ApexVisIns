@@ -109,7 +109,7 @@ Apex 外觀瑕疵檢測
 
 * [ ] 標示器新增 RGB 
 
-* [ ] 測試 CameraEnumer 更改為 static
+* [ ] ~測試 CameraEnumer 更改為 static~
 
 * [ ] LightEumer 改 SerialPortEumer 
 
@@ -118,6 +118,9 @@ Apex 外觀瑕疵檢測
 
 * [ ] SpecListView 直接用固定Height
 
+* [ ] DeviceTab 改 CameraTab
+
+* [ ] Enumer 的優先度往前拉
 
 ### Config Logic
 

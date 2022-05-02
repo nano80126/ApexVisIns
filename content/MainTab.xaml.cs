@@ -202,7 +202,8 @@ namespace ApexVisIns.content
                         }
 
                         MainWindow.CameraEnumer.WorkerPause();
-                        MainWindow.LightEnumer.WorkerPause();
+                        //MainWindow.LightEnumer.WorkerPause();
+                        MainWindow.SerialEnumer.WorkerPause();
                         // MainWindow.CreateIOWindow();
 
                         // 硬體準備完成旗標
@@ -982,7 +983,8 @@ namespace ApexVisIns.content
             CloseHardware();
             // 啟動 Enumerator
             MainWindow.CameraEnumer.WorkerResume();
-            MainWindow.LightEnumer.WorkerResume();
+            MainWindow.SerialEnumer.WorkerResume();
+            //MainWindow.LightEnumer.WorkerResume();
         }
         
         /// <summary>

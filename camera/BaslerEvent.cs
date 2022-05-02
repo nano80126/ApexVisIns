@@ -5,6 +5,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+/*
+ 無用 cs ?
+ */
+
 namespace ApexVisIns
 {
     public partial class MainWindow : System.Windows.Window

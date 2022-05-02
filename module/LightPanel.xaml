@@ -45,7 +45,7 @@
                       Margin="0 8" Padding="5 3" MaxDropDownHeight="200"
                       materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
                       materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Path=Background}"
-                      ItemsSource="{Binding ComPortSource, Source={StaticResource LightEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                      ItemsSource="{Binding ComPortSource, Source={StaticResource SerialEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                       IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanInverter}}"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}">
                 <ComboBox.ItemTemplate>

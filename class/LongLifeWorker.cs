@@ -57,6 +57,7 @@ namespace ApexVisIns
         /// </summary>
         protected CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
 
+        [Obsolete("deprecated")]
         public virtual void Initialize()
         {
             CancellationTokenSource = new CancellationTokenSource();
@@ -99,13 +100,12 @@ namespace ApexVisIns
             {
                 CancellationTokenSource.Cancel();
             }
-
-            if (Worker != null)
-            {
-                Worker.Wait();
-                Worker.Dispose();
-                Worker = null;
-            }
+            //if (Worker != null)
+            //{
+            //    Worker.Wait();
+            //    Worker.Dispose();
+            //    Worker = null;
+            //}
         }
 
         /// <summary>
@@ -151,7 +151,9 @@ namespace ApexVisIns
 
             if (disposing)
             {
-                throw new NotImplementedException();
+                Worker.Wait();
+                Worker.Dispose();
+                Worker = null;
             }
 
             _disposed = true;
@@ -159,6 +161,7 @@ namespace ApexVisIns
     }
 
 
+    [Obsolete("No use in this project")]
     public class Thermometer : LongLifeWorker, INotifyPropertyChanged
     {
         private double _temperature;

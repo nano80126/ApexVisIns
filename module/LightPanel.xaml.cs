@@ -69,7 +69,8 @@ namespace ApexVisIns.module
                     // 歸零所有通道
                     LightControl.ResetAllChannel();
                     // 暫停 LightEnummer
-                    MainWindow.LightEnumer.WorkerPause();
+                    //MainWindow.LightEnumer.WorkerPause();
+                    MainWindow.SerialEnumer.WorkerPause();
                 }
                 catch (Exception ex)
                 {
@@ -84,7 +85,8 @@ namespace ApexVisIns.module
                 // 關閉 COM
                 LightControl.ComClose();
                 // 啟動 LightEnumer
-                MainWindow.LightEnumer.WorkerResume();
+                //MainWindow.LightEnumer.WorkerResume();
+                MainWindow.SerialEnumer.WorkerResume();
             }
         }
 

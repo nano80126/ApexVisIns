@@ -52,15 +52,24 @@ namespace ApexVisIns
         public static BaslerCam[] BaslerCams { get; set; }
         #endregion
 
+        #region Serial Port Enumerator
+        /// <summary>
+        /// Com Port 列舉器，
+        /// </summary>
+        public SerialEnumer SerialEnumer { get; set; }
+        #endregion
+
+
         #region Light Controller
         /// <summary>
         /// Com Port 列舉器，
         /// 綁在 MainWindow
         /// </summary>
+        [Obsolete("這邊要移除")]
         public LightEnumer LightEnumer { get; set; }
 
         /// <summary>
-        /// 光源控制器
+        /// 光源控制器，確認無用可刪除
         /// </summary>
         public static LightController LightController { get; set; }
 
@@ -196,9 +205,14 @@ namespace ApexVisIns
             BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
             #endregion
 
+            #region Serial Port
+            SerialEnumer = FindResource(nameof(SerialEnumer)) as SerialEnumer;
+            SerialEnumer.WorkerStart();
+            #endregion
+
             #region Light Controller
-            LightEnumer = TryFindResource(nameof(LightEnumer)) as LightEnumer;
-            LightEnumer?.WorkerStart();
+            //LightEnumer = TryFindResource(nameof(LightEnumer)) as LightEnumer;
+            //LightEnumer?.WorkerStart();
 
 #if DEBUG
             //LightController = FindResource(nameof(LightController)) as LightController;
@@ -298,11 +312,13 @@ namespace ApexVisIns
             MsgInformer.DisableCollectionBinding();
             MsgInformer.DisposeProgressTask();
 
-            CameraEnumer.WorkerEnd();
-            LightEnumer.WorkerEnd();
+            CameraEnumer.WorkerEnd();   // 停止 Camera Enumerator
+            CameraEnumer.Dispose();
+            SerialEnumer.WorkerEnd();   // 停止 Serial Enumerator 
+            // LightEnumer.WorkerEnd();
 
-            ServoMotion.Dispose();
-            IOController.Dispose();
+            ServoMotion.Dispose();      // 處置 ServoMotion
+            IOController.Dispose();     // 處置 IOController
 
             if (IOWindow != null)
             {
@@ -385,6 +401,9 @@ namespace ApexVisIns
             //IOThread.Start();
         }
 
+        /// <summary>
+        /// 開啟 IO Window
+        /// </summary>
         public void OpenIOWindow()
         {
             //IOThread.SetApartmentState(ApartmentState.STA);

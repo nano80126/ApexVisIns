@@ -490,7 +490,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 單張拍攝
         /// </summary>

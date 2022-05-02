@@ -102,6 +102,7 @@
 
             <!--#region 光源控制 Resources -->
             <!--ComPort 列舉-->
+            <local:SerialEnumer x:Key="SerialEnumer"/>
             <local:LightEnumer x:Key="LightEnumer"/>
             <!--光源控制器-->
             <!--<local:LightController x:Key="LightController" ChannelNumber="4"/>-->
