@@ -20,7 +20,6 @@
                 -->
             </ResourceDictionary.MergedDictionaries>
 
-
             <!--#region Convertor -->
             <cvt:BooleanInverter x:Key="BooleanInverter"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>

@@ -388,9 +388,20 @@
                     <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
                     <!--規格列表 1-->
                     <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 8 0 0" VerticalAlignment="Top" Height="300"
-                                          ScrollViewerHeight="120"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
-                                          ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
+                                          ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
+                        <control:SpecListView.Style>
+                            <Style TargetType="control:SpecListView">
+                                <Setter Property="ScrollViewerHeight" Value="120"/> 
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                        <Setter Property="ScrollViewerHeight" Value="237"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </control:SpecListView.Style>
+                    </control:SpecListView>
+
                 </Grid>
             </GroupBox>
             <!--#endregion-->
@@ -430,9 +441,19 @@
                     <!--height = 120 + 137 -->
                     <!--規格列表 2-->
                     <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
-                                          ScrollViewerHeight="237"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
-                                          ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}"/>
+                                          ItemsSource="{Binding SpecCollection, Source={StaticResource SpecGroup}}">
+                        <control:SpecListView.Style>
+                            <Style TargetType="control:SpecListView">
+                                <Setter Property="ScrollViewerHeight" Value="120"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                        <Setter Property="ScrollViewerHeight" Value="237"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </control:SpecListView.Style>
+                    </control:SpecListView>
 
                     <!--#region DataGrid -->
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" Visibility="Collapsed">

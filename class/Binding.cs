@@ -101,6 +101,7 @@ namespace ApexVisIns
         /// <summary>
         /// 主影像 Source
         /// </summary>
+        [Obsolete("轉移到 Indicator")]
         public ImageSource ImageSource
         {
             get => _imgSrc;
@@ -227,8 +228,7 @@ namespace ApexVisIns
     public class Indicator : INotifyPropertyChanged
     {
         private Mat _img;
-        private int _posX;
-        private int _posY;
+
 
         public Mat Image
         {
@@ -237,55 +237,55 @@ namespace ApexVisIns
             {
                 _img = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ImageSource));
+                OnPropertyChanged(nameof(R));
+                OnPropertyChanged(nameof(G));
+                OnPropertyChanged(nameof(B));
             }
         }
 
         /// <summary>
+        /// 主影像 Source
+        /// </summary>
+        public ImageSource ImageSource => _img?.ToImageSource();
+
+        /// <summary>
         /// R 像素
         /// </summary>
-        public byte R => Image != null ? Image.At<Vec3b>(Y, X)[2] : (byte)0;
+        public byte R => _img != null ? _img.At<Vec3b>(Y, X)[2] : (byte)0;
         /// <summary>
         /// G 像素
         /// </summary>
-        public byte G => Image != null ? Image.At<Vec3b>(Y, X)[1] : (byte)0;
+        public byte G => _img != null ? _img.At<Vec3b>(Y, X)[1] : (byte)0;
         /// <summary>
         /// B 像素
         /// </summary>
-        public byte B => Image != null ? Image.At<Vec3b>(Y, X)[0] : (byte)0;
-        public int X
-        {
-            get => _posX;
-            //set
-            //{
-            //    if (value != _posX)
-            //    {
-            //        _posX = value;
-            //        OnPropertyChanged(nameof(X));
-            //    }
-            //}
-        }
-        public int Y
-        {
-            get => _posY;
-            //set
-            //{
-            //    if (value != _posY)
-            //    {
-            //        _posY = value;
-            //        OnPropertyChanged(nameof(Y));
-            //    }
-            //}
-        }
+        public byte B => _img != null ? _img.At<Vec3b>(Y, X)[0] : (byte)0;
+
+        /// <summary>
+        /// X pos
+        /// </summary>
+        public int X { get; private set; }
+
+        /// <summary>
+        /// Y pos
+        /// </summary>
+        public int Y { get; private set; }
 
         public void SetPoint(int x, int y)
         {
-            _posX = x;
-            _posY = y;
-            OnPropertyChanged();
+            X = x;
+            Y = y;
+            OnPropertyChanged(nameof(X));
+            OnPropertyChanged(nameof(Y));
+            OnPropertyChanged(nameof(R));
+            OnPropertyChanged(nameof(G));
+            OnPropertyChanged(nameof(B));
+            //OnPropertyChanged();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -82,6 +82,14 @@ namespace ApexVisIns.content
                 MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
                 loaded = true;
             }
+
+            //OpenCvSharp.Mat m = new OpenCvSharp.Mat(@"C:\Users\nano80126\Pictures\EKs6vfSUYAAyeRc.jpg");
+            //MainWindow.BaslerCam.Width = m.Width;
+            //MainWindow.BaslerCam.Height = m.Height;
+            //MainWindow.BaslerCam.PropertyChange();
+
+            //Indicator.Image = m;
+            //Indicator.ImageSource = m.ToImageSource();
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)

@@ -334,7 +334,7 @@
                 </Grid.RowDefinitions>
 
                 <!--#region Image Panel -->
-                <Border x:Name="ImageBorder" Grid.Column="1" Grid.RowSpan="2" BorderThickness="1 0 " BorderBrush="{StaticResource ColorOrange}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Border x:Name="ImageBorder" Grid.Column="1" Grid.RowSpan="2" BorderThickness="1 0" BorderBrush="{StaticResource ColorOrange}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical">
                         <Grid x:Name="ImageGrid">
                             <ScrollViewer x:Name="ImageScroller" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Background="{x:Null}"
@@ -363,7 +363,8 @@
 
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                               Source="{Binding ImageSource, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1} , UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"-->
                                         <!--Source="{Binding ImageSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Mode=OneWay}"-->
 
                                         <!--#region Assist Rectangle -->

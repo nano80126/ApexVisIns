@@ -293,8 +293,10 @@ namespace ApexVisIns.module
                 Cam.PropertyChange();
 
 
-                // 重置 ImageSource
-                MainWindow.ImageSource = null;
+                // 重置 ImageSource，因為 Width & Height 有變更
+                //MainWindow.ImageSource = null;
+                //EngineerTab.Indicator.ImageSource = null;
+                EngineerTab.Indicator.Image = null;
 
                 // Reset ZoomRatio // 這邊需要修正
                 EngineerTab.ZoomRatio = 100;

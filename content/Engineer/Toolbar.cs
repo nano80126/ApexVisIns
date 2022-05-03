@@ -184,7 +184,9 @@ namespace ApexVisIns.content
                     cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
 
                     // 清空 Image
-                    MainWindow.ImageSource = null;
+                    //MainWindow.ImageSource = null;
+                    //Indicator.ImageSource = null;
+                    Indicator.Image = null;
                 }
             }
             catch (TimeoutException T)
@@ -670,7 +672,9 @@ namespace ApexVisIns.content
             Cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
             Cam.PropertyChange();
 
-            MainWindow.ImageSource = null;
+            //MainWindow.ImageSource = null;
+            //Indicator.ImageSource = null;
+            Indicator.Image = null;
 
             // 啟動 Camera Enumerator
             MainWindow.CameraEnumer.WorkerPause();
@@ -717,127 +721,18 @@ namespace ApexVisIns.content
                     //Cv2.DestroyAllWindows();
                     #region Coding custom ROI Method here
 
-                    Methods.GetRoiOtsu(mat, AssistRect.GetRect(), 0, 255, out Mat otsu, out byte th);
-                    Debug.WriteLine($"Otsu th: {th}");
-#if false
-                    //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(2200, 130, 1000, 20);
-                    //OpenCvSharp.Rect roi = new OpenCvSharp.Rect(1150, 130, 1200, 20);
-                    OpenCvSharp.Rect roi = new(1570, 130, 780, 20);
-
-                    //Cv2.Rectangle(mat, roi, Scalar.Black, 2);
-                    //Mat roiMat = new(mat, AssistRect.GetRect());
-                    Mat roiMat = new(mat, roi);
-
-                    // 高斯模糊
-                    Methods.GetRoiGaussianBlur(mat, roi, new OpenCvSharp.Size(3, 3), 1.2, 0, out Mat blur);
-
-                    Mat hist = new();
-                    Cv2.CalcHist(new Mat[] { blur }, new int[] { 0 }, new Mat(), hist, 1, new int[] { 256 }, new Rangef[] { new Rangef(0.0f, 256.0f) });
-                    // Cv2.Normalize(hist, hist);
-
-                    int[] maxArr = new int[1];
-                    int[] minArr = new int[1];
-                    Cv2.MinMaxIdx(hist, out double min, out double max, minArr, maxArr);
-                    Debug.WriteLine($"Max: {max}, Min: {min}, {string.Join(",", maxArr)} {string.Join(",", minArr)}");
-
-                    Mat histChart = new(new OpenCvSharp.Size(256, 300), MatType.CV_8UC3, Scalar.White);
-                    for (int i = 0; i < 256; i++)
-                    {
-                        // float v = hist.Get<float>(i) / 10000;
-                        // int len = (int)(v * result.Rows);
-                        int len = (int)(hist.Get<float>(i) / (1.2 * max) * histChart.Rows);
-                        Cv2.Line(histChart, i, histChart.Rows, i, histChart.Rows - len, Scalar.Blue, 1);
-                    }
-                    Cv2.Line(histChart, maxArr[0], histChart.Rows, maxArr[0], histChart.Rows - (int)(max / (1.2 * max) * histChart.Rows), Scalar.Red, 1);
-
-                    // 計算平均值和標準差
-                    Cv2.MeanStdDev(blur, out Scalar mean, out Scalar stddev);
-
-                    // 平均值 & 標準差 (gray)
-                    Debug.WriteLine($"Mat Mean: {mean}, Stddev: {stddev}");
-                    // byte[] arr = new byte[roiMat.Width];
-
-                    // 取得 X 座標對灰度值圖
-                    Methods.GetHorizontalGrayScale(blur, out byte[] grayArr, out short[] grayArrDiff, true, out Mat chart, Scalar.Black);
-                    Methods.CalLocalOutliers(chart, grayArr, 50, 15, null, out OpenCvSharp.Point[] peaks, out OpenCvSharp.Point[] valleys);
-
-                    Debug.WriteLine($"Peaks: {peaks.Length}, Valleys: {valleys.Length}");
-
-                    // 眾數線
-                    Cv2.Line(chart, 0, 300 - maxArr[0], chart.Width, 300 - maxArr[0], Scalar.Orange, 1);
-                    // 平均數
-                    Cv2.Line(chart, 0, 300 - (int)mean[0], chart.Width, 300 - (int)mean[0], Scalar.Blue, 1);
-                    // 一個標準差內
-                    Cv2.Line(chart, 0, 300 - (int)(mean[0] + stddev[0]), chart.Width, 300 - (int)(mean[0] + stddev[0]), Scalar.DarkCyan, 1);
-                    Cv2.Line(chart, 0, 300 - (int)(mean[0] - stddev[0]), chart.Width, 300 - (int)(mean[0] - stddev[0]), Scalar.DarkCyan, 1);
-
-                    //Mat chart2 = new(new OpenCvSharp.Size(chart.Width, 300), MatType.CV_8UC3, Scalar.White);
-                    for (int i = 1; i < grayArrDiff.Length; i++)
-                    {
-                        Cv2.Line(chart, i - 1, 150 + (grayArrDiff[i - 1] * 10), i, 150 + (grayArrDiff[i] * 10), Scalar.LightGreen, 1);
-                    }
-
-                    Cv2.CvtColor(roiMat, roiMat, ColorConversionCodes.GRAY2BGR);
-                    Cv2.CvtColor(blur, blur, ColorConversionCodes.GRAY2BGR);
-                    Cv2.VConcat(new Mat[] { chart, roiMat, blur }, chart);
-
-                    //if (FullMat.Height < 900)
-                    //{
-                    //    Cv2.VConcat(FullMat, line, FullMat);
-                    //}
-                    //else
-                    //{
-                    //    Dispatcher.Invoke(() =>
-                    //    {
-                    //        Cv2.ImShow("Full", FullMat);
-                    //    });
-                    //}  
-#endif
 
 
-                    #region 標記
-#if false
-                    unsafe
-                    {
-                        byte* b = roiMat.DataPointer;
 
-                        for (int i = 0; i < roiMat.Width; i++)
-                        {
-                            // 0.8 個標準差
-                            if (grayArr[i] < mean[0] - (stddev[0] * 0.8) && ((grayArr[i] < maxArr[0] - 10) || (grayArr[i] > maxArr[0] + 10)))
-                            {
-                                b[i + (mat.Width * roiMat.Height / 2)] = 255;
-                            }
-                            // 0.8 個標準差
-                            else if (grayArr[i] > mean[0] + (stddev[0] * 0.8) && ((grayArr[i] < maxArr[0] - 10) || (grayArr[i] > maxArr[0] + 10)))
-                            {
-                                b[i + (mat.Width * roiMat.Height / 2)] = 0;
-                            }
-                        }
-                    } 
-#endif
-                    #endregion
 
                     #region UI Thread here
                     Dispatcher.Invoke(() =>
                     {
-                        //Cv2.ImShow("GrayScale", chart);
-                        //Cv2.MoveWindow("GrayScale", 100, 100);
-                        //Cv2.ImShow("GrayScale'", chart2);
-                        //Cv2.MoveWindow("GrayScale'", 100, 100 + chart.Height + 32);
 
-                        // Cv2.ImShow("ROI", roiMat);
-                        // Cv2.MoveWindow("ROI", 100, 100 + chart.Height * 2 + 64);
-                        // Cv2.ImShow("ROI Blur", blur);
-                        // Cv2.MoveWindow("ROI Blur", 100, 100 + chart.Height * 2 + 48 + roiMat.Height * 2 + 32);
 
-                        //Cv2.ImShow("Hist Diagram", histChart);
-                        //Cv2.MoveWindow("Hist Diagram", 100 + chart.Width + 2, 100);
 
-                        Cv2.ImShow("Ostu", otsu);
                     });
                     #endregion
-
                     #endregion
                 }
                 #endregion
@@ -847,7 +742,9 @@ namespace ApexVisIns.content
 
                 MainWindow.Dispatcher.Invoke(() =>
                 {
-                    MainWindow.ImageSource = mat.ToImageSource();
+                    //MainWindow.ImageSource = mat.ToImageSource();
+                    //Indicator.ImageSource = mat.ToImageSource();
+                    Indicator.Image = mat;
                     //Debug.WriteLine($"width: {width} maxWindowWidth: {maxWindowWidth}");
                     //Debug.WriteLine($"1st {step1done}, 2nd {step2done} 3rd {step3done} 4th {step4done}");
 
