@@ -104,10 +104,9 @@ namespace ApexVisIns.content
 
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
-            // Light24V.SetAllChannelValue(128, 128);
 
             // 硬體初始化
-            InitHardware();
+            //InitHardware();
 
             if (!loaded)
             {
@@ -143,6 +142,7 @@ namespace ApexVisIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
+                        //等待進度條滿
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 50, 5 * 1000))
                         {
                             // 硬體初始化失敗
@@ -151,6 +151,13 @@ namespace ApexVisIns.content
 
                         return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
+                    {
+                        // 相機開啟 Grabber
+
+
+
+                        return MainWindow.InitFlags.OK;
+                    }).ContinueWith(t =>
                     {
                         if (t.Result != MainWindow.InitFlags.OK)
                         {

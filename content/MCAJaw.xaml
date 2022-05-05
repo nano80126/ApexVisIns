@@ -540,7 +540,13 @@
                       materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                       FontSize="16" FontWeight="SemiBold" Padding="8"
                       Background="Transparent">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    
                     <Border Width="800" Height="200" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image3Viewbox">
                             <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -548,7 +554,7 @@
                         </Viewbox>
                     </Border>
 
-                    <TextBlock>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}Camera 3, {0} x {1}">
                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
@@ -556,7 +562,8 @@
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
-                </StackPanel>
+                </Grid>
+                <!--</StackPanel>-->
             </GroupBox>
             <!--#endregion-->
 
