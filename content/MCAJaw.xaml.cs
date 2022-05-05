@@ -121,7 +121,6 @@ namespace ApexVisIns.content
 
         }
 
-
         #region 初始化
         /// <summary>
         /// 硬體初始化
@@ -137,13 +136,33 @@ namespace ApexVisIns.content
                     InitLightCtrl(token),
                     InitIOCtrl(token)).ContinueWith(t =>
                     {
+                        // 終止初始化，狀態變更為閒置
+                        if (token.IsCancellationRequested)
+                        {
+                            StatusLabel.Text = "閒置";
+                            token.ThrowIfCancellationRequested();
+                        }
 
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 50, 5 * 1000))
+                        {
+                            // 硬體初始化失敗
+                            return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                        }
 
+                        return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
                     {
-
-
-                        MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {1}");
+                        if (t.Result != MainWindow.InitFlags.OK)
+                        {
+                            MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {1}");
+                        }
+                        else
+                        {
+                            MainWindow.Dispatcher.Invoke(() =>
+                            {
+                                StatusLabel.Text = "初始化完成";
+                            });
+                        }
                     }, token);
             }
             catch (OperationCanceledException cancell)
@@ -229,9 +248,6 @@ namespace ApexVisIns.content
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
                                                 if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    Debug.WriteLine($"連線成功");
-
-
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
                                             }
@@ -282,7 +298,7 @@ namespace ApexVisIns.content
                         {
                             throw new CameraException("相機設定檔為空");
                         }
-                    } 
+                    }
                     else
                     {
                         throw new CameraException("相機設定檔不存在");
@@ -304,7 +320,7 @@ namespace ApexVisIns.content
         {
             return Task.Run(() =>
             {
-                if (IOCtrlInitialized) { return; }
+                if (LightCtrlInitilized) { return; }
 
                 if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
 
@@ -426,6 +442,24 @@ namespace ApexVisIns.content
             Debug.WriteLine((sender as Button).CommandParameter);
         }
 
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //foreach (BaslerCam cam in MainWindow.BaslerCams)
+            //{
+            //    if (cam.IsOpen)
+            //    {
+            //        // 切換
+            //        MainWindow.Basler_ContinousGrab(cam);
+            //    }
+            //}
+            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
+            {
+                MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
+            }
+        }
+
+        #region 待刪除
         ModbusTCPIO _modbusTCPIO = new();
 
         /// <summary>
@@ -448,7 +482,6 @@ namespace ApexVisIns.content
             Debug.WriteLine($"Connected: {_modbusTCPIO.Conneected}");
         }
 
-
         /// <summary>
         /// Tcp 斷線
         /// </summary>
@@ -458,5 +491,8 @@ namespace ApexVisIns.content
         {
             _modbusTCPIO.Disconnect();
         }
+        #endregion
+
+      
     }
 }

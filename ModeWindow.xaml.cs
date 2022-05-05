@@ -56,6 +56,7 @@ namespace ApexVisIns
                     break;
                 case Key.F2:
                     WarmModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
+                    //EditModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
                     break;
                 case Key.F3:
                     EditModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);

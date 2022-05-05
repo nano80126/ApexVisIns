@@ -22,7 +22,7 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         Topmost="False"
-        Title="ModeWindow" Height="120" Width="360"
+        Title="ModeWindow" Height="120" Width="240"
         Loaded="Window_Loaded"
         Unloaded="Window_Unloaded"
         KeyDown="Window_KeyDown"
@@ -76,7 +76,8 @@
                 </RadioButton>
 
                 <RadioButton x:Name="WarmModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
-                             Foreground="{StaticResource ColorPink}" Checked="RadioButton_Checked" CommandParameter="1">
+                             Foreground="{StaticResource ColorPink}" Checked="RadioButton_Checked" CommandParameter="1"
+                             Visibility="Collapsed">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>

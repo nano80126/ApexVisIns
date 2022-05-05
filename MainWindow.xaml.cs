@@ -68,11 +68,6 @@ namespace ApexVisIns
         [Obsolete("這邊要移除")]
         public LightEnumer LightEnumer { get; set; }
 
-        /// <summary>
-        /// 光源控制器，確認無用可刪除
-        /// </summary>
-        public static LightController LightController { get; set; }
-
         //public static LightSerial LightCtrl { get; set; }
         /// <summary>
         /// 光源控制器
@@ -149,7 +144,7 @@ namespace ApexVisIns
         {
             InitializeComponent();
 
-            InitializePanels();
+            //InitializePanels();
 
             LoadTabItems();
         }
@@ -305,16 +300,17 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            MsgInformer.DisableCollectionBinding();
-            MsgInformer.DisposeProgressTask();
-
             CameraEnumer.WorkerEnd();   // 停止 Camera Enumerator
             CameraEnumer.Dispose();
             SerialEnumer.WorkerEnd();   // 停止 Serial Enumerator 
+            SerialEnumer.Dispose();
             // LightEnumer.WorkerEnd();
 
             ServoMotion.Dispose();      // 處置 ServoMotion
             IOController.Dispose();     // 處置 IOController
+
+            MsgInformer.DisableCollectionBinding();
+            MsgInformer.DisposeProgressTask();
 
             if (IOWindow != null)
             {
@@ -693,6 +689,7 @@ namespace ApexVisIns
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
 
+#if true
         /// <summary>
         /// 啟動窗戶、耳朵相機 Grabber
         /// </summary>
@@ -708,7 +705,7 @@ namespace ApexVisIns
                 BaslerCams[0].IsContinuousGrabbing = false;
 
                 // 
-                BaslerCams[0].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
+                //BaslerCams[0].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
             }
 
             if (!BaslerCams[1].IsGrabberOpened && !BaslerCams[1].IsGrabbing)
@@ -721,7 +718,7 @@ namespace ApexVisIns
                 BaslerCams[1].IsContinuousGrabbing = false;
 
                 // 
-                BaslerCams[1].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
+                //BaslerCams[1].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
             }
         }
 
@@ -737,7 +734,7 @@ namespace ApexVisIns
                 BaslerCams[0].IsGrabberOpened = false;
 
                 // 
-                BaslerCams[0].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
+                //BaslerCams[0].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
             }
 
             if (BaslerCams[1].IsGrabbing)
@@ -747,9 +744,10 @@ namespace ApexVisIns
                 BaslerCams[1].IsGrabberOpened = false;
 
                 // 
-                BaslerCams[1].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
+                //BaslerCams[1].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
             }
-        }
+        } 
+#endif
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
         #endregion

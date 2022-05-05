@@ -38,6 +38,13 @@
 
                 <TextBlock Margin="12 8 0 0" Text="Ver. 1.0.0" FontSize="12" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas" 
                            Foreground="{StaticResource ColorPrimaryTransparent}"/>
+
+
+                <Button Margin="12 0 0 0" VerticalAlignment="Center" Content="啟動相機" Foreground="{StaticResource ColorSuccess}"
+                        Style="{StaticResource MaterialDesignToolButton}" Click="Button_Click"/>
+
+
+
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -136,7 +143,7 @@
                                                      ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                                      ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
-                        
+
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
@@ -233,7 +240,7 @@
                             <!--#region 1st row  -->
                             <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0">
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center" 
                                            TextAlignment="Center" FontSize="28" FontWeight="SemiBold" 
                                            Text="初始化"/>
                             </Border>
@@ -327,14 +334,15 @@
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
 
-                            <Button Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Content="連線" Click="TcpConnect_Click"
+                            <!--<Button Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Content="連線" Click="TcpConnect_Click"
                                     VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
 
                             <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Content="斷線" Click="TcpDisconnect_Click"
                                     VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
+                            
                             <!--#endregion-->
                         </Grid>
                     </DockPanel>
@@ -374,16 +382,16 @@
                         </TextBlock.Text>
                     </TextBlock>
 
-                    <!--標示視窗尺寸用，待刪除 -->
+                    <!--標示視窗尺寸用，待刪除 --><!--
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 32 0 0">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
                                 <Binding Path="ActualWidth" ElementName="Border1" Mode="OneWay"/>
                                 <Binding Path="ActualHeight" ElementName="Border1" Mode="OneWay"/>
-                                <!--<Binding Path="ActualHeight" ElementName="ImageGroupBox1" Mode="OneWay"/>-->
+                                --><!--<Binding Path="ActualHeight" ElementName="ImageGroupBox1" Mode="OneWay"/>--><!--
                             </MultiBinding>
                         </TextBlock.Text>
-                    </TextBlock>
+                    </TextBlock>-->
 
                     <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
                     <!--規格列表 1-->
@@ -536,7 +544,7 @@
                     <Border Width="800" Height="200" Background="{StaticResource ColorInfoTransparent}">
                         <Viewbox x:Name="Image3Viewbox">
                             <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                   Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                         </Viewbox>
                     </Border>
 

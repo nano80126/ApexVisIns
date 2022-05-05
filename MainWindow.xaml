@@ -29,8 +29,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         Topmost="False"
-        Title="MainWindow" Width="1600" Height="900"
-        x:Name="MainWindow1">
+        Title="MainWindow" Width="1600" Height="900">
     <Window.Resources>
         <!--#region Appbar -->
         <RoutedUICommand x:Key="QuitAction" Text="Quit"/>
@@ -187,8 +186,8 @@
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!--//-->
-                    <content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
-                    <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
+                    <!--<content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
+                    <content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
                 </TabItem>
                 <!--#endregion-->
                 <!--//-->
@@ -249,7 +248,7 @@
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>
+                    <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 

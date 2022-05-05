@@ -361,6 +361,9 @@ namespace ApexVisIns
         {
             int retryCount = 0;
 
+            Debug.WriteLine($"{cam.IsConnected} {serialNumber} {userData}");
+
+
             while (!cam.IsOpen)
             {
                 if (ct.IsCancellationRequested) { break; }
@@ -378,6 +381,14 @@ namespace ApexVisIns
                     cam.Camera.CameraOpened += Camera_CameraOpened; ;
                     cam.Camera.CameraClosing += Camera_CameraClosing; ;
                     cam.Camera.CameraClosed += Camera_CameraClosed; ;
+
+                    // 設定 UserData, ImageGrabber 事件會用到
+                    cam.Camera.StreamGrabber.UserData = userData;
+
+                    // 開始相機
+                    cam.Open();
+                    cam.PropertyChange();
+
                 }
                 catch (Exception ex)
                 {
@@ -672,7 +683,24 @@ namespace ApexVisIns
                 switch (targetFeatureType)
                 {
                     case CameraConfigBase.TargetFeatureType.MCA_Front:
-
+                        //Debug.WriteLine($"{1}");
+                        Dispatcher.Invoke(() =>
+                        {
+                            ImageSource1 = mat.ToImageSource();
+                        });
+                        break;
+                    case CameraConfigBase.TargetFeatureType.MCA_Bottom:
+                        //Debug.WriteLine($"{2}");
+                        Dispatcher.Invoke(() =>
+                        {
+                            ImageSource2 = mat.ToImageSource();
+                        });
+                        break;
+                    case CameraConfigBase.TargetFeatureType.MCA_SIDE:
+                        Dispatcher.Invoke(() =>
+                        {
+                            ImageSource3 = mat.ToImageSource();
+                        });
                         break;
                     default:
                         break;

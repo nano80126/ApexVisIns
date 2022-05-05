@@ -202,7 +202,7 @@ namespace ApexVisIns.content
                         }
 
                         MainWindow.CameraEnumer.WorkerPause();
-                        //MainWindow.LightEnumer.WorkerPause();
+                        // MainWindow.LightEnumer.WorkerPause();
                         MainWindow.SerialEnumer.WorkerPause();
                         // MainWindow.CreateIOWindow();
 

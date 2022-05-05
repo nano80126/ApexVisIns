@@ -27,8 +27,6 @@ namespace ApexVisIns
                 byte endStep = 0b1001;
                 int cycleCount = 0;
 
-                StartCorrection = DateTime.Now;
-                Debug.WriteLine($"方向判定開始:{DateTime.Now:mm:ss.fff}");
 
                 while (ApexAngleCorrectionFlags.CheckModeStep < endStep)
                 {
@@ -114,7 +112,6 @@ namespace ApexVisIns
                             break;
                     }
                 }
-                Debug.WriteLine($"方向判定結束:{DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
             }
             catch (TimeoutException T)
             {
@@ -643,8 +640,6 @@ namespace ApexVisIns
                     Cv2.ImShow("ApexCorrectionCanny", canny);
                     Cv2.MoveWindow("ApexCorrectionCanny", 20, 500);
 
-                    Debug.WriteLine($"粗定位開始: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
-
                     switch (ApexAngleCorrectionFlags.Steps)
                     {
                         case 0b0000:    // 0 // 快速找窗戶
@@ -727,8 +722,7 @@ namespace ApexVisIns
                                         ApexAngleCorrectionFlags.Steps += 0b01;
 
                                         Cv2.DestroyWindow("ApexCorrectionCanny");
-
-                                        Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
+                                        //Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                                     }
                                 }
 
@@ -740,8 +734,7 @@ namespace ApexVisIns
                                 ApexAngleCorrectionFlags.Steps += 0b01;
                                 // 到此粗定位結束
                                 Cv2.DestroyWindow("ApexCorrectionCanny");
-
-                                Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
+                                //Debug.WriteLine($"粗定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                             }
                             ApexAngleCorrectionFlags.LastWindowWidth = (ushort)width;
                             #endregion
@@ -896,7 +889,7 @@ namespace ApexVisIns
                                 Cv2.DestroyWindow("ZOOM");
                                 // 終止連續拍攝
                                 StopWindowEarCameraContinous();
-                                Debug.WriteLine($"精定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
+                                //Debug.WriteLine($"精定位結束: {DateTime.Now:mm:ss.fff} {(DateTime.Now - StartCorrection).TotalMilliseconds}");
                             }
                             #endregion
                             break;

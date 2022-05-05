@@ -98,6 +98,38 @@ namespace ApexVisIns
         }
         #endregion
 
+        #region Flags
+        /// <summary>
+        /// 硬體初始化用旗標
+        /// </summary>
+        public enum InitFlags
+        {
+            OK = 0,
+            INIT_HARDWARE_FAILED = 1,
+        }
+
+
+        /// <summary>
+        /// 檢驗狀態旗標
+        /// </summary>
+        public enum InsStatus
+        {
+            [Description("初始化")]
+            INIT = 0,
+            [Description("準備完成")]
+            READY = 1,
+            [Description("閒置")]
+            IDLE = 2,
+            [Description("檢驗中")]
+            RUNNING = 3,
+            [Description("完成")]
+            DONE = 4,
+            [Description("錯誤")]
+            ERROR = 5,
+        }
+        #endregion
+
+
         /// <summary>
         /// 主影像 Source
         /// </summary>

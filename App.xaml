@@ -62,30 +62,30 @@
             
             <!-- 相機陣列 4 台-->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
-                <!-- // ConfigName 為 EnginnerTab 使用 -->
+                <!--  Camera 1 // ConfigName 為 EnginnerTab 使用 -->
                 <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
-                <!-- // -->
+                <!-- Camera 2 -->
                 <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
-                <!-- // -->
+                <!-- Camera 3 -->
                 <local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
-                <!-- // -->
-                <local:BaslerCam ConfigName="Default">
+                <!-- Camera 4 -->
+                <!--<local:BaslerCam ConfigName="Default">
                     <local:BaslerCam.Config>
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
-                </local:BaslerCam>
+                </local:BaslerCam>-->
             </x:Array>
             
             <!--EtherCAT for ServoMotion -->
