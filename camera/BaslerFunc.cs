@@ -378,8 +378,6 @@ namespace ApexVisIns
                     cam.Camera.CameraOpened += Camera_CameraOpened; ;
                     cam.Camera.CameraClosing += Camera_CameraClosing; ;
                     cam.Camera.CameraClosed += Camera_CameraClosed; ;
-
-
                 }
                 catch (Exception ex)
                 {

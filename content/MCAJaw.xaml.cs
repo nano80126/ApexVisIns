@@ -74,6 +74,8 @@ namespace ApexVisIns.content
         public MCAJaw()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -90,21 +92,22 @@ namespace ApexVisIns.content
                 }
             }
 
+
             if (JawSpecGroup2.SpecCollection.Count == 0)
             {
                 for (int i = 0; i < 10; i++)
                 {
                     JawSpecGroup2.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
                 }
-            } 
+            }
             #endregion
 
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
-            //Light24V.SetAllChannelValue(128, 128);
+            // Light24V.SetAllChannelValue(128, 128);
 
             // 硬體初始化
-            //InitHardware();
+            InitHardware();
 
             if (!loaded)
             {
@@ -183,12 +186,15 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    string path = @"./devices/device.json";
+                    //string path = @"./devices/device.json";
+                    string path = $@"{Directory.GetCurrentDirectory()}\cameras\camera.json";
+
 
                     if (File.Exists(path))
                     {
                         using StreamReader reader = new StreamReader(path);
                         string json = reader.ReadToEnd();
+
 
                         if (json != string.Empty)
                         {
@@ -208,9 +214,13 @@ namespace ApexVisIns.content
 
                             Parallel.ForEach(devices, (dev) =>
                             {
+                                Debug.WriteLine($"{dev.SerialNumber} {dev.Model} {dev.TargetFeature}");
+
                                 // 確認 Device 為在線上之 Camera 
                                 if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                                 {
+                                    Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
+
                                     switch (dev.TargetFeature)
                                     {
                                         case CameraConfigBase.TargetFeatureType.MCA_Front:
@@ -219,6 +229,9 @@ namespace ApexVisIns.content
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
                                                 if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
+                                                    Debug.WriteLine($"連線成功");
+
+
                                                     MainWindow.MsgInformer.TargetProgressValue += 10;
                                                 }
                                             }
@@ -345,7 +358,7 @@ namespace ApexVisIns.content
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, $"光源初始化失敗: {ex.Message}");
                 }
-            });
+            }, ct);
         }
 
         /// <summary>
@@ -388,9 +401,8 @@ namespace ApexVisIns.content
 
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.IO, $"IO 控制初始化失敗: {ex.Message}");
                 }
-            });
+            }, ct);
         }
-
 
         private void ModbusTCPIO_IOChanged(object sender, ModbusTCPIO.IOChangedEventArgs e)
         {
@@ -403,7 +415,6 @@ namespace ApexVisIns.content
             Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
         }
         #endregion
-
 
         private void MinusButton_Click(object sender, RoutedEventArgs e)
         {

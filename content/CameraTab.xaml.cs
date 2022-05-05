@@ -353,7 +353,7 @@ namespace ApexVisIns.content
                     break;
                 }
             }
-            //Debug.WriteLine($"{button.CommandParameter}");
+            // Debug.WriteLine($"{button.CommandParameter}");
         }
 
         /// <summary>
@@ -519,12 +519,22 @@ namespace ApexVisIns.content
                 config.BlackLevel = (int)camera.Parameters[PLGigECamera.BlackLevelRaw].GetValue();
                 config.GammaEnable = camera.Parameters[PLGigECamera.GammaEnable].GetValue();
                 config.GammaSelectorEnum = camera.Parameters[PLGigECamera.GammaSelector].GetAllValues().ToArray();
-                config.GammaSelector = camera.Parameters[PLGigECamera.GammaSelector].GetValue();
+
+                //Debug.WriteLine($"{camera.Parameters[PLGigECamera.GammaEnable].GetValue()}");
+                //Debug.WriteLine($"{string.Join(",", camera.Parameters[PLGigECamera.GammaSelector].GetAllValues().ToArray())}");
+
+                if (config.GammaSelectorEnum.Length > 0)
+                {
+                    config.GammaSelector = camera.Parameters[PLGigECamera.GammaSelector].GetValue();
+                }
+                else
+                {
+                    config.GammaSelector = string.Empty;
+                }
                 config.Gamma = camera.Parameters[PLGigECamera.Gamma].GetValue();
                 #endregion
 
                 string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
-
                 Debug.WriteLine($"{userSet}");
             }
             catch (Exception)
@@ -647,18 +657,18 @@ namespace ApexVisIns.content
             //Camera camera = MainWindow.BaslerCam.Camera;
             Camera camera = _camerasList[_devInUse].Camera;
 
-            //try
-            //{
-            // 更新 Config
-            UpdateConfig(config, camera);
-            // UserSet 紀錄
-            camera.Parameters[PLGigECamera.UserSetSave].Execute();
-            //}
-            //catch (Exception ex)
-            //{
-            //    // 這邊要修改 (Error 格式有問題)
-            //    MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-            //}
+            try
+            {
+                // 更新 Config
+                UpdateConfig(config, camera);
+                // UserSet 紀錄
+                camera.Parameters[PLGigECamera.UserSetSave].Execute();
+            }
+            catch (Exception ex)
+            {
+                // 這邊要修改 (Error 格式有問題)
+                MainWindow.MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+            }
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)

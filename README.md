@@ -109,13 +109,14 @@ Apex 外觀瑕疵檢測
 
 * [ ] 標示器新增 RGB 
 	* 測試動態效果
+	* 初測正常
 
 * [ ] ~測試 CameraEnumer 更改為 static~
 
-* [ ] LightEumer 改 SerialPortEumer 
+* [x] LightEumer 改 SerialPortEumer 
 	* 待測試功能正常
 
-* [ ] LightPanel 內建 LightControl
+* [x] LightPanel 內建 LightControl
 	* 測試 LightControl 移到 LightPanel 後的功能
 
 * [ ] SpecListView 直接用固定 Height

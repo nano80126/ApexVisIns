@@ -61,6 +61,8 @@ namespace ApexVisIns.content
         public EngineerTab()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)

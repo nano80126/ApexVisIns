@@ -247,11 +247,11 @@ namespace ApexVisIns
             // 若不為 DebugMode，設為全螢幕
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
-            //SpinWait.SpinUntil(() => false, 1000);
+            // SpinWait.SpinUntil(() => false, 1000);
 
-            //CreateIOWindow();
+            // CreateIOWindow();
 
-            //AppTabControl.Items[]
+            // AppTabControl.Items[]
 
 
 #if false
