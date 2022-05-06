@@ -443,16 +443,20 @@ namespace ApexVisIns
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 啟動觸發模式
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+                    cam.IsTriggerMode = true;
+
                     // 啟動 StreamGrabber 連續拍攝
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
-                    //
-                    cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
-                    cam.IsContinuousGrabbing = true;
-                    cam.IsContinuousGrabbing = false;
-                    //
-                    cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
 
-                    Debug.WriteLine($"{cam.Camera.StreamGrabber.UserData} {cam.Camera.StreamGrabber.UserData.GetType()}");
+                    _ = cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                    // cam.IsContinuousGrabbing = true;
+                    // cam.IsContinuousGrabbing = false;
+
+                    // 取消綁定事件
+                    cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
+                    // Debug.WriteLine($"{cam.Camera.StreamGrabber.UserData} {cam.Camera.StreamGrabber.UserData.GetType()}");
                 }
             }
             catch (TimeoutException T)
@@ -479,8 +483,13 @@ namespace ApexVisIns
             {
                 if (cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 停止 StreamGrabber
                     cam.Camera.StreamGrabber.Stop();
-                    cam.IsGrabberOpened = false;
+                    //cam.IsGrabberOpened = false;
+
+                    // 關閉觸發模式
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    cam.IsTriggerMode = false;
 
                     cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                 }
@@ -512,8 +521,8 @@ namespace ApexVisIns
                     // 啟動 StreamGrabber 拍攝一張
                     cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
                     // 
-                    cam.Camera.ExecuteSoftwareTrigger();
-                    _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
+                    // cam.Camera.ExecuteSoftwareTrigger();
+                    //_ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
                 }
             }
             catch (TimeoutException T)
@@ -546,7 +555,7 @@ namespace ApexVisIns
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                     // 變更 Flag 連續拍攝
-                    cam.IsContinuousGrabbing = true;
+                    // cam.IsContinuousGrabbing = true;
                 }
                 else
                 {
@@ -556,7 +565,7 @@ namespace ApexVisIns
                     cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 
                     // 變更 Flag
-                    cam.IsContinuousGrabbing = false;
+                    // cam.IsContinuousGrabbing = false;
                 }
             }
             catch (TimeoutException T)
@@ -616,8 +625,8 @@ namespace ApexVisIns
                 #endregion
 
                 #region 事件綁定
-                baslerCam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted; ;
-                baslerCam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped; ;
+                baslerCam.Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
+                baslerCam.Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
                 // 可能需要轉為客製
                 baslerCam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                 #endregion
@@ -650,7 +659,7 @@ namespace ApexVisIns
             string userData = (sender as IStreamGrabber).UserData.ToString();
             Debug.WriteLine($"{userData}");
 
-            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera?.StreamGrabber.UserData.ToString() == userData);
             baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
         }
 
@@ -658,11 +667,10 @@ namespace ApexVisIns
         {
             Debug.WriteLine("Grabber Stopped");
             string userData = (sender as IStreamGrabber).UserData.ToString();
-            Debug.WriteLine($"{userData}");
 
-            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera.StreamGrabber.UserData.ToString() == userData);
+            BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera?.StreamGrabber.UserData.ToString() == userData);
             baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));
-            //throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         /// <summary>

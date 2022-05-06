@@ -106,6 +106,7 @@ namespace ApexVisIns
         {
             OK = 0,
             INIT_HARDWARE_FAILED = 1,
+            SET_CAMERA_TRIGGER_MODE = 2
         }
 
 

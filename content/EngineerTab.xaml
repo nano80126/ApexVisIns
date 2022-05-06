@@ -149,14 +149,14 @@
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
                             <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
-                        </MultiBinding>                        
+                        </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
                     <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False}" Value="True">
+                                    <DataTrigger Binding="{Binding IsTriggerMode, FallbackValue=False}" Value="True">
                                         <Setter Property="Kind" Value="VideoMinusOutline"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -175,7 +175,6 @@
                             <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
                         </MultiBinding>
                     </Button.IsEnabled>
-                    
                     
                     <materialDesign:PackIcon Width="30" Height="26" Kind="ImageOutline"/>
                 </Button>

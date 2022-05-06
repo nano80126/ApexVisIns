@@ -72,7 +72,7 @@ namespace ApexVisIns.content
 
         private void ToggleStreamGrabber_Click(object sender, RoutedEventArgs e)
         {
-            if (!MainWindow.BaslerCam.IsGrabberOpened)
+            if (!MainWindow.BaslerCam.IsTriggerMode)
             {
                 Basler_StartStreamGrabber(MainWindow.BaslerCam);
             }
@@ -80,16 +80,28 @@ namespace ApexVisIns.content
             {
                 Basler_StopStreamGrabber(MainWindow.BaslerCam);
             }
+
+            //if (!MainWindow.BaslerCam.IsGrabberOpened)
+            //{
+            //    Basler_StartStreamGrabber(MainWindow.BaslerCam);
+            //}
+            //else
+            //{
+            //    Basler_StopStreamGrabber(MainWindow.BaslerCam);
+            //}
         }
 
         private void RetrieveImage_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.BaslerCam.IsGrabberOpened)
+            if (MainWindow.BaslerCam.IsGrabbing && MainWindow.BaslerCam.IsTriggerMode)
             {
-                MainWindow.ApexDefectInspectionStepsFlags.EarSteps = 0;
-                MainWindow.ApexDefectInspectionStepsFlags.WindowSteps = 0;
                 Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
             }
+
+            // if (MainWindow.BaslerCam.IsGrabberOpened)
+            // {
+            //     Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
+            // }
         }
 
         private void ToggleCrosshair_Click(object sender, RoutedEventArgs e)
@@ -162,9 +174,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 啟動 StreamGrabber，
-        /// 此方法啟動時，改為 RetrieveResult 取得影像，
-        /// 
+        /// 啟動 StreamGrabber，此方法啟動時，改為 RetrieveResult 取得影像，
         /// </summary>
         /// <param name="cam"></param>
         private void Basler_StartStreamGrabber(BaslerCam cam)
@@ -173,19 +183,23 @@ namespace ApexVisIns.content
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 啟動觸發模式
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+                    cam.IsTriggerMode = true;
+
                     // 啟動 StreamGrabber，連續拍攝
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
 
-                    cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
-                    cam.IsGrabberOpened = true;
-                    cam.IsContinuousGrabbing = false;
+                    _ = cam.Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
+                    //cam.IsGrabberOpened = true;
+                    //cam.IsContinuousGrabbing = false;
 
-                    // 
+                    // 取消綁定事件
                     cam.Camera.StreamGrabber.ImageGrabbed -= StreamGrabber_ImageGrabbed;
 
                     // 清空 Image
-                    //MainWindow.ImageSource = null;
-                    //Indicator.ImageSource = null;
+                    // MainWindow.ImageSource = null;
+                    // Indicator.ImageSource = null;
                     Indicator.Image = null;
                 }
             }
@@ -203,14 +217,23 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 停止 StreamGrabber，此方法啟動時
+        /// </summary>
+        /// <param name="cam"></param>
         private void Basler_StopStreamGrabber(BaslerCam cam)
         {
             try
             {
                 if (cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 停止 StreamGrabber
                     cam.Camera.StreamGrabber.Stop();
-                    cam.IsGrabberOpened = false;
+
+                    // 關閉觸發模式
+                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    cam.IsTriggerMode = false;
+                    //cam.IsGrabberOpened = false;
 
                     cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
                 }
@@ -238,7 +261,7 @@ namespace ApexVisIns.content
                     // 啟動 StreamGrabber，拍攝一張
                     cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
 
-                    cam.Camera.ExecuteSoftwareTrigger();
+                    // cam.Camera.ExecuteSoftwareTrigger();
                     _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
 
                     // Cv2.DestroyAllWindows();
@@ -271,19 +294,19 @@ namespace ApexVisIns.content
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
-                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    // cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                     // 變更 Flag (連續拍攝)
-                    cam.IsContinuousGrabbing = true;
+                    // cam.IsContinuousGrabbing = true;
                 }
                 else
                 {
                     cam.Camera.StreamGrabber.Stop();
-                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+                    // cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 
                     // 變更 Flag (不為連續拍攝)
-                    cam.IsContinuousGrabbing = false;
+                    // cam.IsContinuousGrabbing = false;
                 }
             }
             catch (TimeoutException T)
@@ -307,12 +330,13 @@ namespace ApexVisIns.content
         private void Basler_StreamGrabber_RetrieveImage(BaslerCam cam)
         {
             // 耳朵檢測
-            MainWindow.ApexEarInspectionSequence(cam);
+            // MainWindow.ApexEarInspectionSequence(cam);
             // 窗戶檢驗
             // MainWindow.ApexWindpwInspectionSequence(cam);
 
             try
             {
+
 
 
             }
@@ -401,8 +425,8 @@ namespace ApexVisIns.content
 
             // 設定 Trigger
             camera.Parameters[PLGigECamera.TriggerSelector].SetValue(PLGigECamera.TriggerSelector.FrameStart);
-            camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-            camera.Parameters[PLGigECamera.TriggerSource].SetValue(PLGigECamera.TriggerSource.Software);
+            camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);             // Trigger Mode On
+            camera.Parameters[PLGigECamera.TriggerSource].SetValue(PLGigECamera.TriggerSource.Software);    // Sotfware Trigger // 觸發模式 ON 才有作用
 
             // Anaglog Control
             //camera.Parameters[PLGigECamera.GainRaw].SetValue(50);

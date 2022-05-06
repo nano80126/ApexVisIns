@@ -18,6 +18,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.IO;
 using System.Text.Json;
+using Basler.Pylon;
 
 
 namespace ApexVisIns.content
@@ -106,7 +107,7 @@ namespace ApexVisIns.content
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
             // 硬體初始化
-            //InitHardware();
+            // InitHardware();
 
             if (!loaded)
             {
@@ -152,9 +153,34 @@ namespace ApexVisIns.content
                         return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
                     {
-                        // 相機開啟 Grabber
+                        // 終止初始化，狀態變更為閒置
+                        if (token.IsCancellationRequested)
+                        {
+                            StatusLabel.Text = "閒置";
+                            token.ThrowIfCancellationRequested();
+                        }
 
+                        // 啟動 StreamGrabber & Triiger Mode 
 
+                        if (t.Result == MainWindow.InitFlags.OK)
+                        {
+                            // 相機開啟 Grabber
+                            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
+                            {
+                                BaslerCam cam = MainWindow.BaslerCams[i];
+                                MainWindow.Basler_StartStreamGrabber(cam);
+                            }
+
+                            if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
+                            {
+                                // 開啟 Trigger Mode 失敗
+                                return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                            }
+                        }
+                        else
+                        {
+                            return t.Result;
+                        }
 
                         return MainWindow.InitFlags.OK;
                     }).ContinueWith(t =>
@@ -212,7 +238,7 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    //string path = @"./devices/device.json";
+                    // string path = @"./devices/device.json";
                     string path = $@"{Directory.GetCurrentDirectory()}\cameras\camera.json";
 
 
@@ -220,7 +246,6 @@ namespace ApexVisIns.content
                     {
                         using StreamReader reader = new StreamReader(path);
                         string json = reader.ReadToEnd();
-
 
                         if (json != string.Empty)
                         {
@@ -439,6 +464,7 @@ namespace ApexVisIns.content
         }
         #endregion
 
+        #region 測試
         private void MinusButton_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine((sender as Button).CommandParameter);
@@ -448,23 +474,78 @@ namespace ApexVisIns.content
         {
             Debug.WriteLine((sender as Button).CommandParameter);
         }
+        #endregion
 
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 單張拍攝
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SingleGrab_Click(object sender, RoutedEventArgs e)
         {
-            //foreach (BaslerCam cam in MainWindow.BaslerCams)
-            //{
-            //    if (cam.IsOpen)
-            //    {
-            //        // 切換
-            //        MainWindow.Basler_ContinousGrab(cam);
-            //    }
-            //}
+
+
+
+        }
+
+        /// <summary>
+        /// 啟動連續拍攝
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StartContinuousGrab_Click(object sender, RoutedEventArgs e)
+        {
             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
             {
-                MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
+                if (!MainWindow.BaslerCams[i].IsGrabbing)
+                {
+                    MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
+                }
             }
         }
+
+
+        /// <summary>
+        /// 停止連續拍攝
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StopContinuousGrab_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
+            {
+                if (MainWindow.BaslerCams[i].IsGrabbing)
+                {
+                    MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CameraTrigger_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
+            {
+                BaslerCam cam = MainWindow.BaslerCams[i];
+
+                cam.Camera.ExecuteSoftwareTrigger();
+
+                IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
+                OpenCvSharp.Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                OpenCvSharp.Cv2.ImShow($"mat{i}", mat);
+                // if (MainWindow.BaslerCams[i].IsGrabbing)
+                // {
+                //     MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
+                // }
+            }
+        }
+
 
         #region 待刪除
         ModbusTCPIO _modbusTCPIO = new();
@@ -500,6 +581,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-      
+       
     }
 }

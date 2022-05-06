@@ -94,6 +94,7 @@ namespace ApexVisIns
         #endregion
 
         #region EtherCAT Motion
+        [Obsolete("Not used in MCA_Jaw")]
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
@@ -138,7 +139,6 @@ namespace ApexVisIns
         private DatabaseTab DatabaseTab { get; set; }
         private EngineerTab EngineerTab { get; set; }
         #endregion
-
 
         public MainWindow()
         {
@@ -304,7 +304,7 @@ namespace ApexVisIns
             CameraEnumer.Dispose();
             SerialEnumer.WorkerEnd();   // 停止 Serial Enumerator 
             SerialEnumer.Dispose();
-            // LightEnumer.WorkerEnd();
+            // LightEnumer.WorkerEnd(); // deprecated class
 
             ServoMotion.Dispose();      // 處置 ServoMotion
             IOController.Dispose();     // 處置 IOController
@@ -317,6 +317,19 @@ namespace ApexVisIns
                 IOWindow.Close();
             }
         }
+
+        /// <summary>
+        /// 主視窗關閉
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
+
+
+        }
+
 
         /// <summary>
         /// 載入 TabItems
@@ -403,16 +416,6 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 主視窗關閉
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Window_Closed(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>
         /// 顯示 IO 視窗
         /// </summary>
         /// <param name="sender"></param>
@@ -430,11 +433,18 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine($"-----------------------------------------------------");
+
             // 關閉所有相機
             foreach (BaslerCam cam in BaslerCams)
             {
                 if (cam.IsOpen)
                 {
+                    // 若 Grabber 開啟中，關閉 Grabber
+                    if (cam.IsGrabbing)
+                    {
+                        Basler_StopStreamGrabber(cam);
+                    }
                     cam.Close();
                 }
             }
@@ -905,8 +915,6 @@ namespace ApexVisIns.CustomProperty
             return (bool)target.GetValue(AlarmProperty);
         }
     }
-
-
 
     public class ProcedureBlock : DependencyObject
     {

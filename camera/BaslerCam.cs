@@ -116,6 +116,7 @@ namespace ApexVisIns
         private bool _disposed;
         private bool _isGrabberOpened;
         private bool _isContinuousGrabbing;
+        private bool _isTriggerMode;
 
         /// <summary>
         /// 相機建構子
@@ -156,6 +157,7 @@ namespace ApexVisIns
         /// <summary>
         /// 是否連續拍攝
         /// </summary>
+        [Obsolete("deprecated, MCA_Jaw 不推薦使用")]
         public bool IsContinuousGrabbing
         {
             get => _isContinuousGrabbing;
@@ -172,6 +174,7 @@ namespace ApexVisIns
         /// <summary>
         /// 是否只開啟Grabber不拍照，拍照使用 RetrieveResult 觸發
         /// </summary>
+        [Obsolete("deprecated, MCA_Jaw 不推薦使用")]
         public bool IsGrabberOpened
         {
             get => _isGrabberOpened;
@@ -180,6 +183,22 @@ namespace ApexVisIns
                 if (value != _isGrabberOpened)
                 {
                     _isGrabberOpened = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 是否為 Trigger Mode
+        /// </summary>
+        public bool IsTriggerMode
+        {
+            get => _isTriggerMode;
+            set
+            {
+                if (value != _isTriggerMode)
+                {
+                    _isTriggerMode = value;
                     OnPropertyChanged();
                 }
             }
@@ -305,6 +324,7 @@ namespace ApexVisIns
         //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         //}
     }
+
 
 
     /// <summary>

@@ -130,6 +130,11 @@ Apex 外觀瑕疵檢測
 
 * [ ] 回 APEX 時，TargetFeature 要變更
 
+* [ ] 預設不要啟動 Trigger Mode
+	* 由初始化完成後啟動
+
+* [ ] CameraTab 按鈕 UX 新增
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
