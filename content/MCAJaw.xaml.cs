@@ -19,27 +19,43 @@ using System.Threading;
 using System.IO;
 using System.Text.Json;
 using Basler.Pylon;
-
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ApexVisIns.content
 {
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯
     /// </summary>
-    public partial class MCAJaw : StackPanel
+    public partial class MCAJaw : StackPanel, INotifyPropertyChanged
     {
-        #region Resources
-        public JawSpecGroup JawSpecGroup1 { get; set; }
+        #region Resources (xaml 內)
+        public JawSpecGroup JawSpecGroup { get; set; }
 
-        public JawSpecGroup JawSpecGroup2 { get; set; }
+        // public JawSpecGroup JawSpecGroup2 { get; set; }
         #endregion
 
         #region Variables
         private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+        private int _jawTab = 0;
         #endregion
 
         #region Properties
         public MainWindow MainWindow { get; set; }
+
+        public int JawTab
+        {
+            get => _jawTab;
+            set
+            {
+                if (value != _jawTab)
+                {
+                    _jawTab = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         #endregion
 
         #region Local Object (方便呼叫)
@@ -82,23 +98,36 @@ namespace ApexVisIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 新增假資料
-            JawSpecGroup1 = FindResource("SpecGroup") as JawSpecGroup;
-            JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
+            JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
+            //JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
 
-            if (JawSpecGroup1.SpecCollection.Count == 0)
+            if (JawSpecGroup.Collection1.Count == 0)
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                    JawSpecGroup.Collection1.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                    //JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+                }
+            }
+
+            if (JawSpecGroup.Collection2.Count == 0)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    JawSpecGroup.Collection2.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
                 }
             }
 
 
-            if (JawSpecGroup2.SpecCollection.Count == 0)
+            if (JawSpecGroup.SpecList.Count == 0)
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    JawSpecGroup2.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
+                    JawSpecGroup.SpecList.Add(new JawSpecSetting()
+                    {
+                        Item = $"項目P{i}",
+                        Note = " 123"
+                    });
                 }
             }
             #endregion
@@ -547,8 +576,23 @@ namespace ApexVisIns.content
         }
 
 
+
+
+
+        #region PropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        } 
+        #endregion
+
+
+
         #region 待刪除
         ModbusTCPIO _modbusTCPIO = new();
+
+     
 
         /// <summary>
         /// Tcp 連線

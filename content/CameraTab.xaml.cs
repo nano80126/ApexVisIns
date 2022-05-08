@@ -615,21 +615,29 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void ReadUserSet_Click(object sender, RoutedEventArgs e)
         {
-            // Get UsetSet string and read from camera
-            string userSet = (CameraCard.DataContext as CameraConfig).UserSet;
+            try
+            {
+                // Get UsetSet string and read from camera
+                // string userSet = (CameraCard.DataContext as CameraConfig).UserSet;
+                CameraConfig config = CameraCard.DataContext as CameraConfig;
+                if (config == null) { throw new CameraException("未選擇相機或相機未連線"); }
+                string userSet = (CameraCard.DataContext as CameraConfig).UserSet;
+                //Camera camera = MainWindow.BaslerCam.Camera;
+                Camera camera = _camerasList[_devInUse].Camera;
 
-            CameraConfig config = CameraCard.DataContext as CameraConfig;
-            //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _camerasList[_devInUse].Camera;
+                camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
+                camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
-            camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
-            camera.Parameters[PLGigECamera.UserSetLoad].Execute();
-
-            // 讀取 camera 的 config
-            ReadConfig(camera, config);
-            // 更新 UserSet Read
-            config.UserSetRead = userSet;
-            // Debug.WriteLine($"{userSet}");
+                // 讀取 camera 的 config
+                ReadConfig(camera, config);
+                // 更新 UserSet Read
+                config.UserSetRead = userSet;
+                // Debug.WriteLine($"{userSet}");
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+            }
         }
 
         /// <summary>
@@ -639,11 +647,19 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void SetDefaultUserSet_Click(object sender, RoutedEventArgs e)
         {
-            CameraConfig config = CameraCard.DataContext as CameraConfig;
-            //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _camerasList[_devInUse].Camera;
+            try
+            {
+                CameraConfig config = CameraCard.DataContext as CameraConfig;
+                if (config == null) { throw new CameraException("未選擇相機或相機未連線"); }
+                //Camera camera = MainWindow.BaslerCam.Camera;
+                Camera camera = _camerasList[_devInUse].Camera;
 
-            camera.Parameters[PLGigECamera.UserSetDefaultSelector].SetValue(config.UserSet);
+                camera.Parameters[PLGigECamera.UserSetDefaultSelector].SetValue(config.UserSet);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer?.AddError(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
+            }
         }
 
         /// <summary>
@@ -653,12 +669,14 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void WriteUserSet_Click(object sender, RoutedEventArgs e)
         {
-            CameraConfig config = CameraCard.DataContext as CameraConfig;
-            //Camera camera = MainWindow.BaslerCam.Camera;
-            Camera camera = _camerasList[_devInUse].Camera;
-
             try
             {
+                CameraConfig config = CameraCard.DataContext as CameraConfig;
+                if (config == null) { throw new CameraException("未選擇相機或相機未連線"); }
+                //Camera camera = MainWindow.BaslerCam.Camera;
+                Camera camera = _camerasList[_devInUse].Camera;
+
+
                 // 更新 Config
                 UpdateConfig(config, camera);
                 // UserSet 紀錄

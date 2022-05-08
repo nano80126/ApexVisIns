@@ -51,7 +51,7 @@
             <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
                 <StackPanel.Resources>
                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">
-                        <Setter Property="Margin" Value="6 0"/>
+                        <Setter Property="Margin" Value="8 0"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                     </Style>
                     <Style TargetType="materialDesign:PackIcon" x:Key="ModeChoice">

@@ -402,10 +402,10 @@
                     <!-- 相機角色選擇器 -->
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                         <StackPanel.Resources>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <!--<Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                 <Setter Property="Margin" Value="0 0 12 0" />
                                 <Setter Property="Padding" Value="16 0"/>
-                            </Style>
+                            </Style>-->
 
                             <ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                 <ObjectDataProvider.MethodParameters>
@@ -463,6 +463,12 @@
                                 <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
                                 <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="10"/>
                                 <Setter Property="BorderThickness" Value="0"/>
+
+                                <Style.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                             <!--//-->
                             <!--
@@ -507,22 +513,46 @@
                         <StackPanel x:Name="UserSetActionPanel" Orientation="Horizontal" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
                             <!--讀取 UserSet-->
                             <Button x:Name="ReadUserSet" Margin="12 0 0 0" Content="讀取" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
-                                    IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Click="ReadUserSet_Click"/>
-                            <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
-
-                            <!--指定 UserSet 設為預設-->
+                                    Click="ReadUserSet_Click">
+                                <!--IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                        <!--// Camera IsOpen-->
+                                        <Binding Path="IsOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                        <!--// Relative CameraCard Source, 確認 SerialNumber 不為空-->
+                                        <Binding Path="DataContext.SerialNumber" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}" 
+                                             Converter="{StaticResource StringNotNullOrEmptyConverter}"/>
+                                    </MultiBinding>
+                                </Button.IsEnabled>
+                            </Button>
+                            <!--指定 UserSet 設為預設 -->
                             <Button x:Name="SetDefaultUserSet" Margin="12 0 0 0" Content="設為預設" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
-                                    IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Click="SetDefaultUserSet_Click"/>
-                            <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
-
+                                    Click="SetDefaultUserSet_Click">
+                                <!--IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                        <!--// Camera IsOpen-->
+                                        <Binding Path="IsOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                        <!--// Relative CameraCard Source, 確認 SerialNumber 不為空-->
+                                        <Binding Path="DataContext.SerialNumber" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}" 
+                                             Converter="{StaticResource StringNotNullOrEmptyConverter}"/>
+                                    </MultiBinding>
+                                </Button.IsEnabled>
+                            </Button>
                             <!--寫入 UserSet-->
                             <Button x:Name="WriteUserSet" Margin="12 0 0 0" Content="寫入" Height="{Binding RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, Path=Width}"
-                                    IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Click="WriteUserSet_Click"/>
-                            <!--IsEnabled="{Binding IsOpen, Source={StaticResource BaslerCam}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
-
+                                    Click="WriteUserSet_Click">
+                                <!--IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                        <!--// Camera IsOpen-->
+                                        <Binding Path="IsOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                        <!--// Relative CameraCard Source, 確認 SerialNumber 不為空-->
+                                        <Binding Path="DataContext.SerialNumber" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}" 
+                                             Converter="{StaticResource StringNotNullOrEmptyConverter}"/>
+                                    </MultiBinding>
+                                </Button.IsEnabled>
+                            </Button>
                         </StackPanel>
                         <!--#endregion-->
 

@@ -10,7 +10,7 @@ namespace ApexVisIns.Product
     public interface ISpecBase
     {
         public string Item { get; set; }
-        public double CenterLine { get; set; }
+        public double CenterSpec { get; set; }
         public double LowerSpecLimit { get; set; }
         public double UpperSpecLimit { get; set; }
         public double LowerCtrlLimit { get; set; }
@@ -19,11 +19,19 @@ namespace ApexVisIns.Product
 
     public class SpecBase : ISpecBase, INotifyPropertyChanged
     {
+        //private int _key;
         private double _cl;
         private double _lsl;
         private double _usl;
         private double _lcl;
         private double _ucl;
+
+
+        /// <summary>
+        /// Key ID
+        /// </summary>
+        [Description("Key")]
+        public int Key { get; set; }
 
         [Description("項目")]
         public string Item { get; set; }
@@ -32,7 +40,7 @@ namespace ApexVisIns.Product
         /// 規格中心
         /// </summary>
         [Description("規格中心")]
-        public double CenterLine
+        public double CenterSpec
         {
             get => _cl;
             set
