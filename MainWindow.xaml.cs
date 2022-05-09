@@ -134,6 +134,7 @@ namespace ApexVisIns
         #endregion
 
         #region Tabs
+        private MCAJaw MCAJaw { get; set; }
         private CameraTab CameraTab { get; set; }
         private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }
@@ -339,11 +340,20 @@ namespace ApexVisIns
             for (int i = 0; i < AppTabControl.Items.Count; i++)
             {
                 TabItem tabItem = (TabItem)AppTabControl.Items[i];
-                Debug.WriteLine($"{tabItem.Header} {(tabItem.Header as PackIcon).Kind}");
+                //Debug.WriteLine($"{tabItem.Header} {(tabItem.Header as PackIcon).Kind}");
                 if (tabItem.Content != null) { continue; }
 
                 switch (i)
                 {
+                    case 0:
+                        MCAJaw = new MCAJaw()
+                        {
+                            Name = "MCAJawTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = MCAJaw;
+                        break;
                     case 1:
                         CameraTab = new CameraTab()
                         {
@@ -756,7 +766,7 @@ namespace ApexVisIns
                 // 
                 //BaslerCams[1].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
             }
-        } 
+        }
 #endif
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 

@@ -231,7 +231,7 @@
                     </Grid.RowDefinitions>
 
                     <!--#region Control Panel -->
-                    <Border Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Background="{x:Null}">
+                    <Border Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Background="{x:Null}" DataContext="{StaticResource JawInspection}">
                         <materialDesign:Card Style="{StaticResource GeneralCard}">
                             <DockPanel Background="Transparent">
                                 <!--Panel Header-->
@@ -365,10 +365,10 @@
                                         <!--//-->
 
                                         <!--#region NewRegion -->
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorSuccess}" Text="良品" Style="{StaticResource ItemText}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource ItemText}"
+                                           Text="{Binding LotResult[良品].Name}" />
                                         <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
+                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[良品].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
@@ -377,24 +377,24 @@
                                         <Separator Grid.Row="2" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
                                         <!--#region NewRegion -->
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                   Text="{Binding LotResult[0.008-R].Name, StringFormat={}{0} 不良}"/>
                                         <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
+                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.008-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region NewRegion -->
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                   Text="{Binding LotResult[0.008-L].Name, StringFormat={}{0} 不良}"/>
                                         <Button Grid.Row="4" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
+                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.008-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="5" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -402,7 +402,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="6" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="6" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -410,7 +410,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="7" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="7" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="7" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -418,7 +418,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="8" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="8" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="8" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -426,15 +426,16 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="9" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="9" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="9" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region NewRegion -->
-                                        <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                        <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                   Text="{Binding SpecList[0].Item, Source={StaticResource SpecGroup}, StringFormat={} {0} 不良}">
+                                        </TextBlock>
                                         <Button Grid.Row="10" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="10" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="10" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -445,7 +446,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="13" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="13" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="13" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -453,7 +454,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="14" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="14" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="14" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -461,7 +462,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="15" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -469,7 +470,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"
-                                           Foreground="{StaticResource ColorError}" Text="良品" Style="{StaticResource ItemText}"/>
+                                           Foreground="{StaticResource ColorError}" Text="不良" Style="{StaticResource ItemText}"/>
                                         <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="16" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
                                         <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>

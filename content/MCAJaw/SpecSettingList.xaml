@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-            xmlns:pd="clr-namespace:ApexVisIns.Product"
+        xmlns:pd="clr-namespace:ApexVisIns.Product"
         xmlns:local="clr-namespace:ApexVisIns.content" 
         d:DataContext="{d:DesignInstance Type=pd:JawSpecGroup}"
         mc:Ignorable="d" 
@@ -32,7 +32,17 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <DataGrid x:Name="SpecDataGrid" Grid.Row="1" Margin="0 8 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+        <!--<StackPanel Grid.Row="0" Orientation="Horizontal">-->
+        <DockPanel>
+            <TextBlock FontSize="20" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">規格設定 Specification Setting</TextBlock>
+            <TextBlock FontSize="16" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="單位 (inch)"></TextBlock>
+
+            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200" Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="儲存變更" 
+                    Click="SpecSettingSave_Click">儲存 SAVE</Button>
+        </DockPanel>
+        <!--</StackPanel>-->
+
+        <DataGrid x:Name="SpecDataGrid" Grid.Row="1" Margin="0 0 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                   CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
                   materialDesign:DataGridAssist.CellPadding="15 10" materialDesign:DataGridAssist.ColumnHeaderPadding="10 15">
             <DataGrid.Resources>
@@ -42,15 +52,22 @@
                     <Setter Property="FontSize" Value="14"/>
                     <Setter Property="FontWeight" Value="Bold"/>
                 </Style>
-                
-                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}" x:Key="DataGridCenterColume">
+
+                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}" x:Key="DataGridAlignRightCheckBox">
                     <Setter Property="HorizontalAlignment" Value="Right"/>
                     <Setter Property="Background" Value="{StaticResource ColorTealTransparent}"/>
                 </Style>
-                
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="TextRightDataGridTextColume">
+
+                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}" x:Key="DataGridAlignRightEditingCheckBox">
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="Background" Value="{StaticResource ColorTeal}"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Style>
+
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
                     <Setter Property="HorizontalAlignment" Value="Right"/>
                 </Style>
+                
                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" x:Key="TextRightDataGridEditColumn">
                     <Setter Property="HorizontalAlignment" Value="Right"/>
                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
@@ -60,19 +77,20 @@
 
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Key}" Header="ID" MinWidth="60" 
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource TextRightDataGridTextColume}"/>
+                <DataGridTextColumn Binding="{Binding Key}" Header="ID" MinWidth="60" IsReadOnly="True"
+                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
-                
-                <DataGridCheckBoxColumn Binding="{Binding Enabled}" MinWidth="80"
+                <DataGridCheckBoxColumn Binding="{Binding Enable}" MinWidth="80"
                                         HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                        ElementStyle="{StaticResource DataGridCenterColume}"
-                                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                                        ElementStyle="{StaticResource DataGridAlignRightCheckBox}"
+                                        EditingElementStyle="{StaticResource DataGridAlignRightEditingCheckBox}">
                     <DataGridCheckBoxColumn.Header>
                         <TextBlock Text="啟用" HorizontalAlignment="Center" TextAlignment="Center"/>
                     </DataGridCheckBoxColumn.Header>
                 </DataGridCheckBoxColumn>
+
+                <DataGridTextColumn Binding="{Binding Item}" Header="項目" MinWidth="100" IsReadOnly="True"
+                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                 <!--<DataGridTemplateColumn Header="Φ" IsReadOnly="True" Width="60" CanUserResize="False">
                     <DataGridTemplateColumn.HeaderStyle>
@@ -97,36 +115,33 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>-->
-                <!--//-->
-                <DataGridTextColumn Header="規格中心" MinWidth="120"
-                                    Binding="{Binding CenterSpec}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource TextRightDataGridTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
 
                 <!--//-->
-                <DataGridTextColumn Binding="{Binding LowerCtrlLimit}" Header="管制下限" MinWidth="120"
+                <DataGridTextColumn Header="規格中心" MinWidth="120" Binding="{Binding CenterSpec}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource TextRightDataGridTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
-                <DataGridTextColumn Binding="{Binding UpperCtrlLimit}" Header="管制上限" MinWidth="120" 
+                <DataGridTextColumn Header="管制下限" MinWidth="120" Binding="{Binding LowerCtrlLimit}" 
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource TextRightDataGridTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
-
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
-                <DataGridTextColumn Binding="{Binding Correction}" Header="校正值" MinWidth="120" 
+                <DataGridTextColumn Header="管制上限" MinWidth="120" Binding="{Binding UpperCtrlLimit}" 
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource TextRightDataGridTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
-
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
+                <!--//-->
+                <DataGridTextColumn Header="校正值" MinWidth="120" Binding="{Binding Correction}" 
+                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
                 <DataGridTextColumn Binding="{Binding Note}" Header="備註" MinWidth="120"
-                                                            HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                                            EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" >
+                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}">
                     <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextRightDataGridTextColume}">
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridAlignRighTextColume}">
                             <Setter Property="Foreground" Value="Gray"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>

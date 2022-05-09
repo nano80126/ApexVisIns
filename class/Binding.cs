@@ -1093,4 +1093,60 @@ namespace ApexVisIns
             throw new NotImplementedException();
         }
     }
+
+    public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
+    {
+        private int _index;
+
+        public ObservableDictionary() : base()
+        {
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, TKey key, TValue value)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, new KeyValuePair<TKey, TValue>(key, value)));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(Count));
+        }
+
+        public void Add(TKey key,TValue value)
+        {
+            this.Add(key, value);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, key, value);
+        }
+
+
+        public new KeyCollection Keys
+        {
+            get { return base.Keys; }
+        }
+
+
+        public new ValueCollection Values
+        {
+            get { return base.Values; }
+        }
+
+
+        public new int Count
+        {
+            get { return base.Count; }
+        }
+
+        //public new TValue this[TKey key]
+        //{
+        //get { return this.GetValue(); }
+        //get { return this.GetValueOrDefault(key); }
+        //set { this}
+        //}
+    }
 }

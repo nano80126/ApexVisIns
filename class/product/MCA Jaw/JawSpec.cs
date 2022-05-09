@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Media;
 
-
 namespace ApexVisIns.Product
 {
     public class JawSpec : SpecBase
@@ -53,6 +52,21 @@ namespace ApexVisIns.Product
         private string _note;
         private double _correction;
         private bool _enable;
+
+        public JawSpecSetting() { }
+
+        public JawSpecSetting(int key, bool enable, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, string note = null)
+        {
+            Key = key;
+            Enable = enable;
+
+            Item = item;
+            CenterSpec = centerSpec;
+            LowerCtrlLimit = lowerCtrlLimit;
+            UpperCtrlLimit = upperCtrlLimit;
+            Correction = correction;
+            Note = note ?? string.Empty;
+        }
 
         /// <summary>
         /// 是否啟用
@@ -159,5 +173,36 @@ namespace ApexVisIns.Product
         /// 批號輸入
         /// </summary>
         public string LotNumber { get; set; }
+
+        public Dictionary<string, ResultElement> LotResult { get; } = new Dictionary<string, ResultElement>();
+
+
+        public class ResultElement
+        {
+            public ResultElement(string name, string note, int count)
+            {
+                Name = name;
+                Note = note;
+                Count = count;
+            }
+
+
+            public string Name { get; set; }
+            public string Note { get; set; }
+            public int Count { get; set; }
+
+
+            //public event PropertyChangedEventHandler PropertyChanged;
+
+            //protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            //{
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            //}
+
+            //public void PropertyChange(string propertyName = null)
+            //{
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            //}
+        }
     }
 }

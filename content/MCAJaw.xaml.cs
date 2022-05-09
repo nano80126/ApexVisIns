@@ -21,6 +21,7 @@ using System.Text.Json;
 using Basler.Pylon;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace ApexVisIns.content
 {
@@ -30,6 +31,14 @@ namespace ApexVisIns.content
     public partial class MCAJaw : StackPanel, INotifyPropertyChanged
     {
         #region Resources (xaml 內)
+        /// <summary>
+        /// Jaw 檢驗結果 (綁 Lot)
+        /// </summary>
+        public JawInspection JawInspection { get; set; }
+        
+        /// <summary>
+        /// Jaw 規格設定 (包含檢驗結果)
+        /// </summary>
         public JawSpecGroup JawSpecGroup { get; set; }
 
         // public JawSpecGroup JawSpecGroup2 { get; set; }
@@ -39,6 +48,10 @@ namespace ApexVisIns.content
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
         private int _jawTab = 0;
+
+        private string SpecDirectory { get; } = @$"specification";
+
+        private string SpecPath { get; } = $@"MCAJaw.json";
         #endregion
 
         #region Properties
@@ -93,13 +106,19 @@ namespace ApexVisIns.content
             InitializeComponent();
 
             MainWindow = (MainWindow)Application.Current.MainWindow;
+            // 初始化路徑 
+            InitSpecSettingPath();
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            #region 新增假資料
+            #region 綁定 Resource
+            JawInspection = FindResource("JawInspection") as JawInspection;
             JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
+            #endregion
+
             //JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
+            #region 新增假資料
 
             if (JawSpecGroup.Collection1.Count == 0)
             {
@@ -117,26 +136,33 @@ namespace ApexVisIns.content
                     JawSpecGroup.Collection2.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
                 }
             }
-
-
-            if (JawSpecGroup.SpecList.Count == 0)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    JawSpecGroup.SpecList.Add(new JawSpecSetting()
-                    {
-                        Item = $"項目P{i}",
-                        Note = " 123"
-                    });
-                }
-            }
             #endregion
 
+            // 載入規格設定
+            LoadSpecList();
+
+
+
+            //if (JawSpecGroup.SpecList.Count == 0)
+            //{
+            //    for (int i = 0; i < 10; i++)
+            //    {
+            //        JawSpecGroup.SpecList.Add(new JawSpecSetting()
+            //        {
+            //            Key = JawSpecGroup.SpecList.Count + 1,
+            //            Item = $"項目P{i}",
+            //            Note = string.Empty
+            //        });
+            //    }
+            //}
+
+            #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
             // 硬體初始化
             // InitHardware();
+            #endregion
 
             if (!loaded)
             {
@@ -492,6 +518,76 @@ namespace ApexVisIns.content
             Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
         }
         #endregion
+
+
+        #region 初始化 SpecList
+        private void InitSpecSettingPath()
+        {
+            string directory = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}";
+            string path = $@"{directory}\{SpecPath}";
+
+            if (!Directory.Exists(directory))
+            {
+                // 新增路徑
+                _ = Directory.CreateDirectory(directory);
+                // 新增檔案
+                _ = File.CreateText(path);
+            }
+            else if (!File.Exists(path))
+            {
+                // 新增檔案
+                _ = File.CreateText(path);
+            }
+
+            SettingList.JsonPath = path;
+        }
+
+        private void LoadSpecList()
+        {
+            string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
+
+            using StreamReader reader = File.OpenText(path);
+            string jsonStr = reader.ReadToEnd();
+
+            if (jsonStr != string.Empty)
+            {
+                // 反序列化，載入 JSON FILE
+                List<JawSpecSetting> list = JsonSerializer.Deserialize<List<JawSpecSetting>>(jsonStr, new JsonSerializerOptions
+                {
+                    NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                });
+
+
+                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("良品", "", 0));
+                foreach (JawSpecSetting element in list)
+                {
+                    JawSpecGroup.SpecList.Add(element);
+                    JawInspection.LotResult.Add(element.Item, new JawInspection.ResultElement(element.Item, element.Note, 0));
+
+                    //JawInspection.LotResult[element.Item].PropertyChange();
+                    //Debug.WriteLine($"{element.Item}");
+                }
+
+                //Debug.WriteLine($"1: {JawInspection.LotResult["0.008-R"].Name}");
+                //Debug.WriteLine($"2: {JawInspection.LotResult["0.008-R"].Count}");
+            }
+            else
+            {
+                string[] items = new string[] { "0.88-R", "0.88-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "0.005MAX", "平面度" };
+                double[] center = new double[] { 0.88, 0.88, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
+                double[] lowerc = new double[] { 0.0855, 0.0855, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
+                double[] upperc = new double[] { 0.0905, 0.0905, 0.01, 0.01, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
+                double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+                for (int i = 0; i < items.Length; i++)
+                {
+                    int id = JawSpecGroup.SpecList.Count + 1;
+                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, items[i], center[i], lowerc[i], upperc[i], correc[i]));
+                }
+            }
+        }
+        #endregion
+
 
         #region 測試
         private void MinusButton_Click(object sender, RoutedEventArgs e)

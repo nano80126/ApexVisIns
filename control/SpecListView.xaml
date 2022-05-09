@@ -118,7 +118,7 @@
 
                                 <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
                                 <TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Item}"/>
-                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterLine}"/>
+                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}"/>
                                 <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
                                 <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
                                 <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result}"/>
