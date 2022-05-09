@@ -567,6 +567,7 @@ namespace ApexVisIns.content
                     //JawInspection.LotResult[element.Item].PropertyChange();
                     //Debug.WriteLine($"{element.Item}");
                 }
+                
 
                 //Debug.WriteLine($"1: {JawInspection.LotResult["0.008-R"].Name}");
                 //Debug.WriteLine($"2: {JawInspection.LotResult["0.008-R"].Count}");
@@ -583,7 +584,17 @@ namespace ApexVisIns.content
                 {
                     int id = JawSpecGroup.SpecList.Count + 1;
                     JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, items[i], center[i], lowerc[i], upperc[i], correc[i]));
+                    //JawInspection.LotResult.Add(items[i], new JawInspection.ResultElement(items[i], "", 0));
                 }
+                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("123", "", 0));
+                JawInspection.LotResult.Add("0.008-R", new JawInspection.ResultElement("0.008-R", "", 0));
+
+
+                //Debug.WriteLine($"1: {JawInspection.LotResult.Keys}");
+                //foreach (var item in JawInspection.LotResult.Keys)
+                //{
+                //    Debug.WriteLine($"2: {item}");
+                //}
             }
         }
         #endregion

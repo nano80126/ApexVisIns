@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ApexVisIns
 {
@@ -1067,6 +1068,7 @@ namespace ApexVisIns
             OnCollectionChanged(NotifyCollectionChangedAction.Reset, default);
         }
 
+
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -1096,10 +1098,19 @@ namespace ApexVisIns
 
     public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        private int _index;
 
-        public ObservableDictionary() : base()
+        private IDictionary<TKey, TValue> dictionary;
+
+        //public ObservableDictionary() : this(new Dictionary<TKey, TValue>())
+        //{
+
+        //}
+
+        public ObservableDictionary() : base() { }
+
+        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
         {
+            this.dictionary = dictionary;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -1107,46 +1118,142 @@ namespace ApexVisIns
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            Debug.WriteLine(propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem)
+        {
+            //KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(key, value);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, base.Keys.ToList().IndexOf(newItem.Key)));
+
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+        }
+
+        /// <summary>
+        /// Used By Add & Remove
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         private void OnCollectionChanged(NotifyCollectionChangedAction action, TKey key, TValue value)
         {
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, new KeyValuePair<TKey, TValue>(key, value)));
+            KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(key, value);
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, dictionary.ToList().IndexOf(newItem)));
+
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
             OnPropertyChanged(nameof(Count));
+        }
+
+        /// <summary>
+        /// Used by Update
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="key"></param>
+        /// <param name="newValue"></param>
+        /// <param name="oldValue"></param>
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, TKey key, TValue newValue, TValue oldValue)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, new KeyValuePair<TKey, TValue>(key, newValue), new KeyValuePair<TKey, TValue>(key, oldValue)));
+            OnPropertyChanged(nameof(Values));
+        }
+
+        /// <summary>
+        /// Used By Clear
+        /// </summary>
+        /// <param name="action"></param>
+        private void OnCollectionChanged(NotifyCollectionChangedAction action)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
             OnPropertyChanged(nameof(Count));
-            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
         }
 
-        public void Add(TKey key,TValue value)
+
+        public new bool ContainsKey(TKey key)
         {
-            this.Add(key, value);
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, key, value);
+            return base.ContainsKey(key);
         }
 
 
-        public new KeyCollection Keys
+        public new ICollection<TKey> Keys => dictionary.Keys;
+
+        public new ICollection<TValue> Values => dictionary.Values;
+
+
+        public new TValue this[TKey key]
         {
-            get { return base.Keys; }
+            get => ContainsKey(key) ? base[key] : default;
+            //get => base[key];
+            set => Update(key, value);
         }
 
-
-        public new ValueCollection Values
-        {
-            get { return base.Values; }
-        }
-
-
-        public new int Count
-        {
-            get { return base.Count; }
-        }
-
-        //public new TValue this[TKey key]
+        //public new void Add(TKey key, TValue value)
         //{
-        //get { return this.GetValue(); }
-        //get { return this.GetValueOrDefault(key); }
-        //set { this}
+        //    KeyValuePair<TKey, TValue> item = new(key, value);
+        //    dictionary.Add(item);
+        //    OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+        //    //OnPropertyChanged("Item[]");
         //}
+        public new void Add(TKey key, TValue value)
+        {
+            if (!base.ContainsKey(key))
+            {
+                var item = new KeyValuePair<TKey, TValue>(key, value);
+                base.Add(key, value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+                OnPropertyChanged(nameof(Count));
+                OnPropertyChanged("Item1[]");
+            }
+            //OnPropertyChanged("Item[]");
+        }
+
+
+        public new bool Remove(TKey key)
+        {
+            TValue value;
+
+            if (dictionary.TryGetValue(key, out value) && dictionary.Remove(key))
+            {
+                OnCollectionChanged(NotifyCollectionChangedAction.Remove, key, value);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public new void Clear()
+        {
+            dictionary.Clear();
+            OnCollectionChanged(NotifyCollectionChangedAction.Reset);
+        }
+
+        private void Update(TKey key, TValue value)
+        {
+            if (dictionary.TryGetValue(key, out TValue existing))
+            {
+                dictionary[key] = value;
+                OnCollectionChanged(NotifyCollectionChangedAction.Replace, key, value, existing);
+            }
+            else
+            {
+                Add(key, value);
+            }
+        }
+
+
+        public new bool TryGetValue(TKey key, out TValue value)
+        {
+            return dictionary.TryGetValue(key, out value);
+        }
+
+
+        public new int Count => base.Count;
     }
 }

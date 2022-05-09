@@ -174,7 +174,8 @@ namespace ApexVisIns.Product
         /// </summary>
         public string LotNumber { get; set; }
 
-        public Dictionary<string, ResultElement> LotResult { get; } = new Dictionary<string, ResultElement>();
+        public Dictionary<string, ResultElement> LotResult2 { get; } = new Dictionary<string, ResultElement>();
+        public ObservableDictionary<string, ResultElement> LotResult { get; } = new ObservableDictionary<string, ResultElement>();
 
 
         public class ResultElement
@@ -187,9 +188,9 @@ namespace ApexVisIns.Product
             }
 
 
-            public string Name { get; set; }
-            public string Note { get; set; }
-            public int Count { get; set; }
+            public string Name { get; set; } = "1";
+            public string Note { get; set; } = "2";
+            public int Count { get; set; } = 10;
 
 
             //public event PropertyChangedEventHandler PropertyChanged;

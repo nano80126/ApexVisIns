@@ -366,7 +366,7 @@
 
                                         <!--#region NewRegion -->
                                         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource ItemText}"
-                                           Text="{Binding LotResult[良品].Name}" />
+                                           Text="{Binding LotResult[良品].Name, UpdateSourceTrigger=PropertyChanged}" />
                                         <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
                                         <TextBox Grid.Row="0" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[良品].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
@@ -380,7 +380,7 @@
                                         <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
                                                    Text="{Binding LotResult[0.008-R].Name, StringFormat={}{0} 不良}"/>
                                         <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.008-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding LotResult.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
