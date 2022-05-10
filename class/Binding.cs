@@ -1098,8 +1098,7 @@ namespace ApexVisIns
 
     public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-
-        private IDictionary<TKey, TValue> dictionary;
+        //private IDictionary<TKey, TValue> dictionary;
 
         //public ObservableDictionary() : this(new Dictionary<TKey, TValue>())
         //{
@@ -1108,44 +1107,32 @@ namespace ApexVisIns
 
         public ObservableDictionary() : base() { }
 
-        public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
-        {
-            this.dictionary = dictionary;
-        }
+        //public ObservableDictionary(IDictionary<TKey, TValue> dictionary)
+        //{
+        //    //this.dictionary = dictionary;
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            Debug.WriteLine(propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Used by Add & Remove
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="newItem"></param>
         private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem)
         {
-            //KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(key, value);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, base.Keys.ToList().IndexOf(newItem.Key)));
 
             OnPropertyChanged(nameof(Keys));
             OnPropertyChanged(nameof(Values));
             OnPropertyChanged(nameof(Count));
-        }
-
-        /// <summary>
-        /// Used By Add & Remove
-        /// </summary>
-        /// <param name="action"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, TKey key, TValue value)
-        {
-            KeyValuePair<TKey, TValue> newItem = new KeyValuePair<TKey, TValue>(key, value);
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, dictionary.ToList().IndexOf(newItem)));
-
-            OnPropertyChanged(nameof(Keys));
-            OnPropertyChanged(nameof(Values));
-            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
         }
 
         /// <summary>
@@ -1155,10 +1142,12 @@ namespace ApexVisIns
         /// <param name="key"></param>
         /// <param name="newValue"></param>
         /// <param name="oldValue"></param>
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, TKey key, TValue newValue, TValue oldValue)
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey,TValue> newItem, KeyValuePair<TKey,TValue> oldItem)
         {
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, new KeyValuePair<TKey, TValue>(key, newValue), new KeyValuePair<TKey, TValue>(key, oldValue)));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem, base.Keys.ToList().IndexOf(newItem.Key)));
+         
             OnPropertyChanged(nameof(Values));
+            OnPropertyChanged("Item[]");
         }
 
         /// <summary>
@@ -1168,22 +1157,21 @@ namespace ApexVisIns
         private void OnCollectionChanged(NotifyCollectionChangedAction action)
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
-            OnPropertyChanged(nameof(Count));
+
             OnPropertyChanged(nameof(Keys));
             OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
         }
-
 
         public new bool ContainsKey(TKey key)
         {
             return base.ContainsKey(key);
         }
 
+        public new ICollection<TKey> Keys => base.Keys;
 
-        public new ICollection<TKey> Keys => dictionary.Keys;
-
-        public new ICollection<TValue> Values => dictionary.Values;
-
+        public new ICollection<TValue> Values => base.Values;
 
         public new TValue this[TKey key]
         {
@@ -1201,15 +1189,11 @@ namespace ApexVisIns
         //}
         public new void Add(TKey key, TValue value)
         {
-            if (!base.ContainsKey(key))
-            {
-                var item = new KeyValuePair<TKey, TValue>(key, value);
-                base.Add(key, value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
-                OnPropertyChanged(nameof(Count));
-                OnPropertyChanged("Item1[]");
-            }
-            //OnPropertyChanged("Item[]");
+            //if (!base.ContainsKey(key))
+            KeyValuePair<TKey, TValue> item = new(key, value);
+            base.Add(key, value);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+            OnPropertyChanged(nameof(Count));
         }
 
 
@@ -1217,9 +1201,10 @@ namespace ApexVisIns
         {
             TValue value;
 
-            if (dictionary.TryGetValue(key, out value) && dictionary.Remove(key))
+            if (base.TryGetValue(key, out value) && base.Remove(key))
             {
-                OnCollectionChanged(NotifyCollectionChangedAction.Remove, key, value);
+                KeyValuePair<TKey, TValue> item = new(key, value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
                 return true;
             }
             else
@@ -1230,16 +1215,18 @@ namespace ApexVisIns
 
         public new void Clear()
         {
-            dictionary.Clear();
+            base.Clear();
             OnCollectionChanged(NotifyCollectionChangedAction.Reset);
         }
 
         private void Update(TKey key, TValue value)
         {
-            if (dictionary.TryGetValue(key, out TValue existing))
+            if (base.TryGetValue(key, out TValue existing))
             {
-                dictionary[key] = value;
-                OnCollectionChanged(NotifyCollectionChangedAction.Replace, key, value, existing);
+                base[key] = value;
+                //OnCollectionChanged(NotifyCollectionChangedAction.Replace, key, value, existing);
+                KeyValuePair<TKey, TValue> item = new(key, value);
+                OnCollectionChanged(NotifyCollectionChangedAction.Replace, item);
             }
             else
             {
@@ -1250,7 +1237,7 @@ namespace ApexVisIns
 
         public new bool TryGetValue(TKey key, out TValue value)
         {
-            return dictionary.TryGetValue(key, out value);
+            return base.TryGetValue(key, out value);
         }
 
 

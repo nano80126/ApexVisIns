@@ -580,7 +580,6 @@ namespace ApexVisIns
             ptsV.Clear();
         }
 
-
         /// <summary>
         /// 計算陣列局部離群點 (local outliers)
         /// </summary>
@@ -669,13 +668,13 @@ namespace ApexVisIns
         /// <param name="offset">Offset 位移</param>
         /// <param name="th1">Canny 閾值 1</param>
         /// <param name="th2">Canny 閾值 2</param>
-        /// <param name="con">輪廓陣列</param>
-        /// <param name="cons">一維化輪廓陣列</param>
+        /// <param name="cons">輪廓陣列</param>
+        /// <param name="con">一維化輪廓陣列</param>
         /// <param name="conLength">輪廓長度閾值，過濾小於此長度值的輪廓</param>
-        public static void GetContours(Mat src, Point offset, byte th1, byte th2, out Point[][] con, out Point[] cons, int conLength = 0)
+        public static void GetContours(Mat src, Point offset, byte th1, byte th2, out Point[][] cons, out Point[] con, int conLength = 0)
         {
-            con = null;
             cons = null;
+            con = null;
 
             try
             {
@@ -685,12 +684,51 @@ namespace ApexVisIns
                 Cv2.BilateralFilter(src, blur, 15, 100, 5);
                 Cv2.Canny(blur, canny, th1, th2, 3, true);
 
-                Cv2.FindContours(canny, out con, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, offset);
+                Cv2.FindContours(canny, out cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, offset);
 
-                IEnumerable<Point[]> filter = con.Where(c => c.Length > conLength);
+                IEnumerable<Point[]> filter = cons.Where(c => c.Length > conLength);
 
-                con = filter.ToArray();
-                cons = filter.SelectMany(pts => pts).ToArray();
+                cons = filter.ToArray();
+                con = filter.SelectMany(pts => pts).ToArray();
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 從 Canny 取得輪廓點陣列
+        /// </summary>
+        /// <param name="canny">來源影像</param>
+        /// <param name="offset">Offset 位移</param>
+        /// <param name="cons">輪廓陣列</param>
+        /// <param name="con">一維化輪廓陣列</param>
+        /// <param name="conLength"></param>
+        public static void GetContoursFromCanny(Mat canny, Point offset, out Point[][] cons, out Point[] con, int conLength = 0)
+        {
+            cons = null;
+            con = null;
+
+            try
+            {
+                Cv2.FindContours(canny, out cons, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, offset);
+
+                if (conLength > 0)
+                {
+                    IEnumerable<Point[]> filter = cons.Where(c => c.Length > conLength);
+
+                    cons = filter.ToArray();
+                    con = filter.SelectMany(pts => pts).ToArray();
+                }
+                else
+                {
+                    con = cons.SelectMany(pts => pts).ToArray();
+                }
             }
             catch (OpenCVException)
             {
@@ -789,7 +827,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 計算水平 Hough Lines
+        /// 計算水平 Hough Lines (General)
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="roi">ROI 方形區域</param>
@@ -830,6 +868,41 @@ namespace ApexVisIns
                 throw;
             }
         }
+
+        /// <summary>
+        /// 從 Canny 計算水平 Hough Lines
+        /// </summary>
+        /// <param name="src">來源 Canny 影像</param>
+        /// <param name="th1"></param>
+        /// <param name="th2"></param>
+        /// <param name="lineSegH"></param>
+        /// <param name="Ygap"></param>
+        public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int Ygap = 3)
+        {
+            lineSegH = Array.Empty<LineSegmentPoint>();
+
+            try
+            {
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
+
+                // 1. 保留 Ygap < 3 的線 2. 平移 roi.X roi.Y
+                lineSegH = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Select(line =>
+                {
+                    line.Offset(offset);
+                    return line;
+                }).ToArray();
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// 計算垂直Hough Lines
@@ -980,6 +1053,7 @@ namespace ApexVisIns
 
             try
             {
+                //Debug.WriteLine($"offset: {offset}");
                 LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, 10, 5);
 
                 if (lineSeg != null && lineSeg.Length > 0)
@@ -1239,5 +1313,92 @@ namespace ApexVisIns
             }
         }
 
+
+        #region MCA JAW 使用 Methods 
+
+        /// <summary>
+        /// 從 Canny 計算水平 Hough Lines (MCA Jaw 使用)
+        /// </summary>
+        /// <param name="src">來源 Canny 影像</param>
+        /// <param name="lineSegH"></param>
+        /// <param name="houghThreashold">HoughLinesP 方法內的 Threashold</param>
+        /// <param name="houghMinLineLength">HoughLinesP 方法內的 MinLineLength</param>
+        /// <param name="Ygap"></param>
+        public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
+        {
+            lineSegH = Array.Empty<LineSegmentPoint>();
+
+            try
+            {
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
+
+                // 1. 保留 Ygap < 3 的線 2. 平移 roi.X roi.Y
+                lineSegH = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Select(line =>
+                {
+                    line.Offset(offset);
+                    return line;
+                }).ToArray();
+            }
+            catch (OpenCVException)
+            {
+                throw;
+            }
+
+            catch (OpenCvSharpException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="src"></param>
+        public static void GetBottomRighPoint(Mat src, out Point point)
+        {
+            point = new Point(0, 0);
+
+            try
+            {
+                // Cv2.FindContours(src, out Point[][] con, );
+                //Cv2.FindContours(src, out Point[][] con, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        public static void GetBottomHorizontalLine(Mat src, out double Ypos, int Ygap = 3, int lineLength = 0)
+        {
+            Ypos = 0;
+
+            try
+            {
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, lineLength, Ygap);
+
+                Debug.WriteLine($"lineSeg: {lineSeg.Length}");
+                if (lineSeg != null && lineSeg.Length > 0)
+                {
+                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap);
+
+                    foreach (LineSegmentPoint item in filter)
+                    {
+                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        #endregion
     }
 }

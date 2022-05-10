@@ -119,28 +119,26 @@ namespace ApexVisIns.content
 
             //JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
             #region 新增假資料
+            //if (JawSpecGroup.Collection1.Count == 0)
+            //{
+            //    for (int i = 0; i < 8; i++)
+            //    {
+            //        JawSpecGroup.Collection1.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+            //        //JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
+            //    }
+            //}
 
-            if (JawSpecGroup.Collection1.Count == 0)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    JawSpecGroup.Collection1.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
-                    //JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
-                }
-            }
-
-            if (JawSpecGroup.Collection2.Count == 0)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    JawSpecGroup.Collection2.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
-                }
-            }
+            //if (JawSpecGroup.Collection2.Count == 0)
+            //{
+            //    for (int i = 0; i < 4; i++)
+            //    {
+            //        JawSpecGroup.Collection2.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
+            //    }
+            //}
             #endregion
 
             // 載入規格設定
             LoadSpecList();
-
 
 
             //if (JawSpecGroup.SpecList.Count == 0)
@@ -544,6 +542,13 @@ namespace ApexVisIns.content
 
         private void LoadSpecList()
         {
+            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResult.Count > 0) { return; }
+            else
+            {
+                JawSpecGroup.SpecList.Clear();
+                JawInspection.LotResult.Clear();
+            }
+
             string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
             using StreamReader reader = File.OpenText(path);
@@ -563,33 +568,24 @@ namespace ApexVisIns.content
                 {
                     JawSpecGroup.SpecList.Add(element);
                     JawInspection.LotResult.Add(element.Item, new JawInspection.ResultElement(element.Item, element.Note, 0));
-
-                    //JawInspection.LotResult[element.Item].PropertyChange();
-                    //Debug.WriteLine($"{element.Item}");
                 }
-                
-
-                //Debug.WriteLine($"1: {JawInspection.LotResult["0.008-R"].Name}");
-                //Debug.WriteLine($"2: {JawInspection.LotResult["0.008-R"].Count}");
             }
             else
             {
-                string[] items = new string[] { "0.88-R", "0.88-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "0.005MAX", "平面度" };
-                double[] center = new double[] { 0.88, 0.88, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "0.005MAX", "平面度" };
+                double[] center = new double[] { 0.088, 0.088, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
                 double[] lowerc = new double[] { 0.0855, 0.0855, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
                 double[] upperc = new double[] { 0.0905, 0.0905, 0.01, 0.01, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
                 double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+
+                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("良品", "", 0));
                 for (int i = 0; i < items.Length; i++)
                 {
                     int id = JawSpecGroup.SpecList.Count + 1;
                     JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, items[i], center[i], lowerc[i], upperc[i], correc[i]));
-                    //JawInspection.LotResult.Add(items[i], new JawInspection.ResultElement(items[i], "", 0));
+                    JawInspection.LotResult.Add(items[i], new JawInspection.ResultElement(items[i], "", 0));
                 }
-                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("123", "", 0));
-                JawInspection.LotResult.Add("0.008-R", new JawInspection.ResultElement("0.008-R", "", 0));
-
-
                 //Debug.WriteLine($"1: {JawInspection.LotResult.Keys}");
                 //foreach (var item in JawInspection.LotResult.Keys)
                 //{
@@ -603,12 +599,17 @@ namespace ApexVisIns.content
         #region 測試
         private void MinusButton_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine((sender as Button).CommandParameter);
+            string key = (sender as Button).CommandParameter.ToString();
+            if (JawInspection.LotResult[key].Count > 0)
+            {
+                JawInspection.LotResult[key].Count--;
+            }
         }
 
         private void PlusButton_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine((sender as Button).CommandParameter);
+            string key = (sender as Button).CommandParameter.ToString();
+            JawInspection.LotResult[key].Count++;
         }
         #endregion
 

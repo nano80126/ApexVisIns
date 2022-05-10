@@ -123,7 +123,7 @@
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
-                            <Binding Path="IsGrabberOpened" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                            <Binding Path="IsTriggerMode" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
@@ -148,7 +148,7 @@
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
-                            <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                            <!--<Binding Path="" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>-->
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
@@ -172,7 +172,7 @@
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay"/>
-                            <Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>
+                            <!--<Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>-->
                         </MultiBinding>
                     </Button.IsEnabled>
                     

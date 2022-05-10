@@ -174,12 +174,14 @@ namespace ApexVisIns.Product
         /// </summary>
         public string LotNumber { get; set; }
 
-        public Dictionary<string, ResultElement> LotResult2 { get; } = new Dictionary<string, ResultElement>();
+        // public Dictionary<string, ResultElement> LotResult2 { get; } = new Dictionary<string, ResultElement>();
         public ObservableDictionary<string, ResultElement> LotResult { get; } = new ObservableDictionary<string, ResultElement>();
 
 
-        public class ResultElement
+        public class ResultElement : INotifyPropertyChanged
         {
+            private int _count;
+
             public ResultElement(string name, string note, int count)
             {
                 Name = name;
@@ -187,23 +189,27 @@ namespace ApexVisIns.Product
                 Count = count;
             }
 
-
             public string Name { get; set; } = "1";
             public string Note { get; set; } = "2";
-            public int Count { get; set; } = 10;
+            public int Count
+            {
+                get => _count;
+                set
+                {
+                    if (value != _count)
+                    {
+                        _count = value;
+                        OnPropertyChanged();
+                    }
+                }
+            }
 
+            public event PropertyChangedEventHandler PropertyChanged;
 
-            //public event PropertyChangedEventHandler PropertyChanged;
-
-            //protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            //{
-            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            //}
-
-            //public void PropertyChange(string propertyName = null)
-            //{
-            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            //}
+            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

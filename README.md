@@ -130,10 +130,12 @@ Apex 外觀瑕疵檢測
 
 * [ ] 回 APEX 時，TargetFeature 要變更
 
-* [ ] 預設不要啟動 Trigger Mode
+* [x] 預設不要啟動 Trigger Mode
 	* 由初始化完成後啟動
 
-* [ ] CameraTab 按鈕 UX 新增
+* [x] CameraTab 按鈕 UX 新增
+
+* [ ] 確認 UserSet 可不可以寫入 CenterX & CenterY
 
 ### Config Logic
 

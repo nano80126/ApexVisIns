@@ -479,7 +479,7 @@ namespace ApexVisIns
                 Channels.Clear();
                 for (int i = 0; i < _channelNumber; i++)
                 {
-                    Channels.Add(new LightChannel($"Chi{i + 1}", 0));
+                    Channels.Add(new LightChannel($"Ch{i + 1}", 0));
                 }
             }
         }

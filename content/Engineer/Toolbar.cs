@@ -336,9 +336,45 @@ namespace ApexVisIns.content
 
             try
             {
+                cam.Camera.ExecuteSoftwareTrigger();
+
+                using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (AssistRect.Area > 0)
+                    {
+#if false
+                        OpenCvSharp.Rect roi = AssistRect.GetRect();
+                        Mat roiMat = new(mat, roi);
+                        Cv2.ImShow($"roi", new Mat(mat, roi));
+
+                        Methods.GetRoiCanny(mat, roi, 75, 150, out Mat canny);
+                        // Methods.GetContours(roiMat, roi.Location, 75, 150, out OpenCvSharp.Point[][] cons, out OpenCvSharp.Point[] con);
+                        Methods.GetContoursFromCanny(canny, roi.Location, out _, out OpenCvSharp.Point[] con);
+
+                        Methods.GetHoughHorizonalYPos(canny, roi.Top, out int YCount, out double[] Ypos, 5, 0);
+
+                        int maxX = con.Min(c => c.X);
+                        int maxY = con.Max(c => c.Y);
+
+                        Debug.WriteLine($"X: {maxX} Y: {maxY}");
+                        Debug.WriteLine($"{string.Join(",", Ypos)}");
 
 
+                        //Methods.GetHoughVerticalXPos(canny, roi.Left, out int count, out double[] XPos);
+                        //Methods.GetBottomHorizontalLine(canny, out double Ypos);
 
+                        //Debug.WriteLine($"{XPos.Length} {string.Join(",", XPos)}");
+                        //Cv2.ImShow($"roi", roiMat);
+                        Cv2.ImShow($"canny", canny); 
+#endif
+                        MainWindow.JawInvSequence(mat);
+                    }
+
+                    Indicator.Image = mat;
+                });
             }
             catch (TimeoutException T)
             {
@@ -528,9 +564,6 @@ namespace ApexVisIns.content
                 {
                     //Cv2.DestroyAllWindows();
                     #region Coding custom ROI Method here
-
-
-
 
 
                     #region UI Thread here

@@ -52,9 +52,9 @@
 
         <!--#region Objects -->
         <!--Crosshair
-        <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>-->
+            <local:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>-->
         <!--輔助 Rect
-        <local:AssistRect x:Key="AssistRect" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3" />-->
+            <local:AssistRect x:Key="AssistRect" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3" />-->
         <!--輔助 Points
             <x:Array x:Key="AssistPoints" Type="local:AssistPoint">
                 <local:AssistPoint X="0" Y="0" Enable="True" Stroke="{StaticResource ColorDeepPurple}" StrokeThickness="1.0"/>
@@ -142,8 +142,10 @@
                 </Grid.ColumnDefinitions>
 
                 <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
-                <!--<TextBlock Grid.Column="0" Text="{Binding Title, FallbackValue=Default, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
-                           Style="{StaticResource MainWindowTitle}" VerticalAlignment="Center"/>-->
+                
+                <!--
+                    <TextBlock Grid.Column="0" Text="{Binding Title, FallbackValue=Default, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" VerticalAlignment="Center" Style="{StaticResource MainWindowTitle}" />
+                -->
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button x:Name="Minbtn" Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Click="Minbtn_Click" Style="{StaticResource WindowButton}"
@@ -243,7 +245,7 @@
 
                 <!--#region MCA Jaw Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" Visibility="Collapsed">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
