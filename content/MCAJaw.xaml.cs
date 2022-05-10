@@ -596,7 +596,15 @@ namespace ApexVisIns.content
         #endregion
 
 
-        #region 測試
+        #region +/- 數量
+        private void ResetCount_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (string key in JawInspection.LotResult.Keys)
+            {
+                JawInspection.LotResult[key].Count = 0;
+            }
+        }
+
         private void MinusButton_Click(object sender, RoutedEventArgs e)
         {
             string key = (sender as Button).CommandParameter.ToString();
@@ -685,8 +693,6 @@ namespace ApexVisIns.content
 
 
 
-
-
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -731,8 +737,8 @@ namespace ApexVisIns.content
         {
             _modbusTCPIO.Disconnect();
         }
+
         #endregion
 
-       
     }
 }

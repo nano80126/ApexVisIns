@@ -91,11 +91,11 @@ namespace ApexVisIns
             Rect left = new(leftPt.X - 20, leftPt.Y - 40, 20, 20);
             Rect right = new(rightPt.X + 1, rightPt.Y - 40, 20, 20);
 
+            double sumLength = 0;
             LineSegmentPoint[] lineH;
 
             using Mat leftMat = new(src, left);
             using Mat rightMat = new(src, right);
-
 
             Methods.GetRoiCanny(src, left, 75, 150, out Mat leftCanny);
             Methods.GetRoiCanny(src, right, 75, 150, out Mat rightCanny);
@@ -104,33 +104,30 @@ namespace ApexVisIns
             //Methods.GetCanny(rightMat, 75, 150, out Mat rightCanny);
 
             Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 5, 0);
-
-            double SamLength = lineH.Sum(line => line.Length());
-            LeftY = 0;
+            sumLength = lineH.Sum(line => line.Length());
+            LeftY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
 
             foreach (LineSegmentPoint item in lineH)
             {
-                LeftY += (item.P1.Y + item.P2.Y) / 2 * item.Length() / SamLength;
+                LeftY += (item.P1.Y + item.P2.Y) / 2 * item.Length() / sumLength;
             }
-            Debug.WriteLine($"Left Y: {LeftY} {SamLength}");
+            Debug.WriteLine($"Left Y: {LeftY} {sumLength}");
             Debug.WriteLine("");
 
             Methods.GetHoughLinesHFromCanny(rightCanny, right.Location, out lineH, 5, 0);
-            SamLength = lineH.Sum(line => line.Length());
-            //RightY = 0;
-
-            RightY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / SamLength);
-
+            sumLength = lineH.Sum(line => line.Length());
+            RightY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
 
             RightY = 0;
             foreach (LineSegmentPoint item in lineH)
             {
-                RightY += (item.P1.Y + item.P2.Y) / 2 * item.Length() / SamLength;
+                RightY += (item.P1.Y + item.P2.Y) / 2 * item.Length() / sumLength;
             }
-            Debug.WriteLine($"Right Y: {RightY} {SamLength}");
+            Debug.WriteLine($"Right Y: {RightY} {sumLength}");
             Debug.WriteLine("");
 
-            return true;
+            // 確認 OK / NG
+            return Math.Abs(LeftY - RightY) * 0.249 < upperLimit;
         }
 
 

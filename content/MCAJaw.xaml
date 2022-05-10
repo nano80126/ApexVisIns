@@ -275,15 +275,18 @@
                                     <!--Control Panel, 1st row, 2nd row-->
                                     <DockPanel Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="8 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-                                        <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 4" VerticalAlignment="Top" HorizontalAlignment="Stretch" materialDesign:TextFieldAssist.PrefixText="Lot"
-                                         materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
-                                         Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                                        <TextBox DockPanel.Dock="Top" Margin="0 0 0 0" Padding="8 4" VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+                                                 materialDesign:TextFieldAssist.PrefixText="Lot"
+                                                 materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
+                                                 Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
+                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
 
                                         <Button DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Margin="0 12 0 0" Padding="0 0" 
-                                        VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
-                                        Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>
+                                                VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
+                                                Click="ResetCount_Click"
+                                                Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>  
+                                        
                                     </DockPanel>
                                     <!--#endregion-->
 
