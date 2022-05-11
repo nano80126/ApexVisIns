@@ -1332,7 +1332,7 @@ namespace ApexVisIns
             {
                 LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
 
-                // 1. 保留 Ygap < 3 的線 2. 平移 roi.X roi.Y
+                // 1. 保留 Ygap < 3 的線 2. 平移 roi.X, roi.Y
                 lineSegH = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap).Select(line =>
                 {
                     line.Offset(offset);
@@ -1343,60 +1343,80 @@ namespace ApexVisIns
             {
                 throw;
             }
-
             catch (OpenCvSharpException)
             {
                 throw;
             }
         }
 
+
+        //public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
+        //{
+        //    lineSegH = Array.Empty<LineSegmentPoint>();
+
+        //    try
+        //    {
+        //        LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
+
+        //        if (lineSeg != null && lineSeg.Length > 0)
+        //        {
+        //            IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap);
+        //            IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.Y + line.P2.Y).GroupBy(line => Math.Floor((double)(line.P1.Y * line.P2.Y) / 10000)).ToArray();
+
+
+        //            int YPosCount = groupings.Length;
+        //            Ypos = new double[groupings.Length];
+        //            for (int j = 0; j < groupings.Length; j++)
+        //            {
+        //                Ypos[j] = groupings[j].Average(a => Math.Round((double)(a.P1.Y + a.P2.Y) / 2)) + offset;
+        //            }
+        //        }
+        //    }
+        //    catch (OpenCVException)
+        //    {
+        //        throw;
+        //    }
+        //    catch (OpenCvSharpException)
+        //    {
+        //        throw;
+        //    }
+        //}
+
+
+
         /// <summary>
-        /// 
+        /// 從 Canny 計算垂直 Hough Lines (MCA Jaw 使用)
         /// </summary>
         /// <param name="src"></param>
-        public static void GetBottomRighPoint(Mat src, out Point point)
+        /// <param name="roi"></param>
+        /// <param name="lineSegV"></param>
+        /// <param name="Xgap"></param>
+        public static void GetHoughLinesVFromCanny(Mat src, Point roi, out LineSegmentPoint[] lineSegV, int houghThreashold = 25, double houghMinLineLength = 10, int Xgap = 3)
         {
-            point = new Point(0, 0);
+            lineSegV = Array.Empty<LineSegmentPoint>();
 
             try
             {
-                // Cv2.FindContours(src, out Point[][] con, );
-                //Cv2.FindContours(src, out Point[][] con, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
 
-
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-
-        public static void GetBottomHorizontalLine(Mat src, out double Ypos, int Ygap = 3, int lineLength = 0)
-        {
-            Ypos = 0;
-
-            try
-            {
-                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, 25, lineLength, Ygap);
-
-                Debug.WriteLine($"lineSeg: {lineSeg.Length}");
-                if (lineSeg != null && lineSeg.Length > 0)
+                // 1. 保留 Xgap < 3 的線 2. 平移 roi.X, roi.Y
+                lineSegV = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap).Select(line =>
                 {
-                    IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap);
-
-                    foreach (LineSegmentPoint item in filter)
-                    {
-                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-                    }
-                }
+                    line.Offset(roi.X, roi.Y);
+                    return line;
+                }).ToArray();
             }
-            catch (Exception)
+            catch (OpenCVException)
+            {
+                throw;
+            }
+            catch (OpenCvSharpException)
             {
                 throw;
             }
         }
+
+
 
 
         #endregion

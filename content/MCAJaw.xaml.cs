@@ -71,6 +71,7 @@ namespace ApexVisIns.content
         }
         #endregion
 
+
         #region Local Object (方便呼叫)
         /// <summary>
         /// WISE-4050/LAN IO 控制器
@@ -93,6 +94,7 @@ namespace ApexVisIns.content
         /// </summary>
         private BaslerCam BaslerCam3;
         #endregion
+
 
         #region Flags
         private bool loaded;
@@ -692,21 +694,17 @@ namespace ApexVisIns.content
         }
 
 
-
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
         #endregion
-
 
 
         #region 待刪除
         ModbusTCPIO _modbusTCPIO = new();
-
-     
 
         /// <summary>
         /// Tcp 連線
