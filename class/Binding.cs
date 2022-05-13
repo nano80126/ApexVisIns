@@ -263,7 +263,6 @@ namespace ApexVisIns
     {
         private Mat _img;
 
-
         public Mat Image
         {
             get => _img;
@@ -278,6 +277,7 @@ namespace ApexVisIns
             }
         }
 
+
         /// <summary>
         /// 主影像 Source
         /// </summary>
@@ -286,15 +286,15 @@ namespace ApexVisIns
         /// <summary>
         /// R 像素
         /// </summary>
-        public byte R => _img != null ? _img.At<Vec3b>(Y, X)[2] : (byte)0;
+        public byte R => _img != null ? _img.Channels() == 1 ? _img.At<byte>(Y, X) : _img.At<Vec3b>(Y, X)[2] : (byte)0;
         /// <summary>
         /// G 像素
         /// </summary>
-        public byte G => _img != null ? _img.At<Vec3b>(Y, X)[1] : (byte)0;
+        public byte G => _img != null ? _img.Channels() == 1 ? _img.At<byte>(Y, X) : _img.At<Vec3b>(Y, X)[1] : (byte)0;
         /// <summary>
         /// B 像素
         /// </summary>
-        public byte B => _img != null ? _img.At<Vec3b>(Y, X)[0] : (byte)0;
+        public byte B => _img != null ? _img.Channels() == 1 ? _img.At<byte>(Y, X) : _img.At<Vec3b>(Y, X)[0] : (byte)0;
 
         /// <summary>
         /// X pos

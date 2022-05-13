@@ -20,6 +20,8 @@
         <pd:JawInspection x:Key="JawInspection"/>
         <!--規格群組-->
         <pd:JawSpecGroup x:Key="SpecGroup"/>
+        <!--狀態顏色 Converter-->
+        <local:MCAJawStatusColorConverter x:Key="MCAJawStatusColorConverter"/>
     </StackPanel.Resources>
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
@@ -164,7 +166,6 @@
                                                      ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                                      ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
                         </Canvas>
-
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
@@ -267,9 +268,9 @@
                                     <!--#region 1st row  -->
                                     <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                                     <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0">
-                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                           TextAlignment="Center" FontSize="28" FontWeight="SemiBold" 
-                                           Text="初始化"/>
+                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="Center" FontSize="28" FontWeight="SemiBold" 
+                                                   Text="{Binding Status, RelativeSource={RelativeSource AncestorType=local:MCAJaw, Mode=FindAncestor, AncestorLevel=1}, Converter={StaticResource EnumDescriptionConverter}}"
+                                                   Foreground="{Binding Status,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:MCAJaw,AncestorLevel=1}, Converter={StaticResource MCAJawStatusColorConverter}}"/>
                                     </Border>
 
                                     <!--Control Panel, 1st row, 2nd row-->
@@ -497,10 +498,15 @@
                                     <!--#endregion-->
 
                                     <!--#region 3rd row -->
-                                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" 
-                                    HorizontalAlignment="Center" 
-                                    VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}">
+                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, Converter={StaticResource EqualConverter}, ConverterParameter=1}"
+                                            Click="TriggerInspection_Click">
+
+                                        <!--{Binding JawTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}}-->
+                                        
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="開始檢測" Margin="0 0 8 0"/>
                                             <materialDesign:PackIcon Kind="FootPrint"/>
@@ -510,7 +516,6 @@
                                     <!--<Button Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Content="連線" Click="TcpConnect_Click"
                                         VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
 
                                     <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Content="斷線" Click="TcpDisconnect_Click"
                                         VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"

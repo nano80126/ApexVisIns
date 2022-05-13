@@ -10,9 +10,34 @@ using System.Windows.Media;
 
 namespace ApexVisIns.Product
 {
+
+    /// <summary>
+    /// MCA Jaw 規格輸出
+    /// </summary>
     public class JawSpec : SpecBase
     {
         private double _result;
+
+        public JawSpec(string item, double cl, double lcl, double ucl)
+        {
+            Item = item;
+            CenterSpec = cl;
+            //LowerSpecLimit = lsl;
+            //UpperSpecLimit = usl;
+            LowerCtrlLimit = lcl;
+            UpperCtrlLimit = ucl;
+        }
+
+        public JawSpec(string item, double cl, double lcl, double ucl, double result)
+        {
+            Item = item;
+            CenterSpec = cl;
+            //LowerSpecLimit = lsl;
+            //UpperSpecLimit = usl;
+            LowerCtrlLimit = lcl;
+            UpperCtrlLimit = ucl;
+            Result = result;
+        }
 
         public JawSpec(string item, double cl, double lsl, double usl, double lcl, double ucl)
         {
@@ -47,6 +72,9 @@ namespace ApexVisIns.Product
     }
 
 
+    /// <summary>
+    /// MCA Jaw 規格設定
+    /// </summary>
     public class JawSpecSetting : SpecBase
     {
         private string _note;
@@ -120,9 +148,12 @@ namespace ApexVisIns.Product
         }
     }
 
+
+    /// <summary>
+    /// MCA Jaw 規格群組
+    /// </summary>
     public class JawSpecGroup
     {
-
         /// <summary>
         /// 尺寸規格列表
         /// </summary>
@@ -178,6 +209,10 @@ namespace ApexVisIns.Product
         public ObservableDictionary<string, ResultElement> LotResult { get; } = new ObservableDictionary<string, ResultElement>();
 
 
+
+        /// <summary>
+        /// MCA Jaw 尺寸 NG 數
+        /// </summary>
         public class ResultElement : INotifyPropertyChanged
         {
             private int _count;
@@ -189,8 +224,8 @@ namespace ApexVisIns.Product
                 Count = count;
             }
 
-            public string Name { get; set; } = "1";
-            public string Note { get; set; } = "2";
+            public string Name { get; set; }
+            public string Note { get; set; }
             public int Count
             {
                 get => _count;
@@ -212,4 +247,5 @@ namespace ApexVisIns.Product
             }
         }
     }
+
 }

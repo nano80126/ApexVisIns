@@ -110,6 +110,7 @@ Apex 外觀瑕疵檢測
 * [ ] 標示器新增 RGB 
 	* 測試動態效果
 	* 初測正常
+	* 區分灰階與 RGB 影像
 
 * [ ] ~測試 CameraEnumer 更改為 static~
 
@@ -136,6 +137,12 @@ Apex 外觀瑕疵檢測
 * [x] CameraTab 按鈕 UX 新增
 
 * [ ] 確認 UserSet 可不可以寫入 CenterX & CenterY
+
+* [x] MCA Jaw 自動 / 編輯模式區分
+
+* [ ] 光源 Panel UX 優化
+	* 未連線 Disable slider
+	* 按鈕增加按下的視覺效果
 
 ### Config Logic
 

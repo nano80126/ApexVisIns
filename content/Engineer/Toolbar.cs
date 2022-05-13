@@ -371,9 +371,10 @@ namespace ApexVisIns.content
                         Cv2.ImShow($"canny", canny); 
 #endif
 
-
                         //MainWindow.JawInsSequenceCam1(mat);
-                        MainWindow.JawInsSequenceCam2(mat);
+                        //MainWindow.JawInsSequenceCam2(mat);
+                        MainWindow.JawInsSequenceCam3(mat);
+
                     }
 
                     Indicator.Image = mat;

@@ -74,7 +74,8 @@
                                         <Setter Property="Fill" Value="Transparent"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource NumberIsOddConverter}}" Value="True">
-                                                <Setter Property="Fill" Value="{StaticResource ColorSuccessTransparent}"/>
+                                                <Setter Property="Fill" Value="{StaticResource ColorInfoTransparent}"/>
+                                                <Setter Property="Opacity" Value="0.3"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -84,7 +85,7 @@
                                         <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

@@ -108,6 +108,8 @@ namespace ApexVisIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            Debug.WriteLine($"{value}");
+
             return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
         }
 

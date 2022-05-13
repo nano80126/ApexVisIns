@@ -22,6 +22,8 @@ using Basler.Pylon;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
+using System.Windows.Controls.Primitives;
+using System.Globalization;
 
 namespace ApexVisIns.content
 {
@@ -49,6 +51,24 @@ namespace ApexVisIns.content
 
         private int _jawTab = 0;
 
+        public enum INS_STATUS
+        {
+            [Description("初始化")]
+            INIT = 0,
+            [Description("準備檢驗")]
+            READY = 1,
+            [Description("檢驗中")]
+            INSPECTING = 2,
+            [Description("錯誤")]
+            ERROR = 3,
+            [Description("閒置")]
+            IDLE = 4,
+            [Description("未知")]
+            UNKNOWN = 9,
+        }
+
+        private INS_STATUS _status = INS_STATUS.UNKNOWN;
+
         private string SpecDirectory { get; } = @$"specification";
 
         private string SpecPath { get; } = $@"MCAJaw.json";
@@ -67,6 +87,16 @@ namespace ApexVisIns.content
                     _jawTab = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        public INS_STATUS Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -119,7 +149,26 @@ namespace ApexVisIns.content
             JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
             #endregion
 
-            //JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
+            // 載入規格設定
+            LoadSpecList();
+
+            switch (MainWindow.InitMode)
+            {
+                case MainWindow.InitModes.AUTO:
+                    // 硬體初始化
+                    InitHardware();
+                    break;
+                case MainWindow.InitModes.EDIT:
+                    // 保留
+                    break;
+                default:
+                    // 保留
+                    break;
+            }
+
+            Debug.WriteLine(MainWindow.InitMode);
+
+            // JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
             #region 新增假資料
             //if (JawSpecGroup.Collection1.Count == 0)
             //{
@@ -139,29 +188,25 @@ namespace ApexVisIns.content
             //}
             #endregion
 
-            // 載入規格設定
-            LoadSpecList();
 
-
-            //if (JawSpecGroup.SpecList.Count == 0)
-            //{
-            //    for (int i = 0; i < 10; i++)
-            //    {
-            //        JawSpecGroup.SpecList.Add(new JawSpecSetting()
-            //        {
-            //            Key = JawSpecGroup.SpecList.Count + 1,
-            //            Item = $"項目P{i}",
-            //            Note = string.Empty
-            //        });
-            //    }
-            //}
+            // if (JawSpecGroup.SpecList.Count == 0)
+            // {
+            //     for (int i = 0; i < 10; i++)
+            //     {
+            //         JawSpecGroup.SpecList.Add(new JawSpecSetting()
+            //         {
+            //             Key = JawSpecGroup.SpecList.Count + 1,
+            //             Item = $"項目P{i}",
+            //             Note = string.Empty
+            //         });
+            //     }
+            // }
 
             #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-            // 硬體初始化
-            // InitHardware();
+        
             #endregion
 
             if (!loaded)
@@ -186,6 +231,7 @@ namespace ApexVisIns.content
             {
                 CancellationToken token = _cancellationTokenSource.Token;
 
+                Status = INS_STATUS.INIT;
                 await Task.WhenAll(
                     InitCamera(token),
                     InitLightCtrl(token),
@@ -194,7 +240,8 @@ namespace ApexVisIns.content
                         // 終止初始化，狀態變更為閒置
                         if (token.IsCancellationRequested)
                         {
-                            StatusLabel.Text = "閒置";
+                            //StatusLabel.Text = "閒置";
+                            Status = INS_STATUS.IDLE;
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -211,19 +258,28 @@ namespace ApexVisIns.content
                         // 終止初始化，狀態變更為閒置
                         if (token.IsCancellationRequested)
                         {
-                            StatusLabel.Text = "閒置";
+                            //StatusLabel.Text = "閒置";
+                            Status = INS_STATUS.IDLE;
                             token.ThrowIfCancellationRequested();
                         }
 
                         // 啟動 StreamGrabber & Triiger Mode 
-
                         if (t.Result == MainWindow.InitFlags.OK)
                         {
                             // 相機開啟 Grabber
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                             {
                                 BaslerCam cam = MainWindow.BaslerCams[i];
-                                MainWindow.Basler_StartStreamGrabber(cam);
+                                #region 載入 UserSet1
+                                if (!cam.IsGrabbing)
+                                {
+                                    // 這邊要防呆
+                                    cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
+                                    cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+
+                                    MainWindow.Basler_StartStreamGrabber(cam);
+                                }
+                                #endregion
                             }
 
                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
@@ -248,7 +304,8 @@ namespace ApexVisIns.content
                         {
                             MainWindow.Dispatcher.Invoke(() =>
                             {
-                                StatusLabel.Text = "初始化完成";
+                                //StatusLabel.Text = "初始化完成";
+                                Status = INS_STATUS.READY;
                             });
                         }
                     }, token);
@@ -432,7 +489,8 @@ namespace ApexVisIns.content
                                     // 關閉 COM 
                                     LightCOM2.ComClose();
                                     // 拋出異常
-                                    throw new Exception($"24V {result}");
+                                    //throw new Exception($"24V {result}");
+                                    throw new LightCtrlException($"24V 光源控制通訊逾時");
                                 }
                                 else
                                 {
@@ -509,13 +567,13 @@ namespace ApexVisIns.content
 
         private void ModbusTCPIO_IOChanged(object sender, ModbusTCPIO.IOChangedEventArgs e)
         {
-            if (e.DI0)
+            if (e.DI0 == false)
             {
                 // 觸發檢驗
                 // 要做防彈跳
+                Dispatcher.Invoke(() => TriggerIns.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent)));
             }
-
-            Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
+            //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
         }
         #endregion
 
@@ -623,6 +681,21 @@ namespace ApexVisIns.content
         }
         #endregion
 
+        #region 觸發檢測
+        private void TriggerInspection_Click(object sender, RoutedEventArgs e)
+        {
+            // 清除當下 Collection
+            JawSpecGroup.Collection1.Clear();
+            JawSpecGroup.Collection2.Clear();
+            JawSpecGroup.Collection3.Clear();
+
+            Status = INS_STATUS.INSPECTING;
+
+            MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3);
+
+            Status = INS_STATUS.READY;
+        }
+        #endregion
 
         /// <summary>
         /// 單張拍攝
@@ -703,6 +776,9 @@ namespace ApexVisIns.content
         #endregion
 
 
+
+
+#if false
         #region 待刪除
         ModbusTCPIO _modbusTCPIO = new();
 
@@ -735,8 +811,42 @@ namespace ApexVisIns.content
         {
             _modbusTCPIO.Disconnect();
         }
-
         #endregion
+#endif
+    }
 
+
+    /// <summary>
+    /// MCA Jaw 檢驗狀態顏色轉換器
+    /// </summary>
+    [ValueConversion(typeof(MCAJaw.INS_STATUS), typeof(SolidColorBrush))]
+    public class MCAJawStatusColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is MCAJaw.INS_STATUS))
+            {
+                throw new ArgumentException("Value is invalid");
+            }
+
+            MCAJaw.INS_STATUS status = (MCAJaw.INS_STATUS)value;
+            return status switch
+            {
+                MCAJaw.INS_STATUS.INIT => new SolidColorBrush(Color.FromArgb(0x88, 0x21, 0x96, 0xf3)),
+                MCAJaw.INS_STATUS.READY => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xAF, 0x50)),
+                MCAJaw.INS_STATUS.INSPECTING => new SolidColorBrush(Color.FromArgb(0x88, 0x00, 0x96, 0x88)),
+                MCAJaw.INS_STATUS.ERROR => new SolidColorBrush(Color.FromArgb(0x88, 0xE9, 0x1E, 0x63)),
+                MCAJaw.INS_STATUS.IDLE => new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0xC1, 0x07)),
+                MCAJaw.INS_STATUS.UNKNOWN => new SolidColorBrush(Color.FromArgb(0x88, 0x9E, 0x9E, 0x9E)),
+       
+                _ => new SolidColorBrush(Colors.Red),   // Default
+            };
+            //return new SolidColorBrush(Colors.Red);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

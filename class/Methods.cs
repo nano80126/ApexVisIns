@@ -1314,16 +1314,15 @@ namespace ApexVisIns
         }
 
 
-        #region MCA JAW 使用 Methods 
-
+        #region MCA JAW 專用 Methods 
         /// <summary>
-        /// 從 Canny 計算水平 Hough Lines (MCA Jaw 使用)
+        /// 從 Canny 計算水平 Hough Lines (MCA Jaw 專用)
         /// </summary>
         /// <param name="src">來源 Canny 影像</param>
-        /// <param name="lineSegH"></param>
+        /// <param name="lineSegH">水平 Hough Line</param>
         /// <param name="houghThreashold">HoughLinesP 方法內的 Threashold</param>
         /// <param name="houghMinLineLength">HoughLinesP 方法內的 MinLineLength</param>
-        /// <param name="Ygap"></param>
+        /// <param name="Ygap">同一線段 Y 座標變化</param>
         public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
         {
             lineSegH = Array.Empty<LineSegmentPoint>();
@@ -1349,49 +1348,16 @@ namespace ApexVisIns
             }
         }
 
-
-        //public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
-        //{
-        //    lineSegH = Array.Empty<LineSegmentPoint>();
-
-        //    try
-        //    {
-        //        LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
-
-        //        if (lineSeg != null && lineSeg.Length > 0)
-        //        {
-        //            IEnumerable<LineSegmentPoint> filter = lineSeg.Where(line => Math.Abs(line.P2.Y - line.P1.Y) < Ygap);
-        //            IGrouping<double, LineSegmentPoint>[] groupings = filter.OrderBy(line => line.P1.Y + line.P2.Y).GroupBy(line => Math.Floor((double)(line.P1.Y * line.P2.Y) / 10000)).ToArray();
-
-
-        //            int YPosCount = groupings.Length;
-        //            Ypos = new double[groupings.Length];
-        //            for (int j = 0; j < groupings.Length; j++)
-        //            {
-        //                Ypos[j] = groupings[j].Average(a => Math.Round((double)(a.P1.Y + a.P2.Y) / 2)) + offset;
-        //            }
-        //        }
-        //    }
-        //    catch (OpenCVException)
-        //    {
-        //        throw;
-        //    }
-        //    catch (OpenCvSharpException)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-
-
         /// <summary>
-        /// 從 Canny 計算垂直 Hough Lines (MCA Jaw 使用)
+        /// 從 Canny 計算垂直 Hough Lines (MCA Jaw 專用)
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="roi"></param>
-        /// <param name="lineSegV"></param>
-        /// <param name="Xgap"></param>
-        public static void GetHoughLinesVFromCanny(Mat src, Point roi, out LineSegmentPoint[] lineSegV, int houghThreashold = 25, double houghMinLineLength = 10, int Xgap = 3)
+        /// <param name="src">來源 Canny 影像</param>
+        /// <param name="offset">位移</param>
+        /// <param name="lineSegV">垂直 Hough Line</param>
+        /// <param name="houghThreashold">HoughLinesP 方法內的 Threashold</param>
+        /// <param name="houghMinLineLength">HoughLinesP 方法內的 MinLineLength</param>
+        /// <param name="Xgap">同一線段 X 座雕變化</param>
+        public static void GetHoughLinesVFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegV, int houghThreashold = 25, double houghMinLineLength = 10, int Xgap = 3)
         {
             lineSegV = Array.Empty<LineSegmentPoint>();
 
@@ -1402,7 +1368,7 @@ namespace ApexVisIns
                 // 1. 保留 Xgap < 3 的線 2. 平移 roi.X, roi.Y
                 lineSegV = lineSeg.Where(line => Math.Abs(line.P2.X - line.P1.X) < Xgap).Select(line =>
                 {
-                    line.Offset(roi.X, roi.Y);
+                    line.Offset(offset.X, offset.Y);
                     return line;
                 }).ToArray();
             }
@@ -1415,10 +1381,6 @@ namespace ApexVisIns
                 throw;
             }
         }
-
-
-
-
         #endregion
     }
 }
