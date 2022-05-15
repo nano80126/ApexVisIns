@@ -165,8 +165,7 @@ namespace ApexVisIns.content
                     // 保留
                     break;
             }
-
-            Debug.WriteLine(MainWindow.InitMode);
+            //Debug.WriteLine(MainWindow.InitMode);
 
             // JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
             #region 新增假資料

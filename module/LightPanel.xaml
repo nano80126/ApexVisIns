@@ -105,24 +105,48 @@
                         <DataTemplate>
                             <!--Background="{StaticResource ColorErrorTransparent}"-->
                             <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 4">
+                                <DockPanel.Resources>
+                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorGray}"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource ColorGray}"/>
+                                        <Setter Property="MinWidth" Value="60"/>
+
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                            </Trigger>
+
+                                            <Trigger Property="IsEnabled" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource ColorPrimary}"/>
+                                                <Setter Property="BorderBrush" Value="{StaticResource ColorPrimary}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+
+                                    <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MaterialDesignSlider}">
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
+                                    </Style>
+                                </DockPanel.Resources>
+                                
+                                
                                 <TextBlock DockPanel.Dock="Left" Margin="0 0 12 0" VerticalAlignment="Center" Text="{Binding Channel}"
                                            FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
 
                                 <TextBox DockPanel.Dock="Right" Grid.Column="1" Padding="0 3" HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                         Margin="12 8 0 8" Width="60" TextAlignment="Center" Cursor="Arrow" Focusable="False"
-                                         Foreground="{StaticResource ColorPrimary}" BorderBrush="{StaticResource ColorPrimary}"
-                                         IsReadOnly="True" Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                                         Margin="12 8 0 8" TextAlignment="Center" Cursor="Arrow" Focusable="False"
+                                         Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                                 <Slider Grid.Column="0" Minimum="0" Maximum="1023" Margin="0 8 " VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False"
                                         materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True" 
-                                        Foreground="{StaticResource ColorInfo}"
                                         DockPanel.Dock="Right"
                                         IsSnapToTickEnabled="True"
                                         TickPlacement="BottomRight" TickFrequency="32" 
                                         Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        Cursor="Hand" Style="{StaticResource MaterialDesignSlider}"/>
-                                <!--ValueChanged="Slider_ValueChanged"-->
+                                        IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </DockPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -134,20 +158,42 @@
 
             <!--Row 4, Action -->
             <StackPanel Grid.Row="4" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="BulbOffBtn" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center"
-                        materialDesign:RippleAssist.IsDisabled="True"
-                        IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}}"
-                        Foreground="{StaticResource ColorDeepOrange}" Style="{StaticResource MaterialDesignToolButton}"
-                        MinWidth="60" Click="BulbOffBtn_Click">
-                    <materialDesign:PackIcon Kind="LightbulbOffOutline" Width="30" Height="26"/>
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOffBtnStyle">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorWarning}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOnBtnStyle">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button x:Name="BulbOnBtn" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center"
+                        materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="16"
+                        Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}}"
+                        MinWidth="60" Click="BulbOnBtn_Click"
+                        Style="{StaticResource LightOnBtnStyle}">
+                    <materialDesign:PackIcon Kind="LightbulbOutline" Width="30" Height="26"/>
                 </Button>
 
-                <Button x:Name="CmdSendBtn" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center"
-                        materialDesign:RippleAssist.IsDisabled="True"
-                        IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}}"
-                        Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignToolButton}"
-                        MinWidth="60" Click="CmdSendBtn_Click">
-                    <materialDesign:PackIcon Kind="LightbulbOutline" Width="30" Height="26"/>
+                <Button x:Name="BulbOffBtn" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center"
+                        materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="16"
+                        Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightControl}}"
+                        MinWidth="60" Click="BulbOffBtn_Click"
+                        Style="{StaticResource LightOffBtnStyle}">
+                    <materialDesign:PackIcon Kind="LightbulbOffOutline" Width="30" Height="26"/>
                 </Button>
             </StackPanel>
         </Grid>

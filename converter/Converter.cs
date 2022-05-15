@@ -67,12 +67,11 @@ namespace ApexVisIns.Converter
     }
 
     [ValueConversion(typeof(bool[]), typeof(Visibility))]
-    public class BooleanAndToVisibilityInverse : BooleanAndToVisibility
+    public class BooleanAndToVisibilityInverse : BooleanAndGate
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            //return ((Visibility)base.Convert(values, targetType, parameter, culture)) == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
-            return (Visibility)base.Convert(values, targetType, parameter, culture) == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            return (bool)base.Convert(values, targetType, parameter, culture) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -108,8 +107,6 @@ namespace ApexVisIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Debug.WriteLine($"{value}");
-
             return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
         }
 

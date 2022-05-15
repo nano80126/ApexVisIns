@@ -25,6 +25,17 @@ namespace ApexVisIns.content
 
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// 主視窗物件
+        /// </summary>
+        public MainWindow MainWindow { get; set; }
+        /// <summary>
+        /// Informer 物件
+        /// </summary>
+        //public MsgInformer MsgInformer { get; set; }
+        #endregion
+
         #region Flags
         /// <summary>
         /// 已載入旗標
@@ -35,6 +46,8 @@ namespace ApexVisIns.content
         public DatabaseTab()
         {
             InitializeComponent();
+
+            MainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         /// <summary>
@@ -100,7 +113,12 @@ namespace ApexVisIns.content
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
-        private void FindCollectionButton_Click(object sender, RoutedEventArgs e)
+        private void DateTimeFindBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void LotNumberFindBtn_Click(object sender, RoutedEventArgs e)
         {
 
         }

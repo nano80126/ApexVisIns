@@ -286,10 +286,7 @@ namespace ApexVisIns
 #endif
             #region 開啟 Mode Dialog
             ModeWindow modeWindow = new() { Owner = this };
-            if (modeWindow.ShowDialog() == true)
-            {
-                Debug.WriteLine($"Init Mode: {InitMode}");
-            }
+            if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}"); }
             #endregion
         }
 

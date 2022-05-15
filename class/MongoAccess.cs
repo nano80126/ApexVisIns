@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB;
@@ -15,145 +17,280 @@ namespace ApexVisIns.MongoDB
     /// <summary>
     /// 連結 Mongo 資料庫
     /// </summary>
-    public class MongoAccess
+    public class MongoAccess : INotifyPropertyChanged, IDisposable
     {
-        private static MongoClient client;
+        #region Private
+        /// <summary>
+        /// MongoDB Client
+        /// </summary>
+        private MongoClient client;
+        private bool _disposed;
         private bool _connected;
 
-        public bool Connected => _connected;
+
+        #endregion
+
+
+        #region Public
+        public string Host { get; set; }
+
+        public int Port { get; set; }
+
+        public string Database { get; private set; } = string.Empty;
 
         /// <summary>
-        /// 連線資料庫
+        /// 是否連線
         /// </summary>
-        /// <param name="dbName">資料庫名稱</param>
-        /// <param name="user">使用者</param>
-        /// <param name="pwd">密碼</param>
-        private static void Connect(string dbName, string user, string pwd)
+        public bool Connected {
+            get => _connected;
+            set
+            {
+                if (value != _connected)
+                {
+                    _connected = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        public MongoAccess()
+        {
+
+        }
+
+        public MongoAccess(string host, int port)
+        {
+            Host = host;
+            Port = port;
+        }
+
+
+        /// <summary>
+        /// Mongo 連線，
+        /// 僅用於沒有權限要求時
+        /// </summary>
+        [Obsolete("僅用於沒權有權限要求時測試用")]
+        public void Connect()
         {
             if (client == null)
             {
-                MongoClientSettings settings = new MongoClientSettings
+                // MongoUrl url = new MongoUrl(mongoUrl);
+                client = new MongoClient(new MongoClientSettings
                 {
-                    Credential = MongoCredential.CreateCredential(dbName, user, pwd),
-                    Server = new MongoServerAddress("localhost", 27017),
+                    //Credential = MongoCredential.CreateCredential("fanuc", "root", "0000"),
+                    Server = new MongoServerAddress(Host, Port),
                     DirectConnection = true
-                };
-
-                client = new MongoClient(settings);
+                });
             }
         }
 
         /// <summary>
-        /// 建立 Collection
+        /// MongoDB 連線
         /// </summary>
-        /// <param name="dbName">Database Name</param>
-        /// <param name="collection">Collection Name</param>
-        /// <param name=""></param>
-        public static void CreateCollection(string dbName, string collection)
+        /// <param name="dbName">資料庫名稱</param>
+        /// <param name="user">使用者</param>
+        /// <param name="pwd">密碼</param>
+        /// <returns></returns>
+        public void Connect(string dbName, string user, string pwd)
         {
             try
             {
-                IMongoDatabase database = client.GetDatabase(dbName);
-
-                bool exist = database.ListCollectionNames().ToList().Contains(collection);
-
-                if (!exist)
+                client = new MongoClient(new MongoClientSettings
                 {
-                    database.CreateCollection(collection);
+                    //Credential = MongoCredential.CreateCredential("fanuc", "root", "0000"),
+                    Credential = MongoCredential.CreateCredential(dbName, user, pwd),
+                    Server = new MongoServerAddress(Host, Port),
+                    DirectConnection = true,
+                });
+
+                BsonDocument db = client.GetDatabase(dbName).RunCommand((Command<BsonDocument>)"{ping:1}");
+                Database = dbName;
+                Connected = true;
+            }
+            catch (MongoException)
+            {
+                // 若異常則斷線
+                client.Cluster.Dispose();
+                client = null;
+                Database = string.Empty;
+                Connected = false;
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// MongoDB 斷線
+        /// </summary>
+        public void Disconnect()
+        {
+            try
+            {
+                if (!Connected) { return; }
+
+                if (client != null)
+                {
+                    client.Cluster.Dispose();
+                    client = null;
+                    Database = string.Empty;
+                    Connected = false;
                 }
             }
             catch (MongoException)
             {
                 throw;
             }
-            catch (Exception)
+        }
+
+
+        /// <summary>
+        /// 列出所有 Database
+        /// </summary>
+        /// <param name="client">Mongo Client</param>
+        public void ListDatabases(out List<string> dbNames)
+        {
+            try
+            {
+                dbNames = client.ListDatabaseNames().ToList();
+            }
+            catch (MongoException)
             {
                 throw;
             }
         }
 
         /// <summary>
-        /// 建立 Collection with options
+        /// 列出 Database 內所有 Collections
         /// </summary>
-        /// <param name="dbName"></param>
-        /// <param name="collection"></param>
-        /// <param name="options"></param>
-        public static void CreateCollection(string dbName, string collection, CreateCollectionOptions options)
+        /// <param name="client">Mongo Client</param>
+        /// <param name="dbName">Database</param>
+        public void ListCollections(string dbName, out List<string> collections)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// 列出資料庫
-        /// </summary>
-        /// <returns></returns>
-        public static string[] ListDatabase()
-        {
-            return client != null ? client.ListDatabaseNames().ToList().ToArray() : throw new MongoException("資料庫尚未建立連線");
-        }
-
-        /// <summary>
-        /// 列出集合
-        /// </summary>
-        /// <param name="dbName"></param>
-        /// <returns></returns>
-        public static string[] ListCollections(string dbName)
-        {
-            if (client != null)
+            try
             {
-                List<string> cols = client.GetDatabase(dbName).ListCollectionNames().ToList();
-                return cols.ToArray();
+                IMongoDatabase db = client.GetDatabase(dbName);
+                collections = db.ListCollectionNames().ToList();
             }
-            else
+            catch (MongoException)
             {
-                throw new MongoException("資料庫尚未建立連線");
+                throw;
             }
         }
 
+
         /// <summary>
-        /// 插入單筆
+        /// 插入一筆 document
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbName"></param>
-        /// <param name="colName"></param>
-        /// <param name="item"></param>
-        public static void InsertOne<T>(string dbName, string colName, T item)
+        /// <param name="client">Mongo Client</param>
+        /// <param name="dbName">資料庫名稱</param>
+        /// <param name="cName">集合名稱</param>
+        /// <param name="item">物件 (Document)</param>
+        public static void InsertOne<T>(MongoClient client, string dbName, string cName, T item)
         {
             if (client != null)
             {
                 IMongoDatabase db = client.GetDatabase(dbName);
-                IMongoCollection<T> collection = db.GetCollection<T>(colName);
-
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
                 collection.InsertOne(item);
             }
             else
             {
-                throw new MongoException("資料庫尚未建立連線");
+                throw new MongoException("MongoDB connection is not established");
             }
         }
 
         /// <summary>
-        /// 插入多筆
+        /// 插入多筆 Documents (list)
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbName"></param>
-        /// <param name="colName"></param>
-        /// <param name="list"></param>
-        public static void InsertMany<T>(string dbName, string colName, List<T> list)
+        /// <param name="client">Mongo Client</param>
+        /// <param name="dbName">資料庫名稱</param>
+        /// <param name="cName">集合名稱</param>
+        /// <param name="list">列表</param>
+        public static void InsertMany<T>(MongoClient client, string dbName, string cName, List<T> list)
         {
             if (client != null)
             {
                 IMongoDatabase db = client.GetDatabase(dbName);
-                IMongoCollection<T> collection = db.GetCollection<T>(colName);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
                 collection.InsertMany(list);
             }
             else
             {
-                throw new MongoException("資料庫尚未建立連線");
+                throw new MongoException("MongoDB connection is not established");
+                //Console.WriteLine("MongoDB Client is not initialized");
+            }
+        }
+
+        /// <summary>
+        /// 插入多筆 Documents (array)
+        /// </summary>
+        /// <param name="client">Mongo Client</param>
+        /// <param name="dbName">資料庫名稱</param>
+        /// <param name="cName">集合名稱</param>
+        /// <param name="list">列表</param>
+        public static void InsertMany<T>(MongoClient client, string dbName, string cName, T[] list)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+                collection.InsertMany(list);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+                //Console.WriteLine("MongoDB Client is not initialized");
             }
         }
 
 
+        /// <summary>
+        /// 搜尋第一筆符合條件 Document
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbName"></param>
+        /// <param name="cName"></param>
+        public void FindOne<T>(string dbName, string cName)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
 
+                var filter = Builders<T>.Filter.Lt("DateTime", DateTime.Now);
+
+                var d = collection.Find<T>(filter).ToList();
+
+                foreach (var item in d)
+                {
+
+                }
+            }
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed) { return; }
+
+            if (disposing)
+            {
+
+            }
+            _disposed = true;
+        }
     }
 }

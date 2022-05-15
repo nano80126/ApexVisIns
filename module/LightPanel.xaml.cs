@@ -90,19 +90,7 @@ namespace ApexVisIns.module
             }
         }
 
-        private void BulbOffBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (LightControl.IsComOpen)
-            {
-                LightControl.ResetAllChannel();
-            }
-            else
-            {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
-            }
-        }
-
-        private void CmdSendBtn_Click(object sender, RoutedEventArgs e)
+        private void BulbOnBtn_Click(object sender, RoutedEventArgs e)
         {
             if (LightControl.IsComOpen)
             {
@@ -126,7 +114,17 @@ namespace ApexVisIns.module
             }
         }
 
-      
+        private void BulbOffBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (LightControl.IsComOpen)
+            {
+                LightControl.ResetAllChannel();
+            }
+            else
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
+            }
+        }
 
 
         //private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

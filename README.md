@@ -140,9 +140,11 @@ Apex 外觀瑕疵檢測
 
 * [x] MCA Jaw 自動 / 編輯模式區分
 
-* [ ] 光源 Panel UX 優化
+* [x] 光源 Panel UX 優化
 	* 未連線 Disable slider
 	* 按鈕增加按下的視覺效果
+
+* [ ] DatabaseTab 新增批號查詢
 
 ### Config Logic
 
