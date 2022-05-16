@@ -11,7 +11,7 @@ using MongoDB.Driver;
 using MongoDB.Libmongocrypt;
 
 
-namespace ApexVisIns.MongoDB
+namespace ApexVisIns
 {
 
     /// <summary>

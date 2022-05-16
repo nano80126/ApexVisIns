@@ -52,7 +52,7 @@ namespace ApexVisIns
         public static BaslerCam[] BaslerCams { get; set; }
         #endregion
 
-        #region Serial Port Enumerator
+        #region Serial Port Enumerator (SerialPort 列舉器)
         /// <summary>
         /// Com Port 列舉器，
         /// </summary>
@@ -86,21 +86,22 @@ namespace ApexVisIns
         public Thread IOThread { get; set; }
         #endregion
 
-        #region Devices
-        /// <summary>
-        /// 相機裝置列表
-        /// </summary>
-        // public static ObservableCollection<DeviceConfig> DeviceConfigs { get; set; }
-        #endregion
-
         #region EtherCAT Motion
         [Obsolete("Not used in MCA_Jaw")]
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
+
+        #region Database
+        /// <summary>
+        /// MongoDB 存取
+        /// </summary>
+        public static MongoAccess MongoAccess { get; set; }
+        #endregion
+
+
         #region Major
         public static ApexDefect ApexDefect { get; set; }
-
         #endregion
 
         #region Resources

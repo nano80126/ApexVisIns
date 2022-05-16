@@ -67,7 +67,6 @@
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="觸發拍照" Foreground="{StaticResource ColorPrimary}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="CameraTrigger_Click"/>
 
-
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -426,7 +425,6 @@
                                         <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>-->
                                         <!--#endregion-->
 
-
                                         <TextBlock Grid.Row="7" Margin="8 0 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
                                         <Separator Grid.Row="8" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
@@ -548,21 +546,32 @@
                               materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                               FontSize="16" FontWeight="SemiBold" Padding="8" 
                               Background="Transparent">
-                        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
 
                             <!--Image 1-->
-                            <Border Grid.Row="0" Height="300" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Height" Value="240"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                                <Setter Property="Height" Value="300"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
                                 <Viewbox x:Name="Image1Viewbox">
                                     <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                                     Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                 </Viewbox>
                             </Border>
 
-                            <!--標示視窗尺寸用，待刪除
+                            <!--標示視窗尺寸用，待刪除-->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
@@ -570,18 +579,14 @@
                                         <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
                                     </MultiBinding>
                                 </TextBlock.Text>
-                            </TextBlock>-->
+                            </TextBlock>
 
-                            <!--標示視窗尺寸用，待刪除 -->
-                            <!--
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 32 0 0">
+                            <!--標示視窗尺寸用，待刪除-->
+                            <!--<TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 32 0 0">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}Camera 1, {0} x {1}">
                                         <Binding Path="ActualWidth" ElementName="Border1" Mode="OneWay"/>
                                         <Binding Path="ActualHeight" ElementName="Border1" Mode="OneWay"/>
-                                        -->
-                                    <!--<Binding Path="ActualHeight" ElementName="ImageGroupBox1" Mode="OneWay"/>-->
-                                    <!--
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>-->
@@ -589,7 +594,7 @@
                             <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
 
                             <!--規格列表 1-->
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 8 0 0" VerticalAlignment="Top"
+                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
@@ -621,14 +626,25 @@
                             </Grid.RowDefinitions>
 
                             <!--Image 2-->
-                            <Border Height="300" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Height" Value="240"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                                <Setter Property="Height" Value="300"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                
                                 <Viewbox x:Name="Image2Viewbox">
                                     <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                 </Viewbox>
                             </Border>
 
-                            <!--標示視窗尺寸用，待刪除
+                            <!--標示視窗尺寸用，待刪除-->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
@@ -636,13 +652,13 @@
                                         <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
                                     </MultiBinding>
                                 </TextBlock.Text>
-                            </TextBlock>-->
+                            </TextBlock>
 
                             <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
 
                             <!--height = 120 + 137 -->
                             <!--規格列表 2-->
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
+                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                           ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                           ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
@@ -674,14 +690,25 @@
                                 <RowDefinition Height="1*"/>
                             </Grid.RowDefinitions>
 
-                            <Border Height="200" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Height" Value="160"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
+                                                <Setter Property="Height" Value="200"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
                                 <Viewbox x:Name="Image3Viewbox">
                                     <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                 </Viewbox>
                             </Border>
 
-                            <!--標示視窗尺寸用，待刪除
+                            <!--標示視窗尺寸用，待刪除-->
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}Camera 3, {0} x {1}">
@@ -689,9 +716,9 @@
                                         <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
                                     </MultiBinding>
                                 </TextBlock.Text>
-                            </TextBlock>-->
+                            </TextBlock>
 
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 12 0 0" VerticalAlignment="Stretch"
+                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                                   ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
                                                   ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
