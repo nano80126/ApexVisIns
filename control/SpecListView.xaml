@@ -122,7 +122,7 @@
                                 <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}"/>
                                 <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
                                 <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
-                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result}"/>
+                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result, StringFormat={}{0:0.0000}}"/>
 
                                 <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
                                                  IsEnabled="False" Grid.Column="5" Margin="12 3">

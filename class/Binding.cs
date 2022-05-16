@@ -626,8 +626,8 @@ namespace ApexVisIns
             {
                 if (value > _targetProgressValue)
                 {
-                    // 1 % = 100 ms
-                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 45);
+                    // 1 % = 25 ms
+                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 25);
                     ProgressAnimation.Add(() =>
                     {
                         OnProgressValueChanged(_progress, value, timeSpan);
@@ -655,6 +655,7 @@ namespace ApexVisIns
                     {
                         ProgressAnimation[0]();
                         ProgressAnimation.RemoveAt(0);
+                        continue;
                     }
                     _ = SpinWait.SpinUntil(() => false, 50);
                 }

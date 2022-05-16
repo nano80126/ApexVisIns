@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -32,8 +33,8 @@ namespace ApexVisIns.Product
         {
             Item = item;
             CenterSpec = cl;
-            //LowerSpecLimit = lsl;
-            //UpperSpecLimit = usl;
+            // LowerSpecLimit = lsl;
+            // UpperSpecLimit = usl;
             LowerCtrlLimit = lcl;
             UpperCtrlLimit = ucl;
             Result = result;
@@ -68,7 +69,7 @@ namespace ApexVisIns.Product
         /// 檢測結果
         /// </summary>
         [Description("檢驗結果")]
-        public bool OK => LowerCtrlLimit <= Result && Result <= UpperCtrlLimit;
+        public bool OK => (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
     }
 
 
@@ -154,6 +155,35 @@ namespace ApexVisIns.Product
     /// </summary>
     public class JawSpecGroup
     {
+        #region Private
+        private readonly object _c1lock = new();
+        private readonly object _c2lock = new();
+        private readonly object _c3lock = new();
+        //private readonly object _lock = new();
+        #endregion
+
+
+        #region Public
+        public bool SyncBinding { get; private set; }
+        #endregion
+
+        public void EnableCollectionBinding()
+        {
+            BindingOperations.EnableCollectionSynchronization(Collection1, _c1lock);
+            BindingOperations.EnableCollectionSynchronization(Collection2, _c2lock);
+            BindingOperations.EnableCollectionSynchronization(Collection3, _c3lock);
+            SyncBinding = true;
+        }
+
+        public void DisableCollectionBinding()
+        {
+            BindingOperations.DisableCollectionSynchronization(Collection1);
+            BindingOperations.DisableCollectionSynchronization(Collection2);
+            BindingOperations.DisableCollectionSynchronization(Collection3);
+            SyncBinding = false;
+        }
+
+
         /// <summary>
         /// 尺寸規格列表
         /// </summary>

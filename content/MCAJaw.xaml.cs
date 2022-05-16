@@ -147,6 +147,7 @@ namespace ApexVisIns.content
             #region 綁定 Resource
             JawInspection = FindResource("JawInspection") as JawInspection;
             JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
+            if (!JawSpecGroup.SyncBinding) { JawSpecGroup.EnableCollectionBinding(); }
             #endregion
 
             // 載入規格設定
@@ -245,7 +246,7 @@ namespace ApexVisIns.content
                         }
 
                         //等待進度條滿
-                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue == 50, 5 * 1000))
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 85, 5 * 1000))
                         {
                             // 硬體初始化失敗
                             return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
@@ -391,7 +392,7 @@ namespace ApexVisIns.content
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
                                                 if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
                                                 }
                                             }
                                             break;
@@ -401,7 +402,7 @@ namespace ApexVisIns.content
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
                                                 if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
                                                 }
                                             }
                                             break;
@@ -411,7 +412,7 @@ namespace ApexVisIns.content
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
                                                 if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
                                                 }
                                             }
                                             break;
@@ -496,7 +497,7 @@ namespace ApexVisIns.content
                                     // 重置所有通道
                                     LightCOM2.ResetAllChannel();
                                     // 更新 Progress Bar
-                                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                                    MainWindow.MsgInformer.TargetProgressValue += 17;
                                 }
                                 break;
                             default:
@@ -544,7 +545,7 @@ namespace ApexVisIns.content
                     ModbusTCPIO.Connect();
                     ModbusTCPIO.IOChanged += ModbusTCPIO_IOChanged;
 
-                    MainWindow.MsgInformer.TargetProgressValue += 10;
+                    MainWindow.MsgInformer.TargetProgressValue += 17;
 
                     if (ModbusTCPIO.Conneected)
                     {
@@ -631,7 +632,7 @@ namespace ApexVisIns.content
             }
             else
             {
-                string[] items = new string[] { "0.088-R", "0.088-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "0.005MAX", "平面度" };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
                 double[] center = new double[] { 0.088, 0.088, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
                 double[] lowerc = new double[] { 0.0855, 0.0855, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
                 double[] upperc = new double[] { 0.0905, 0.0905, 0.01, 0.01, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
@@ -683,6 +684,13 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
+            //MainWindow.ListJawParam();
+            Debug.WriteLine(MainWindow);
+
+            DateTime t1 = DateTime.Now;
+
+            if (Status != INS_STATUS.READY) { return; }
+
             // 清除當下 Collection
             JawSpecGroup.Collection1.Clear();
             JawSpecGroup.Collection2.Clear();
@@ -690,9 +698,14 @@ namespace ApexVisIns.content
 
             Status = INS_STATUS.INSPECTING;
 
-            MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3);
-
-            Status = INS_STATUS.READY;
+            _ = Task.Run(() =>
+              {
+                  MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3);
+              }).ContinueWith(t =>
+              {
+                  Status = INS_STATUS.READY;
+                  Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+              });
         }
         #endregion
 
@@ -831,12 +844,12 @@ namespace ApexVisIns.content
             MCAJaw.INS_STATUS status = (MCAJaw.INS_STATUS)value;
             return status switch
             {
-                MCAJaw.INS_STATUS.INIT => new SolidColorBrush(Color.FromArgb(0x88, 0x21, 0x96, 0xf3)),
-                MCAJaw.INS_STATUS.READY => new SolidColorBrush(Color.FromArgb(0x88, 0x4c, 0xAF, 0x50)),
-                MCAJaw.INS_STATUS.INSPECTING => new SolidColorBrush(Color.FromArgb(0x88, 0x00, 0x96, 0x88)),
-                MCAJaw.INS_STATUS.ERROR => new SolidColorBrush(Color.FromArgb(0x88, 0xE9, 0x1E, 0x63)),
-                MCAJaw.INS_STATUS.IDLE => new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0xC1, 0x07)),
-                MCAJaw.INS_STATUS.UNKNOWN => new SolidColorBrush(Color.FromArgb(0x88, 0x9E, 0x9E, 0x9E)),
+                MCAJaw.INS_STATUS.INIT => new SolidColorBrush(Color.FromArgb(0xbb, 0x21, 0x96, 0xf3)),
+                MCAJaw.INS_STATUS.READY => new SolidColorBrush(Color.FromArgb(0xff, 0x4c, 0xAF, 0x50)),
+                MCAJaw.INS_STATUS.INSPECTING => new SolidColorBrush(Color.FromArgb(0xff, 0x00, 0x96, 0x88)),
+                MCAJaw.INS_STATUS.ERROR => new SolidColorBrush(Color.FromArgb(0xff, 0xE9, 0x1E, 0x63)),
+                MCAJaw.INS_STATUS.IDLE => new SolidColorBrush(Color.FromArgb(0xff, 0xFF, 0xC1, 0x07)),
+                MCAJaw.INS_STATUS.UNKNOWN => new SolidColorBrush(Color.FromArgb(0xbb, 0x9E, 0x9E, 0x9E)),
        
                 _ => new SolidColorBrush(Colors.Red),   // Default
             };

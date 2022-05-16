@@ -214,7 +214,7 @@
                 <!--//-->
                 <Separator/>
                 <!--切換Crosshair-->
-                <Button VerticalAlignment="Center" Click="ToggleCrosshair_Click" ToolTip="(F1) Show Crosshair" materialDesign:RippleAssist.IsDisabled="True" Height="36">
+                <Button VerticalAlignment="Center" Click="ToggleCrosshair_Click" ToolTip="(F1) Show Crosshair" materialDesign:RippleAssist.IsDisabled="True" Height="36" Focusable="False">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
@@ -229,7 +229,7 @@
                     <materialDesign:PackIcon Kind="TargetVariant" Width="30" Height="26"/>
                 </Button>
                 <!--輔助方塊-->
-                <Button VerticalAlignment="Center" Click="ToggleAssistRect_Click" ToolTip="(F2) Show Assist Rectangle" materialDesign:RippleAssist.IsDisabled="True" Height="36">
+                <Button VerticalAlignment="Center" Click="ToggleAssistRect_Click" ToolTip="(F2) Show Assist Rectangle" materialDesign:RippleAssist.IsDisabled="True" Height="36" Focusable="False">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Style.Triggers>
