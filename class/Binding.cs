@@ -864,6 +864,10 @@ namespace ApexVisIns
                 /// </summary>
                 CAMERA,
                 /// <summary>
+                /// Database Exception
+                /// </summary>
+                DATABASE,
+                /// <summary>
                 /// DLL Exception 
                 /// </summary>
                 DLL,

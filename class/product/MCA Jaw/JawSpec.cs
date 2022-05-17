@@ -74,7 +74,7 @@ namespace ApexVisIns.Product
 
 
     /// <summary>
-    /// MCA Jaw 規格設定
+    /// MCA Jaw 規格設定，規格設定列表用
     /// </summary>
     public class JawSpecSetting : SpecBase
     {
@@ -151,7 +151,7 @@ namespace ApexVisIns.Product
 
 
     /// <summary>
-    /// MCA Jaw 規格群組
+    /// MCA Jaw 規格群組，即時顯示用
     /// </summary>
     public class JawSpecGroup
     {
@@ -298,4 +298,37 @@ namespace ApexVisIns.Product
         }
     }
 
+
+    /// <summary>
+    /// Jaw 全尺寸物件，存入資料庫用
+    /// </summary>
+    public class JawFullSpecIns
+    {
+        public JawFullSpecIns(string lotNumber, Dictionary<string, double> results, bool oK)
+        {
+            LotNumber = lotNumber;
+            Results = results;
+            OK = oK;
+        }
+
+        /// <summary>
+        /// 批號
+        /// </summary>
+        public string LotNumber { get; set; }
+
+        /// <summary>
+        /// 各尺寸檢驗結果
+        /// </summary>
+        public Dictionary<string, double> Results { get; } = new Dictionary<string, double>();
+
+        /// <summary>
+        /// 是否良品
+        /// </summary>
+        public bool OK { get; set; }
+
+        /// <summary>
+        /// 檢驗完成時間
+        /// </summary>
+        public DateTime DateTime { get; set; }
+    }
 }

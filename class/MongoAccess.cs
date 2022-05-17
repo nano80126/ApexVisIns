@@ -65,7 +65,6 @@ namespace ApexVisIns
             Port = port;
         }
 
-
         /// <summary>
         /// Mongo 連線，
         /// 僅用於沒有權限要求時
@@ -119,7 +118,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// MongoDB 斷線
         /// </summary>
@@ -136,6 +134,39 @@ namespace ApexVisIns
                     Database = string.Empty;
                     Connected = false;
                 }
+            }
+            catch (MongoException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 建立 Collection
+        /// </summary>
+        /// <param name="collection">集合名稱</param>
+        public void CreateCollection(string collection)
+        {
+            try
+            {
+                bool exist = client.GetDatabase(Database).ListCollectionNames().ToList().Contains(collection);
+                if (!exist) { client.GetDatabase(Database).CreateCollection(collection); }
+            }
+            catch (MongoException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 捨棄 Collection
+        /// </summary>
+        /// <param name="collection">集合名稱</param>
+        public void DropCollection(string collection)
+        {
+            try
+            {
+                client.GetDatabase(Database).DropCollection(collection);
             }
             catch (MongoException)
             {
@@ -165,11 +196,11 @@ namespace ApexVisIns
         /// </summary>
         /// <param name="client">Mongo Client</param>
         /// <param name="dbName">Database</param>
-        public void ListCollections(string dbName, out List<string> collections)
+        public void ListCollections(out List<string> collections)
         {
             try
             {
-                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoDatabase db = client.GetDatabase(Database);
                 collections = db.ListCollectionNames().ToList();
             }
             catch (MongoException)

@@ -123,6 +123,10 @@ namespace ApexVisIns.content
         /// Basler Camera 相機 3
         /// </summary>
         private BaslerCam BaslerCam3;
+        /// <summary>
+        /// 資料庫存取
+        /// </summary>
+        private MongoAccess MongoAccess;
         #endregion
 
 
@@ -131,6 +135,7 @@ namespace ApexVisIns.content
         private bool CameraInitialized { get; set; }
         private bool LightCtrlInitilized { get; set; }
         private bool IOCtrlInitialized { get; set; }
+        private bool DatabaseInitialized { get; set; }
         #endregion
 
         public MCAJaw()
@@ -166,6 +171,8 @@ namespace ApexVisIns.content
                     // 保留
                     break;
             }
+
+            InitMongoDB(_cancellationTokenSource.Token);
             //Debug.WriteLine(MainWindow.InitMode);
 
             // JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
@@ -206,7 +213,7 @@ namespace ApexVisIns.content
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-        
+
             #endregion
 
             if (!loaded)
@@ -533,10 +540,7 @@ namespace ApexVisIns.content
             {
                 if (IOCtrlInitialized) { return; }
 
-                if (ct.IsCancellationRequested)
-                {
-                    ct.ThrowIfCancellationRequested();
-                }
+                if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
 
                 ModbusTCPIO = MainWindow.ModbusTCPIO;
 
@@ -574,6 +578,32 @@ namespace ApexVisIns.content
                 Dispatcher.Invoke(() => TriggerIns.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent)));
             }
             //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
+        }
+
+
+        private Task InitMongoDB(CancellationToken ct)
+        {
+            return Task.Run(() =>
+            {
+                if (DatabaseInitialized) { return; }
+
+                if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
+
+                MongoAccess = MainWindow.MongoAccess;
+
+                try
+                {
+                    MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
+
+                    MongoAccess.CreateCollection("test2");
+
+
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"IO 控制初始化失敗: {ex.Message}");
+                }
+            }, ct);
         }
         #endregion
 
@@ -717,7 +747,7 @@ namespace ApexVisIns.content
 
         private void FinishLot_Click(object sender, RoutedEventArgs e)
         {
-            string json = JsonSerializer.Serialize(JawInspection.LotResult, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(JawInspection, new JsonSerializerOptions { WriteIndented = true });
             
             Debug.WriteLine(json);
             //_ = 

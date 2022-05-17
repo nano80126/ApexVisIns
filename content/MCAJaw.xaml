@@ -124,7 +124,7 @@
                         <Canvas ToolTip="資料庫">
                             <materialDesign:PackIcon Kind="Database" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="False"/>
+                                                     ctProperty:StatusHelper.Connected="{Binding Connected, Source={StaticResource MongoAccess}, UpdateSourceTrigger=PropertyChanged}"/>
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -555,7 +555,7 @@
                                     <!--#endregion-->
 
                                     <!--#region 3rd row -->
-                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
+                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
                                             HorizontalAlignment="Center" 
                                             VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -571,8 +571,8 @@
                                     </Button>
 
 
-                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
+                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}"
                                             IsEnabled="{Binding LotNumber, Source={StaticResource JawInspection}, Mode=OneWay, Converter={StaticResource StringNotNullOrEmptyConverter}}"
                                             Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"

@@ -233,9 +233,15 @@ namespace ApexVisIns
             ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as ModbusTCPIO;
             #endregion
 
+            #region MongoDB Access
+            MongoAccess = FindResource(nameof(MongoAccess)) as MongoAccess;
+            MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
+            #endregion
+
+
             #region ApexDefect 上線檢驗用
             // Main Tab 使用
-            ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
+            //ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
             #endregion
 
             // 載入後, focus 視窗
