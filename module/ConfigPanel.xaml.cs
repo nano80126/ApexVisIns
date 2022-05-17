@@ -70,7 +70,7 @@ namespace ApexVisIns.module
                 Mode = BindingMode.OneWay,
                 ElementName = "ConfigSelector",
                 Path = new PropertyPath("SelectedIndex"),
-                Converter = new Converter.NotEqualConverter(),
+                Converter = new Converter.NumberNotEqualConverter(),
                 ConverterParameter = -1,
                 FallbackValue = false,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
@@ -105,8 +105,7 @@ namespace ApexVisIns.module
             Initialize_JsonFile();
             // ConfigDelBtn 綁定Config Selector 
             SetBinding();
-
-            Debug.WriteLine("Combobox opened");
+            //Debug.WriteLine("Combobox opened");
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
@@ -122,7 +121,7 @@ namespace ApexVisIns.module
             ConfigSelector.SelectedIndex = -1;
 
             //Debug.WriteLine($"{Cam?.Camera != null}");
-            Debug.WriteLine("Combobox closed");
+            //Debug.WriteLine("Combobox closed");
         }
 
         /// <summary>

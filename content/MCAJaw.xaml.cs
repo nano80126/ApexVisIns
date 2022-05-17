@@ -656,7 +656,14 @@ namespace ApexVisIns.content
         #endregion
 
 
-        #region +/- 數量
+        #region 主控版 , +/- 數量
+
+        private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Keyboard.ClearFocus();
+            _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
+        }
+
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
             foreach (string key in JawInspection.LotResult.Keys)
@@ -707,6 +714,15 @@ namespace ApexVisIns.content
                   Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
               });
         }
+
+        private void FinishLot_Click(object sender, RoutedEventArgs e)
+        {
+            string json = JsonSerializer.Serialize(JawInspection.LotResult, new JsonSerializerOptions { WriteIndented = true });
+            
+            Debug.WriteLine(json);
+            //_ = 
+        }
+
         #endregion
 
         /// <summary>
@@ -785,10 +801,11 @@ namespace ApexVisIns.content
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+   
+
+
         #endregion
-
-
-
 
 #if false
         #region 待刪除
@@ -824,6 +841,7 @@ namespace ApexVisIns.content
             _modbusTCPIO.Disconnect();
         }
         #endregion
+
 #endif
     }
 

@@ -91,7 +91,7 @@
                                 DockPanel.Dock="Right" Padding="0" Height="26" 
                                 Width="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Height, Mode=OneWay}" 
                                 materialDesign:ButtonAssist.CornerRadius="13"
-                                IsEnabled="{Binding ElementName=CameraSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
+                                IsEnabled="{Binding ElementName=CameraSelector, Path=SelectedIndex, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Click="CameraAdd_Click">
                             <materialDesign:PackIcon Kind="PlusCircleOutline" Width="26" Height="26"/>

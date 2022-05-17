@@ -58,8 +58,8 @@
             </ComboBox>
 
             <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="2" Margin="8 0 0 0"
-                    IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
-                    materialDesign:RippleAssist.IsDisabled="True"
+                    IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1}"
+                    materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                     Click="ComPortConnect_Click">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">

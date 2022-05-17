@@ -48,7 +48,7 @@
                             <Binding Source="{StaticResource ServoMotion}" Path="Axes[0].IsAxisOpen" FallbackValue="false"/>
                             <Binding Source="{StaticResource ServoMotion}" Path="Axes[0].ZeroReturned" FallbackValue="false"/>
                             <Binding Source="{StaticResource ApexDefect}" Path="CurrentStep" 
-                                     Converter="{StaticResource EqualConverter}" ConverterParameter="2"/>
+                                     Converter="{StaticResource NumberEqualConverter}" ConverterParameter="2"/>
                         </MultiBinding>
                         <!--1. 確認 Servo Motion 連線狀態-->
                         <!--2. 確認 是否有原點復歸-->

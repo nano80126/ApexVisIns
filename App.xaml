@@ -31,12 +31,12 @@
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
-            <cvt:EqualConverter x:Key="EqualConverter"/>
-            <cvt:NotEqualConverter x:Key="NotEqualConverter"/>
+            <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
+            <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
             <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
-            <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
+            <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>

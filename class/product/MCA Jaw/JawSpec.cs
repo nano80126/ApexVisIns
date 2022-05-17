@@ -228,16 +228,36 @@ namespace ApexVisIns.Product
     /// MAC Jaw 檢驗主物件，
     /// 狀態、計數等功能
     /// </summary>
-    public class JawInspection
+    public class JawInspection : INotifyPropertyChanged
     {
+        #region private
+        private string _lotNumber;
+        #endregion
+
         /// <summary>
         /// 批號輸入
         /// </summary>
-        public string LotNumber { get; set; }
+        public string LotNumber
+        {
+            get => _lotNumber;
+            set
+            {
+                if (value != _lotNumber)
+                {
+                    _lotNumber = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        // public Dictionary<string, ResultElement> LotResult2 { get; } = new Dictionary<string, ResultElement>();
         public ObservableDictionary<string, ResultElement> LotResult { get; } = new ObservableDictionary<string, ResultElement>();
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
 
         /// <summary>

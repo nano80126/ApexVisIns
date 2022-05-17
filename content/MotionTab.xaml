@@ -105,7 +105,7 @@
                                 DockPanel.Dock="Right" Padding="0" Height="26" Width="26"
                                 VerticalAlignment="Center" HorizontalAlignment="Right"
                                 materialDesign:ButtonAssist.CornerRadius="13"
-                                IsEnabled="{Binding ElementName=DeviceSelector, Path=SelectedIndex, Converter={StaticResource NotEqualConverter}, ConverterParameter=-1}"
+                                IsEnabled="{Binding ElementName=DeviceSelector, Path=SelectedIndex, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1}"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Click="BoardOpen_Click">
                             <materialDesign:PackIcon Width="24" Height="24">
@@ -170,7 +170,7 @@
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                     <Binding Source="{StaticResource ServoMotion}" Path="DeviceOpened" UpdateSourceTrigger="PropertyChanged" Mode="OneWay"/>
                                     <Binding ElementName="AxisSelector" Path="SelectedIndex" UpdateSourceTrigger="PropertyChanged" Mode="OneWay" 
-                                             Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1"/>
+                                             Converter="{StaticResource NumberNotEqualConverter}" ConverterParameter="-1"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
 
@@ -324,7 +324,7 @@
                                 Style="{StaticResource MaterialDesignOutlinedButton}" Click="ResetCmdPos_Click">
                             <Button.IsEnabled>
                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
+                                    <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NumberNotEqualConverter}" ConverterParameter="-1" />
                                     <Binding Path="IO_SVON.BitOn" UpdateSourceTrigger="PropertyChanged"/>
                                 </MultiBinding>
                             </Button.IsEnabled>
@@ -363,7 +363,7 @@
                             <!--IsEnabled="{Binding DeviceOpened, UpdateSourceTrigger=PropertyChanged}"-->
                             <Button.IsEnabled>
                                 <!--<MultiBinding Converter="{StaticResource BooleanAndGate}">-->
-                                <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1" />
+                                <Binding ElementName="AxisSelector" Path="SelectedIndex" Converter="{StaticResource NumberNotEqualConverter}" ConverterParameter="-1" />
                                 <!--<Binding Path="ServoOn" UpdateSourceTrigger="PropertyChanged"/>-->
                                 <!--</MultiBinding>-->
                             </Button.IsEnabled>

@@ -68,7 +68,7 @@
                                 <DataTrigger Value="True">
                                     <DataTrigger.Binding>
                                         <MultiBinding Converter="{StaticResource BooleanOrGate}">
-                                            <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource EqualConverter}" ConverterParameter="-1"/>
+                                            <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource NumberEqualConverter}" ConverterParameter="-1"/>
                                             <Binding Path="IsGrabbing" FallbackValue="False" UpdateSourceTrigger="PropertyChanged"/>
                                         </MultiBinding>
                                     </DataTrigger.Binding>
@@ -264,53 +264,41 @@
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" 
                      Height="38" ToolBarTray.IsLocked="True" Focusable="False" FlowDirection="LeftToRight">
                 <!--//-->
+                
+                
+                <!--#region Toolbar Contents -->
 
-                <!--<TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding ElementName=CamSelector, Path=SelectedIndex , Converter={StaticResource EqualConverter}, ConverterParameter=-1, FallbackValue=False}"/>
-                <TextBlock Margin="12 0" VerticalAlignment="Center" Text="{Binding IsGrabbing, Source={StaticResource BaslerCam}, UpdateSourceTrigger=PropertyChanged}"/>-->
-
-                <!--<TextBlock Margin="12 0" VerticalAlignment="Center">
-                    <TextBlock.Text>
-                        <MultiBinding Converter="{StaticResource BooleanOrGate}" FallbackValue="123" StringFormat="{}{0}">
-                            <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource EqualConverter}" ConverterParameter="-1" FallbackValue="True"/>
-                            <Binding Path="IsGrabbing" Source="{StaticResource BaslerCam}" FallbackValue="False" UpdateSourceTrigger="PropertyChanged"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>-->
-
-                <Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                <!--<Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
                         <TextBlock Margin="0 0 0 0" Text="測試1" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button2_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
                         <TextBlock Margin="0 0 0 0" Text="測試2" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button3_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
                         <TextBlock Margin="0 0 0 0" Text="測試3" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button4_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
                         <TextBlock Margin="0 0 0 0" Text="測試4" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="Button5_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
-                        <!--<materialDesign:PackIcon Kind="Thermometer" Width="30" Height="26" VerticalAlignment="Center"/>-->
                         <TextBlock Margin="0 0 0 0" Text="測試5" VerticalAlignment="Center"/>
                     </StackPanel>
-                </Button>
+                </Button>-->
+                
+                <!--#endregion-->
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->

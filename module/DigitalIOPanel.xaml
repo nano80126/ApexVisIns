@@ -263,7 +263,7 @@
             </StackPanel>
         </StackPanel>
 
-        <Button DockPanel.Dock="Top" Click="InitializeIO_Click" Content="初始化" BorderThickness="0" 
+        <Button DockPanel.Dock="Top" Click="InitializeIO_Click" Content="初始化" BorderThickness="0" Focusable="False"
                 materialDesign:ButtonAssist.CornerRadius="15"
                 Style="{StaticResource MaterialDesignOutlinedButton}">
             <Button.Visibility>

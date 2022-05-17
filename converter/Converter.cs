@@ -103,14 +103,14 @@ namespace ApexVisIns.Converter
     /// Int32 equal 轉換器
     /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
-    public class EqualConverter : IValueConverter
+    public class NumberEqualConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //return (int)value == System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
             throw new NotImplementedException();
@@ -121,14 +121,14 @@ namespace ApexVisIns.Converter
     /// Int32 not equal 轉換器
     /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
-    public class NotEqualConverter : IValueConverter
+    public class NumberNotEqualConverter : NumberEqualConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (int)value != System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -335,7 +335,7 @@ namespace ApexVisIns.Converter
     /// <summary>
     /// 數字陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class NumberEqualConverter : IMultiValueConverter
+    public class NumberAllEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -351,15 +351,14 @@ namespace ApexVisIns.Converter
     }
 
 
-
     /// <summary>
-    /// 字串不為Null或Empty
+    /// 字串不為 Null 或 Empty
     /// </summary>
     public class StringNotNullOrEmptyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !string.IsNullOrEmpty(value.ToString());
+            return !string.IsNullOrEmpty((string)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
