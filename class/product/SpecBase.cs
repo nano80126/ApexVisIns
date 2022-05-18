@@ -28,11 +28,20 @@ namespace ApexVisIns.Product
 
 
         /// <summary>
-        /// Key ID
+        /// ID (自動遞增)
+        /// </summary>
+        [Description("ID")]
+        public int ID { get; set; }
+
+        /// <summary>
+        /// Key (主要用於資料庫)
         /// </summary>
         [Description("Key")]
-        public int Key { get; set; }
+        public string Key { get; set; }
 
+        /// <summary>
+        /// 主要用於 UI 顯示
+        /// </summary>
         [Description("項目")]
         public string Item { get; set; }
 

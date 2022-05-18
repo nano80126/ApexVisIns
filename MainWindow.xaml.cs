@@ -235,7 +235,7 @@ namespace ApexVisIns
 
             #region MongoDB Access
             MongoAccess = FindResource(nameof(MongoAccess)) as MongoAccess;
-            MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
+            //MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
             #endregion
 
 

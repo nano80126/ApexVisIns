@@ -90,8 +90,9 @@ namespace ApexVisIns
         /// <param name="dbName">資料庫名稱</param>
         /// <param name="user">使用者</param>
         /// <param name="pwd">密碼</param>
+        /// <param name="timeout">Timeout (ms)</param>
         /// <returns></returns>
-        public void Connect(string dbName, string user, string pwd)
+        public void Connect(string dbName, string user, string pwd, double timeout = 5000)
         {
             try
             {
@@ -101,7 +102,11 @@ namespace ApexVisIns
                     Credential = MongoCredential.CreateCredential(dbName, user, pwd),
                     Server = new MongoServerAddress(Host, Port),
                     DirectConnection = true,
+                    //ConnectTimeout = new TimeSpan(0, 0, 0, 1, 500),
+                    //SocketTimeout = new TimeSpan(0, 0, 0, 1, 500),
+                    ServerSelectionTimeout = TimeSpan.FromMilliseconds(1500) // 選擇 Server timeout (嘗試連線時之timeout)
                 });
+
 
                 BsonDocument db = client.GetDatabase(dbName).RunCommand((Command<BsonDocument>)"{ping:1}");
                 Database = dbName;
@@ -149,6 +154,7 @@ namespace ApexVisIns
         {
             try
             {
+                // 先確認 Collection 是否存在，再新增
                 bool exist = client.GetDatabase(Database).ListCollectionNames().ToList().Contains(collection);
                 if (!exist) { client.GetDatabase(Database).CreateCollection(collection); }
             }
@@ -217,11 +223,11 @@ namespace ApexVisIns
         /// <param name="dbName">資料庫名稱</param>
         /// <param name="cName">集合名稱</param>
         /// <param name="item">物件 (Document)</param>
-        public static void InsertOne<T>(MongoClient client, string dbName, string cName, T item)
+        public void InsertOne<T>(string cName, T item)
         {
             if (client != null)
             {
-                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
                 collection.InsertOne(item);
             }
@@ -238,11 +244,11 @@ namespace ApexVisIns
         /// <param name="dbName">資料庫名稱</param>
         /// <param name="cName">集合名稱</param>
         /// <param name="list">列表</param>
-        public static void InsertMany<T>(MongoClient client, string dbName, string cName, List<T> list)
+        public void InsertMany<T>(string cName, List<T> list)
         {
             if (client != null)
             {
-                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
                 collection.InsertMany(list);
             }
@@ -260,11 +266,11 @@ namespace ApexVisIns
         /// <param name="dbName">資料庫名稱</param>
         /// <param name="cName">集合名稱</param>
         /// <param name="list">列表</param>
-        public static void InsertMany<T>(MongoClient client, string dbName, string cName, T[] list)
+        public void InsertMany<T>(string cName, T[] list)
         {
             if (client != null)
             {
-                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
                 collection.InsertMany(list);
             }

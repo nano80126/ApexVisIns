@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -84,11 +85,12 @@ namespace ApexVisIns.Product
 
         public JawSpecSetting() { }
 
-        public JawSpecSetting(int key, bool enable, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, string note = null)
+        public JawSpecSetting(int id, bool enable, string key, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, string note = null)
         {
-            Key = key;
+            ID = id;
             Enable = enable;
 
+            Key = key;
             Item = item;
             CenterSpec = centerSpec;
             LowerCtrlLimit = lowerCtrlLimit;
@@ -231,9 +233,10 @@ namespace ApexVisIns.Product
     public class JawInspection : INotifyPropertyChanged
     {
         #region private
-        private string _lotNumber;
+        private string _lotNumber = string.Empty;
         #endregion
 
+        [BsonElement("LotNumber")]
         /// <summary>
         /// 批號輸入
         /// </summary>
@@ -250,7 +253,11 @@ namespace ApexVisIns.Product
             }
         }
 
-        public ObservableDictionary<string, ResultElement> LotResult { get; } = new ObservableDictionary<string, ResultElement>();
+        [BsonElement("LotResults")]
+        public ObservableDictionary<string, ResultElement> LotResults { get; } = new ObservableDictionary<string, ResultElement>();
+
+        [BsonElement("DateTime")]
+        public DateTime DateTime { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -258,7 +265,6 @@ namespace ApexVisIns.Product
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
 
         /// <summary>
         /// MCA Jaw 尺寸 NG 數
@@ -304,31 +310,33 @@ namespace ApexVisIns.Product
     /// </summary>
     public class JawFullSpecIns
     {
-        public JawFullSpecIns(string lotNumber, Dictionary<string, double> results, bool oK)
+        public JawFullSpecIns(string lotNumber)
         {
             LotNumber = lotNumber;
-            Results = results;
-            OK = oK;
         }
 
         /// <summary>
         /// 批號
         /// </summary>
+        [BsonElement("LotNumber")]
         public string LotNumber { get; set; }
 
         /// <summary>
         /// 各尺寸檢驗結果
         /// </summary>
+        [BsonElement("Results")]
         public Dictionary<string, double> Results { get; } = new Dictionary<string, double>();
 
         /// <summary>
         /// 是否良品
         /// </summary>
+        [BsonElement("OK")]
         public bool OK { get; set; }
 
         /// <summary>
         /// 檢驗完成時間
         /// </summary>
+        [BsonElement("DateTime")]
         public DateTime DateTime { get; set; }
     }
 }

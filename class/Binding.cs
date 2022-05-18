@@ -611,7 +611,7 @@ namespace ApexVisIns
             {
                 if (value != _progress)
                 {
-                    _progress = value;
+                    _progress = value > 100 ? 100 : value;
                     OnPropertyChanged();
                 }
             }
@@ -894,7 +894,7 @@ namespace ApexVisIns
                 /// <summary>
                 /// OpenCvSharp Process Error Code
                 /// </summary>
-                OPENCVS,
+                OPENCVSHARP,
                 /// <summary>
                 /// I/O Control Exception Code
                 /// </summary>

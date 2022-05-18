@@ -51,7 +51,7 @@ namespace ApexVisIns
             {
                 Dispatcher.Invoke(() =>
                 {
-                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVS, ex.Message);
+                    MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVSHARP, ex.Message);
                     ImageSource = img.GetMat().ToImageSource();
                 });
             }

@@ -29,6 +29,7 @@ namespace ApexVisIns
 
         private readonly Dictionary<string, Rect> JawROIs = new()
         {
+            { "有料檢知", new Rect(185, 345, 710, 30) },
             { "粗定位左", new Rect(310, 260, 230, 200) },
             { "粗定位右", new Rect(540, 260, 230, 200) },
             { "治具定位", new Rect(460, 900, 160, 100) },
@@ -43,7 +44,7 @@ namespace ApexVisIns
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
         }
 
-        public async void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
+        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawFullSpecIns jawFullSpecIns = null)
         {
             // 1. 擷取影像 
             // 2. 取得 Canny
@@ -53,181 +54,223 @@ namespace ApexVisIns
             // 6. 重複以上 4 次
             // 7. 計算平均結果並新增
 
-            List<JawSpecSetting> specList = MCAJaw.JawSpecGroup.SpecList.ToList();
-            double d_front = 0;
-            double d_back = 0;
-
-            List<Task> task1 = new();
-            List<Task> task2 = new();
-            List<Task> task3 = new();
-
-            #region results
-            Dictionary<string, List<double>> cam1results = new Dictionary<string, List<double>>();
-            Dictionary<string, List<double>> cam2results = new Dictionary<string, List<double>>();
-            Dictionary<string, List<double>> cam3results = new Dictionary<string, List<double>>();
-            #endregion
-
-            for (int i = 0; i < 2; i++)
+            try
             {
-                #region CAMERA 3
-                // COM2 光源控制器 (24V, 2CH)
-                LightCtrls[1].SetAllChannelValue(96, 0);
-                // 等待光源
-                _ = SpinWait.SpinUntil(() => false, 100);
+                // 規格列表
+                List<JawSpecSetting> specList = MCAJaw.JawSpecGroup.SpecList.ToList();
+                JawSpecSetting spec;
+                // 有無料
+                bool partExist = false;
+                // 前開
+                double d_front = 0;
+                // 後開
+                double d_back = 0;
 
-                int count = 0;
-                // 拍照要 Dispacker
-                Dispatcher.Invoke(() =>
-                {
-                    while (count < 2)
-                    {
-                        cam1.Camera.ExecuteSoftwareTrigger();
-                        using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                List<Task> task1 = new();
+                List<Task> task2 = new();
+                List<Task> task3 = new();
 
-                        if (grabResult != null && grabResult.GrabSucceeded)
-                        {
-                            Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
-
-                            task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results)));
-
-                            ImageSource1 = mat.ToImageSource();
-                            count++;
-                        }
-                    }
-                });
-
-                //DateTime t1 = DateTime.Now;
-                //foreach (string key in cam1results.Keys)
-                //{
-                //    double avg = cam1results[key].Average();
-                //    JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                //    MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-
-                //    if (key == "前開") { d_front = avg; }
-                //}
-                //Debug.WriteLine($"t1 takes: {(DateTime.Now - t1).TotalMilliseconds}");
+                #region results
+                Dictionary<string, List<double>> cam1results = new();
+                Dictionary<string, List<double>> cam2results = new();
+                Dictionary<string, List<double>> cam3results = new();
                 #endregion
 
-
-                #region CAMERA 2 
-                // COM2 光源控制器 (24V, 2CH)
-                LightCtrls[1].SetAllChannelValue(0, 128);
-                // 等待光源
-                _ = SpinWait.SpinUntil(() => false, 100);
-
-                count = 0;
-                // 拍照要 Dispacker
-                Dispatcher.Invoke(() =>
+                for (int i = 0; i < 2; i++)
                 {
-                    while (count < 2)
-                    {
-                        cam2.Camera.ExecuteSoftwareTrigger();
-                        using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                    #region CAMERA 3
+                    // COM2 光源控制器 (24V, 2CH)
+                    LightCtrls[1].SetAllChannelValue(96, 0);
+                    // 等待光源
+                    _ = SpinWait.SpinUntil(() => false, 100);
 
-                        if (grabResult != null && grabResult.GrabSucceeded)
+                    int count = 0;
+                    // 拍照要 Dispacker
+                    Dispatcher.Invoke(() =>
+                    {
+                        while (count < 2)
                         {
-                            Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+                            cam1.Camera.ExecuteSoftwareTrigger();
+                            using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                            task2.Add(Task.Run(() => JawInsSequenceCam2(mat, specList, cam2results)));
-                            //JawInsSequenceCam2(mat, specList, cam2results);
+                            if (grabResult != null && grabResult.GrabSucceeded)
+                            {
+                                Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                            ImageSource2 = mat.ToImageSource();
-                            count++;
+                                if (count == 0)
+                                {
+                                    if (CheckPart(mat)) { partExist = true; }
+                                }
+
+                                if (partExist) { task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results))); }
+                                else { count += 999; }  // 跳出迴圈
+
+                                ImageSource1 = mat.ToImageSource();
+                                count++;
+                            }
                         }
-                    }
-                });
-                //DateTime t2 = DateTime.Now;
-                //foreach (string key in cam2results.Keys)
-                //{
-                //    double avg = cam2results[key].Average();
-                //    JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                //    MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    });
 
-                //    if (key == "後開") { d_back = avg; }
-                //}
-                //Debug.WriteLine($"t2 takes: {(DateTime.Now - t2).TotalMilliseconds}");
-                #endregion
-            }
+                    // DateTime t1 = DateTime.Now;
+                    // foreach (string key in cam1results.Keys)
+                    // {
+                    //     double avg = cam1results[key].Average();
+                    //     JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
+                    //     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
-            #region CAMERA 3 平面度
-            // COM2 光源控制器 (24V, 2CH)
-            LightCtrls[1].SetAllChannelValue(128, 256);
-            // 等待光源
-            _ = SpinWait.SpinUntil(() => false, 100);
+                    //     if (key == "前開") { d_front = avg; }
+                    // }
+                    // Debug.WriteLine($"t1 takes: {(DateTime.Now - t1).TotalMilliseconds}");
+                    #endregion
 
-            int count2 = 0;
-            // 拍照要 Dispacker
-            Dispatcher.Invoke(() =>
-            {
-                while (count2 < 4)
-                {
-                    cam3.Camera.ExecuteSoftwareTrigger();
-                    IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                    #region CAMERA 2 
+                    // COM2 光源控制器 (24V, 2CH)
+                    LightCtrls[1].SetAllChannelValue(0, 128);
+                    // 等待光源
+                    _ = SpinWait.SpinUntil(() => false, 100);
 
-                    if (grabResult != null && grabResult.GrabSucceeded)
+                    count = 0;
+                    // 拍照要 Dispacker
+                    Dispatcher.Invoke(() =>
                     {
-                        Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+                        while (count < 2)
+                        {
+                            cam2.Camera.ExecuteSoftwareTrigger();
+                            using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                        task3.Add(Task.Run(() => JawInsSequenceCam3(mat, specList, cam3results)));
-                        //JawInsSequenceCam3(mat, specList, cam3results);
+                            if (grabResult != null && grabResult.GrabSucceeded)
+                            {
+                                Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                        ImageSource3 = mat.ToImageSource();
+                                if (partExist) { task2.Add(Task.Run(() => JawInsSequenceCam2(mat, specList, cam2results))); }
+                                else { count += 999; }  // 跳出迴圈
+                                //JawInsSequenceCam2(mat, specList, cam2results);
 
-                        count2++;
-                    }
+                                ImageSource2 = mat.ToImageSource();
+                                count++;
+                            }
+                        }
+                    });
+
+                    #endregion
+                    // 跳出迴圈
+                    if (!partExist) { break; }
                 }
-            });
-            #endregion
 
-            LightCtrls[1].SetAllChannelValue(0, 0);
-            await Task.WhenAll(task1.Concat(task2).Concat(task3));
+                #region CAMERA 3 平面度
+                // COM2 光源控制器 (24V, 2CH)
+                LightCtrls[1].SetAllChannelValue(128, 256);
+                // 等待光源
+                _ = SpinWait.SpinUntil(() => false, 100);
 
-            // Camera 1
-            DateTime t1 = DateTime.Now;
-            foreach (string key in cam1results.Keys)
-            {
-                //Debug.WriteLine($"{key} {cam1results[key].Count}");
-                double avg = cam1results[key].Average();
-                JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                int count2 = 0;
+                // 拍照要 Dispacker
+                Dispatcher.Invoke(() =>
+                {
+                    while (count2 < 4)
+                    {
+                        cam3.Camera.ExecuteSoftwareTrigger();
+                        IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                if (key == "前開") { d_front = avg; }
+                        if (grabResult != null && grabResult.GrabSucceeded)
+                        {
+                            Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                            if (partExist) { task3.Add(Task.Run(() => JawInsSequenceCam3(mat, specList, cam3results))); }
+                            else { count2 += 999; }
+                            //JawInsSequenceCam3(mat, specList, cam3results);
+
+                            ImageSource3 = mat.ToImageSource();
+                            count2++;
+                        }
+                    }
+                });
+                #endregion
+
+                LightCtrls[1].SetAllChannelValue(0, 0);
+                if (!partExist) { throw new MCAJawException("未檢測到料件"); }
+
+                Debug.WriteLine($"st: {DateTime.Now:mm:ss.fff}");
+
+                // 等待所有 計算完成
+                Task.WhenAll(task1.Concat(task2).Concat(task3)).Wait();
+
+                Debug.WriteLine($"end: {DateTime.Now:mm:ss.fff}");
+
+                // Camera 1 結果
+                DateTime stTime = DateTime.Now;
+                foreach (string item in cam1results.Keys)
+                {
+                    // Debug.WriteLine($"{key} {cam1results[key].Count}");
+                    double avg = cam1results[item].Average();
+                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
+                    MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;
+
+                    // 資料庫物件新增
+                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
+
+                    if (item == "前開") { d_front = avg; }
+                }
+
+                // Camera 2 結果
+                foreach (string item in cam2results.Keys)
+                {
+                    // Debug.WriteLine($"{key} {cam2results[key].Count}");
+                    double avg = cam2results[item].Average();
+                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
+                    MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection2[^1].OK ? 0 : 1;
+
+                    // 資料庫物件新增
+                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
+
+                    if (item == "後開") { d_back = avg; }
+                }
+
+                #region 開度差 (先確認是否啟用)
+                spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == "開度差");
+                if (spec.Enable)
+                {
+                    double bfDiff = Math.Abs(d_front - d_back);
+                    MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
+                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;
+
+                    // 資料庫物件新增  key, value
+                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, bfDiff); }
+                }
+                #endregion
+
+                // Camera 3 結果
+                foreach (string item in cam3results.Keys)
+                {
+                    // Debug.WriteLine($"{key} {cam3results[key].Count}");
+                    double avg = cam3results[item].Average();
+                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
+                    MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;
+
+                    // 資料庫物件新增  key, value
+                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
+                }
+
+                // 判斷是否為良品
+                MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawSpecGroup.Col1Result && MCAJaw.JawSpecGroup.Col2Result && MCAJaw.JawSpecGroup.Col3Result ? 1 : 0;
+
+                Debug.WriteLine($"Total takes {(DateTime.Now - stTime).TotalMilliseconds} ms");
             }
-            Debug.WriteLine($"t1 takes: {(DateTime.Now - t1).TotalMilliseconds} ms");
-
-            // Camera 2
-            DateTime t2 = DateTime.Now;
-            foreach (string key in cam2results.Keys)
+            catch (OpenCVException ex)
             {
-                //Debug.WriteLine($"{key} {cam2results[key].Count}");
-                double avg = cam2results[key].Average();
-                JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-
-                if (key == "後開") { d_back = avg; }
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message);
             }
-            Debug.WriteLine($"t2 takes: {(DateTime.Now - t2).TotalMilliseconds} ms");
-
-
-            #region 開度差
-            JawSpecSetting spec2 = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == "開度差");
-            if (spec2.Enable)
+            catch (OpenCvSharpException ex)
             {
-                MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(spec2.Item, spec2.CenterSpec, spec2.LowerCtrlLimit, spec2.UpperCtrlLimit, Math.Abs(d_front - d_back)));
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVSHARP, ex.Message);
             }
-            #endregion
-
-            // Camera 3
-            DateTime t3 = DateTime.Now;
-            foreach (string key in cam3results.Keys)
+            catch (Exception ex)
             {
-                //Debug.WriteLine($"{key} {cam3results[key].Count}");
-                double avg = cam3results[key].Average();
-                JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.EX, ex.Message);
             }
-            Debug.WriteLine($"t3 takes: {(DateTime.Now - t3).TotalMilliseconds} ms");
-            Debug.WriteLine($"Total takes {(DateTime.Now - t1).TotalMilliseconds} ms");
         }
 
         /// <summary>
@@ -240,16 +283,9 @@ namespace ApexVisIns
             // List<JawSpecSetting> specList = MCAJaw.JawSpecGroup.SpecList.ToList();
             JawSpecSetting spec;
 
-            OpenCvSharp.Point baseL;
-            OpenCvSharp.Point baseR;
-
-            //Mat canny;
             double CenterX;
 
-            // 1. 取得 Canny 影像
-            // 2. 取得基準點 (左爪右下 & 右爪左下)
-
-            GetCoarsePos(src, out baseL, out baseR);
+            GetCoarsePos(src, out Point baseL, out Point baseR);
             CenterX = (baseL.X + baseR.X) / 2;
 
             // Debug.WriteLine($"{baseL} {baseR} {CenterX}");
@@ -361,7 +397,6 @@ namespace ApexVisIns
                 }
             }
             #endregion
-            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         public void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
@@ -372,7 +407,6 @@ namespace ApexVisIns
 
             // 取得基準線
             GetJigPos(src, out double JigPosY);
-            Debug.WriteLine($"JigPos: {JigPosY}");
 
             #region 計算後開
             spec = specList?[8];
@@ -445,6 +479,14 @@ namespace ApexVisIns
             //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
+        public bool CheckPart(Mat src)
+        {
+            // ROI
+            Rect roi = JawROIs["有料檢知"];
+
+            Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshHold);
+            return threshHold is > 30 and < 200;
+        }
 
         /// <summary>
         /// 取得左右兩邊基準點 (極端點)
@@ -452,7 +494,7 @@ namespace ApexVisIns
         /// <param name="src">來源影像</param>
         /// <param name="LeftPoint">左半邊極端點</param>
         /// <param name="RightPoint">右半邊極端點</param>
-        public void GetCoarsePos(Mat src, out OpenCvSharp.Point LeftPoint, out OpenCvSharp.Point RightPoint)
+        public void GetCoarsePos(Mat src, out Point LeftPoint, out Point RightPoint)
         {
             Rect LeftRoi = JawROIs["粗定位左"];
             Rect RightROi = JawROIs["粗定位右"];
@@ -495,11 +537,11 @@ namespace ApexVisIns
         /// <param name="correction">校正值 (inch)</param>
         /// <param name="upperLimit">管制上限 (default: 0.005)</param>
         /// <returns>OK / NG</returns>
-        public bool CalContourValue(Mat src, OpenCvSharp.Point leftPt, OpenCvSharp.Point rightPt, out double LeftY, out double RightY, out double d_005max, double correction = 0, double upperLimit = 0.005)
+        public bool CalContourValue(Mat src, Point leftPt, Point rightPt, out double LeftY, out double RightY, out double d_005max, double correction = 0, double upperLimit = 0.005)
         {
             // 計算 roi
-            Rect left = new(leftPt.X - 19, leftPt.Y - 150, 18, 70);
-            Rect right = new(rightPt.X + 2, rightPt.Y - 150, 18, 70);
+            Rect left = new(leftPt.X - 20, leftPt.Y - 150, 25, 70);
+            Rect right = new(rightPt.X - 5, rightPt.Y - 150, 25, 70);
 
             double sumLength = 0;
 
@@ -509,79 +551,87 @@ namespace ApexVisIns
             // using Mat leftMat = new(src, left);
             // using Mat rightMat = new(src, right);
 
-            Methods.GetRoiCanny(src, left, 75, 150, out Mat leftCanny);
-            Methods.GetRoiCanny(src, right, 75, 150, out Mat rightCanny);
+            Methods.GetRoiCanny(src, left, 60, 120, out Mat leftCanny);
+            Methods.GetRoiCanny(src, right, 60, 120, out Mat rightCanny);
 
-            // Cv2.ImShow("Left Canny", leftCanny);
-            // Cv2.ImShow("Right Canny", rightCanny);
+            Dispatcher.Invoke(() =>
+            {
+                Cv2.ImShow("Left Canny", leftCanny);
+                Cv2.ImShow("Right Canny", rightCanny);
+            });
 
             #region 左邊
-            Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 3, 0, 3);
+            Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 2, 0, 3);
             // sumLength = lineH.Sum(line => line.Length());
             // LeftY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
             min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
-            center = (min + max) / 2;
+            center = Math.Abs(max - min) > 10 ? (min + max) / 2 : min; // 先判斷有辨識到最小值
 
             // 大於中心值
-            IEnumerable<LineSegmentPoint> maxH_L = lineH.Where(line => (line.P1.Y + line.P2.Y) / 2 > center);
+            IEnumerable<LineSegmentPoint> maxH_L = lineH.Where(line => (line.P1.Y + line.P2.Y) / 2 >= center);
             // 計算 maxH 總長
             sumLength = maxH_L.Sum(line => line.Length());
             // 計算平均 Y 座標
             LeftY = maxH_L.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
-#if false
-            //foreach (LineSegmentPoint l in lineH)
-            //{
-            //    Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
-            //}
-            //Debug.WriteLine($"------------------------------");
+#if true
+            Debug.WriteLine($"L Center: {center} {min} {max}");
+            Debug.WriteLine($"---------------L---------------");
+            foreach (LineSegmentPoint l in lineH)
+            {
+                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
+            }
+#endif
             Debug.WriteLine($"---------------L---------------");
             foreach (LineSegmentPoint l in maxH_L)
             {
                 Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
             }
-#endif
             #endregion
 
             #region 右邊
-            Methods.GetHoughLinesHFromCanny(rightCanny, right.Location, out lineH, 3, 0, 3);
+            Methods.GetHoughLinesHFromCanny(rightCanny, right.Location, out lineH, 2, 0, 3);
             // sumLength = lineH.Sum(line => line.Length());
             // RightY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
             min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
-            center = (min + max) / 2;
+            center = Math.Abs(max - min) > 10 ? (min + max) / 2 : min; // 先判斷有辨識到最小值
 
             // 大於中心值
-            IEnumerable<LineSegmentPoint> maxH_R = lineH.Where(line => (line.P1.Y + line.P2.Y) / 2 > center);
+            IEnumerable<LineSegmentPoint> maxH_R = lineH.Where(line => (line.P1.Y + line.P2.Y) / 2 >= center);
             // 計算 maxH 總長
             sumLength = maxH_R.Sum(line => line.Length());
             // 計算平均 Y 座標
             RightY = maxH_R.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
-#if false
-            //foreach (LineSegmentPoint l in lineH)
-            //{
-            //    Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
-            //}
-            //Debug.WriteLine($"------------------------------");
+
+#if true
+            Debug.WriteLine($"R Center: {center} {min} {max}");
             Debug.WriteLine($"---------------R---------------");
-            foreach (LineSegmentPoint l in maxH_R)
+            foreach (LineSegmentPoint l in lineH)
             {
                 Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
             }
 #endif
+            Debug.WriteLine($"---------------R---------------");
+            foreach (LineSegmentPoint l in maxH_R)
+            {
+                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()} {center}");
+            }
             #endregion
+
+            //Debug.WriteLine($"L:{LeftY} R:{RightY}");
 
             // 計算 輪廓度
             d_005max = (Math.Abs(LeftY - RightY) * Cam1Unit) + correction;
-            //Debug.WriteLine($"005MAX PT: {LeftY - RightY}");
+            Debug.WriteLine($"005MAX PT: {LeftY - RightY} {d_005max}");
 
             #region Dispose
-            leftCanny.Dispose();
-            rightCanny.Dispose();
+            //leftCanny.Dispose();
+            //rightCanny.Dispose();
             #endregion
 
             // 確認 OK / NG
@@ -596,7 +646,7 @@ namespace ApexVisIns
         /// <param name="rightPt">右邊基準點</param>
         /// <param name="distance">(out) 前開距離</param>
         /// <param name="correction">校正值 (inch)</param>
-        public void CalFrontDistanceValue(Mat src, OpenCvSharp.Point leftPt, OpenCvSharp.Point rightPt, out double leftX, out double rightX, out double distance, double correction = 0)
+        public void CalFrontDistanceValue(Mat src, Point leftPt, Point rightPt, out double leftX, out double rightX, out double distance, double correction = 0)
         {
             // 計算 roi
             Rect leftRoi = new(leftPt.X - 35, leftPt.Y - 85, 26, 40);
@@ -620,7 +670,7 @@ namespace ApexVisIns
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
-            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)}");
+            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px");
 
             leftCanny.Dispose();
             rightCanny.Dispose();
@@ -638,7 +688,7 @@ namespace ApexVisIns
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
         /// <returns>OK / NG</returns>
-        public bool Cal008DistanceValue(Mat src, OpenCvSharp.Point basePoint, double compareX, out double toothX, out double distance, double correction = 0, double limitL = 0.006, double limitU = 0.010)
+        public bool Cal008DistanceValue(Mat src, Point basePoint, double compareX, out double toothX, out double distance, double correction = 0, double limitL = 0.006, double limitU = 0.010)
         {
             // 計算 roi
             Rect roi = new(basePoint.X - 10, basePoint.Y - 140, 20, 150);
@@ -673,7 +723,7 @@ namespace ApexVisIns
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
-        public bool Cal013DistanceValue(Mat src, OpenCvSharp.Point basePoint, int leftRight, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
+        public bool Cal013DistanceValue(Mat src, Point basePoint, int leftRight, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
             Rect roi = new(basePoint.X - 20, basePoint.Y - 70, 40, 90);
@@ -683,11 +733,11 @@ namespace ApexVisIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 5, 0);
 
-            //foreach (LineSegmentPoint item in lineH)
-            //{
-            //    Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-            //}
-            //Debug.WriteLine("----------------------------------------");
+            // foreach (LineSegmentPoint item in lineH)
+            // {
+            //     Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+            // }
+            // Debug.WriteLine("----------------------------------------");
 
             double min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             double max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));

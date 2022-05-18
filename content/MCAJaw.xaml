@@ -394,16 +394,16 @@
 
                                         <!--#region 良品 -->
                                         <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[良品].Name, UpdateSourceTrigger=PropertyChanged}" />
+                                                   Text="{Binding LotResults[good].Name, UpdateSourceTrigger=PropertyChanged}" />
 
                                         <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[良品].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                                   Text="{Binding LotResults[good].Note, UpdateSourceTrigger=PropertyChanged}"/>
 
                                         <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[良品].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="良品" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[良品].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="良品" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[good].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[good].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <TextBlock Grid.Row="1" Margin="8 0 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
@@ -411,35 +411,35 @@
 
                                         <!--#region 0.088R -->
                                         <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.088-R].Name,StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[0.088R].Name,StringFormat={}{0} 不良}" />
 
                                         <TextBlock Grid.Row="3" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.088-R].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088-R" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.088-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088-R" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.088R].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.088R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.088L -->
                                         <TextBlock Grid.Row="4" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.088-L].Name ,StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[0.088L].Name ,StringFormat={}{0} 不良}" />
 
                                         <TextBlock Grid.Row="4" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.088-L].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="4" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088-L" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.088-L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088-L" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.088L].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="4" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.088L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 後開 -->
                                         <TextBlock Grid.Row="5" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[後開].Name, StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[back].Name, StringFormat={}{0} 不良}" />
 
                                         <TextBlock Grid.Row="5" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[後開].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="後開" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[後開].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="後開" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[back].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region NewRegion -->
@@ -455,87 +455,87 @@
 
                                         <!--#region 0.008R -->
                                         <TextBlock Grid.Row="9" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.008-R].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding LotResults[0.008R].Name, StringFormat={}{0} 不良}"/>
 
                                         <TextBlock Grid.Row="9" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.008-R].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="9" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008-R" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.008-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="9" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008-R" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.008R].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="9" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.008R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="9" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.008L -->
                                         <TextBlock Grid.Row="10" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.008-L].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding LotResults[0.008L].Name, StringFormat={}{0} 不良}"/>
 
                                         <TextBlock Grid.Row="10" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.008-L].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="10" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008-L" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.008-L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="10" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008-L" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.008L].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="10" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.008L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="10" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.013R -->
                                         <TextBlock Grid.Row="11" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.013-R].Name, StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[0.013R].Name, StringFormat={}{0} 不良}" />
 
                                         <TextBlock Grid.Row="11" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.013-R].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="11" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013-R" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.013-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="11" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013-R" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.013R].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="11" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.013R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="11" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.013L -->
                                         <TextBlock Grid.Row="12" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.013-L].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding LotResults[0.013L].Name, StringFormat={}{0} 不良}"/>
                                         
                                         <TextBlock Grid.Row="12" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.013-L].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="12" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013-L" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.013-L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="12" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013-L" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.013L].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="12" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.013L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="12" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.024R -->
                                         <TextBlock Grid.Row="13" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.024-R].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding LotResults[0.024R].Name, StringFormat={}{0} 不良}"/>
                                         
                                         <TextBlock Grid.Row="13" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.024-R].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="13" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024-R" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.024-R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="13" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024-R" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.024R].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="13" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.024R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="13" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.024L -->
                                         <TextBlock Grid.Row="14" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[0.024-L].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding LotResults[0.024L].Name, StringFormat={}{0} 不良}"/>
                                         <TextBlock Grid.Row="14" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[0.024-L].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="14" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024-L" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[0.024-L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="14" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024-L" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[0.024L].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="14" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.024L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="14" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 開度差 -->
                                         <TextBlock Grid.Row="15" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResult[開度差].Name, StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[bfDiff].Name, StringFormat={}{0} 不良}" />
                                         <TextBlock Grid.Row="15" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[開度差].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="開度差" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="15" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[開度差].Count, Mode=OneWay}"/>
-                                        <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="開度差" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[bfDiff].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="15" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[bfDiff].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region 0.005MAX 輪廓度 -->
                                         <TextBlock Grid.Row="16" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding  LotResult[輪廓度].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding  LotResults[contour].Name, StringFormat={}{0} 不良}"/>
                                         <TextBlock Grid.Row="16" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[輪廓度].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="輪廓度" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[輪廓度].Count, Mode=OneWay}"/>
-                                        <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="輪廓度" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[contour].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[contour].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <TextBlock Grid.Row="17" Margin="8 0 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
@@ -543,12 +543,12 @@
 
                                         <!--#region 平面度 -->
                                         <TextBlock Grid.Row="19" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}" 
-                                                    Text="{Binding LotResult[平面度].Name, StringFormat={}{0} 不良}" />
+                                                    Text="{Binding LotResults[flatness].Name, StringFormat={}{0} 不良}" />
                                         <TextBlock Grid.Row="19" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResult[平面度].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="19" Grid.Column="2" Click="MinusButton_Click" CommandParameter="平面度" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="19" Grid.Column="3" Padding="0 4" Text="{Binding LotResult[平面度].Count, Mode=OneWay}"/>
-                                        <Button Grid.Row="19" Grid.Column="4" Click="PlusButton_Click" CommandParameter="平面度" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[flatness].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="19" Grid.Column="2" Click="MinusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="19" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="19" Grid.Column="4" Click="PlusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
                                     </Grid>
 

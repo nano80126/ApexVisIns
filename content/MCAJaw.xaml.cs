@@ -172,7 +172,7 @@ namespace ApexVisIns.content
                     break;
             }
 
-            InitMongoDB(_cancellationTokenSource.Token);
+            //InitMongoDB(_cancellationTokenSource.Token);
             //Debug.WriteLine(MainWindow.InitMode);
 
             // JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
@@ -242,7 +242,8 @@ namespace ApexVisIns.content
                 await Task.WhenAll(
                     InitCamera(token),
                     InitLightCtrl(token),
-                    InitIOCtrl(token)).ContinueWith(t =>
+                    InitIOCtrl(token),
+                    InitMongoDB(token)).ContinueWith(t =>
                     {
                         // 終止初始化，狀態變更為閒置
                         if (token.IsCancellationRequested)
@@ -253,11 +254,14 @@ namespace ApexVisIns.content
                         }
 
                         //等待進度條滿
-                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 85, 5 * 1000))
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
                         {
                             // 硬體初始化失敗
                             return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
                         }
+
+                        Debug.WriteLine($"ProgressValue: {MainWindow.MsgInformer.ProgressValue}");
+                        Debug.WriteLine($"TargetProgressValue: {MainWindow.MsgInformer.TargetProgressValue}");
 
                         return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
@@ -580,7 +584,11 @@ namespace ApexVisIns.content
             //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
         }
 
-
+        /// <summary>
+        /// 初始化 Database
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         private Task InitMongoDB(CancellationToken ct)
         {
             return Task.Run(() =>
@@ -593,15 +601,23 @@ namespace ApexVisIns.content
 
                 try
                 {
-                    MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
+                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
 
-                    MongoAccess.CreateCollection("test2");
+                    if (MongoAccess.Connected)
+                    {
+                        MongoAccess.CreateCollection("Lots");
+                        MongoAccess.CreateCollection("Spec");
 
-
+                        MainWindow.MsgInformer.TargetProgressValue += 17;
+                    }
+                    else
+                    {
+                        throw new DatabaseException("資料庫連線失敗");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"IO 控制初始化失敗: {ex.Message}");
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message}");
                 }
             }, ct);
         }
@@ -632,11 +648,11 @@ namespace ApexVisIns.content
 
         private void LoadSpecList()
         {
-            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResult.Count > 0) { return; }
+            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResults.Count > 0) { return; }
             else
             {
                 JawSpecGroup.SpecList.Clear();
-                JawInspection.LotResult.Clear();
+                JawInspection.LotResults.Clear();
             }
 
             string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
@@ -653,34 +669,29 @@ namespace ApexVisIns.content
                 });
 
 
-                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("良品", "", 0));
+                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
                 foreach (JawSpecSetting element in list)
                 {
                     JawSpecGroup.SpecList.Add(element);
-                    JawInspection.LotResult.Add(element.Item, new JawInspection.ResultElement(element.Item, element.Note, 0));
+                    JawInspection.LotResults.Add(element.Key, new JawInspection.ResultElement(element.Item, element.Note, 0));
                 }
             }
-            else
+            else // 若規格列表不存在
             {
+                string[] keys = new string[] { "0.088R", "0.088L", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
                 string[] items = new string[] { "0.088-R", "0.088-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
                 double[] center = new double[] { 0.088, 0.088, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
                 double[] lowerc = new double[] { 0.0855, 0.0855, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
                 double[] upperc = new double[] { 0.0905, 0.0905, 0.01, 0.01, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
                 double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-
-                JawInspection.LotResult.Add("良品", new JawInspection.ResultElement("良品", "", 0));
-                for (int i = 0; i < items.Length; i++)
+                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
+                for (int i = 0; i < keys.Length; i++)
                 {
                     int id = JawSpecGroup.SpecList.Count + 1;
-                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, items[i], center[i], lowerc[i], upperc[i], correc[i]));
-                    JawInspection.LotResult.Add(items[i], new JawInspection.ResultElement(items[i], "", 0));
+                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i]));
+                    JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0));
                 }
-                //Debug.WriteLine($"1: {JawInspection.LotResult.Keys}");
-                //foreach (var item in JawInspection.LotResult.Keys)
-                //{
-                //    Debug.WriteLine($"2: {item}");
-                //}
             }
         }
         #endregion
@@ -696,25 +707,25 @@ namespace ApexVisIns.content
 
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
-            foreach (string key in JawInspection.LotResult.Keys)
+            foreach (string key in JawInspection.LotResults.Keys)
             {
-                JawInspection.LotResult[key].Count = 0;
+                JawInspection.LotResults[key].Count = 0;
             }
         }
 
         private void MinusButton_Click(object sender, RoutedEventArgs e)
         {
             string key = (sender as Button).CommandParameter.ToString();
-            if (JawInspection.LotResult[key].Count > 0)
+            if (JawInspection.LotResults[key].Count > 0)
             {
-                JawInspection.LotResult[key].Count--;
+                JawInspection.LotResults[key].Count--;
             }
         }
 
         private void PlusButton_Click(object sender, RoutedEventArgs e)
         {
             string key = (sender as Button).CommandParameter.ToString();
-            JawInspection.LotResult[key].Count++;
+            JawInspection.LotResults[key].Count++;
         }
         #endregion
 
@@ -728,7 +739,7 @@ namespace ApexVisIns.content
 
             if (Status != INS_STATUS.READY) { return; }
 
-            // 清除當下 Collection
+            // 清空當下 Collection
             JawSpecGroup.Collection1.Clear();
             JawSpecGroup.Collection2.Clear();
             JawSpecGroup.Collection3.Clear();
@@ -736,21 +747,39 @@ namespace ApexVisIns.content
             Status = INS_STATUS.INSPECTING;
 
             _ = Task.Run(() =>
-              {
-                  MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3);
-              }).ContinueWith(t =>
-              {
-                  Status = INS_STATUS.READY;
-                  Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
-              });
+            {
+                JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
+                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                return _jawFullSpecIns;
+            }).ContinueWith(t =>
+            {
+                if (true)
+                {
+                    JawFullSpecIns data = t.Result;
+                    data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                    data.DateTime = DateTime.Now;
+                    MongoAccess.InsertOne("Spec", data);
+                    //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                    //Debug.WriteLine(json);
+                }
+                Status = INS_STATUS.READY;
+
+                Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+            });
         }
 
         private void FinishLot_Click(object sender, RoutedEventArgs e)
         {
-            string json = JsonSerializer.Serialize(JawInspection, new JsonSerializerOptions { WriteIndented = true });
-            
-            Debug.WriteLine(json);
-            //_ = 
+            if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+            {
+                // 刷新時間
+                JawInspection.DateTime = DateTime.Now;
+                MongoAccess.InsertOne("Lots", JawInspection);
+            }
+
+            //// string json = JsonSerializer.Serialize(JawInspection, new JsonSerializerOptions { WriteIndented = true });
+            //// Debug.WriteLine(json);
+            //// _ = 
         }
 
         #endregion

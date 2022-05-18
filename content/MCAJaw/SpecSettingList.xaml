@@ -77,7 +77,7 @@
 
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Key}" Header="ID" MinWidth="60" IsReadOnly="True"
+                <DataGridTextColumn Binding="{Binding ID}" Header="ID" MinWidth="60" IsReadOnly="True"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                 <DataGridCheckBoxColumn Binding="{Binding Enable}" MinWidth="80"
