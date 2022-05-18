@@ -28,23 +28,29 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <!--<StackPanel Grid.Row="0" Orientation="Horizontal">-->
-        <DockPanel>
+        <DockPanel MouseDown="DockPanel_MouseDown" Background="Transparent">
             <TextBlock FontSize="20" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">規格設定 Specification Setting</TextBlock>
             <TextBlock FontSize="16" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="單位 (inch)"></TextBlock>
 
-            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200" Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="儲存變更" 
-                    Click="SpecSettingSave_Click">儲存 SAVE</Button>
+            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" Margin="0 0 12 0" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200" 
+                    Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="儲存變更" 
+                    BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="18"
+                    Click="SpecSettingSave_Click" Content="儲存 SAVE"/>
         </DockPanel>
         <!--</StackPanel>-->
 
-        <DataGrid x:Name="SpecDataGrid" Grid.Row="1" Margin="0 0 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+        <Separator Grid.Row="1" Margin="0 8 0 0 "/>
+
+        <DataGrid x:Name="SpecDataGrid" Grid.Row="2" Margin="0 0 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                   CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
-                  materialDesign:DataGridAssist.CellPadding="15 10" materialDesign:DataGridAssist.ColumnHeaderPadding="10 15">
+                  materialDesign:DataGridAssist.CellPadding="15 10" materialDesign:DataGridAssist.ColumnHeaderPadding="10 15"
+                  AlternationCount="100" Background="Transparent">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -72,6 +78,7 @@
                     <Setter Property="HorizontalAlignment" Value="Right"/>
                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
                     <Setter Property="MinWidth" Value="80"/>
+                    <Setter Property="BorderThickness" Value="0"/>
                 </Style>
             </DataGrid.Resources>
 
@@ -103,29 +110,35 @@
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}"
                                     EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
-                <DataGridTextColumn Header="管制上限" MinWidth="120" Binding="{Binding UpperCtrlLimit}" 
+                <DataGridTextColumn Header="管制上限" MinWidth="120" Binding="{Binding UpperCtrlLimit}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}"
                                     EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
-                <DataGridTextColumn Header="校正值" MinWidth="120" Binding="{Binding Correction}" 
+                <DataGridTextColumn Header="校正值" MinWidth="120" Binding="{Binding Correction}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}"
                                     EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
                 <!--//-->
-                <DataGridTextColumn Binding="{Binding Note}" Header="備註" MinWidth="120"
+                <DataGridTextColumn Header="備註" MinWidth="120" Binding="{Binding Note}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridAlignRighTextColume}">
-                            <Setter Property="Foreground" Value="Gray"/>
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}">
+                    <!--EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"-->
+                    <!--保留當作參考-->
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextRightDataGridEditColumn}">
+                            <Setter Property="Foreground" Value="{StaticResource ColorSecondary}"/>
                         </Style>
-                    </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBlock Grid.Row="2" Margin="12 0 0 12" HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold"
-                   Text="※變更備註須重啟程式才會套用變更" Foreground="{StaticResource ColorDeepOrange}"/>
+        <StackPanel Grid.Row="3" Margin="12 0 0 12" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 量測開度差需要啟用前開、後開與開度差" Foreground="{StaticResource ColorDeepOrange}"/>
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 變更備註須重啟程式才會套用變更" Foreground="{StaticResource ColorDeepOrange}"/>
+
+            <!--<TextBox materialDesign:TextFieldAssist.UnderlineBrush="Transparent"/>-->
+        </StackPanel>
     </Grid>
 </Border>

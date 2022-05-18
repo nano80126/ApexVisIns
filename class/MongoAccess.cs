@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -41,7 +42,8 @@ namespace ApexVisIns
         /// <summary>
         /// 是否連線
         /// </summary>
-        public bool Connected {
+        public bool Connected
+        {
             get => _connected;
             set
             {
@@ -288,21 +290,62 @@ namespace ApexVisIns
         /// <typeparam name="T"></typeparam>
         /// <param name="dbName"></param>
         /// <param name="cName"></param>
-        public void FindOne<T>(string dbName, string cName)
+        public void FindOne<T>(string cName, FilterDefinition<T> filter, out T data)
         {
             if (client != null)
             {
-                IMongoDatabase db = client.GetDatabase(dbName);
+                IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
+                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                data = collection.Find(filter).FirstOrDefault();
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
 
-                var filter = Builders<T>.Filter.Lt("DateTime", DateTime.Now);
 
-                var d = collection.Find<T>(filter).ToList();
+        /// <summary>
+        /// 搜尋符合條件 Document
+        /// </summary>
+        /// <param name="cName">集合名</param>
+        /// <param name="filter">過濾器</param>
+        /// <param name="limit">搜尋比數</param>
+        /// <param name="data">(out) 資料</param>
+        public void FindMany<T>(string cName, FilterDefinition<T> filter, int limit, out List<T> data)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                data = collection.Find(filter).Limit(limit).ToList();
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
 
-                foreach (var item in d)
-                {
-
-                }
+        /// <summary>
+        /// 搜尋所有符合條件 Document
+        /// </summary>
+        /// <param name="cName">集合名</param>
+        /// <param name="filter">過濾器</param>
+        /// <param name="data">(out) 資料</param>
+        public void FindAll<T>(string cName, FilterDefinition<T> filter, out List<T> data)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                data = collection.Find(filter).ToList();
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
             }
         }
 
@@ -330,4 +373,22 @@ namespace ApexVisIns
             _disposed = true;
         }
     }
+
+
+    /// <summary>
+    /// DateTime Extension
+    /// </summary>
+    public static class DateTimeEx
+    {
+        public static DateTime GetStartOfDay(this DateTime dt)
+        {
+            return new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0);
+        }
+
+        public static DateTime GetEndOfDay(this DateTime dt)
+        {
+            return new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
+        }
+    }
+
 }

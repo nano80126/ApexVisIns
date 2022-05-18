@@ -243,14 +243,13 @@
                 </TabItem>
                 <!--#endregion-->
 
-                <!--#region MCA Jaw Tab -->
+                <!--#region MCA Jaw Tab  -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" Visibility="Collapsed">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
-                    <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
 

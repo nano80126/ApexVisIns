@@ -386,13 +386,16 @@ namespace ApexVisIns
                         tabItem.Content = DatabaseTab;
                         break;
                     case 4:
-                        EngineerTab = new EngineerTab()
+                        if (DebugMode)
                         {
-                            Name = "EngineerTab",
-                            Focusable = true,
-                            FocusVisualStyle = null
-                        };
-                        tabItem.Content = EngineerTab;
+                            EngineerTab = new EngineerTab()
+                            {
+                                Name = "EngineerTab",
+                                Focusable = true,
+                                FocusVisualStyle = null
+                            };
+                            tabItem.Content = EngineerTab;
+                        }
                         break;
                     default:
                         break;

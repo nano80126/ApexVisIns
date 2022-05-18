@@ -236,6 +236,9 @@ namespace ApexVisIns.Product
         private string _lotNumber = string.Empty;
         #endregion
 
+        [BsonId]
+        public MongoDB.Bson.ObjectId _id { get; set; }
+
         [BsonElement("LotNumber")]
         /// <summary>
         /// 批號輸入

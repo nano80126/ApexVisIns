@@ -272,8 +272,8 @@ namespace ApexVisIns
         private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
             byte idx = byte.Parse(e.Parameter as string);
-            // 確保 idx 不會超過 TabItems 數目
-            OnTabIndex = idx < AppTabControl.Items.Count && (AppTabControl.Items[idx] as TabItem).IsEnabled ? idx : OnTabIndex;
+            // 確保 idx 不會超過 TabItems 數目 // 確保 Enable // 確保 Content 不為 null
+            OnTabIndex = idx < AppTabControl.Items.Count && (AppTabControl.Items[idx] as TabItem).IsEnabled && (AppTabControl.Items[idx] as TabItem).Content != null ? idx : OnTabIndex;
         }
 
         private void GlobalTest(object sender, ExecutedRoutedEventArgs e)

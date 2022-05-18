@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ApexVisIns.Product;
+using MongoDB.Bson;
+using MongoDB.Driver;
+
 
 namespace ApexVisIns.content
 {
@@ -115,7 +120,26 @@ namespace ApexVisIns.content
 
         private void DateTimeFindBtn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                DateTime date = DatePicker.SelectedDate.Value;
+                string[] stTime = StartTimePicker.SelectedItem.ToString().Split(':');
+                string[] endTime = EndTimePicker.SelectedItem.ToString().Split(':');
 
+                DateTime st = new(date.Year, date.Month, date.Day, Convert.ToInt32(stTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(stTime[1], CultureInfo.CurrentCulture), 0);
+                DateTime end = new(date.Year, date.Month, date.Day, Convert.ToInt32(endTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(endTime[1], CultureInfo.CurrentCulture), 0);
+
+                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Gt(s => s.DateTime, st);
+                filter &= Builders<JawInspection>.Filter.Lt(s => s.DateTime, end);
+
+                MainWindow.MongoAccess.FindOne("Lots", filter, out JawInspection ins);
+
+                if (ins != null) Debug.WriteLine($"{ins.LotNumber} {ins.DateTime.ToLocalTime()}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         private void LotNumberFindBtn_Click(object sender, RoutedEventArgs e)
