@@ -1147,10 +1147,10 @@ namespace ApexVisIns
         /// <param name="key"></param>
         /// <param name="newValue"></param>
         /// <param name="oldValue"></param>
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey,TValue> newItem, KeyValuePair<TKey,TValue> oldItem)
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem, base.Keys.ToList().IndexOf(newItem.Key)));
-         
+
             OnPropertyChanged(nameof(Values));
             OnPropertyChanged("Item[]");
         }
@@ -1230,8 +1230,9 @@ namespace ApexVisIns
             {
                 base[key] = value;
                 //OnCollectionChanged(NotifyCollectionChangedAction.Replace, key, value, existing);
-                KeyValuePair<TKey, TValue> item = new(key, value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Replace, item);
+                KeyValuePair<TKey, TValue> newItem = new(key, value);
+                KeyValuePair<TKey, TValue> oldItem = new(key, existing);
+                OnCollectionChanged(NotifyCollectionChangedAction.Replace, newItem, oldItem);
             }
             else
             {

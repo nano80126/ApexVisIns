@@ -185,7 +185,6 @@ namespace ApexVisIns.Product
             SyncBinding = false;
         }
 
-
         /// <summary>
         /// 尺寸規格列表
         /// </summary>
@@ -226,6 +225,7 @@ namespace ApexVisIns.Product
     }
 
 
+
     /// <summary>
     /// MAC Jaw 檢驗主物件，
     /// 狀態、計數等功能
@@ -239,7 +239,7 @@ namespace ApexVisIns.Product
         [BsonId]
         public MongoDB.Bson.ObjectId _id { get; set; }
 
-        [BsonElement("LotNumber")]
+        [BsonElement(nameof(LotNumber))]
         /// <summary>
         /// 批號輸入
         /// </summary>
@@ -256,10 +256,10 @@ namespace ApexVisIns.Product
             }
         }
 
-        [BsonElement("LotResults")]
-        public ObservableDictionary<string, ResultElement> LotResults { get; } = new ObservableDictionary<string, ResultElement>();
+        [BsonElement(nameof(LotResults))]
+        public ObservableDictionary<string, ResultElement> LotResults { get; set; } = new ObservableDictionary<string, ResultElement>();
 
-        [BsonElement("DateTime")]
+        [BsonElement(nameof(DateTime))]
         public DateTime DateTime { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -275,6 +275,8 @@ namespace ApexVisIns.Product
         public class ResultElement : INotifyPropertyChanged
         {
             private int _count;
+
+            public ResultElement() { }
 
             public ResultElement(string name, string note, int count)
             {
@@ -307,39 +309,43 @@ namespace ApexVisIns.Product
         }
     }
 
-
     /// <summary>
     /// Jaw 全尺寸物件，存入資料庫用
     /// </summary>
     public class JawFullSpecIns
     {
+        public JawFullSpecIns() { }
+
         public JawFullSpecIns(string lotNumber)
         {
             LotNumber = lotNumber;
         }
 
+        [BsonId]
+        public MongoDB.Bson.ObjectId _id { get; set; }
+
         /// <summary>
         /// 批號
         /// </summary>
-        [BsonElement("LotNumber")]
+        [BsonElement(nameof(LotNumber))]
         public string LotNumber { get; set; }
 
         /// <summary>
         /// 各尺寸檢驗結果
         /// </summary>
-        [BsonElement("Results")]
-        public Dictionary<string, double> Results { get; } = new Dictionary<string, double>();
+        [BsonElement(nameof(Results))]
+        public Dictionary<string, double> Results { get; set; } = new Dictionary<string, double>();
 
         /// <summary>
         /// 是否良品
         /// </summary>
-        [BsonElement("OK")]
+        [BsonElement(nameof(OK))]
         public bool OK { get; set; }
 
         /// <summary>
         /// 檢驗完成時間
         /// </summary>
-        [BsonElement("DateTime")]
+        [BsonElement(nameof(DateTime))]
         public DateTime DateTime { get; set; }
     }
 }

@@ -279,7 +279,6 @@ namespace ApexVisIns
             else
             {
                 throw new MongoException("MongoDB connection is not established");
-                //Console.WriteLine("MongoDB Client is not initialized");
             }
         }
 
@@ -287,16 +286,16 @@ namespace ApexVisIns
         /// <summary>
         /// 搜尋第一筆符合條件 Document
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbName"></param>
-        /// <param name="cName"></param>
+        /// <param name="cName">集合名</param>
+        /// <param name="filter">過濾器</param>
+        /// <param name="data">(out) 資料</param>
         public void FindOne<T>(string cName, FilterDefinition<T> filter, out T data)
         {
             if (client != null)
             {
                 IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
-                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                // FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
                 data = collection.Find(filter).FirstOrDefault();
             }
             else
@@ -304,7 +303,6 @@ namespace ApexVisIns
                 throw new MongoException("MongoDB connection is not established");
             }
         }
-
 
         /// <summary>
         /// 搜尋符合條件 Document
@@ -319,7 +317,7 @@ namespace ApexVisIns
             {
                 IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
-                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                // FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
                 data = collection.Find(filter).Limit(limit).ToList();
             }
             else
@@ -340,7 +338,7 @@ namespace ApexVisIns
             {
                 IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
-                //FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
+                // FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
                 data = collection.Find(filter).ToList();
             }
             else

@@ -6,6 +6,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content"
+            xmlns:pd="clr-namespace:ApexVisIns.Product"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
@@ -36,7 +37,19 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
+        <!--#region Column 1 -->
         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Top" Background="{x:Null}">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                     <DockPanel.Resources>
@@ -62,7 +75,7 @@
                         </Style>
                         <!--//-->
                     </DockPanel.Resources>
-                    
+
                     <DockPanel x:Name="CalenderHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="CalendarOutline" Width="30" Height="26"/>
                         <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="日期時間查詢" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
@@ -93,7 +106,7 @@
                                 </Style.Triggers>-->
                             </Style>
                         </StackPanel.Resources>
-                        
+
                         <ComboBox x:Name="StartTimePicker" DockPanel.Dock="Top" Padding="8 3"
                                   ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                   materialDesign:TextFieldAssist.PrefixText="S "
@@ -121,7 +134,7 @@
                         </ComboBox>
                     </StackPanel>
 
-                    <Button Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click" Style="{StaticResource MaterialDesignOutlinedButton}">
+                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center"/>
                             <TextBlock VerticalAlignment="Center" Text="查詢"/>
@@ -140,13 +153,12 @@
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
 
-
                     <TextBox x:Name="LotNumberText" DockPanel.Dock="Top" Padding="8 3" 
                              materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card,AncestorLevel=1}}"
                              materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
-                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="LotNumberFindBtn_Click" Style="{StaticResource MaterialDesignOutlinedButton}">
+                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="LotNumberFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center"/>
                             <TextBlock VerticalAlignment="Center" Text="查詢"/>
@@ -155,13 +167,15 @@
                 </DockPanel>
             </materialDesign:Card>
         </StackPanel>
+        <!--#endregion-->
 
-        <!--Separator-->
+        <!--#region Column 2, Separator -->
         <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                    Background="{StaticResource ColorSecondaryTransparent}"/>
+        <!--#endregion-->
 
+        <!--#region Column 3 -->
         <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" Background="{x:Null}">
-
             <materialDesign:Card x:Name="HistoryCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
@@ -187,17 +201,227 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 10" />
                     <!--//-->
-                    <TextBlock DockPanel.Dock="Top" Text="Data History Content" FontSize="20" Foreground="{StaticResource ColorInfo}"/>
+                    <!--<TextBlock DockPanel.Dock="Top" Text="Data History Content" FontSize="20" Foreground="{StaticResource ColorInfo}"/>-->
+
+                    <DataGrid x:Name="LotDataGrid" DockPanel.Dock="Top" Margin="0" MaxHeight="200"
+                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
+                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
+                              Background="Transparent"
+                              ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <DataGrid.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
+                                <Setter Property="Background" Value="{StaticResource ColorPurpleTransparent}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource ColorPurpleTransparent}"/>
+                            </Style>
+                            
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="FontFamily" Value="微軟正黑體"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridSuccessColumeHeader">
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridErrorColumeHeader">
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="批號" MinWidth="120" CanUserResize="False" IsReadOnly="True" Binding="{Binding LotNumber}" 
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                            
+                            <!--查詢按鈕, MinWidth = 80 + 16 (padding)-->
+                            <DataGridTemplateColumn MinWidth="96" CanUserResize="False" IsReadOnly="True">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
+                                
+                                <DataGridTemplateColumn.Header>
+                                    <TextBlock HorizontalAlignment="Right" Text="動作" TextAlignment="Center" Width="80"/>
+                                </DataGridTemplateColumn.Header>
+
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button HorizontalAlignment="Right" Content="查詢" Width="80" Foreground="{StaticResource ColorInfo}"
+                                                materialDesign:ButtonAssist.CornerRadius="15"
+                                                Style="{StaticResource MaterialDesignFlatButton}" Click="SearchResultsByLotNumber_Click" CommandParameter="{Binding LotNumber}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="時間" MinWidth="120" IsReadOnly="True" 
+                                                Binding="{Binding DateTime, StringFormat={}{0:MM/dd/yy HH:mm}, Converter={StaticResource DateTimeToLocalConverter}}" 
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--//-->
+                            <DataGridTextColumn Header="良品" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[good].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridSuccessColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                            <!--//-->
+                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088R].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088L].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008R].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008L].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013R].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013L].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024R].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024L].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contour].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--//-->
+                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[back].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[bfDiff].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                            <!--//-->
+                            <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!--<DataGrid x:Name="LotDataGrid" DockPanel.Dock="Top" Margin="0" MaxHeight="200"
+                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
+                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
+                              Background="Transparent"
+                              ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">-->
+                    
+                    
+                    <DataGrid DockPanel.Dock="Top" Margin="0 12 0 0" 
+                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
+                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
+                              Background="{StaticResource ColorGrayTransparent}"
+                              ItemsSource="{Binding JawFullSpecInsCol, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <DataGrid.Style>
+                            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
+                                <!--900 - 120-->
+                                <Setter Property="Height" Value="508"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                                        <!--1080 - 120-->
+                                        <Setter Property="Height" Value="688"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Style>
+
+                        <DataGrid.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
+                                <Setter Property="Background" Value="{StaticResource ColorPrimaryTransparent}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="FontFamily" Value="微軟正黑體"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextCenterDataGridColumeHeader">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridSuccessColumeHeader">
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridErrorColumeHeader">
+                                <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                            </Style>
+
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="0 3"/>
+                            </Style>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="時間" MinWidth="80" IsReadOnly="True" CanUserResize="False"
+                                                Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}, Converter={StaticResource DateTimeToLocalConverter}}" 
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" 
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTemplateColumn Header="OK/NG" MinWidth="80" IsReadOnly="True" CanUserResize="False" 
+                                                    HeaderStyle="{StaticResource TextCenterDataGridColumeHeader}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon Width="30" Height="26" Tag="{Binding OK}" HorizontalAlignment="Center">
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                                            <Setter Property="Kind" Value="Cube"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Kind" Value="CubeOff"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <!--//-->
+                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088R], StringFormat={}{0:0.0000}}"
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088L], StringFormat={}{0:0.0000}}"
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </DockPanel>
             </materialDesign:Card>
-            
-            
-            <!--
-            <StackPanel Background="White" HorizontalAlignment="Stretch" Height="300">
-                <Button Content="123" Style="{StaticResource MaterialDesignOutlinedButton}"></Button>
-            </StackPanel>
-            -->
         </StackPanel>
+        <!--#endregion-->
 
     </Grid>
 </StackPanel>

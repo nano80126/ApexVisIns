@@ -9,6 +9,7 @@ using System.Windows.Data;
 
 namespace ApexVisIns.Converter
 {
+    #region Bool 轉換器
     /// <summary>
     /// 布林 反向 轉換器
     /// </summary>
@@ -24,6 +25,26 @@ namespace ApexVisIns.Converter
         {
             //Debug.WriteLine($"ConvertBack: {value}");
             return !(bool)value;
+        }
+    }
+
+    /// <summary>
+    /// 布林 OR 轉換器
+    /// </summary>
+    [ValueConversion(typeof(bool[]), typeof(bool))]
+    public class BooleanOrGate : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return values.Any(value =>
+            {
+                return (bool)value;
+            });
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -47,17 +68,32 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 布林轉Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class BooleanToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 布林 AND To Visibility 轉換器
+    /// </summary>
     [ValueConversion(typeof(bool[]), typeof(Visibility))]
     public class BooleanAndToVisibility : BooleanAndGate
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            //bool b = values.All(value =>
-            //{
-            //    return value != DependencyProperty.UnsetValue && (bool)value;
-            //});
             return (bool)base.Convert(values, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
-            //return b ? Visibility.Visible : (object)Visibility.Collapsed;
         }
 
         public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -66,6 +102,9 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 布林 AND To Visibility 反向轉換器
+    /// </summary>
     [ValueConversion(typeof(bool[]), typeof(Visibility))]
     public class BooleanAndToVisibilityInverse : BooleanAndGate
     {
@@ -79,26 +118,9 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+    #endregion
 
-    /// <summary>
-    /// 布林 OR 轉換器
-    /// </summary>
-    public class BooleanOrGate : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            return values.Any(value =>
-            {
-                return (bool)value;
-            });
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
+    #region 數字 Equal 轉換器
     /// <summary>
     /// Int32 equal 轉換器
     /// </summary>
@@ -133,10 +155,12 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+    #endregion
 
 
+    #region 字串 Equal 轉換器
     /// <summary>
-    /// 字串比較
+    /// 字串 Equal 轉換器
     /// </summary>
     [ValueConversion(typeof(string), typeof(bool))]
     public class StringEqualConverter : IValueConverter
@@ -152,9 +176,8 @@ namespace ApexVisIns.Converter
         }
     }
 
-
     /// <summary>
-    /// 字串比較(反向)
+    /// 字串 Equal 反向轉換器
     /// </summary>
     [ValueConversion(typeof(string), typeof(bool))]
     public class StringNotEqualConverter : IValueConverter
@@ -170,7 +193,25 @@ namespace ApexVisIns.Converter
         }
     }
 
+    /// <summary>
+    /// 字串不為 Null 或 Empty
+    /// </summary>
+    public class StringNotNullOrEmptyConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !string.IsNullOrEmpty((string)value);
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    #endregion
+
+
+    #region 數學運算轉換器
     /// <summary>
     ///  數學加法 轉換器
     /// </summary>
@@ -238,7 +279,12 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+    #endregion
 
+    #region 數字比較轉換器
+    /// <summary>
+    /// 數字 Odd 轉換器
+    /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
     public class NumberIsOddConverter : IValueConverter
     {
@@ -254,7 +300,7 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// 數學小於 轉換器
+    /// 數字 小於 轉換器
     /// </summary>
     public class NumberLessConverter : IValueConverter
     {
@@ -277,7 +323,7 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// 數學大於 轉換器
+    /// 數字 大於 轉換器
     /// </summary>
     public class NumberGreaterConvert : IValueConverter
     {
@@ -298,15 +344,16 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+    #endregion
 
-    /// <summary>
-    /// 布林轉Visibility 轉換器
-    /// </summary>
-    public class BooleanVisibilityConverter : IValueConverter
+    #region DateTime 轉換器
+    [ValueConversion(typeof(DateTime), typeof(DateTime))]
+    public class DateTimeToLocalConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? Visibility.Visible : Visibility.Hidden;
+            return ((DateTime)value).ToLocalTime();
+            //throw new NotImplementedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -314,6 +361,8 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+
+    #endregion
 
     /// <summary>
     /// 字串陣列比較器 (每個元素相等則傳回true)
@@ -351,21 +400,6 @@ namespace ApexVisIns.Converter
     }
 
 
-    /// <summary>
-    /// 字串不為 Null 或 Empty
-    /// </summary>
-    public class StringNotNullOrEmptyConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return !string.IsNullOrEmpty((string)value);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     public class BooleanNotNullOrFalseConverter : IValueConverter
     {
@@ -420,8 +454,6 @@ namespace ApexVisIns.Converter
             return string.Empty;
         }
     }
-
-
 
 
     /// <summary>

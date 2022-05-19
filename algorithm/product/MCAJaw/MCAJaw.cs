@@ -37,6 +37,7 @@ namespace ApexVisIns
             { "側面定位", new Rect(460, 110, 240, 130) }
         };
 
+
         public void ListJawParam()
         {
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
@@ -44,6 +45,13 @@ namespace ApexVisIns
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
         }
 
+        /// <summary>
+        /// Jaw 檢驗流程
+        /// </summary>
+        /// <param name="cam1">相機 1</param>
+        /// <param name="cam2">相機 2</param>
+        /// <param name="cam3">相機 3</param>
+        /// <param name="jawFullSpecIns">檢驗結果物件</param>
         public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawFullSpecIns jawFullSpecIns = null)
         {
             // 1. 擷取影像 
@@ -274,9 +282,11 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 
+        /// 相機 1 檢驗
         /// </summary>
-        /// <param name="src"></param>
+        /// <param name="src">來源影像</param>
+        /// <param name="specList">規格列表</param>
+        /// <param name="results">檢驗結果</param>
         public void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -399,6 +409,12 @@ namespace ApexVisIns
             #endregion
         }
 
+        /// <summary>
+        /// 相機 2 檢驗
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="specList">規格列表</param>
+        /// <param name="results">檢驗結果</param>
         public void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -453,6 +469,12 @@ namespace ApexVisIns
             //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
+        /// <summary>
+        /// 相機 3 檢驗
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="specList">規格列表</param>
+        /// <param name="results">檢驗結果</param>
         public void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -554,11 +576,11 @@ namespace ApexVisIns
             Methods.GetRoiCanny(src, left, 60, 120, out Mat leftCanny);
             Methods.GetRoiCanny(src, right, 60, 120, out Mat rightCanny);
 
-            Dispatcher.Invoke(() =>
-            {
-                Cv2.ImShow("Left Canny", leftCanny);
-                Cv2.ImShow("Right Canny", rightCanny);
-            });
+            //Dispatcher.Invoke(() =>
+            //{
+            //    Cv2.ImShow("Left Canny", leftCanny);
+            //    Cv2.ImShow("Right Canny", rightCanny);
+            //});
 
             #region 左邊
             Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 2, 0, 3);
@@ -630,8 +652,8 @@ namespace ApexVisIns
             Debug.WriteLine($"005MAX PT: {LeftY - RightY} {d_005max}");
 
             #region Dispose
-            //leftCanny.Dispose();
-            //rightCanny.Dispose();
+            leftCanny.Dispose();
+            rightCanny.Dispose();
             #endregion
 
             // 確認 OK / NG

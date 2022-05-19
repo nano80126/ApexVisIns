@@ -24,6 +24,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
 using System.Globalization;
+using MongoDB.Driver;
 
 namespace ApexVisIns.content
 {
@@ -195,23 +196,10 @@ namespace ApexVisIns.content
             //}
             #endregion
 
-
-            // if (JawSpecGroup.SpecList.Count == 0)
-            // {
-            //     for (int i = 0; i < 10; i++)
-            //     {
-            //         JawSpecGroup.SpecList.Add(new JawSpecSetting()
-            //         {
-            //             Key = JawSpecGroup.SpecList.Count + 1,
-            //             Item = $"項目P{i}",
-            //             Note = string.Empty
-            //         });
-            //     }
-            // }
-
             #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
+            InitMongoDB(_cancellationTokenSource.Token).Wait();
 
 
             #endregion
@@ -707,6 +695,7 @@ namespace ApexVisIns.content
 
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
+            JawInspection._id = new MongoDB.Bson.ObjectId();
             foreach (string key in JawInspection.LotResults.Keys)
             {
                 JawInspection.LotResults[key].Count = 0;
@@ -772,10 +761,36 @@ namespace ApexVisIns.content
         {
             if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {
-                // 刷新時間
+                JawInspection._id = new MongoDB.Bson.ObjectId();
                 JawInspection.DateTime = DateTime.Now;
+                // 刷新時間
                 MongoAccess.InsertOne("Lots", JawInspection);
             }
+
+            //TestDic testDic = new TestDic
+            //{
+            //    _id = new MongoDB.Bson.ObjectId(),
+            //    Value = {
+            //        { "123", 456 },
+            //        { "456", 456 },
+            //        { "789", 789 },
+            //    }
+            //};
+
+            //MongoAccess.InsertOne("Lots", testDic);
+
+            //MongoAccess.FindAll("Lots", Builders<TestDic>.Filter.Empty, out List<TestDic> data);
+
+            //foreach (var item in data)
+            //{
+            //    Debug.WriteLine($"{string.Join(",", item.Value.Keys)}");
+
+            //    Debug.WriteLine($"{item.Value.Keys} {item.Value.Count}");
+            //}
+
+            //Debug.WriteLine($"{JawInspection.LotResults["good"].Name} {JawInspection.LotResults["good"].Note} {JawInspection.LotResults["good"].Count}");
+            //JawInspection.LotResults["good"] = new JawInspection.ResultElement("123", "456", 10);
+            //Debug.WriteLine($"{JawInspection.LotResults["good"].Name} {JawInspection.LotResults["good"].Note} {JawInspection.LotResults["good"].Count}" );
 
             //// string json = JsonSerializer.Serialize(JawInspection, new JsonSerializerOptions { WriteIndented = true });
             //// Debug.WriteLine(json);
