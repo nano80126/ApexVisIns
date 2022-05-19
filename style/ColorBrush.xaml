@@ -12,6 +12,8 @@
     <SolidColorBrush x:Key="ColorSecondaryTransparent" Color="#88424242"/>
     <SolidColorBrush x:Key="ColorGray" Color="#9E9E9E"/>
     <SolidColorBrush x:Key="ColorGrayTransparent" Color="#889E9E9E"/>
+    <SolidColorBrush x:Key="ColorLightGray" Color="#CDCDCD"/>
+    <SolidColorBrush x:Key="ColorLightGrayTransparent" Color="#88CDCDCD"/>
     <SolidColorBrush x:Key="ColorBlueGray" Color="#607D8B"/>
     <SolidColorBrush x:Key="ColorBlueGrayTranparent" Color="#88607D8B"/>
     <SolidColorBrush x:Key="ColorAccent" Color="#82B1FF"/>

@@ -146,6 +146,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] DatabaseTab 新增批號查詢
 
+* [ ] DatabaseTab 日期改範圍
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

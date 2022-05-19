@@ -88,7 +88,6 @@ namespace ApexVisIns.content
 
         }
 
-
         /// <summary>
         /// DatePicker & TimePicker 初始化
         /// </summary>
@@ -138,15 +137,16 @@ namespace ApexVisIns.content
                 DateTime st = new(date.Year, date.Month, date.Day, Convert.ToInt32(stTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(stTime[1], CultureInfo.CurrentCulture), 0);
                 DateTime end = new(date.Year, date.Month, date.Day, Convert.ToInt32(endTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(endTime[1], CultureInfo.CurrentCulture), 0);
 
-                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Gt(s => s.DateTime, st);
-                filter &= Builders<JawInspection>.Filter.Lt(s => s.DateTime, end);
+                // st < DateTime < end
+                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Gt(s => s.DateTime, st) & Builders<JawInspection>.Filter.Lt(s => s.DateTime, end);
+                // filter &= Builders<JawInspection>.Filter.Lt(s => s.DateTime, end);
 
                 MainWindow.MongoAccess.FindAll("Lots", filter, out List<JawInspection> data);
 
                 foreach (JawInspection item in data)
                 {
                     JawInspections.Add(item);
-                    //Debug.WriteLine($"{string.Join(",", item.LotResults)} {item.LotResults.Count}");
+                    // Debug.WriteLine($"{item.ObjID} {item.DateTime}");
                 }
             }
             catch (Exception ex)
@@ -170,7 +170,7 @@ namespace ApexVisIns.content
                 foreach (JawInspection item in data)
                 {
                     JawInspections.Add(item);
-                    //Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()}");
+                    // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()}");
                 }
             }
             catch (Exception ex)
@@ -183,26 +183,54 @@ namespace ApexVisIns.content
         {
             try
             {
-                //JawFullSpecInsCol.Clear();
-
+                RecordHeader.Text = string.Empty;
+                JawFullSpecInsCol.Clear();
                 string lotNumber = (sender as Button).CommandParameter as string;
 
                 FilterDefinition<JawFullSpecIns> filter = Builders<JawFullSpecIns>.Filter.Eq("LotNumber", lotNumber);
 
                 MainWindow.MongoAccess.FindAll("Spec", filter, out List<JawFullSpecIns> data);
 
-                foreach (JawFullSpecIns item in data)
-                {
-                    JawFullSpecInsCol.Add(item);
 
-                    Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()} {item.OK}");
-                    Debug.WriteLine($"{string.Join(",", item.Results.Keys)}");
+                if (data.Count > 0)
+                {
+                    RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
+                    foreach (JawFullSpecIns item in data)
+                    {
+                        JawFullSpecInsCol.Add(item);
+                        // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()} {item.OK} {string.Join(",", item.Results.Keys)}");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
             }
+
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (JawFullSpecInsCol.Count < 10)
+            {
+
+                JawFullSpecInsCol.Add(new JawFullSpecIns
+                {
+                    LotNumber = "123",
+                    OK = false,
+                    DateTime = DateTime.Now,
+                    Results = new Dictionary<string, double>() {
+                        { "0.088R", 0.001 }
+                    }
+                });
+            } else
+            {
+                JawFullSpecInsCol.Clear();
+            }
+
+
+
 
         }
     }

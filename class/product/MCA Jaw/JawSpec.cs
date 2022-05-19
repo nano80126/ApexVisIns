@@ -237,7 +237,7 @@ namespace ApexVisIns.Product
         #endregion
 
         [BsonId]
-        public MongoDB.Bson.ObjectId _id { get; set; }
+        public MongoDB.Bson.ObjectId ObjID { get; set; }
 
         [BsonElement(nameof(LotNumber))]
         /// <summary>
@@ -314,21 +314,25 @@ namespace ApexVisIns.Product
     /// </summary>
     public class JawFullSpecIns
     {
-        public JawFullSpecIns() { }
+        public JawFullSpecIns()
+        {
+            Results = new Dictionary<string, double>();
+        }
 
         public JawFullSpecIns(string lotNumber)
         {
             LotNumber = lotNumber;
+            Results = new Dictionary<string, double>();
         }
 
         [BsonId]
-        public MongoDB.Bson.ObjectId _id { get; set; }
+        public MongoDB.Bson.ObjectId ObjID { get; set; }
 
         /// <summary>
         /// 批號
         /// </summary>
         [BsonElement(nameof(LotNumber))]
-        public string LotNumber { get; set; }
+        public string LotNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// 各尺寸檢驗結果
@@ -340,12 +344,12 @@ namespace ApexVisIns.Product
         /// 是否良品
         /// </summary>
         [BsonElement(nameof(OK))]
-        public bool OK { get; set; }
+        public bool OK { get; set; } = false;
 
         /// <summary>
         /// 檢驗完成時間
         /// </summary>
         [BsonElement(nameof(DateTime))]
-        public DateTime DateTime { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.Now;
     }
 }

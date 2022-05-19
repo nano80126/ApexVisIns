@@ -695,7 +695,7 @@ namespace ApexVisIns.content
 
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
-            JawInspection._id = new MongoDB.Bson.ObjectId();
+            JawInspection.ObjID = new MongoDB.Bson.ObjectId();
             foreach (string key in JawInspection.LotResults.Keys)
             {
                 JawInspection.LotResults[key].Count = 0;
@@ -761,7 +761,7 @@ namespace ApexVisIns.content
         {
             if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {
-                JawInspection._id = new MongoDB.Bson.ObjectId();
+                JawInspection.ObjID = new MongoDB.Bson.ObjectId();
                 JawInspection.DateTime = DateTime.Now;
                 // 刷新時間
                 MongoAccess.InsertOne("Lots", JawInspection);
