@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -25,7 +24,14 @@ namespace ApexVisIns
             }
         }
 
+        // // // // // // 以下要改成 Command // // // // // 
+
         private void Minbtn_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MinWindow_Command(object sender, ExecutedRoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }

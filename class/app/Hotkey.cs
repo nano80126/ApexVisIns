@@ -20,11 +20,13 @@ namespace ApexVisIns
         {
             e.CanExecute = true;
         }
+
         private void MainTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // MainTab is focused
             e.CanExecute = OnTabIndex == 0;
         }
+
         private void DeviceTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // DeviceTab is focused

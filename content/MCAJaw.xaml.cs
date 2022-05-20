@@ -1,30 +1,23 @@
-﻿using System;
+﻿using ApexVisIns.Product;
+using Basler.Pylon;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ApexVisIns.Product;
-using System.Net.Sockets;
-using System.Threading;
-using System.IO;
-using System.Text.Json;
-using Basler.Pylon;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
-using System.Windows.Controls.Primitives;
-using System.Globalization;
-using MongoDB.Driver;
 
 namespace ApexVisIns.content
 {
@@ -38,7 +31,7 @@ namespace ApexVisIns.content
         /// Jaw 檢驗結果 (綁 Lot)
         /// </summary>
         public JawInspection JawInspection { get; set; }
-        
+
         /// <summary>
         /// Jaw 規格設定 (包含檢驗結果)
         /// </summary>
@@ -50,7 +43,9 @@ namespace ApexVisIns.content
         #region Variables
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-        private int _jawTab = 0;
+        private int _jawTab;
+
+        private Task _testTask;
 
         public enum INS_STATUS
         {
@@ -173,33 +168,10 @@ namespace ApexVisIns.content
                     break;
             }
 
-            //InitMongoDB(_cancellationTokenSource.Token);
-            //Debug.WriteLine(MainWindow.InitMode);
-
-            // JawSpecGroup2 = FindResource("SpecGroup") as JawSpecGroup;
-            #region 新增假資料
-            //if (JawSpecGroup.Collection1.Count == 0)
-            //{
-            //    for (int i = 0; i < 8; i++)
-            //    {
-            //        JawSpecGroup.Collection1.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
-            //        //JawSpecGroup1.SpecCollection.Add(new JawSpec($"項目 {i}", i, i - 0.02 * i, i + 0.02 * i, i - 0.03 * i, i + 0.03 * i));
-            //    }
-            //}
-
-            //if (JawSpecGroup.Collection2.Count == 0)
-            //{
-            //    for (int i = 0; i < 4; i++)
-            //    {
-            //        JawSpecGroup.Collection2.Add(new JawSpec($"項目 {i}", i, i - 0.03 * i, i + 0.03 * i, i - 0.04 * i, i + 0.04 * i));
-            //    }
-            //}
-            #endregion
-
             #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
-            InitMongoDB(_cancellationTokenSource.Token).Wait();
+            //InitMongoDB(_cancellationTokenSource.Token).Wait();
 
 
             #endregion
@@ -483,20 +455,18 @@ namespace ApexVisIns.content
                                 LightCOM2 = ctrl;
                                 LightCOM2.ComOpen(115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
 
-                                if (!LightCOM2.Test(out result))
+                                if (LightCOM2.Test(out result))
+                                {
+                                    // 重置所有通道
+                                    LightCOM2.ResetAllChannel();
+                                }
+                                else
                                 {
                                     // 關閉 COM 
                                     LightCOM2.ComClose();
                                     // 拋出異常
                                     //throw new Exception($"24V {result}");
                                     throw new LightCtrlException($"24V 光源控制通訊逾時");
-                                }
-                                else
-                                {
-                                    // 重置所有通道
-                                    LightCOM2.ResetAllChannel();
-                                    // 更新 Progress Bar
-                                    MainWindow.MsgInformer.TargetProgressValue += 17;
                                 }
                                 break;
                             default:
@@ -506,6 +476,8 @@ namespace ApexVisIns.content
 
                     if (LightCOM2.IsComOpen)
                     {
+                        MainWindow.MsgInformer.TargetProgressValue += 17;
+
                         LightCtrlInitilized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
                     }
@@ -541,10 +513,11 @@ namespace ApexVisIns.content
                     ModbusTCPIO.Connect();
                     ModbusTCPIO.IOChanged += ModbusTCPIO_IOChanged;
 
-                    MainWindow.MsgInformer.TargetProgressValue += 17;
 
                     if (ModbusTCPIO.Conneected)
                     {
+                        MainWindow.MsgInformer.TargetProgressValue += 17;
+
                         IOCtrlInitialized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
                     }
@@ -597,6 +570,9 @@ namespace ApexVisIns.content
                         MongoAccess.CreateCollection("Spec");
 
                         MainWindow.MsgInformer.TargetProgressValue += 17;
+                        
+                        DatabaseInitialized = true;
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.DATABASE, "資料庫初始化完成");
                     }
                     else
                     {
@@ -721,39 +697,54 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
-            //MainWindow.ListJawParam();
-            Debug.WriteLine(MainWindow);
+            if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
 
-            DateTime t1 = DateTime.Now;
-
-            if (Status != INS_STATUS.READY) { return; }
-
-            // 清空當下 Collection
-            JawSpecGroup.Collection1.Clear();
-            JawSpecGroup.Collection2.Clear();
-            JawSpecGroup.Collection3.Clear();
-
-            Status = INS_STATUS.INSPECTING;
-
-            _ = Task.Run(() =>
+            _testTask = Task.Run(async () =>
             {
-                JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
-                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                return _jawFullSpecIns;
-            }).ContinueWith(t =>
-            {
-                if (true)
+                for (int i = 0; i < 100; i++)
                 {
-                    JawFullSpecIns data = t.Result;
-                    data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                    data.DateTime = DateTime.Now;
-                    MongoAccess.InsertOne("Spec", data);
-                    //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                    //Debug.WriteLine(json);
-                }
-                Status = INS_STATUS.READY;
+                    //MainWindow.ListJawParam();
+                    Debug.WriteLine(MainWindow);
 
-                Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+                    DateTime t1 = DateTime.Now;
+
+                    if (Status != INS_STATUS.READY) { return; }
+
+                    // 清空當下 Collection
+                    JawSpecGroup.Collection1.Clear();
+                    JawSpecGroup.Collection2.Clear();
+                    JawSpecGroup.Collection3.Clear();
+
+                    Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+                    Status = INS_STATUS.INSPECTING;
+
+                    await Task.Run(() =>
+                    {
+                        JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
+                        MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                        return _jawFullSpecIns;
+                    }).ContinueWith(t =>
+                    {
+                        if (true)
+                        {
+                            JawFullSpecIns data = t.Result;
+                            data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                            data.DateTime = DateTime.Now;
+                            MongoAccess.InsertOne("Spec", data);
+                        //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                        //Debug.WriteLine(json);
+                    }
+                        Status = INS_STATUS.READY;
+
+                        Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+                    });
+
+                    Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+
+                    SpinWait.SpinUntil(() => false, 3000);
+                }
             });
         }
 
@@ -875,50 +866,8 @@ namespace ApexVisIns.content
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-   
-
-
         #endregion
-
-#if false
-        #region 待刪除
-        ModbusTCPIO _modbusTCPIO = new();
-
-        /// <summary>
-        /// Tcp 連線
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TcpConnect_Click(object sender, RoutedEventArgs e)
-        {
-            _modbusTCPIO = new()
-            {
-                IP = "192.168.1.1",
-                Port = 502
-            };
-
-            _modbusTCPIO.IOChanged += ModbusTCPIO_IOChanged;
-
-            _modbusTCPIO.Connect();
-
-            Debug.WriteLine($"Connected: {_modbusTCPIO.Conneected}");
-        }
-
-        /// <summary>
-        /// Tcp 斷線
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TcpDisconnect_Click(object sender, RoutedEventArgs e)
-        {
-            _modbusTCPIO.Disconnect();
-        }
-        #endregion
-
-#endif
     }
-
 
     /// <summary>
     /// MCA Jaw 檢驗狀態顏色轉換器

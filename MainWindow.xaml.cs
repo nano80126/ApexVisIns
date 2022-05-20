@@ -1,8 +1,10 @@
-﻿using Basler.Pylon;
-using Microsoft.Win32;
+﻿using ApexVisIns.content;
+using ApexVisIns.Product;
+using Basler.Pylon;
+using MaterialDesignThemes.Wpf;
 using OpenCvSharp;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,22 +12,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
-using System.IO.Ports;
-using MaterialDesignThemes.Wpf;
-using MaterialDesignThemes;
-using System.Windows.Controls.Primitives;
-using System.ComponentModel;
 using System.Windows.Media.Animation;
-using ApexVisIns.Product;
-using ApexVisIns.content;
+using System.Windows.Media.Imaging;
 
 namespace ApexVisIns
 {
@@ -426,6 +420,7 @@ namespace ApexVisIns
         /// <summary>
         /// 開啟 IO Window
         /// </summary>
+        [Obsolete("No Used in MCA Jaw")]
         public void OpenIOWindow()
         {
             //IOThread.SetApartmentState(ApartmentState.STA);
@@ -483,6 +478,12 @@ namespace ApexVisIns
                     _ = ctrl.TryResetAllChannel(out _);
                     ctrl.ComClose();
                 }
+            }
+
+            // 與資料庫斷線
+            if (MongoAccess.Connected)
+            {
+                MongoAccess.Disconnect();
             }
 
             _ = SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);

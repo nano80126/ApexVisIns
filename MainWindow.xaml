@@ -105,7 +105,7 @@
     <Window.CommandBindings>
         <!--Appbar-->
         <CommandBinding Command="{StaticResource QuitAction}" CanExecute="QuitCanExecute" Executed="QuitCommand"/>
-        <CommandBinding Command="{StaticResource MinAction}" CanExecute="CanExcute" Executed="MinCommand"/>
+        <CommandBinding Command="{StaticResource MinAction}" CanExecute="CanExcute" Executed="MinWindow_Command"/>
         <CommandBinding Command="{StaticResource MaxAction}" CanExecute="CanExcute" Executed="MaxCommand"/>
         <!--EngineerTab Toolbar-->
         <CommandBinding Command="{StaticResource OpenDevice}" CanExecute="OpenDeviceCanExecute" Executed="OpenDeviceCommand"/>
@@ -148,9 +148,10 @@
                 -->
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button x:Name="Minbtn" Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Click="Minbtn_Click" Style="{StaticResource WindowButton}"
+                    <Button x:Name="Minbtn" Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Style="{StaticResource WindowButton}"
                             Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"/>
+                            IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                            Command="{StaticResource MinAction}"/>
                     <Button x:Name="Maxbtn" Margin="5 0" Click="Maxbtn_Click" Style="{StaticResource WindowButton}"
                             Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
                             IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}">

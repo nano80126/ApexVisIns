@@ -148,6 +148,12 @@ Apex 外觀瑕疵檢測
 
 * [ ] DatabaseTab 日期改範圍
 
+* [ ] Appbar click evnet 改 command
+
+* [ ] 移除 MontionTab.xaml
+
+* [ ] 批號新增確認按鈕
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
