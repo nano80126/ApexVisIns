@@ -122,7 +122,7 @@ Apex 外觀瑕疵檢測
 
 * [ ] SpecListView 直接用固定 Height
 
-* [ ] DeviceTab 改 CameraTab
+* [x] DeviceTab 改 CameraTab
 	* 待測試功能正常
 
 * [ ] Enumer 的優先度往前拉
@@ -144,15 +144,20 @@ Apex 外觀瑕疵檢測
 	* 未連線 Disable slider
 	* 按鈕增加按下的視覺效果
 
-* [ ] DatabaseTab 新增批號查詢
+* [x] DatabaseTab 新增批號查詢
 
 * [ ] DatabaseTab 日期改範圍
 
-* [ ] Appbar click evnet 改 command
+* [x] Appbar click evnet 改 command
 
-* [ ] 移除 MontionTab.xaml
+* [x] 移除 無用Tab
+	* MainTab.xaml
+	* MontionTab.xaml
 
 * [ ] 批號新增確認按鈕
+	* 待確認
+
+* [x] ModeWindow 改 command 
 
 ### Config Logic
 

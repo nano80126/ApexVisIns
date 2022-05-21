@@ -73,7 +73,7 @@ namespace ApexVisIns.content
 
             if (!loaded)
             {
-                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "履歷頁面已載入");
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "資料庫頁面已載入");
                 loaded = true;
             }
         }

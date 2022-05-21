@@ -31,20 +31,20 @@ namespace ApexVisIns
 
         private ImageSource _chartSource;
 
-        private int _onTabIndex;
+        private int _onNavIndex;
         private bool _loginFlag;
 
         /// <summary>
         /// Tab active index
         /// </summary>
-        public int OnTabIndex
+        public int OnNavIndex
         {
-            get => _onTabIndex;
+            get => _onNavIndex;
             set
             {
-                if (value != _onTabIndex)
+                if (value != _onNavIndex)
                 {
-                    _onTabIndex = value;
+                    _onNavIndex = value;
                     OnPropertyChanged();
                 }
             }

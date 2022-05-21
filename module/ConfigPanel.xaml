@@ -181,66 +181,6 @@
                             <materialDesign:Badged.Style>
                                 <Style TargetType="materialDesign:Badged">
                                     <Style.Triggers>
-                                        <!--#region 暫保留 -->
-                                        <!--<DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW" >
-                                                    <Binding Path="Width" />
-                                                    <Binding Path="Config.Width"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>
-                                        -->
-                                        <!--//-->
-                                        <!--
-                                        <DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
-                                                    <Binding Path="Height"/>
-                                                    <Binding Path="Config.Height"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>
-                                        -->
-                                        <!--//-->
-                                        <!--
-                                        <DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
-                                                    <Binding Path="FPS"/>
-                                                    <Binding Path="Config.FPS"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>
-                                        -->
-                                        <!--//-->
-                                        <!--
-                                        <DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource NumberCompareConverter}" ConverterCulture="zh-TW">
-                                                    <Binding Path="ExposureTime"/>
-                                                    <Binding Path="Config.ExposureTime"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>
-                                        -->
-                                        <!--//-->
-                                        <!--
-                                        <DataTrigger Value="False">
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource StringCompareConverter}" ConverterCulture="zh-TW">
-                                                    <Binding Path="ConfigName"/>
-                                                    <Binding Path="Config.Name"/>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
-                                        </DataTrigger>-->
-                                        <!--#endregion-->
-
                                         <DataTrigger Binding="{Binding Path=Config.Saved}" Value="False">
                                             <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}"/>
                                         </DataTrigger>

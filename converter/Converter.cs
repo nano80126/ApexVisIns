@@ -147,11 +147,32 @@ namespace ApexVisIns.Converter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int)value != System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
+
+            return !(bool)base.Convert(value, targetType, parameter, culture);
+            //return (int)value != System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    /// <summary>
+    /// 數字陣列比較器 (每個元素相等則傳回true)
+    /// </summary>
+    public class NumberAllEqualConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            object first = values[0];
+            return values.Length >= 2 && values.All(value => value.Equals(first));
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            //if (string.IsNullOrEmpty(value as )) return false;
             throw new NotImplementedException();
         }
     }
@@ -165,12 +186,12 @@ namespace ApexVisIns.Converter
     [ValueConversion(typeof(string), typeof(bool))]
     public class StringEqualConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null && value.ToString().Equals(parameter.ToString());
+            return value != null && value.ToString().Equals(parameter.ToString(), StringComparison.Ordinal);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -180,18 +201,36 @@ namespace ApexVisIns.Converter
     /// 字串 Equal 反向轉換器
     /// </summary>
     [ValueConversion(typeof(string), typeof(bool))]
-    public class StringNotEqualConverter : IValueConverter
+    public class StringNotEqualConverter : StringEqualConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null || !value.ToString().Equals(parameter.ToString());
+            return !(bool)base.Convert(value, targetType, parameter, culture);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// 字串陣列比較器 (每個元素相等則傳回true)
+    /// </summary>
+    public class StringAllEqualConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            string first = values[0] as string;
+            return values.Length >= 2 && values.All(value => value.ToString().Equals(first, StringComparison.Ordinal));
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
     /// <summary>
     /// 字串不為 Null 或 Empty
@@ -361,43 +400,9 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
-
     #endregion
 
-    /// <summary>
-    /// 字串陣列比較器 (每個元素相等則傳回true)
-    /// </summary>
-    public class StringCompareConverter : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            string first = values[0] as string;
-            return values.Length >= 2 && values.All(value => value.ToString().Equals(first, StringComparison.Ordinal));
-        }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// 數字陣列比較器 (每個元素相等則傳回true)
-    /// </summary>
-    public class NumberAllEqualConverter : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            object first = values[0];
-            return values.Length >= 2 && values.All(value => value.Equals(first));
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            //if (string.IsNullOrEmpty(value as )) return false;
-            throw new NotImplementedException();
-        }
-    }
 
 
 

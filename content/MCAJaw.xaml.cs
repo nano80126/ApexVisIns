@@ -662,16 +662,23 @@ namespace ApexVisIns.content
 
 
         #region 主控版 , +/- 數量
-
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
+        private void LotNumberCheckButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(JawInspection.LotNumber) && !string.IsNullOrWhiteSpace(JawInspection.LotNumber))
+            {
+                JawInspection.CheckLotNumber();
+            }
+        }
+
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
-            JawInspection.ObjID = new MongoDB.Bson.ObjectId();
+            //JawInspection.ObjID = new MongoDB.Bson.ObjectId();
             foreach (string key in JawInspection.LotResults.Keys)
             {
                 JawInspection.LotResults[key].Count = 0;
@@ -867,6 +874,7 @@ namespace ApexVisIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+    
     }
 
     /// <summary>

@@ -22,21 +22,24 @@
 
             <!--#region Convertor -->
             <cvt:BooleanInverter x:Key="BooleanInverter"/>
+            <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
             <cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility"/>
             <cvt:BooleanAndToVisibilityInverse x:Key="BooleanAndToVisibilityInverse"/>
-            <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
+            
             <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
             <cvt:MathMinusConverter x:Key="MathMinusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
+            
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
+            <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
+            
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
-            <cvt:StringCompareConverter x:Key="StringCompareConverter"/>
-            <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
+            <cvt:StringAllEqualConverter x:Key="StringAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
@@ -93,7 +96,7 @@
             <!--Motion 列舉-->
             <!--<local:MotionEnumer x:Key="MotionEnumer"/>-->
             <!--Motion 物件-->
-            <local:ServoMotion x:Key="ServoMotion"/>
+            <!--<local:ServoMotion x:Key="ServoMotion"/>-->
             <!--#endregion-->
 
             <!--#region 光源控制 Resources -->

@@ -27,7 +27,7 @@ namespace ApexVisIns
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            AutoModeRadio.IsChecked = true;
+            //AutoModeRadio.IsChecked = true;
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -35,58 +35,30 @@ namespace ApexVisIns
 
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        //private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    MainWindow.InitModes mode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), (sender as RadioButton).CommandParameter.ToString());
+        //    (Owner as MainWindow).InitMode = mode;
+        //}
+
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    DialogResult = true;
+        //    Close();
+        //}
+
+        #region Command
+        private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            MainWindow.InitModes mode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), (sender as RadioButton).CommandParameter.ToString());
-            (Owner as MainWindow).InitMode = mode;
+            e.CanExecute = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ChangeModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            (Owner as MainWindow).InitMode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), e.Parameter.ToString());
+            (e.Source as RadioButton).IsChecked = true;
             DialogResult = true;
-            Close();
         }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.F1:
-                    AutoModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
-                    break;
-                case Key.F2:
-                    WarmModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
-                    //EditModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
-                    break;
-                case Key.F3:
-                    EditModeRadio.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, true);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void Window_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.F1:
-                    (Owner as MainWindow).InitMode = MainWindow.InitModes.AUTO;
-                    DialogResult = true;
-                    Close();
-                    break;
-                case Key.F2:
-                    (Owner as MainWindow).InitMode = MainWindow.InitModes.WARM;
-                    DialogResult = true;
-                    Close();
-                    break;
-                case Key.F3:
-                    (Owner as MainWindow).InitMode = MainWindow.InitModes.EDIT;
-                    DialogResult = true;
-                    break;
-                default:
-                    break;
-            }
-        }
+        #endregion
     }
 }

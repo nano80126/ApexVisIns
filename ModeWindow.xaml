@@ -22,18 +22,29 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         Topmost="False"
-        Title="ModeWindow" Height="120" Width="240"
+        Title="ModeWindow" Height="100" Width="240"
         Loaded="Window_Loaded"
-        Unloaded="Window_Unloaded"
-        KeyDown="Window_KeyDown"
-        KeyUp="Window_KeyUp">
+        Unloaded="Window_Unloaded">
+    <Window.Resources>
+        <RoutedCommand x:Key="ChangeModeAction"/>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F1" Command="{StaticResource ChangeModeAction}" CommandParameter="1" CommandTarget="{Binding ElementName=AutoModeRadio}"/>
+        <KeyBinding Key="F2" Command="{StaticResource ChangeModeAction}" CommandParameter="2" CommandTarget="{Binding ElementName=EditModeRadio}"/>
+    </Window.InputBindings>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource ChangeModeAction}" CanExecute="CanExecute" Executed="ChangeModeCommand"/>
+    </Window.CommandBindings>
+    
     <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="WhiteSmoke" Style="{StaticResource MainWindowBorder}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <!--<RowDefinition Height="1*"/>-->
             </Grid.RowDefinitions>
 
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3">
@@ -66,7 +77,8 @@
                 </StackPanel.Resources>
 
                 <RadioButton x:Name="AutoModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}"
-                             Foreground="{StaticResource ColorTeal}" Checked="RadioButton_Checked" CommandParameter="0">
+                             Foreground="{StaticResource ColorTeal}" 
+                             Command="{StaticResource ChangeModeAction}" CommandParameter="1">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
@@ -75,19 +87,9 @@
                     </RadioButton.Content>
                 </RadioButton>
 
-                <RadioButton x:Name="WarmModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
-                             Foreground="{StaticResource ColorPink}" Checked="RadioButton_Checked" CommandParameter="1"
-                             Visibility="Collapsed">
-                    <RadioButton.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
-                            <TextBlock VerticalAlignment="Center" Text="暖機模式"/>
-                        </StackPanel>
-                    </RadioButton.Content>
-                </RadioButton>
-
                 <RadioButton x:Name="EditModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
-                             Foreground="{StaticResource ColorDeepPurple}" Checked="RadioButton_Checked" CommandParameter="2">
+                             Foreground="{StaticResource ColorDeepPurple}" 
+                             Command="{StaticResource ChangeModeAction}" CommandParameter="2">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
@@ -97,10 +99,10 @@
                 </RadioButton>
             </StackPanel>
 
-            <Button Grid.Row="3" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            <!--<Button Grid.Row="3" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
                     Height="26" Content="確定" Focusable="False"
                     Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
-                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
 
         </Grid>
     </Border>

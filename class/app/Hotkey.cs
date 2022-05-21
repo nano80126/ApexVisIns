@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System;
 using ApexVisIns.content;
+using System.Globalization;
 
 namespace ApexVisIns
 {
@@ -24,56 +25,54 @@ namespace ApexVisIns
         private void MainTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // MainTab is focused
-            e.CanExecute = OnTabIndex == 0;
+            e.CanExecute = OnNavIndex == 0;
         }
 
         private void DeviceTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // DeviceTab is focused
-            e.CanExecute = OnTabIndex == 1;
+            e.CanExecute = OnNavIndex == 1;
         }
 
         private void MotionTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // MotionTab is focused
-            e.CanExecute = OnTabIndex == 2;
+            e.CanExecute = OnNavIndex == 2;
         }
 
         private void DatabaseTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = OnTabIndex == 3;
+            e.CanExecute = OnNavIndex == 3;
         }
 
         private void EngineerTabCanExcute(object sender, CanExecuteRoutedEventArgs e)
         {
             // EngineerTab is focused
-            e.CanExecute = OnTabIndex == 4;
+            e.CanExecute = OnNavIndex == 4;
         }
 
-        private void MinCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
+#if false
+        //private void MinCommand(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    Minbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        //}
 
-        private void MaxCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
+        //private void MaxCommand(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    Maxbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        //}
 
-        private void QuitCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = DebugMode && !BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected);
-        }
+        //private void QuitCommand(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    //Debug.WriteLine(BaslerCam.IsConnected);
+        //    //foreach (var item in BaslerCams)
+        //    //{
+        //    //    Debug.WriteLine($"Connected {item.IsConnected}");
+        //    //}
+        //    Quitbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        //}  
+#endif
 
-        private void QuitCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            //Debug.WriteLine(BaslerCam.IsConnected);
-            //foreach (var item in BaslerCams)
-            //{
-            //    Debug.WriteLine($"Connected {item.IsConnected}");
-            //}
-            Quitbtn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
         private void OpenDeviceCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // Grabber 不為啟動狀態 // CamSelector 有選擇相機
@@ -85,7 +84,7 @@ namespace ApexVisIns
             //    default:
             //        break;
             //}
-            e.CanExecute = OnTabIndex switch
+            e.CanExecute = OnNavIndex switch
             {
                 4 => EngineerTab.CamConnect.IsEnabled,
                 _ => false
@@ -138,7 +137,7 @@ namespace ApexVisIns
         //}
         private void SingleShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = OnTabIndex switch
+            e.CanExecute = OnNavIndex switch
             {
                 4 => EngineerTab.SingleShot.IsEnabled,
                 _ => false,
@@ -161,7 +160,7 @@ namespace ApexVisIns
 
         private void ContinousShotCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = OnTabIndex switch
+            e.CanExecute = OnNavIndex switch
             {
                 4 => EngineerTab.ContinouseShot.IsEnabled,
                 _ => false,
@@ -185,7 +184,7 @@ namespace ApexVisIns
 
         private void ToggleStreamGrabberCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = OnTabIndex switch
+            e.CanExecute = OnNavIndex switch
             {
                 4 => EngineerTab.ToggleStreamGrabber.IsEnabled,
                 _ => false
@@ -199,7 +198,7 @@ namespace ApexVisIns
 
         private void RetrieveImageCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = OnTabIndex switch
+            e.CanExecute = OnNavIndex switch
             {
                 4 => EngineerTab.RetrieveImage.IsEnabled,
                 _ => false
@@ -236,35 +235,6 @@ namespace ApexVisIns
             //        break;
             //}
         }
-        /// <summary>
-        /// Switch to Tab 1
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SwitchTab1Command(object sender, ExecutedRoutedEventArgs e)
-        {
-            OnTabIndex = 0;
-        }
-
-        /// <summary>
-        /// Switch to Tab 2
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SwitchTab2Command(object sender, ExecutedRoutedEventArgs e)
-        {
-            OnTabIndex = 1;
-        }
-
-        /// <summary>
-        /// Switch to Tab 3
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SwitchTab3Command(object sender, ExecutedRoutedEventArgs e)
-        {
-            OnTabIndex = 2;
-        }
 
         /// <summary>
         /// Switch Tab with parameter
@@ -273,14 +243,17 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            byte idx = byte.Parse(e.Parameter as string);
+            byte idx = byte.Parse(e.Parameter as string, CultureInfo.CurrentCulture);
             // 確保 idx 不會超過 TabItems 數目 // 確保 Enable // 確保 Content 不為 null
-            OnTabIndex = idx < AppTabControl.Items.Count && (AppTabControl.Items[idx] as TabItem).IsEnabled && (AppTabControl.Items[idx] as TabItem).Content != null ? idx : OnTabIndex;
+            OnNavIndex =
+                idx < AppTabControl.Items.Count &&
+                (AppTabControl.Items[idx] as TabItem).IsEnabled &&
+                (AppTabControl.Items[idx] as TabItem).Content != null ? idx : OnNavIndex;
         }
 
         private void GlobalTest(object sender, ExecutedRoutedEventArgs e)
         {
-            Debug.WriteLine($"{OnTabIndex}");
+            Debug.WriteLine($"{OnNavIndex}");
 
             Debug.WriteLine($"{EngineerTab.CamSelector.Visibility}");
             Debug.WriteLine($"{EngineerTab.SingleShot.Visibility}");

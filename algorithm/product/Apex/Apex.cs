@@ -33,7 +33,7 @@ namespace ApexVisIns
             {
                 Dispatcher.Invoke(() =>
                 {
-                    if (OnTabIndex == 0)
+                    if (OnNavIndex == 0)
                     {
                         ImageSource = img.GetMat().ToImageSource();
                     }

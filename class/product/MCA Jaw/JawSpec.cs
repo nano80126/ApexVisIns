@@ -12,7 +12,6 @@ using System.Windows.Media;
 
 namespace ApexVisIns.Product
 {
-
     /// <summary>
     /// MCA Jaw 規格輸出
     /// </summary>
@@ -234,15 +233,20 @@ namespace ApexVisIns.Product
     {
         #region private
         private string _lotNumber = string.Empty;
+        private bool _lotNumberChecked;
         #endregion
 
+
+        /// <summary>
+        /// MOngo ID
+        /// </summary>
         [BsonId]
         public MongoDB.Bson.ObjectId ObjID { get; set; }
 
-        [BsonElement(nameof(LotNumber))]
         /// <summary>
         /// 批號輸入
         /// </summary>
+        [BsonElement(nameof(LotNumber))]
         public string LotNumber
         {
             get => _lotNumber;
@@ -251,16 +255,47 @@ namespace ApexVisIns.Product
                 if (value != _lotNumber)
                 {
                     _lotNumber = value;
+                    _lotNumberChecked = false;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(LotNumberChecked));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 批號是否已確認 (不會插入 MongoDB)
+        /// </summary>
+        [BsonIgnore]
+        public bool LotNumberChecked
+        {
+            get => _lotNumberChecked;
+            private set
+            {
+                if (value != _lotNumberChecked)
+                {
+                    _lotNumberChecked = value;
                     OnPropertyChanged();
                 }
             }
         }
 
+        /// <summary>
+        /// 批號檢驗結果
+        /// </summary>
         [BsonElement(nameof(LotResults))]
         public ObservableDictionary<string, ResultElement> LotResults { get; set; } = new ObservableDictionary<string, ResultElement>();
 
+        /// <summary>
+        /// 資料插入時間
+        /// </summary>
         [BsonElement(nameof(DateTime))]
         public DateTime DateTime { get; set; }
+
+        public void CheckLotNumber()
+        {
+            LotNumberChecked = true;
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

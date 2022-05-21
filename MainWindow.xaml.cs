@@ -53,7 +53,6 @@ namespace ApexVisIns
         public SerialEnumer SerialEnumer { get; set; }
         #endregion
 
-
         #region Light Controller
         /// <summary>
         /// Com Port 列舉器，
@@ -81,10 +80,8 @@ namespace ApexVisIns
         #endregion
 
         #region EtherCAT Motion
-        [Obsolete("Not used in MCA_Jaw")]
         public static ServoMotion ServoMotion { get; set; }
         #endregion
-
 
         #region Database
         /// <summary>
@@ -92,7 +89,6 @@ namespace ApexVisIns
         /// </summary>
         public static MongoAccess MongoAccess { get; set; }
         #endregion
-
 
         #region Major
         public static ApexDefect ApexDefect { get; set; }
@@ -110,16 +106,11 @@ namespace ApexVisIns
         #endregion
 
         #region Varibles
-        /// <summary>
-        /// 影像處理中
-        /// </summary>
-        public static bool IsProcessing { get; set; }
-
         public enum InitModes
         {
-            AUTO = 0,
-            WARM = 1,
-            EDIT = 2
+            AUTO = 1,
+            EDIT = 2,
+            //WARM = 3,
         }
 
         /// <summary>
@@ -131,7 +122,7 @@ namespace ApexVisIns
         #region Tabs
         private MCAJaw MCAJaw { get; set; }
         private CameraTab CameraTab { get; set; }
-        private MotionTab MotionTab { get; set; }
+        //private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }
         private EngineerTab EngineerTab { get; set; }
         #endregion
@@ -179,6 +170,9 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //Debug.WriteLine($"{(bool)(BaslerCam?.IsConnected) == false}");
+            //Debug.WriteLine($"------------------------");
+
             #region Find Resource
             MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
             MsgInformer.EnableCollectionBinding();
@@ -213,10 +207,9 @@ namespace ApexVisIns
             #endregion
 
             #region EtherCAT Motion
-            // MotionEnumer = FindResource(nameof(MotionEnumer)) as MotionEnumer;
-            ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
-            ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
-            // ServoMotion.ListAvailableDevices(true);
+            // MCA Jaw 用不到
+            //ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+            //ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
             #endregion
 
             #region IO Controller
@@ -287,7 +280,7 @@ namespace ApexVisIns
 #endif
             #region 開啟 Mode Dialog
             ModeWindow modeWindow = new() { Owner = this };
-            if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}"); }
+            if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}, MainWindow.xaml Line: 280"); }
             #endregion
         }
 
@@ -299,17 +292,17 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            CameraEnumer.WorkerEnd();   // 停止 Camera Enumerator
-            CameraEnumer.Dispose();
-            SerialEnumer.WorkerEnd();   // 停止 Serial Enumerator 
-            SerialEnumer.Dispose();
+            CameraEnumer?.WorkerEnd();   // 停止 Camera Enumerator
+            CameraEnumer?.Dispose();
+            SerialEnumer?.WorkerEnd();   // 停止 Serial Enumerator 
+            SerialEnumer?.Dispose();
             // LightEnumer.WorkerEnd(); // deprecated class
 
-            ServoMotion.Dispose();      // 處置 ServoMotion
-            IOController.Dispose();     // 處置 IOController
+            ServoMotion?.Dispose();      // 處置 ServoMotion
+            IOController?.Dispose();     // 處置 IOController
 
-            MsgInformer.DisableCollectionBinding();
-            MsgInformer.DisposeProgressTask();
+            MsgInformer?.DisableCollectionBinding();
+            MsgInformer?.DisposeProgressTask();
 
             if (IOWindow != null)
             {
@@ -361,14 +354,14 @@ namespace ApexVisIns
                         };
                         tabItem.Content = CameraTab;
                         break;
-                    case 2:
-                        MotionTab = new MotionTab()
-                        {
-                            Name = "MotionTab",
-                            Focusable = true,
-                            FocusVisualStyle = null
-                        };
-                        tabItem.Content = MotionTab;
+                    case 2:  // 這邊可以刪
+                        //MotionTab = new MotionTab()
+                        //{
+                        //    Name = "MotionTab",
+                        //    Focusable = true,
+                        //    FocusVisualStyle = null
+                        //};
+                        //tabItem.Content = MotionTab;
                         break;
                     case 3:
                         DatabaseTab = new DatabaseTab()
@@ -380,7 +373,7 @@ namespace ApexVisIns
                         tabItem.Content = DatabaseTab;
                         break;
                     case 4:
-                        if (DebugMode)
+                        if (DebugMode)  // 先判斷是否為 Debug Mode
                         {
                             EngineerTab = new EngineerTab()
                             {
@@ -445,51 +438,55 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"-----------------------------------------------------");
-
             // 關閉所有相機
-            foreach (BaslerCam cam in BaslerCams)
+            if (BaslerCams != null)
             {
-                if (cam.IsOpen)
+                foreach (BaslerCam cam in BaslerCams)
                 {
-                    // 若 Grabber 開啟中，關閉 Grabber
-                    if (cam.IsGrabbing)
+                    if (cam.IsOpen)
                     {
-                        Basler_StopStreamGrabber(cam);
+                        // 若 Grabber 開啟中，關閉 Grabber
+                        if (cam.IsGrabbing)
+                        {
+                            Basler_StopStreamGrabber(cam);
+                        }
+                        cam.Close();
                     }
-                    cam.Close();
                 }
             }
 
             // Servo Off & 關閉 Motion 控制 
-            if (ServoMotion.DeviceOpened)
+            if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
                 ServoMotion.SetAllServoOff();
                 ServoMotion.DisableAllTimer();
                 ServoMotion.CloseDevice();
             }
 
+
             // 重製 & 關閉所有光源
-            // foreach (LightController ctrl in LightCtrls_old)
-            foreach (LightSerial ctrl in LightCtrls)
+            if (LightCtrls != null)
             {
-                if (ctrl.IsComOpen)
+                foreach (LightSerial ctrl in LightCtrls)
                 {
-                    _ = ctrl.TryResetAllChannel(out _);
-                    ctrl.ComClose();
+                    if (ctrl.IsComOpen)
+                    {
+                        _ = ctrl.TryResetAllChannel(out _);
+                        ctrl.ComClose();
+                    }
                 }
             }
 
             // 與資料庫斷線
-            if (MongoAccess.Connected)
+            if (MongoAccess != null && MongoAccess.Connected)
             {
                 MongoAccess.Disconnect();
             }
 
-            _ = SpinWait.SpinUntil(() => BaslerCams.All(cam => !cam.IsConnected), 3000);
-            _ = SpinWait.SpinUntil(() => !ServoMotion.DeviceOpened, 3000);
+            _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
+            _ = SpinWait.SpinUntil(() => ServoMotion == null || !ServoMotion.DeviceOpened, 3000);
             // SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
-            _ = SpinWait.SpinUntil(() => LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
+            _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
             Close();
         }
