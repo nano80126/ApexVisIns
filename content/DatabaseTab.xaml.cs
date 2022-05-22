@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,10 +27,11 @@ namespace ApexVisIns.content
     /// <summary>
     /// DatabaseTab.xaml 的互動邏輯
     /// </summary>
-    public partial class DatabaseTab : StackPanel
+    public partial class DatabaseTab : StackPanel, INotifyPropertyChanged
     {
         #region Variables
-
+        private DateTime _startDate = DateTime.Today;
+        private DateTime _endDate = DateTime.Today;
         #endregion
 
         #region Properties
@@ -46,13 +49,39 @@ namespace ApexVisIns.content
         /// 量測查詢結果
         /// </summary>
         public ObservableCollection<JawFullSpecIns> JawFullSpecInsCol { get; set; } = new();
+
+        public DateTime StartDate
+        {
+            get => _startDate;
+            set
+            {
+                if (value != _startDate)
+                {
+                    _startDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public DateTime EndDate
+        {
+            get => _endDate;
+            set
+            {
+                if (value != _endDate)
+                {
+                    _endDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         #endregion
 
         #region Flags
         /// <summary>
         /// 已載入旗標
         /// </summary>
-        private bool loaded; 
+        private bool loaded;
         #endregion
 
         public DatabaseTab()
@@ -124,18 +153,56 @@ namespace ApexVisIns.content
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
+        private void ShortCutDatePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DateTime dt;
+            int diff;
+            switch ((sender as ListBox).SelectedIndex)
+            {
+                case 0:
+                    dt = DateTime.Today;
+                    StartDate = EndDate = dt;
+                    break;
+                case 1:
+                    //Debug.WriteLine($"{DayOfWeek.s}");
+                    diff = DayOfWeek.Sunday - DateTime.Today.DayOfWeek - 7;
+                    StartDate = DateTime.Today.AddDays(diff).Date;
+                    EndDate = DateTime.Today.AddDays(diff + 6).Date;
+                    break;
+                case 2:
+                    diff = DayOfWeek.Sunday - DateTime.Today.DayOfWeek;
+                    StartDate = DateTime.Today.AddDays(diff).Date;
+                    EndDate = DateTime.Today.AddDays(diff + 6).Date;
+                    break;
+                case 3:
+                    diff = DateTime.Today.Day;
+                    dt = DateTime.Today.AddDays(-1 * diff + 1).Date;
+                    StartDate = dt;
+                    EndDate = dt.AddMonths(1).AddDays(-1);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void DatePicker_CalendarOpened(object sender, RoutedEventArgs e)
+        {
+            // 選擇最後一個 item (自訂)
+            ShortCutDatePicker.SelectedItem = ShortCutDatePicker.Items[^1];
+        }
+
         private void DateTimeFindBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 JawInspections.Clear();
 
-                DateTime date = DatePicker.SelectedDate.Value;
-                string[] stTime = StartTimePicker.SelectedItem.ToString().Split(':');
-                string[] endTime = EndTimePicker.SelectedItem.ToString().Split(':');
+                //DateTime date = DatePicker.SelectedDate.Value;
+                //string[] stTime = StartTimePicker.SelectedItem.ToString().Split(':');
+                //string[] endTime = EndTimePicker.SelectedItem.ToString().Split(':');
 
-                DateTime st = new(date.Year, date.Month, date.Day, Convert.ToInt32(stTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(stTime[1], CultureInfo.CurrentCulture), 0);
-                DateTime end = new(date.Year, date.Month, date.Day, Convert.ToInt32(endTime[0], CultureInfo.CurrentCulture), Convert.ToInt32(endTime[1], CultureInfo.CurrentCulture), 0);
+                DateTime st = new(StartDate.Year, StartDate.Month, StartDate.Day, 0, 0, 0); // 00:00:00
+                DateTime end = new(EndDate.Year, EndDate.Month, EndDate.Day, 23, 59, 59);   // 23:59:59
 
                 // st < DateTime < end
                 FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Gt(s => s.DateTime, st) & Builders<JawInspection>.Filter.Lt(s => s.DateTime, end);
@@ -224,14 +291,24 @@ namespace ApexVisIns.content
                         { "0.088R", 0.001 }
                     }
                 });
-            } else
+            }
+            else
             {
                 JawFullSpecInsCol.Clear();
             }
-
-
-
-
         }
+
+
+
+        #region PropertyChanged 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+      
     }
 }

@@ -146,7 +146,7 @@ Apex 外觀瑕疵檢測
 
 * [x] DatabaseTab 新增批號查詢
 
-* [ ] DatabaseTab 日期改範圍
+* [x] DatabaseTab 日期改範圍
 
 * [x] Appbar click evnet 改 command
 

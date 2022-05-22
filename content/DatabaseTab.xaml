@@ -7,7 +7,9 @@
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content"
             xmlns:pd="clr-namespace:ApexVisIns.Product"
-            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+            d:DataContext="{d:DesignInstance Type=local:DatabaseTab}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
@@ -77,8 +79,8 @@
                     </DockPanel.Resources>
 
                     <DockPanel x:Name="CalenderHeader" DockPanel.Dock="Top">
-                        <materialDesign:PackIcon Kind="CalendarOutline" Width="30" Height="26"/>
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="日期時間查詢" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                        <materialDesign:PackIcon Kind="CalendarMonth" Width="30" Height="26"/>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="日期查詢" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                     </DockPanel>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
@@ -87,9 +89,77 @@
                               Background="{StaticResource ColorCyanTransparent}" Foreground="{StaticResource ColorSecondary}" FontSize="20"
                               materialDesign:CalendarAssist.IsHeaderVisible="False"
                               CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}" 
-                              CalendarButtonStyle="{StaticResource CustomCalendarButton}" />
+                              CalendarButtonStyle="{StaticResource CustomCalendarButton}" 
+                              BorderThickness="1" BorderBrush="{StaticResource ColorError}" 
+                              Visibility="Collapsed"/>
 
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                    <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.Resources>
+                            <Style TargetType="Calendar" BasedOn="{StaticResource MaterialDesignDatePickerCalendarPortrait}" x:Key="CustomCalendar">
+                                <Setter Property="Background" Value="AliceBlue"/>
+                                <Setter Property="materialDesign:CalendarAssist.IsHeaderVisible" Value="False"/>
+                                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth2"/>
+                                <Setter Property="CalendarDayButtonStyle" Value="{StaticResource CustomCalendarDayButton}"/>
+                                <Setter Property="CalendarButtonStyle" Value="{StaticResource CustomCalendarButton}"/>
+                            </Style>
+                            <Style TargetType="Calendar" BasedOn="{StaticResource CustomCalendar}" x:Key="CustomCalendar2">
+                                <Setter Property="Background" Value="AliceBlue"/>
+                            </Style>
+
+                            <Style TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
+                                <!--<Setter Property="FlowDirection" Value="RightToLeft"/>-->
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+
+                            <!--<Style TargetType="DatePickerTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <Setter Property="Foreground" Value="Red" />
+                            </Style>-->
+                            
+                        </Grid.Resources>
+
+                        <ListBox x:Name="ShortCutDatePicker" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                 Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                 SelectionChanged="ShortCutDatePicker_SelectionChanged">
+                            <ListBoxItem Content="今天" IsSelected="True"/>
+                            <ListBoxItem Content="上周"/>
+                            <ListBoxItem Content="本周"/>
+                            <ListBoxItem Content="本月"/>
+                            <ListBoxItem Content="自訂"/>
+                        </ListBox>
+
+                        <DatePicker x:Name="StartDatePicker" Grid.Row="1" Grid.Column="0" Padding="8 3" CalendarStyle="{StaticResource CustomCalendar}" Margin="0 4 0 0"
+                                    SelectedDate="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CalendarOpened="DatePicker_CalendarOpened"/>
+                        <!--//-->
+                        <materialDesign:PackIcon Grid.Row="1" Grid.Column="1" Kind="Tilde" Width="20" Height="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="8 4 8 0"/>
+                        <!--//-->
+                        <DatePicker x:Name="EndDatePicker" Grid.Row="1" Grid.Column="2" Padding="8 3" CalendarStyle="{StaticResource CustomCalendar}" Margin="0 4 0 0"
+                                    SelectedDate="{Binding EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  CalendarOpened="DatePicker_CalendarOpened"/>
+
+
+                        <Button Grid.Row="2" Grid.ColumnSpan="3" Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center" Text="查詢"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center" Visibility="Collapsed">
                         <StackPanel.Resources>
                             <Style x:Key="TimePickComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
                                 <Setter Property="Margin" Value="0 8"/>
@@ -98,12 +168,6 @@
                                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Setter Property="MaxDropDownHeight" Value="200"/>
-                                <!--<Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="Red"/>
-                                        <Setter Property="BorderThickness" Value="3"/>
-                                    </Trigger>
-                                </Style.Triggers>-->
                             </Style>
                         </StackPanel.Resources>
 
@@ -134,12 +198,12 @@
                         </ComboBox>
                     </StackPanel>
 
-                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click">
+                    <!--<Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center"/>
                             <TextBlock VerticalAlignment="Center" Text="查詢"/>
                         </StackPanel>
-                    </Button>
+                    </Button>-->
                 </DockPanel>
             </materialDesign:Card>
 
@@ -170,8 +234,7 @@
         <!--#endregion-->
 
         <!--#region Column 2, Separator -->
-        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
-                   Background="{StaticResource ColorSecondaryTransparent}"/>
+        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondaryTransparent}"/>
         <!--#endregion-->
 
         <!--#region Column 3 -->
@@ -207,6 +270,16 @@
                               CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
                               materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
                               ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <DataGrid.Style>
+                            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Style>
+
                         <DataGrid.Resources>
                             <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
                                 <Setter Property="Background" Value="{StaticResource ColorPurpleTransparent}"/>

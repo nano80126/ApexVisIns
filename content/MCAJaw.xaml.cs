@@ -171,7 +171,7 @@ namespace ApexVisIns.content
             #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
-            //InitMongoDB(_cancellationTokenSource.Token).Wait();
+            InitMongoDB(_cancellationTokenSource.Token).Wait();
 
 
             #endregion
