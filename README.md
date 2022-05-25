@@ -159,6 +159,14 @@ Apex 外觀瑕疵檢測
 
 * [x] ModeWindow 改 command 
 
+* [ ] 移除 MontionTab
+
+* [ ] DatebaseTab 不須 admin
+
+* [ ] 初始化完成前不允許切換 Tab
+	* 或避免重複進入 InitHardWare function
+	* 新增 Initlizing Flag
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

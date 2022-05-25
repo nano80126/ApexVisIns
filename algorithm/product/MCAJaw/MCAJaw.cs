@@ -27,6 +27,17 @@ namespace ApexVisIns
         private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
         #endregion
 
+
+        #region 
+        /// <summary>
+        /// Jaw 左右 enum，013、024等演算法所需 param
+        /// </summary>
+        public enum JawPos
+        {
+            Left = 1,
+            Right = 2,
+        }
+
         private readonly Dictionary<string, Rect> JawROIs = new()
         {
             { "有料檢知", new Rect(185, 345, 710, 30) },
@@ -36,6 +47,7 @@ namespace ApexVisIns
             { "後開位置", new Rect(320, 570, 440, 60) },
             { "側面定位", new Rect(460, 110, 240, 130) }
         };
+        #endregion
 
 
         public void ListJawParam()
@@ -69,6 +81,8 @@ namespace ApexVisIns
                 JawSpecSetting spec;
                 // 有無料
                 bool partExist = false;
+                // 是否NG (避免重複計算NG數量)
+                bool isNG = false;
                 // 前開
                 double d_front = 0;
                 // 後開
@@ -205,15 +219,27 @@ namespace ApexVisIns
 
                 Debug.WriteLine($"end: {DateTime.Now:mm:ss.fff}");
 
+
                 // Camera 1 結果
-                DateTime stTime = DateTime.Now;
+                //DateTime stTime = DateTime.Now;
                 foreach (string item in cam1results.Keys)
                 {
                     // Debug.WriteLine($"{key} {cam1results[key].Count}");
                     double avg = cam1results[item].Average();
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
                     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;
+                    // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;   // 保留
+
+                    // 先判斷是否已為 NG
+                    if (!isNG)
+                    {
+                        // 判斷是否 ok
+                        bool ok = MCAJaw.JawSpecGroup.Collection1[^1].OK;
+                        // ok => Count 不加 0
+                        MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
+                        // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
+                        isNG = !ok;
+                    }
 
                     // 資料庫物件新增
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
@@ -228,7 +254,18 @@ namespace ApexVisIns
                     double avg = cam2results[item].Average();
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
                     MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection2[^1].OK ? 0 : 1;
+                    // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection2[^1].OK ? 0 : 1;   // 保留
+
+                    // 先判斷是否已為 NG
+                    if (!isNG)
+                    {
+                        // 判斷是否 OK
+                        bool ok = MCAJaw.JawSpecGroup.Collection2[^1].OK;
+                        // ok => Count 不加 0
+                        MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
+                        // 若不 ok => 標示這 pc 為 NG 品
+                        isNG = !ok;
+                    }
 
                     // 資料庫物件新增
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
@@ -242,7 +279,17 @@ namespace ApexVisIns
                 {
                     double bfDiff = Math.Abs(d_front - d_back);
                     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
-                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;
+                    //MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;    // 保留
+
+                    if (!isNG)
+                    {
+                        // 判斷是否 OK
+                        bool ok = MCAJaw.JawSpecGroup.Collection1[^1].OK;
+                        // ok => Count 不加 0
+                        MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
+                        // 若不 ok => 標示這 pc 為 NG 品
+                        isNG = !ok;
+                    }
 
                     // 資料庫物件新增  key, value
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, bfDiff); }
@@ -256,7 +303,18 @@ namespace ApexVisIns
                     double avg = cam3results[item].Average();
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
                     MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-                    MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;
+                    // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
+
+                    // 先判斷是否已為 NG
+                    if (!isNG)
+                    {
+                        // 判斷是否 OK
+                        bool ok = MCAJaw.JawSpecGroup.Collection3[^1].OK;
+                        // ok => Count 不加 0
+                        MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
+                        // 若不 ok => 標示這 pc 為 NG 品
+                        isNG = !ok;
+                    }
 
                     // 資料庫物件新增  key, value
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
@@ -264,8 +322,7 @@ namespace ApexVisIns
 
                 // 判斷是否為良品
                 MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawSpecGroup.Col1Result && MCAJaw.JawSpecGroup.Col2Result && MCAJaw.JawSpecGroup.Col3Result ? 1 : 0;
-
-                Debug.WriteLine($"Total takes {(DateTime.Now - stTime).TotalMilliseconds} ms");
+                //Debug.WriteLine($"Total takes {(DateTime.Now - stTime).TotalMilliseconds} ms");
             }
             catch (OpenCVException ex)
             {
@@ -358,7 +415,7 @@ namespace ApexVisIns
 
             #region 計算 0.013 左 (實際上是右)
             spec = specList?[4];
-            Cal013DistanceValue(src, baseL, 0, out double LtopY, out double LbotY, out double d_013R, spec != null ? spec.Correction : 0);
+            Cal013DistanceValue(src, baseL, JawPos.Left, LX, out double LtopY, out double LbotY, out double d_013R, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
                 lock (results)
@@ -371,7 +428,7 @@ namespace ApexVisIns
 
             #region 計算 0.013 右 (實際上是左)
             spec = specList?[5];
-            Cal013DistanceValue(src, baseR, 1, out double RtopY, out double RbotY, out double d_013L, spec != null ? spec.Correction : 0);
+            Cal013DistanceValue(src, baseR,  JawPos.Right, RX,out double RtopY, out double RbotY, out double d_013L, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
                 lock (results)
@@ -562,8 +619,8 @@ namespace ApexVisIns
         public bool CalContourValue(Mat src, Point leftPt, Point rightPt, out double LeftY, out double RightY, out double d_005max, double correction = 0, double upperLimit = 0.005)
         {
             // 計算 roi
-            Rect left = new(leftPt.X - 20, leftPt.Y - 150, 25, 70);
-            Rect right = new(rightPt.X - 5, rightPt.Y - 150, 25, 70);
+            Rect left = new(leftPt.X - 25, leftPt.Y - 150, 30, 70);
+            Rect right = new(rightPt.X - 5, rightPt.Y - 150, 30, 70);
 
             double sumLength = 0;
 
@@ -573,17 +630,17 @@ namespace ApexVisIns
             // using Mat leftMat = new(src, left);
             // using Mat rightMat = new(src, right);
 
-            Methods.GetRoiCanny(src, left, 60, 120, out Mat leftCanny);
-            Methods.GetRoiCanny(src, right, 60, 120, out Mat rightCanny);
+            Methods.GetRoiCanny(src, left, 50, 120, out Mat leftCanny);
+            Methods.GetRoiCanny(src, right, 50, 120, out Mat rightCanny);
 
             //Dispatcher.Invoke(() =>
             //{
-            //    Cv2.ImShow("Left Canny", leftCanny);
-            //    Cv2.ImShow("Right Canny", rightCanny);
+                //Cv2.ImShow("Left Canny", leftCanny);
+                //Cv2.ImShow("Right Canny", rightCanny);
             //});
 
             #region 左邊
-            Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 2, 0, 3);
+            Methods.GetHoughLinesHFromCanny(leftCanny, left.Location, out lineH, 2, 2, 5);
             // sumLength = lineH.Sum(line => line.Length());
             // LeftY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
@@ -598,23 +655,24 @@ namespace ApexVisIns
             // 計算平均 Y 座標
             LeftY = maxH_L.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
-#if true
+#if false
             Debug.WriteLine($"L Center: {center} {min} {max}");
             Debug.WriteLine($"---------------L---------------");
             foreach (LineSegmentPoint l in lineH)
             {
-                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
+                Debug.WriteLine($"Count: {lineH.Length} {l.P1} {l.P2} {l.Length()}");
             }
-#endif
             Debug.WriteLine($"---------------L---------------");
             foreach (LineSegmentPoint l in maxH_L)
             {
-                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
+                Debug.WriteLine($"Count: {maxH_L.Count()} {l.P1} {l.P2} {l.Length()}");
+                Cv2.Line(src, l.P1, l.P2, Scalar.Black, 2);
             }
+#endif
             #endregion
 
             #region 右邊
-            Methods.GetHoughLinesHFromCanny(rightCanny, right.Location, out lineH, 2, 0, 3);
+            Methods.GetHoughLinesHFromCanny(rightCanny, right.Location, out lineH, 2, 2, 5);
             // sumLength = lineH.Sum(line => line.Length());
             // RightY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
@@ -630,26 +688,27 @@ namespace ApexVisIns
             RightY = maxH_R.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
 
 
-#if true
+#if false
             Debug.WriteLine($"R Center: {center} {min} {max}");
             Debug.WriteLine($"---------------R---------------");
             foreach (LineSegmentPoint l in lineH)
             {
-                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()}");
+                Debug.WriteLine($"Count: {lineH.Length} {l.P1} {l.P2} {l.Length()}");
             }
-#endif
             Debug.WriteLine($"---------------R---------------");
             foreach (LineSegmentPoint l in maxH_R)
             {
-                Debug.WriteLine($"{l.P1} {l.P2} {l.Length()} {center}");
+                Debug.WriteLine($"Count: {maxH_R.Count()} {l.P1} {l.P2} {l.Length()} {center}");
+                Cv2.Line(src, l.P1, l.P2, Scalar.Black, 2);
             }
+#endif
             #endregion
 
             //Debug.WriteLine($"L:{LeftY} R:{RightY}");
 
             // 計算 輪廓度
             d_005max = (Math.Abs(LeftY - RightY) * Cam1Unit) + correction;
-            Debug.WriteLine($"005MAX PT: {LeftY - RightY} {d_005max}");
+            //Debug.WriteLine($"005MAX PT: {LeftY - RightY} {d_005max}");
 
             #region Dispose
             leftCanny.Dispose();
@@ -692,7 +751,7 @@ namespace ApexVisIns
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
-            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px");
+            //Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px");
 
             leftCanny.Dispose();
             rightCanny.Dispose();
@@ -739,27 +798,44 @@ namespace ApexVisIns
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
         /// <param name="leftRight">(deprecate) 暫保留</param>
+        /// <param name="X">ROI X (從前開取得)</param>
         /// <param name="topY">上邊緣</param>
         /// <param name="botY">下邊緣</param>
         /// <param name="distance">(out) 0.013 距離</param>
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
-        public bool Cal013DistanceValue(Mat src, Point basePoint, int leftRight, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
+        public bool Cal013DistanceValue(Mat src, Point basePoint, JawPos leftRight, double X, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
-            Rect roi = new(basePoint.X - 20, basePoint.Y - 70, 40, 90);
+            //Rect roi = new(basePoint.X - 20, basePoint.Y - 70, 40, 90);
+            Rect roi = new();
+
+            switch (leftRight)
+            {
+                case JawPos.Left:
+                    roi = new((int)X + 1, basePoint.Y - 70, (int)(basePoint.X - X - 2), 90);
+                    break;
+                case JawPos.Right:
+                    roi = new(basePoint.X + 1, basePoint.Y - 70, (int)(X - basePoint.X - 2), 90);
+                    break;
+                default:
+                    break;
+            }
 
             double sumLength = 0;
 
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 5, 0);
 
-            // foreach (LineSegmentPoint item in lineH)
-            // {
-            //     Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-            // }
-            // Debug.WriteLine("----------------------------------------");
+            //Cv2.ImShow($"013canny{leftRight}", canny);
+
+            Debug.WriteLine("-------------------------013-------------------------");
+            foreach (LineSegmentPoint item in lineH)
+            {
+                Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+            }
+            Debug.WriteLine("-----------------------------------------------------");
 
             double min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             double max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
@@ -785,6 +861,8 @@ namespace ApexVisIns
             // 銷毀 canny
             canny.Dispose();
             //Debug.WriteLine(distance);
+
+            //Debug.WriteLine($"{leftRight} :013 Value {distance}");
 
             return limitL <= distance && distance <= limitU;
         }

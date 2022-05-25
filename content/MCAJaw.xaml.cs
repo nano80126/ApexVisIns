@@ -127,7 +127,14 @@ namespace ApexVisIns.content
 
 
         #region Flags
+        /// <summary>
+        /// Tab loaded 旗標
+        /// </summary>
         private bool loaded;
+        /// <summary>
+        /// 硬體正在初始化旗標
+        /// </summary>
+        private bool initialzing;
         private bool CameraInitialized { get; set; }
         private bool LightCtrlInitilized { get; set; }
         private bool IOCtrlInitialized { get; set; }
@@ -158,10 +165,14 @@ namespace ApexVisIns.content
             {
                 case MainWindow.InitModes.AUTO:
                     // 硬體初始化
-                    InitHardware();
+                    if (!initialzing)
+                    {
+                        InitHardware();
+                    }
                     break;
                 case MainWindow.InitModes.EDIT:
-                    // 保留
+                    // 只連線 MongoDB
+                    InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
                     // 保留
@@ -171,8 +182,6 @@ namespace ApexVisIns.content
             #region 初始化
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
-            InitMongoDB(_cancellationTokenSource.Token).Wait();
-
 
             #endregion
 
@@ -196,7 +205,15 @@ namespace ApexVisIns.content
         {
             try
             {
+                // 若正在初始化，直接 return
+                if (initialzing)
+                {
+                    return;
+                }
+
                 CancellationToken token = _cancellationTokenSource.Token;
+
+                initialzing = true;
 
                 Status = INS_STATUS.INIT;
                 await Task.WhenAll(
@@ -213,15 +230,15 @@ namespace ApexVisIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        //等待進度條滿
+                        // 等待進度條滿，超過 5 秒則 Timeout
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
                         {
                             // 硬體初始化失敗
                             return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
                         }
 
-                        Debug.WriteLine($"ProgressValue: {MainWindow.MsgInformer.ProgressValue}");
-                        Debug.WriteLine($"TargetProgressValue: {MainWindow.MsgInformer.TargetProgressValue}");
+                        // Debug.WriteLine($"ProgressValue: {MainWindow.MsgInformer.ProgressValue}");
+                        // Debug.WriteLine($"TargetProgressValue: {MainWindow.MsgInformer.TargetProgressValue}");
 
                         return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
@@ -273,12 +290,9 @@ namespace ApexVisIns.content
                         }
                         else
                         {
-                            MainWindow.Dispatcher.Invoke(() =>
-                            {
-                                //StatusLabel.Text = "初始化完成";
-                                Status = INS_STATUS.READY;
-                            });
+                            MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                         }
+                        initialzing = false;
                     }, token);
             }
             catch (OperationCanceledException cancell)
@@ -672,17 +686,29 @@ namespace ApexVisIns.content
         {
             if (!string.IsNullOrEmpty(JawInspection.LotNumber) && !string.IsNullOrWhiteSpace(JawInspection.LotNumber))
             {
+                // 確認批號
                 JawInspection.CheckLotNumber();
+                // 該批設為未儲存
+                JawInspection.SetLotInserted(false);
             }
         }
 
         private void ResetCount_Click(object sender, RoutedEventArgs e)
         {
-            //JawInspection.ObjID = new MongoDB.Bson.ObjectId();
+            if (JawInspection.LotNumberChecked && !JawInspection.LotInserted)
+            {
+                if (MessageBox.Show("該批資料尚未儲存，是否確定歸零數量？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
+            // JawInspection.ObjID = new MongoDB.Bson.ObjectId();
             foreach (string key in JawInspection.LotResults.Keys)
             {
                 JawInspection.LotResults[key].Count = 0;
             }
+            //JawInspection.SetLotInserted(false);
         }
 
         private void MinusButton_Click(object sender, RoutedEventArgs e)
@@ -704,16 +730,16 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
+#if true
             if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
 
             _testTask = Task.Run(async () =>
             {
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 150; i++)
                 {
-                    //MainWindow.ListJawParam();
-                    Debug.WriteLine(MainWindow);
-
+                    // MainWindow.ListJawParam();
                     DateTime t1 = DateTime.Now;
+#endif
 
                     if (Status != INS_STATUS.READY) { return; }
 
@@ -722,47 +748,60 @@ namespace ApexVisIns.content
                     JawSpecGroup.Collection2.Clear();
                     JawSpecGroup.Collection3.Clear();
 
-                    Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+                    //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
                     Status = INS_STATUS.INSPECTING;
 
-                    await Task.Run(() =>
+                    bool b = await Task.Run(() =>
                     {
                         JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
                         MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
                         return _jawFullSpecIns;
                     }).ContinueWith(t =>
                     {
-                        if (true)
-                        {
-                            JawFullSpecIns data = t.Result;
-                            data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                            data.DateTime = DateTime.Now;
-                            MongoAccess.InsertOne("Spec", data);
+                        // 判斷是否插入資料庫
+                        //if (true)
+                        //{
+                        JawFullSpecIns data = t.Result;
+                        data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                        data.DateTime = DateTime.Now;
+                        MongoAccess.InsertOne("Spec", data);
                         //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
                         //Debug.WriteLine(json);
-                    }
+
+                        //return data.OK;
+                        //}
                         Status = INS_STATUS.READY;
 
                         Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+
+                        return data.OK;
+                        //return 
                     });
 
+                    if (!b) break;
+
+#if true
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-
-                    SpinWait.SpinUntil(() => false, 3000);
+                    _ = SpinWait.SpinUntil(() => false, 3000);
                 }
             });
+#endif
         }
 
         private void FinishLot_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {
+                // 給予新 ID
                 JawInspection.ObjID = new MongoDB.Bson.ObjectId();
-                JawInspection.DateTime = DateTime.Now;
                 // 刷新時間
+                JawInspection.DateTime = DateTime.Now;
+                // 插入資料庫
                 MongoAccess.InsertOne("Lots", JawInspection);
+                // 標記這批已插入資料庫
+                JawInspection.SetLotInserted(true);
             }
 
             //TestDic testDic = new TestDic

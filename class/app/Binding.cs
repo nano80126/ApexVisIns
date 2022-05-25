@@ -35,7 +35,7 @@ namespace ApexVisIns
         private bool _loginFlag;
 
         /// <summary>
-        /// Tab active index
+        /// Nav active index
         /// </summary>
         public int OnNavIndex
         {
@@ -80,7 +80,15 @@ namespace ApexVisIns
         public bool DebugMode => _debugMode;
 
         #region Admin Password
+        /// <summary>
+        /// Admin Password
+        /// </summary>
         public string Password { get; } = "admin";
+
+        /// <summary>
+        /// User Password
+        /// </summary>
+        public string UserPassword { get; } = "intai";
 
         /// <summary>
         /// 是否已登入

@@ -121,7 +121,7 @@
 
 
             <!--#region MongoDB -->
-            <local:MongoAccess x:Key="MongoAccess" Host="localhost" Port="27017"/>
+            <local:MongoAccess x:Key="MongoAccess" Host="192.168.2.100" Port="27017"/>
             <!--#endregion-->
 
 

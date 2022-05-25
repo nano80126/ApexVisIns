@@ -1329,13 +1329,12 @@ namespace ApexVisIns
 
             try
             {
-                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
 
                 // 1. 保留 Ygap < 3 的線 2. 確認 X 偏移大於 Y 偏移 3. 平移 roi.X, roi.Y
                 lineSegH = lineSeg.Where(line =>
                     Math.Abs(line.P2.Y - line.P1.Y) < Ygap &&
-                    Math.Abs(line.P2.X - line.P1.X) >= Math.Abs(line.P2.Y - line.P1.Y) &&
-                    line.Length() > 0).Select(line =>
+                    Math.Abs(line.P2.X - line.P1.X) >= Math.Abs(line.P2.Y - line.P1.Y)).Select(line =>
                 {
                     line.Offset(offset);
                     return line;
@@ -1366,13 +1365,12 @@ namespace ApexVisIns
 
             try
             {
-                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 5);
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
 
                 // 1. 保留 Xgap < 3 的線 2. 確認 Y 偏移大於 X 偏移 3. 平移 roi.X, roi.Y
                 lineSegV = lineSeg.Where(line =>
                     Math.Abs(line.P2.X - line.P1.X) < Xgap &&
-                    Math.Abs(line.P2.Y - line.P1.Y) >= Math.Abs(line.P2.X - line.P1.X) &&
-                    line.Length() > 0).Select(line =>
+                    Math.Abs(line.P2.Y - line.P1.Y) >= Math.Abs(line.P2.X - line.P1.X)).Select(line =>
                 {
                     line.Offset(offset.X, offset.Y);
                     return line;

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Media;
+using MongoDB.Bson;
 
 namespace ApexVisIns.Product
 {
@@ -163,7 +164,6 @@ namespace ApexVisIns.Product
         //private readonly object _lock = new();
         #endregion
 
-
         #region Public
         public bool SyncBinding { get; private set; }
         #endregion
@@ -224,7 +224,6 @@ namespace ApexVisIns.Product
     }
 
 
-
     /// <summary>
     /// MAC Jaw 檢驗主物件，
     /// 狀態、計數等功能
@@ -234,14 +233,14 @@ namespace ApexVisIns.Product
         #region private
         private string _lotNumber = string.Empty;
         private bool _lotNumberChecked;
+        private bool _lotInserted;
         #endregion
-
 
         /// <summary>
         /// MOngo ID
         /// </summary>
         [BsonId]
-        public MongoDB.Bson.ObjectId ObjID { get; set; }
+        public ObjectId ObjID { get; set; }
 
         /// <summary>
         /// 批號輸入
@@ -280,6 +279,24 @@ namespace ApexVisIns.Product
         }
 
         /// <summary>
+        /// 批號是否已確認 (不會插入 MongoDB)
+        /// </summary>
+        [BsonIgnore]
+        public bool LotInserted
+        {
+            get => _lotInserted;
+            private set
+            {
+                if (value != _lotInserted)
+                {
+                    _lotInserted = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 批號檢驗結果
         /// </summary>
         [BsonElement(nameof(LotResults))]
@@ -296,6 +313,10 @@ namespace ApexVisIns.Product
             LotNumberChecked = true;
         }
 
+        public void SetLotInserted(bool inserted)
+        {
+            LotInserted = inserted;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -361,7 +382,7 @@ namespace ApexVisIns.Product
         }
 
         [BsonId]
-        public MongoDB.Bson.ObjectId ObjID { get; set; }
+        public ObjectId ObjID { get; set; }
 
         /// <summary>
         /// 批號
