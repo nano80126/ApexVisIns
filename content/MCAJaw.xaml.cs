@@ -125,7 +125,6 @@ namespace ApexVisIns.content
         private MongoAccess MongoAccess;
         #endregion
 
-
         #region Flags
         /// <summary>
         /// Tab loaded 旗標

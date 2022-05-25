@@ -25,14 +25,13 @@ namespace ApexVisIns
         private readonly bool _debugMode = false;
 #endif
 
+        #region private
         private ImageSource _imgSrc;
-
         private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
-
         private ImageSource _chartSource;
-
         private int _onNavIndex;
-        private bool _loginFlag;
+        private bool _loginFlag; 
+        #endregion
 
         /// <summary>
         /// Nav active index
@@ -50,30 +49,6 @@ namespace ApexVisIns
             }
         }
 
-        //public double ZoomRatio
-        //{
-        //    //get => ImageViewbox.Width / ImageCanvas.Width * 100;
-        //    //set
-        //    //{
-        //    //    int v = (int)Math.Floor(value);
-
-        //    //    if (20 > v)
-        //    //    {
-        //    //        ImageViewbox.Width = 0.2 * ImageCanvas.Width;
-        //    //    }
-        //    //    else if (v > 200)
-        //    //    {
-        //    //        ImageViewbox.Width = 2 * ImageCanvas.Width;
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        double ratio = value / 100;
-        //    //        ImageViewbox.Width = ratio * ImageCanvas.Width;
-        //    //    }
-        //    //    OnPropertyChanged(nameof(ZoomRatio));
-        //    //}
-        //}
-
         /// <summary>
         /// Debug 模式
         /// </summary>
@@ -83,12 +58,21 @@ namespace ApexVisIns
         /// <summary>
         /// Admin Password
         /// </summary>
-        public string Password { get; } = "admin";
+        private string Password { get; } = "admin0000";
+        /// <summary>
+        /// 密碼字典表 { "密碼", 等級 }
+        /// </summary>
+        private Dictionary<string, int> PasswordDict { get; } = new Dictionary<string, int>();
 
         /// <summary>
-        /// User Password
+        /// 權限等級
+        /// 0: 無權限；
+        /// 1: 操作員；
+        /// 2: 品管員；
+        /// 5: 工程師；
+        /// 9: 開發者；
         /// </summary>
-        public string UserPassword { get; } = "intai";
+        public int AuthLevel { get; set; }
 
         /// <summary>
         /// 是否已登入
@@ -118,10 +102,10 @@ namespace ApexVisIns
             SET_CAMERA_TRIGGER_MODE = 2
         }
 
-
         /// <summary>
         /// 檢驗狀態旗標
         /// </summary>
+        [Obsolete("Not used in MCA Jaw")]
         public enum InsStatus
         {
             [Description("初始化")]
@@ -135,10 +119,9 @@ namespace ApexVisIns
             [Description("完成")]
             DONE = 4,
             [Description("錯誤")]
-            ERROR = 5,
+            ERROR = 5
         }
         #endregion
-
 
         /// <summary>
         /// 主影像 Source

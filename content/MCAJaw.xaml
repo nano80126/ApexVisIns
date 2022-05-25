@@ -47,7 +47,8 @@
                     <ListBoxItem Padding="16 4" ToolTip="主畫面" Cursor="Hand">
                         <materialDesign:PackIcon Kind="ViewGrid" Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
-                    <ListBoxItem Padding="16 4" ToolTip="規格設定" Cursor="Hand">
+                    <ListBoxItem Padding="16 4" ToolTip="規格設定" Cursor="Hand" 
+                                 IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
                         <materialDesign:PackIcon Kind="PlaylistEdit"  Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                 </ListBox>
@@ -857,7 +858,8 @@
         <!--#endregion-->
 
         <!--#region Tab2 -->
-        <TabItem Header="2" Height="0" Margin="0">
+        <TabItem Header="{x:Null}" Height="0" Margin="0">
+                 <!--IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"-->
             <local:SpecSettingList x:Name="SettingList" DataContext="{StaticResource SpecGroup}"/>
         </TabItem>
         <!--#endregion-->

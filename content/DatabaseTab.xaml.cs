@@ -98,7 +98,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            InitDateTimePickers();
+            //InitDateTimePickers();
 
             if (!loaded)
             {
@@ -258,7 +258,6 @@ namespace ApexVisIns.content
 
                 MainWindow.MongoAccess.FindAll("Spec", filter, out List<JawFullSpecIns> data);
 
-
                 if (data.Count > 0)
                 {
                     RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
@@ -273,7 +272,6 @@ namespace ApexVisIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
             }
-
         }
 
         private void FilterButton_Click(object sender, RoutedEventArgs e)
@@ -297,7 +295,6 @@ namespace ApexVisIns.content
                 JawFullSpecInsCol.Clear();
             }
         }
-
 
 
         #region PropertyChanged 

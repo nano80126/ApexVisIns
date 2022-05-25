@@ -345,14 +345,14 @@ namespace ApexVisIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((string)value == "N/A")
-            {
-                return "N/A";
-            }
-            else
-            {
-                return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) < System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
-            }
+            //if ((string)value == "N/A")
+            //{
+            //    return "N/A";
+            //}
+            //else
+            //{
+            //}
+            return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) < System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -368,14 +368,14 @@ namespace ApexVisIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((string)value == "N/A")
-            {
-                return "N/A";
-            }
-            else
-            {
-                return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) > System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
-            }
+            //if ((string)value == "N/A")
+            //{
+            //    return "N/A";
+            //}
+            //else
+            //{
+            //}
+            return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) > System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

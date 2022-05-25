@@ -36,7 +36,9 @@
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
             <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
-            
+            <cvt:NumberGreaterConvert x:Key="NumberGreaterConvert"/>
+            <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
+
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
             <cvt:StringAllEqualConverter x:Key="StringAllEqualConverter"/>
@@ -119,11 +121,9 @@
             <local:ModbusTCPIO x:Key="ModbusTCPIO" IP="192.168.1.1" Port="502"/>
             <!--#endregion-->
 
-
             <!--#region MongoDB -->
-            <local:MongoAccess x:Key="MongoAccess" Host="192.168.2.100" Port="27017"/>
+            <local:MongoAccess x:Key="MongoAccess" Host="localhost" Port="27017"/>
             <!--#endregion-->
-
 
             <!--#region Major -->
             <pd:ApexDefect x:Key="ApexDefect"/>

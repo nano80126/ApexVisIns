@@ -163,9 +163,15 @@ Apex 外觀瑕疵檢測
 
 * [ ] DatebaseTab 不須 admin
 
-* [ ] 初始化完成前不允許切換 Tab
+* [x] 初始化完成前不允許切換 Tab
 	* 或避免重複進入 InitHardWare function
 	* 新增 Initlizing Flag
+
+* [x] 修正 DatabaseTab Height 不正常 BUG 
+
+* [ ] 新增權限 Level功能
+
+* [ ] 新增登出
 
 ### Config Logic
 

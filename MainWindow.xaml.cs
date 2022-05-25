@@ -322,7 +322,6 @@ namespace ApexVisIns
 
         }
 
-
         /// <summary>
         /// 載入 TabItems
         /// </summary>
@@ -551,13 +550,21 @@ namespace ApexVisIns
         {
             if (e.ChangedButton == MouseButton.Left)
             {
+                // 預設管理者密碼
                 if (LoginPassword.Password == Password)
                 {
                     LoginFlag = true;
-                    IOWindow?.PropertyChange(nameof(LoginFlag));
+                    AuthLevel = 9;
+                    //IOWindow?.PropertyChange(nameof(LoginFlag));
                     LoginPasswordHint.Text = string.Empty;
                     LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
+                }
+                else if (PasswordDict.TryGetValue(LoginPassword.Password, out int level))
+                {
+                    LoginFlag = true;
+                    AuthLevel = level;
+                    //
                 }
                 else
                 {
@@ -575,6 +582,7 @@ namespace ApexVisIns
 
         private void DialogHost_DialogClosing(object sender, DialogClosingEventArgs eventArgs)
         {
+            // empty password and hide hint
             LoginPassword.Password = string.Empty;
             LoginPasswordHint.Text = string.Empty;
             LoginPasswordHint.Visibility = Visibility.Hidden;

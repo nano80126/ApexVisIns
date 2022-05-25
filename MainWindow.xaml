@@ -266,9 +266,13 @@
 
                         <!--#region 密碼 & Hint -->
                         <PasswordBox x:Name="LoginPassword" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password" 
-                                     Padding="4 3" FontWeight="Bold" Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
+                                     materialDesign:HintAssist.Foreground="{StaticResource ColorInfo}"
+                                     Padding="4 3" FontWeight="Bold" BorderBrush="{StaticResource ColorInfo}" 
+                                     CaretBrush="{StaticResource ColorInfoTransparent}"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
 
-                        <TextBlock x:Name="LoginPasswordHint" DockPanel.Dock="Top" Height="12" HorizontalAlignment="Center" FontWeight="SemiBold" Padding="8 0" Margin="0" FontSize="12" Foreground="{StaticResource ColorErrorTransparent}"/>
+                        <TextBlock x:Name="LoginPasswordHint" DockPanel.Dock="Top" Height="12" HorizontalAlignment="Center" FontWeight="SemiBold" Padding="8 0" Margin="0" FontSize="12" 
+                                   Foreground="{StaticResource ColorErrorTransparent}"/>
                         <!--#endregion-->
 
                         <Button x:Name="LoginBtn" DockPanel.Dock="Left" Margin="8 0 8 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="OK" 
