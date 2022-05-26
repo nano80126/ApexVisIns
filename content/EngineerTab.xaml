@@ -362,7 +362,7 @@
                                                    Canvas.Top="{Binding Y, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}"
                                                    Width="{Binding Width, UpdateSourceTrigger=PropertyChanged, FallbackValue=10}"
                                                    Height="{Binding Height, UpdateSourceTrigger=PropertyChanged, FallbackValue=10}" 
-                                                   Visibility="{Binding Enable, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                                   Visibility="{Binding Enable, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibility}, FallbackValue=Hidden}"/>
                                         <!--#endregion-->
 
                                         <!--#region Crosshair Lines -->
@@ -372,14 +372,14 @@
                                                 Y1="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                                 Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                                 Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" />
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibility}, FallbackValue=Hidden}" />
                                         <!-- Vertical, 綁定 ImageCanvas (X1, X2, Y1, Y2) & CrosshairOn (Visibility) -->
                                         <Line x:Name="CrosshairV" 
                                                 X1="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}" 
                                                 X2="{Binding ElementName=ImageCanvas, Path=Width, Mode=OneWay, Converter={StaticResource MathMultiplyConverter}, ConverterParameter=0.5}"
                                                 Y1="0" Y2="{Binding ElementName=ImageCanvas, Path=Height, Mode=OneWay}"
                                                 Stroke="{Binding Stroke, Source={StaticResource Crosshair}}" StrokeThickness="1" StrokeDashArray="2 3 5 3"
-                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                                                Visibility="{Binding Enable, Source={StaticResource Crosshair}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BooleanToVisibility}, FallbackValue=Hidden}"/>
                                         <!--#endregion-->
                                     </Canvas>
                                 </Viewbox>

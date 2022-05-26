@@ -340,7 +340,7 @@ namespace ApexVisIns
                         {
                             Name = "MCAJawTab",
                             Focusable = true,
-                            FocusVisualStyle = null
+                            FocusVisualStyle = null,
                         };
                         tabItem.Content = MCAJaw;
                         break;
@@ -553,7 +553,7 @@ namespace ApexVisIns
                 // 預設管理者密碼
                 if (LoginPassword.Password == Password)
                 {
-                    LoginFlag = true;
+                    //LoginFlag = true;
                     AuthLevel = 9;
                     //IOWindow?.PropertyChange(nameof(LoginFlag));
                     LoginPasswordHint.Text = string.Empty;
@@ -562,7 +562,7 @@ namespace ApexVisIns
                 }
                 else if (PasswordDict.TryGetValue(LoginPassword.Password, out int level))
                 {
-                    LoginFlag = true;
+                    //LoginFlag = true;
                     AuthLevel = level;
                     //
                 }
@@ -597,7 +597,8 @@ namespace ApexVisIns
         {
             if (DebugMode)
             {
-                LoginFlag = true;
+                //LoginFlag = true;
+                AuthLevel = 9;
                 if (IOWindow != null) { IOWindow.PropertyChange(nameof(LoginFlag)); }
                 e.Handled = true;
             }
@@ -625,6 +626,12 @@ namespace ApexVisIns
             {
                 (sender as DialogHost).IsOpen = false;
             }
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            //LoginFlag = false;
+            AuthLevel = 0;
         }
         #endregion
 
@@ -784,6 +791,8 @@ namespace ApexVisIns
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
         #endregion
+
+     
     }
 
     /// <summary>

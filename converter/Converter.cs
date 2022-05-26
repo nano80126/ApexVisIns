@@ -72,18 +72,38 @@ namespace ApexVisIns.Converter
     /// 布林轉Visibility 轉換器
     /// </summary>
     [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class BooleanToVisibilityConverter : IValueConverter
+    public class BooleanToVisibility : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? Visibility.Visible : Visibility.Hidden;
+            return (bool)value ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// 布林轉Visibility 反向轉換器
+    /// </summary>
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class BooleanToVisibilityInverse : BooleanToVisibility
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            //return (bool)value ? Visibility.Visible : Visibility.Hidden;
+            return (Visibility)base.Convert(value, targetType, parameter, culture) == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 
     /// <summary>
     /// 布林 AND To Visibility 轉換器

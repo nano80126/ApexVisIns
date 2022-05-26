@@ -30,7 +30,8 @@ namespace ApexVisIns
         private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
         private ImageSource _chartSource;
         private int _onNavIndex;
-        private bool _loginFlag; 
+        private bool _loginFlag;
+        private int _authLevel;
         #endregion
 
         /// <summary>
@@ -72,22 +73,25 @@ namespace ApexVisIns
         /// 5: 工程師；
         /// 9: 開發者；
         /// </summary>
-        public int AuthLevel { get; set; }
+        public int AuthLevel {
+            get => _authLevel; 
+            set
+            {
+                if (value != _authLevel)
+                {
+                    _authLevel = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(LoginFlag));
+                }
+            }
+        }
 
         /// <summary>
         /// 是否已登入
         /// </summary>
         public bool LoginFlag
         {
-            get => _loginFlag;
-            set
-            {
-                if (value != _loginFlag)
-                {
-                    _loginFlag = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _authLevel > 0;
         }
         #endregion
 

@@ -19,7 +19,7 @@
             <!--//-->
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel Margin="0 8" Background="{x:Null}" Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}">
+                    <DockPanel Margin="0 8" Background="{x:Null}" Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, FallbackValue=Hidden}">
                         <materialDesign:PackIcon Kind="Plus" DockPanel.Dock="Left" Style="{StaticResource GeneralPackIcon}" Foreground="{Binding Stroke}" VerticalAlignment="Center"/>
 
                         <TextBlock DockPanel.Dock="Right" FontFamily="consolas" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right">

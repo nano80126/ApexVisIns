@@ -131,12 +131,12 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <!--Click="Minbtn_Click" -->
                     <Button x:Name="Minbtn" Content="{materialDesign:PackIcon Kind=WindowMinimize}" Margin="5 0" Style="{StaticResource WindowButton}"
-                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibility}}"
                             IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
                             Command="{StaticResource MinAction}"/>
                     <!--Click="Maxbtn_Click" -->
                     <Button x:Name="Maxbtn" Margin="5 0" Style="{StaticResource WindowButton}" 
-                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window,AncestorLevel=1}, Converter={StaticResource BooleanToVisibility}}"
                             IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
                             Command="{StaticResource MaxAction}">
                         <materialDesign:PackIcon>
@@ -154,7 +154,7 @@
                     </Button>
                     <!--Click="Quitbtn_Click"-->
                     <Button x:Name="Quitbtn" Content="{materialDesign:PackIcon Kind=WindowClose}"  Margin="5 0" Style="{StaticResource WindowButton}"
-                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Converter={StaticResource BooleanToVisibility}}"
                             IsEnabled="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
                             Command="{StaticResource QuitAction}"/>
                 </StackPanel>
@@ -172,7 +172,8 @@
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}">
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White" Background="Transparent"
+                                                 ToolTip="主頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
                     </TabItem.Header>
                     <!--//-->
                     <!--<content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
@@ -185,7 +186,8 @@
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
                          IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White" Background="Transparent"
+                                                 ToolTip="相機組態頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
                     </TabItem.Header>
                     <!--//-->
                     <!--<content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
@@ -194,11 +196,14 @@
                 <!--//-->
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
+                         ToolTip="運動控制頁面" ToolTipService.Placement="Right"
+                         ToolTipService.VerticalOffset="11" ToolTipService.HorizontalOffset="8"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
                          IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="Collapsed">
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White" Background="Transparent"
+                                                 ToolTip="運動控制頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
                     </TabItem.Header>
                     <!--//-->
                     <!--<content:MotionTab x:Name="MotionTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
@@ -211,7 +216,8 @@
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}">
                     <!--IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"-->
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="DatabaseSearch" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="DatabaseSearch" Width="30" Height="26" Foreground="White" Background="Transparent"
+                                                 ToolTip="資料庫頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
                     </TabItem.Header>
                     <!-- // -->
                     <!--<content:DatabaseTab x:Name="DatabaseTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
@@ -219,12 +225,13 @@
                 <!--#endregion-->
 
                 <!--#region Engineer Tab -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True" 
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}"
                          IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
-                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}">
+                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White" Background="Transparent"
+                                                 ToolTip="開發者頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
                     </TabItem.Header>
                     <!-- // -->
                     <!--<content:EngineerTab x:Name="EngineerTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
@@ -302,15 +309,17 @@
                                 materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                 Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
-                            <materialDesign:PackIcon Width="30" Height="26">
+                            <materialDesign:PackIcon Width="30" Height="26" ToolTip="登入" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12">
                                 <materialDesign:PackIcon.Style>
                                     <Style TargetType="materialDesign:PackIcon">
                                         <Setter Property="Foreground" Value="{StaticResource ColorWhiteTransparent}"/>
+                                        <Setter Property="Background" Value="Transparent"/>
                                         <Setter Property="Kind" Value="AccountLock"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                                <Setter Property="Kind" Value="AccountCheck"/>
+                                                <!--<Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                                <Setter Property="Kind" Value="AccountCheck"/>-->
+                                                <Setter Property="Visibility" Value="Hidden"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -340,13 +349,26 @@
                                     </Button.Content>
                                 </Button>
 
+                                <Button FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
+                                        Click="Logout_Click" 
+                                        Visibility="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibility}}">
+                                    <!--已登入才顯示-->
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <materialDesign:PackIcon Width="24" Height="18" Kind="Logout" VerticalAlignment="Center"/>
+                                            <TextBlock MinWidth="80" Margin="8 0 0 0" Text="登出" VerticalAlignment="Center" TextAlignment="Right"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+
                                 <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
                                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
                                         Click="AppFullClose_Click">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center"/>
-                                            <TextBlock Margin="8 0 0 0" Text="關閉程式" VerticalAlignment="Center" />
+                                            <TextBlock MinWidth="80"  Margin="8 0 0 0" Text="關閉程式" VerticalAlignment="Center" TextAlignment="Right"/>
                                         </StackPanel>
                                     </Button.Content>
                                 </Button>

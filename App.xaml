@@ -24,6 +24,8 @@
             <cvt:BooleanInverter x:Key="BooleanInverter"/>
             <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
+            <cvt:BooleanToVisibility x:Key="BooleanToVisibility"/>
+            <cvt:BooleanToVisibilityInverse x:Key="BooleanToVisibilityInverse"/>
             <cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility"/>
             <cvt:BooleanAndToVisibilityInverse x:Key="BooleanAndToVisibilityInverse"/>
             

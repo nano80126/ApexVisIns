@@ -106,7 +106,7 @@ namespace ApexVisIns
                     DirectConnection = true,
                     //ConnectTimeout = new TimeSpan(0, 0, 0, 1, 500),
                     //SocketTimeout = new TimeSpan(0, 0, 0, 1, 500),
-                    ServerSelectionTimeout = TimeSpan.FromMilliseconds(1500) // 選擇 Server timeout (嘗試連線時之timeout)
+                    ServerSelectionTimeout = TimeSpan.FromMilliseconds(1500), // 選擇 Server timeout (嘗試連線時之timeout)
                 });
 
 

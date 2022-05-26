@@ -583,7 +583,7 @@ namespace ApexVisIns.content
                         MongoAccess.CreateCollection("Spec");
 
                         MainWindow.MsgInformer.TargetProgressValue += 17;
-                        
+
                         DatabaseInitialized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.DATABASE, "資料庫初始化完成");
                     }
@@ -594,7 +594,8 @@ namespace ApexVisIns.content
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message}");
+                    // 不切的話，message 太長
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message.Split(new string[] { "\n", ". " }, StringSplitOptions.RemoveEmptyEntries)[0]}");
                 }
             }, ct);
         }
