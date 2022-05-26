@@ -170,8 +170,10 @@ Apex 外觀瑕疵檢測
 * [x] 修正 DatabaseTab Height 不正常 BUG 
 
 * [ ] 新增權限 Level功能
+	* 0 1 2 5 9
 
 * [ ] 新增登出
+	* 加在關閉程式的 Menu 上方
 
 ### Config Logic
 

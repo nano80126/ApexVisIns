@@ -734,7 +734,7 @@ namespace ApexVisIns.content
 
             _testTask = Task.Run(async () =>
             {
-                for (int i = 0; i < 150; i++)
+                for (int i = 0; i < 300; i++)
                 {
                     // MainWindow.ListJawParam();
                     DateTime t1 = DateTime.Now;
