@@ -554,7 +554,14 @@ namespace ApexVisIns.content
             {
                 // 觸發檢驗
                 // 要做防彈跳
-                Dispatcher.Invoke(() => TriggerIns.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent)));
+                Dispatcher.Invoke(() =>
+                {
+                    // 確認按鈕 Enabled
+                    if (TriggerIns.IsEnabled)
+                    {
+                        TriggerIns.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    }
+                });
             }
             //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
         }
@@ -731,7 +738,7 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
-#if true
+#if false
             if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
 
             _testTask = Task.Run(async () =>
@@ -742,47 +749,48 @@ namespace ApexVisIns.content
                     DateTime t1 = DateTime.Now;
 #endif
 
-                    if (Status != INS_STATUS.READY) { return; }
+            if (Status != INS_STATUS.READY) { return; }
 
-                    // 清空當下 Collection
-                    JawSpecGroup.Collection1.Clear();
-                    JawSpecGroup.Collection2.Clear();
-                    JawSpecGroup.Collection3.Clear();
+            // 清空當下 Collection
+            JawSpecGroup.Collection1.Clear();
+            JawSpecGroup.Collection2.Clear();
+            JawSpecGroup.Collection3.Clear();
 
-                    //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-                    Status = INS_STATUS.INSPECTING;
+            Status = INS_STATUS.INSPECTING;
 
-                    bool b = await Task.Run(() =>
-                    {
-                        JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
-                        MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                        return _jawFullSpecIns;
-                    }).ContinueWith(t =>
-                    {
-                        // 判斷是否插入資料庫
-                        //if (true)
-                        //{
-                        JawFullSpecIns data = t.Result;
-                        data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                        data.DateTime = DateTime.Now;
-                        MongoAccess.InsertOne("Spec", data);
-                        //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                        //Debug.WriteLine(json);
+            //bool b = await
+            Task.Run(() =>
+            {
+                JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
+                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                return _jawFullSpecIns;
+            }).ContinueWith(t =>
+            {
+                // 判斷是否插入資料庫
+                //if (true)
+                //{
+                JawFullSpecIns data = t.Result;
+                data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                data.DateTime = DateTime.Now;
+                MongoAccess.InsertOne("Spec", data);
+                //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                //Debug.WriteLine(json);
 
-                        //return data.OK;
-                        //}
-                        Status = INS_STATUS.READY;
+                //return data.OK;
+                //}
+                Status = INS_STATUS.READY;
 
-                        Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+                //Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 
-                        return data.OK;
-                        //return 
-                    });
+                return data.OK;
+                //return 
+            });
 
-                    if (!b) break;
+            //if (!b) break;
 
-#if true
+#if false
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
                     _ = SpinWait.SpinUntil(() => false, 3000);
@@ -837,6 +845,8 @@ namespace ApexVisIns.content
 
         #endregion
 
+
+#if false
         /// <summary>
         /// 單張拍攝
         /// </summary>
@@ -905,7 +915,7 @@ namespace ApexVisIns.content
                 // }
             }
         }
-
+#endif
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

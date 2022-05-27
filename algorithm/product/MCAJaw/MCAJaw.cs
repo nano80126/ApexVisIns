@@ -19,7 +19,7 @@ namespace ApexVisIns
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
         private readonly double cam1Mag = 0.218;
-        private readonly double cam2Mag = 0.255;
+        private readonly double cam2Mag = 0.2545;
         private readonly double cam3Mag = 0.11;
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
@@ -44,7 +44,7 @@ namespace ApexVisIns
             { "粗定位左", new Rect(310, 260, 230, 200) },
             { "粗定位右", new Rect(540, 260, 230, 200) },
             { "治具定位", new Rect(460, 900, 160, 100) },
-            { "後開位置", new Rect(320, 570, 440, 60) },
+            { "後開位置", new Rect(320, 575, 440, 40) },
             { "側面定位", new Rect(460, 110, 240, 130) }
         };
         #endregion
@@ -501,10 +501,11 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.088-R
-            spec = specList?[0];
+            spec = specList?[0];    // 
+            //Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
             if (spec != null && spec.Enable && results != null)
             {
-                Cal088DistanceValue(src, JigPosY, RX, 1, out d_088R, spec.Correction);
+                Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction);
                 lock (results)
                 {
                     if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -515,9 +516,10 @@ namespace ApexVisIns
 
             #region 計算 0.088-L
             spec = specList?[1];    // 
+            //Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
             if (spec != null && spec.Enable && results != null)
             {
-                Cal088DistanceValue(src, JigPosY, LX, 0, out d_088L, spec.Correction);
+                Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction);
                 lock (results)
                 {
                     if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -912,7 +914,7 @@ namespace ApexVisIns
             // roi
             Rect roi = JawROIs["後開位置"];
 
-            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+            Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
 
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
@@ -933,14 +935,16 @@ namespace ApexVisIns
 
             //Dispatcher.Invoke(() =>
             //{
-            //    Cv2.ImShow($"src", new Mat(src, roi));
-            //    Cv2.ImShow($"canny", canny);
+            //    Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            //    Cv2.ImShow($"srcBack", new Mat(src, roi));
+            //    Cv2.ImShow($"cannyBack", canny);
             //});
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
+            //Debug.WriteLine($"Right: {rightX} Left: {leftX} {rightX - leftX}");
             // 銷毀 canny
-            //canny.Dispose();
+            canny.Dispose();
 
             return limitL <= distance && distance <= limitU;
         }
@@ -957,20 +961,26 @@ namespace ApexVisIns
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
         /// <returns></returns>
-        public bool Cal088DistanceValue(Mat src, double baseJigY, double compareX, int side, out double distance, double correction = 0, double limitL = 0.0855, double limitU = 0.0905)
+        public bool Cal088DistanceValue(Mat src, double baseJigY, double compareX, JawPos leftRight, out double distance, double correction = 0, double limitL = 0.0855, double limitU = 0.0905)
         {
             // roi
-            Rect roi = side == 0 ? new Rect(100, (int)(baseJigY - 70), 60, 60) : new Rect(920, (int)(baseJigY - 70), 60, 60);
+            Rect roi = leftRight == JawPos.Left ? new Rect(100, (int)(baseJigY - 120), 120, 110) : new Rect(920, (int)(baseJigY - 120), 120, 110);
 
 
-            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+            Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 20, 10, 3);
 
             double sumLength = lineV.Sum(line => line.Length());
             double X = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
 
-            // Cv2.ImShow($"mat", new Mat(src, roi));
-            // Cv2.ImShow($"canny", canny);
+            //Dispatcher.Invoke(() =>
+            //{
+            //    Cv2.Rectangle(src, roi, Scalar.Black, 2);
+            //    Cv2.ImShow($"mat{leftRight}", new Mat(src, roi));
+            //    Cv2.MoveWindow($"mat{leftRight}", 100, (int)(100 + 100 * (int)leftRight));
+            //    Cv2.ImShow($"canny{leftRight}", canny);
+            //    Cv2.MoveWindow($"canny{leftRight}", 300, (int)(100 + 100 * (int)leftRight));
+            //});
             //foreach (LineSegmentPoint item in lineV)
             //{
             //    Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
@@ -979,6 +989,7 @@ namespace ApexVisIns
 
             // 計算 0.088 距離
             distance = (Math.Abs(compareX - X) * Cam2Unit) + correction;
+            //Debug.WriteLine($"088 {leftRight} : {Math.Abs(compareX - X)}");
             // 銷毀 canny
             canny.Dispose();
 
