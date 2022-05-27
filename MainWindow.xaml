@@ -184,7 +184,8 @@
                 <!--#region Config Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
-                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
+                         IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
+                    Converter={StaticResource NumberGreaterConvert}, ConverterParameter=5, UpdateSourceTrigger=PropertyChanged}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White" Background="Transparent"
                                                  ToolTip="相機組態頁面" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"/>
@@ -199,7 +200,8 @@
                          ToolTip="運動控制頁面" ToolTipService.Placement="Right"
                          ToolTipService.VerticalOffset="11" ToolTipService.HorizontalOffset="8"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
-                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
+                    Converter={StaticResource NumberGreaterConvert}, ConverterParameter=5, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="Collapsed">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White" Background="Transparent"
@@ -213,7 +215,9 @@
 
                 <!--#region Test Lazy Loading -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                         IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
+                    Converter={StaticResource NumberGreaterConvert}, ConverterParameter=1, UpdateSourceTrigger=PropertyChanged}">
                     <!--IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"-->
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="DatabaseSearch" Width="30" Height="26" Foreground="White" Background="Transparent"
@@ -227,7 +231,8 @@
                 <!--#region Engineer Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True" 
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}"
-                         IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
+                    Converter={StaticResource NumberGreaterConvert}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White" Background="Transparent"
@@ -386,9 +391,9 @@
                         Background="{StaticResource ColorGrayTransparent}" FlowDirection="LeftToRight"
                         DataContext="{StaticResource MsgInformer}">
                 <!--#region Error & Warning Popupbox -->
-                <materialDesign:PopupBox x:Name="ErrPopupBox" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True" 
-                                         DockPanel.Dock="Right"
-                                         Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
+                <materialDesign:PopupBox x:Name="ErrPopupBox" DockPanel.Dock="Right" Padding="0" StaysOpen="True" 
+                                         materialDesign:RippleAssist.IsDisabled="True" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
                                          Opened="ErrPopupBox_Opened"
                                          Closed="PopupBox_Closed"
                                          PlacementMode="TopAndAlignRightEdges"
@@ -484,11 +489,10 @@
                 <!--#endregion-->
 
                 <!--#region Information Popupbox -->
-                <materialDesign:PopupBox x:Name="InfoPopupbox" StaysOpen="True" materialDesign:RippleAssist.IsDisabled="True"
-                                         DockPanel.Dock="Right"
-                                         Padding="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
-                                         Opened="InfoPopupbox_Opened" 
-                                         Closed="PopupBox_Closed"
+                <materialDesign:PopupBox x:Name="InfoPopupbox" DockPanel.Dock="Right" Padding="0" StaysOpen="True" 
+                                         materialDesign:RippleAssist.IsDisabled="True"
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth1" TabIndex="-1"
+                                         Opened="InfoPopupbox_Opened" Closed="PopupBox_Closed"
                                          PlacementMode="TopAndAlignRightEdges"
                                          FlowDirection="LeftToRight" Focusable="False">
                     <materialDesign:PopupBox.ToggleContent>

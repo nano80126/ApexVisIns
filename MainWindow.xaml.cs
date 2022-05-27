@@ -71,7 +71,7 @@ namespace ApexVisIns
         #region I/O Controller
         public static IOController IOController { get; set; }
 
-        public static ModbusTCPIO ModbusTCPIO { get; set; }
+        public static WISE4050 ModbusTCPIO { get; set; }
 
         public IOWindow IOWindow { get; set; }
 
@@ -217,7 +217,7 @@ namespace ApexVisIns
             IOController = FindResource(nameof(IOController)) as IOController;
             IOController.EnableCollectionBinding(); // 啟用 Collection Binding，避免跨執行緒錯誤
             // IO Module (WISE-4050/LAN)
-            ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as ModbusTCPIO;
+            ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as WISE4050;
             #endregion
 
             #region MongoDB Access

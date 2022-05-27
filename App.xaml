@@ -120,7 +120,7 @@
             <!--#region IO 控制 Resources -->
             <!--<local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
             <local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
-            <local:ModbusTCPIO x:Key="ModbusTCPIO" IP="192.168.1.1" Port="502"/>
+            <local:WISE4050 x:Key="ModbusTCPIO" IP="192.168.1.1" Port="502"/>
             <!--#endregion-->
 
             <!--#region MongoDB -->

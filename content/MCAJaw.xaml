@@ -48,7 +48,8 @@
                         <materialDesign:PackIcon Kind="ViewGrid" Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                     <ListBoxItem Padding="16 4" ToolTip="規格設定" Cursor="Hand" 
-                                 IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}">
+                                 IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
+                    Converter={StaticResource NumberGreaterConvert}, ConverterParameter=2, UpdateSourceTrigger=PropertyChanged}">
                         <materialDesign:PackIcon Kind="PlaylistEdit"  Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                 </ListBox>
@@ -449,7 +450,7 @@
                                         <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="1" Margin="8 0 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
+                                        <TextBlock Grid.Row="1" Margin="8 -2 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
                                         <Separator Grid.Row="2" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
                                         <!--#region 0.088R -->
@@ -474,15 +475,26 @@
                                         <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <!--#region 後開 -->
+                                        <!--#region 0.088合 -->
                                         <TextBlock Grid.Row="5" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[back].Name, StringFormat={}{0} 不良}" />
+                                                   Text="{Binding LotResults[0.088T].Name ,StringFormat={}{0} 不良}" />
 
                                         <TextBlock Grid.Row="5" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
+                                                   Text="{Binding LotResults[0.088T].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[0.088T].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                        <!--#endregion-->
+
+                                        <!--#region 後開 -->
+                                        <TextBlock Grid.Row="6" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                   Text="{Binding LotResults[back].Name, StringFormat={}{0} 不良}" />
+
+                                        <TextBlock Grid.Row="6" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
                                                    Text="{Binding LotResults[back].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                        <Button Grid.Row="6" Grid.Column="2" Click="MinusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
                                         <!--#region NewRegion -->
@@ -493,7 +505,7 @@
                                         <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>-->
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="7" Margin="8 0 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
+                                        <TextBlock Grid.Row="7" Margin="8 -2 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
                                         <Separator Grid.Row="8" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
                                         <!--#region 0.008R -->
@@ -581,7 +593,7 @@
                                         <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="17" Margin="8 0 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
+                                        <TextBlock Grid.Row="17" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
                                         <Separator Grid.Row="18" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
                                         <!--#region 平面度 -->
@@ -704,7 +716,7 @@
 
                             <!--規格列表 1-->
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
-                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
+                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                           ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
                                         <Style TargetType="control:SpecListView">
@@ -768,7 +780,7 @@
                             <!--height = 120 + 137 -->
                             <!--規格列表 2-->
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
-                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
+                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                           ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
                                     <Style TargetType="control:SpecListView">
@@ -828,7 +840,7 @@
                             </TextBlock>-->
 
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
-                                                  ScrollViewerStyle="{StaticResource ScrollViewerPrimary}"
+                                                  ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                                   ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
                                 <!--<control:SpecListView.Style>
                                     <Style TargetType="control:SpecListView">

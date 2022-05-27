@@ -7,26 +7,27 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+
 
 namespace ApexVisIns
 {
-    public class ModbusTCPIO : INotifyPropertyChanged, IDisposable
+    public class WISE4050 : INotifyPropertyChanged, IDisposable
     {
-
         #region private fields
         private bool _disposed;
 
         private TcpClient _tcpClient;
         private NetworkStream _networkStream;
 
-        private System.Timers.Timer _pollingTimer;
+        private Timer _pollingTimer;
         private double _interval = 100;
         private byte _value;
         #endregion
 
-        public ModbusTCPIO() { }
+        public WISE4050() { }
 
-        public ModbusTCPIO(string iP, int port, double interval)
+        public WISE4050(string iP, int port, double interval)
         {
             IP = iP;
             Port = port;
@@ -80,20 +81,21 @@ namespace ApexVisIns
         /// 與 IO 控制器連線
         /// </summary>
         /// <returns>IO控制器連線狀態</returns>
-        public bool Connect()
+        public bool Connect(int timeout = 1500)
         {
             if (_tcpClient == null)
             {
                 // _tcpClient = new TcpClient(IP, Port);
                 _tcpClient = new TcpClient();
-                _tcpClient.Connect(IP, Port);
-                //if (!_tcpClient.ConnectAsync(IP, Port).Wait(1500))
-                //{
-                //    throw new TimeoutException("與 IO 控制器連線逾時");
-                //}
+                //_tcpClient.Connect(IP, Port);
+                if (!_tcpClient.ConnectAsync(IP, Port).Wait(timeout))
+                {
+                    throw new SocketException(10060);
+                    // throw new TimeoutException("與 IO 控制器連線逾時");
+                }
 
                 _networkStream = _tcpClient.GetStream();
-                _pollingTimer = new System.Timers.Timer()
+                _pollingTimer = new Timer()
                 {
                     AutoReset = true,
                     Interval = 50,
@@ -105,6 +107,11 @@ namespace ApexVisIns
             return _tcpClient.Connected;
         }
 
+        /// <summary>
+        /// 輪詢 Timer Elapsed 事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PollingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             ReadIO();
@@ -133,13 +140,14 @@ namespace ApexVisIns
         /// <returns>IO控制器連線狀態</returns>
         public bool Disconnect()
         {
-            if (_pollingTimer.Enabled)
+            // 確認輪詢 Timer 不為 null 且為啟用狀態
+            if (_pollingTimer != null && _pollingTimer.Enabled)
             {
                 _pollingTimer.Stop();
                 _pollingTimer.Dispose();
             }
 
-            // 確認 TcpClient 不為 null 且韋連線狀態
+            // 確認 TcpClient 不為 null 且為連線狀態
             if (_tcpClient != null && _tcpClient.Connected)
             {
                 _networkStream.Close();
@@ -219,25 +227,27 @@ namespace ApexVisIns
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) { return; }
-
-            if (disposing)
+            if (!_disposed)
             {
-                _pollingTimer.Stop();
-                _pollingTimer.Dispose();
+                if (disposing)
+                {
+                    _pollingTimer.Stop();
+                    _pollingTimer.Dispose();
+
+                    _networkStream.Close();
+                    _networkStream.Dispose();
+
+                    _tcpClient.Close();
+                    _tcpClient.Dispose();
+                }
                 _pollingTimer = null;
-
-                _networkStream.Close();
-                _networkStream.Dispose();
                 _networkStream = null;
-
-                _tcpClient.Close();
-                _tcpClient.Dispose();
                 _tcpClient = null;
+
+                _disposed = true;
             }
-            _disposed = true;
         }
     }
 }

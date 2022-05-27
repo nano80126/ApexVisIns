@@ -102,7 +102,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// WISE-4050/LAN IO 控制器
         /// </summary>
-        private ModbusTCPIO ModbusTCPIO;
+        private WISE4050 ModbusTCPIO;
         /// <summary>
         /// 24V 光源控制器
         /// </summary>
@@ -171,7 +171,8 @@ namespace ApexVisIns.content
                     break;
                 case MainWindow.InitModes.EDIT:
                     // 只連線 MongoDB
-                    InitMongoDB(_cancellationTokenSource.Token).Wait();
+                    Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
+                    ////InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
                     // 保留
@@ -547,7 +548,7 @@ namespace ApexVisIns.content
             }, ct);
         }
 
-        private void ModbusTCPIO_IOChanged(object sender, ModbusTCPIO.IOChangedEventArgs e)
+        private void ModbusTCPIO_IOChanged(object sender, WISE4050.IOChangedEventArgs e)
         {
             if (e.DI0 == false)
             {
@@ -656,12 +657,12 @@ namespace ApexVisIns.content
             }
             else // 若規格列表不存在
             {
-                string[] keys = new string[] { "0.088R", "0.088L", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
-                string[] items = new string[] { "0.088-R", "0.088-L", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
-                double[] center = new double[] { 0.088, 0.088, 0.008, 0.008, 0.013, 0.013, 0.024, 0.024, double.NaN, double.NaN, double.NaN, 0, 0 };
-                double[] lowerc = new double[] { 0.0855, 0.0855, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
-                double[] upperc = new double[] { 0.0905, 0.0905, 0.01, 0.01, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
-                double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                string[] keys = new string[] { "0.088R", "0.088L", "0.088T","0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.088合", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
+                double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0 };
+                double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
+                double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
+                double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
                 JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
                 for (int i = 0; i < keys.Length; i++)

@@ -359,7 +359,7 @@ namespace ApexVisIns
             // Methods.GetCanny();
 
             #region 計算輪廓度 // LCY、RCY 輪廓度基準，後面會用到
-            spec = specList?[11];
+            spec = specList?[12];
             CalContourValue(src, baseL, baseR, out double LCY, out double RCY, out double d_005Max, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -375,7 +375,7 @@ namespace ApexVisIns
             //return;
 
             #region 計算前開 // LX、RX 前開基準，後面會用到
-            spec = specList?[9];
+            spec = specList?[10];
             CalFrontDistanceValue(src, baseL, baseR, out double LX, out double RX, out double d_front, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -388,7 +388,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.008 左 (實際上是右)
-            spec = specList?[2];
+            spec = specList?[3];
             if (spec != null && spec.Enable && results != null)
             {
                 Cal008DistanceValue(src, baseL, LX, out double LTX, out double d_008R, spec.Correction);
@@ -401,7 +401,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.008 右 (實際上是左)
-            spec = specList?[3];
+            spec = specList?[4];
             if (spec != null && spec.Enable && results != null)
             {
                 Cal008DistanceValue(src, baseR, RX, out double RTX, out double d_008L, spec.Correction);
@@ -414,7 +414,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.013 左 (實際上是右)
-            spec = specList?[4];
+            spec = specList?[5];
             Cal013DistanceValue(src, baseL, JawPos.Left, LX, out double LtopY, out double LbotY, out double d_013R, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -427,7 +427,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.013 右 (實際上是左)
-            spec = specList?[5];
+            spec = specList?[6];
             Cal013DistanceValue(src, baseR,  JawPos.Right, RX,out double RtopY, out double RbotY, out double d_013L, spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -440,7 +440,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.024 左 (實際上是右)
-            spec = specList?[6];
+            spec = specList?[7];
             double d_024R = (Math.Abs(LCY - LtopY) * Cam1Unit) + (spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -453,7 +453,7 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.024 右 (實際上是左)
-            spec = specList?[7];
+            spec = specList?[8];
             double d_024L = (Math.Abs(RCY - RtopY) * Cam1Unit) + (spec != null ? spec.Correction : 0);
             if (spec != null && spec.Enable && results != null)
             {
@@ -478,11 +478,14 @@ namespace ApexVisIns
             // List<JawSpecSetting> specList = MCAJaw.JawSpecGroup.SpecList.ToList();
             JawSpecSetting spec;
 
+            double d_088R = 0;
+            double d_088L = 0;
+
             // 取得基準線
             GetJigPos(src, out double JigPosY);
 
             #region 計算後開
-            spec = specList?[8];
+            spec = specList?[9];
             CalBackDistanceValue(src, out double LX, out double RX, out double d_back, spec != null ? spec.Correction : 0);
             if (spec != null)
             {
@@ -501,7 +504,7 @@ namespace ApexVisIns
             spec = specList?[0];
             if (spec != null && spec.Enable && results != null)
             {
-                Cal088DistanceValue(src, JigPosY, RX, 1, out double d_088R, spec.Correction);
+                Cal088DistanceValue(src, JigPosY, RX, 1, out d_088R, spec.Correction);
                 lock (results)
                 {
                     if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -511,10 +514,10 @@ namespace ApexVisIns
             #endregion
 
             #region 計算 0.088-L
-            spec = specList?[1];
+            spec = specList?[1];    // 
             if (spec != null && spec.Enable && results != null)
             {
-                Cal088DistanceValue(src, JigPosY, LX, 0, out double d_088L, spec.Correction);
+                Cal088DistanceValue(src, JigPosY, LX, 0, out d_088L, spec.Correction);
                 lock (results)
                 {
                     if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -523,7 +526,18 @@ namespace ApexVisIns
             }
             #endregion
 
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            #region 計算 0.088 合
+            spec = specList?[2];
+            if (spec != null && spec.Enable && results != null)
+            {
+                lock (results)
+                {
+                    if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                    results[spec.Item].Add(d_088R + d_088L);
+                }
+            }
+            #endregion
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         /// <summary>
@@ -534,16 +548,15 @@ namespace ApexVisIns
         /// <param name="results">檢驗結果</param>
         public void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             JawSpecSetting spec;
 
             // 取得 背景 POM 基準 Y
             GetPomDatum(src, out double datumY);
 
             #region 計算 平面度
-            spec = specList?[12];
-            //Cal007FlatnessValue(src, datumY, out double f_007, spec.Correction);
+            spec = specList?[13];
+            // Cal007FlatnessValue(src, datumY, out double f_007, spec.Correction);
             Cal007FlatnessValue(src, datumY, out double f_007);
             if (spec != null && spec.Enable && results != null)
             {
@@ -554,8 +567,7 @@ namespace ApexVisIns
                 }
             }
             #endregion
-
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         public bool CheckPart(Mat src)

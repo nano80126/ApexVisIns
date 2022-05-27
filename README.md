@@ -175,6 +175,9 @@ Apex 外觀瑕疵檢測
 * [ ] 新增登出
 	* 加在關閉程式的 Menu 上方
 
+* [x] 測試WISE4050連線Timeout錯誤處理
+	* 需要處理
+	
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
