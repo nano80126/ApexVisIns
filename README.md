@@ -154,14 +154,16 @@ Apex 外觀瑕疵檢測
 	* MainTab.xaml
 	* MontionTab.xaml
 
-* [ ] 批號新增確認按鈕
+* [x] 批號新增確認按鈕
 	* 待確認
 
 * [x] ModeWindow 改 command 
 
-* [ ] 移除 MontionTab
+* [x] 移除 MontionTab
+	* 隱藏Tab
+	* 不新增 ItemTab.Content
 
-* [ ] DatebaseTab 不須 admin
+* [x] ~DatebaseTab 不須 admin~
 
 * [x] 初始化完成前不允許切換 Tab
 	* 或避免重複進入 InitHardWare function
@@ -169,15 +171,26 @@ Apex 外觀瑕疵檢測
 
 * [x] 修正 DatabaseTab Height 不正常 BUG 
 
-* [ ] 新增權限 Level功能
-	* 0 1 2 5 9
+* [x] 新增權限 Level功能
+	* 0 基本
+	* 1 作業員
+	* 2 品管員
+	* 5 工程師
+	* 9 開發者
 
-* [ ] 新增登出
+* [x] 新增登出
 	* 加在關閉程式的 Menu 上方
 
 * [x] 測試WISE4050連線Timeout錯誤處理
-	* 需要處理
+	* 需要處理 (使用 connectAsync)
 	
+* [ ] 確認 DatabaseTab DataGrid 有0.088合
+
+
+* [ ] 新增 SerialPortBase 驅動
+
+* [ ] 新增 TCPIPBase驅動
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

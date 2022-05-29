@@ -10,9 +10,402 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using ApexVisIns.Driver;
 
 namespace ApexVisIns
 {
+    /// <summary>
+    /// 光源控制器通道
+    /// </summary>
+    public class LightChannel : INotifyPropertyChanged
+    {
+        private ushort _value;
+
+        public LightChannel()
+        {
+        }
+
+
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="channel">通道名</param>
+        /// <param name="value">數值</param>
+        public LightChannel(string channel, ushort value)
+        {
+            Channel = channel;
+            Value = value;
+        }
+
+        public string Channel { get; set; }
+
+        public ushort Value
+        {
+            get => _value;
+            set
+            {
+                if (value != _value)
+                {
+                    _value = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+
+    public class LightSerial : SerialPortBase
+    {
+        #region Varibles
+        private int _channelNumber;
+        //private bool _disposed;
+        #endregion
+
+        public LightSerial()
+        {
+        }
+
+        public LightSerial(int chs)
+        {
+            ChannelNumber = chs;
+            Channels.Clear();
+            for (int i = 0; i < ChannelNumber; i++)
+            {
+                Channels.Add(new LightChannel($"Ch{i + 1}", 0));
+            }
+        }
+
+        /// <summary>
+        /// 光源通道數
+        /// </summary>
+        public int ChannelNumber
+        {
+            get => _channelNumber;
+            set
+            {
+                _channelNumber = value;
+                Channels.Clear();
+                for (int i = 0; i < _channelNumber; i++)
+                {
+                    Channels.Add(new LightChannel($"Ch{i + 1}", 0));
+                }
+            }
+        }
+
+        public ObservableCollection<LightChannel> Channels { get; set; } = new ObservableCollection<LightChannel>();
+
+        ///// <summary>
+        ///// 開啟 COM，
+        ///// 預設 9600, N, 8, 1
+        ///// </summary>
+        ///// <param name="com">COM PORT 名稱</param>
+        //public override void ComOpen(string com)
+        //{
+        //    base.ComOpen(com);
+        //}
+
+        ///// <summary>
+        ///// 開啟 COM
+        ///// </summary>
+        ///// <param name="com">COM PORT 名稱</param>
+        ///// <param name="baudRate"></param>
+        ///// <param name="parity"></param>
+        ///// <param name="dataBits"></param>
+        ///// <param name="stopBits"></param>
+        //public override void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        //{
+        //    base.ComOpen(com, baudRate, parity, dataBits, stopBits);
+        //}
+
+        ///// <summary>
+        ///// 開啟 COM
+        ///// </summary>
+        ///// <param name="com">COM PORT 名稱</param>
+        ///// <param name="baudRate"></param>
+        ///// <param name="parity"></param>
+        ///// <param name="dataBits"></param>
+        ///// <param name="stopBits"></param>
+        //public override void ComOpen(int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        //{
+        //    base.ComOpen(baudRate, parity, dataBits, stopBits);
+        //}
+
+        //public override void ComClose()
+        //{
+        //    base.ComClose();
+        //}
+
+
+        protected override void Write(string str)
+        {
+            base.Write(str);
+            //try
+            //{
+            //    _serialPort.Write(str);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+        }
+
+        protected override string ReadLine()
+        {
+            try
+            {
+                return _serialPort.ReadLine();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public bool Test(out string result)
+        {
+            result = string.Empty;
+            if (IsComOpen)
+            {
+                try
+                {
+                    Write("\r\n");
+                    _ = ReadLine();
+                    return true;
+                }
+                catch (TimeoutException T)
+                {
+                    result = $"控制器沒有回應 {T.Message}";
+                    return false;
+                }
+            }
+            else
+            {
+                result = "SerialPort 未開啟";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 重置所有通道
+        /// </summary>
+        public void ResetAllChannel()
+        {
+            if (IsComOpen)
+            {
+                string cmd = string.Empty;
+                for (int i = 1; i < ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd += $"{ChannelNumber},0\r\n";
+
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    foreach (LightChannel ch in Channels)
+                    {
+                        ch.Value = 0;
+                    }
+                }
+                catch (TimeoutException T)
+                {
+                    throw new LightCtrlException($"重置光源失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new LightCtrlException($"重置光源失敗: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new LightCtrlException("光源控制器 SerialPort 未開啟");
+            }
+        }
+
+        /// <summary>
+        /// 嘗試重置所有通道
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns>若成功回傳 true, 否則 false</returns>
+        public bool TryResetAllChannel(out string result)
+        {
+            if (IsComOpen)
+            {
+                result = string.Empty;
+                string cmd = string.Empty;
+                for (int i = 1; i < ChannelNumber; i++)
+                {
+                    cmd += $"{i},0,";
+                }
+                cmd += $"{ChannelNumber},0\r\n";
+
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    foreach (LightChannel ch in Channels)
+                    {
+                        ch.Value = 0;
+                    }
+                    return true;
+                }
+                catch (TimeoutException T)
+                {
+                    result = $"重置光源失敗: {T.Message}";
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    result = $"重置光源失敗: {ex.Message}";
+                    return false;
+                }
+            }
+            else
+            {
+                result = "SerialPort 未開啟";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 設定通道 Value (ch1 ~)
+        /// </summary>
+        /// <param name="ch">通道 (從 1 開始而非 0)</param>
+        /// <param name="value">設定值</param>
+        public void SetChannelValue(int ch, ushort value)
+        {
+            if (0 < ch && ch <= ChannelNumber)
+            {
+                string cmd = $"{ch},{value}\r\n";
+
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    Channels[ch - 1].Value = value;
+                }
+                catch (TimeoutException T)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("指定的通道不存在");
+            }
+        }
+
+        /// <summary>
+        /// 寫入當前通道所設置的值 (通常僅為 LightPanel 使用)
+        /// </summary>
+        public void SetAllChannelValue()
+        {
+            if (IsComOpen)
+            {
+                string cmd = string.Empty;
+
+                if (ChannelNumber > 0) { cmd += $"1,{Channels[0].Value},"; }
+                if (ChannelNumber > 1) { cmd += $"2,{Channels[1].Value},"; }
+                if (ChannelNumber > 2) { cmd += $"3,{Channels[2].Value},"; }
+                if (ChannelNumber > 3) { cmd += $"4,{Channels[3].Value},"; }
+                cmd = $"{cmd.TrimEnd(',')}\r\n";
+              
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                }
+                catch (TimeoutException T)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new LightCtrlException("光源控制器 SerialPort 未開啟");
+            }
+        }
+
+        /// <summary>
+        /// 一次設置所有通道
+        /// </summary>
+        /// <param name="ch1">Ch1 設定值</param>
+        /// <param name="ch2">Ch2 設定值</param>
+        /// <param name="ch3">Ch3 設定值</param>
+        /// <param name="ch4">Ch4 設定值</param>
+        public void SetAllChannelValue(ushort ch1 = 0, ushort ch2 = 0, ushort ch3 = 0, ushort ch4 = 0)
+        {
+            if (IsComOpen)
+            {
+                string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
+                try
+                {
+                    Write(cmd);
+                    _ = ReadLine();
+                    if (ChannelNumber > 0) { Channels[0].Value = ch1; }
+                    if (ChannelNumber > 1) { Channels[1].Value = ch2; }
+                    if (ChannelNumber > 2) { Channels[2].Value = ch3; }
+                    if (ChannelNumber > 3) { Channels[3].Value = ch4; }
+                }
+                catch (TimeoutException T)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {T.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new LightCtrlException($"光源設置失敗: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new LightCtrlException("光源控制器 SerialPort 未開啟");
+            }
+        }
+
+        /// <summary>
+        /// 取得通道 Value
+        /// </summary>
+        /// <param name="ch">通道</param>
+        /// <returns>返回通道值</returns>
+        public int GetChannelValue(int ch)
+        {
+            return 0 < ch && ch <= ChannelNumber ? Channels[ch - 1].Value : throw new ArgumentException("指定的通道不存在");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (_serialPort.IsOpen) { _serialPort.Close(); }
+                    _serialPort.Dispose();
+                    _serialPort = null;
+                }
+                _disposed = true;
+            }
+        }
+    }
+
+#if false
+
+
+    [Obsolete("use SerialEnumer instead")]
     public class LightEnumer : LongLifeWorker
     {
         private readonly object _CollectionLock = new();
@@ -112,44 +505,6 @@ namespace ApexVisIns
         //}
     }
 
-    /// <summary>
-    /// 光源通道 Channel
-    /// </summary>
-    public class LightChannel : INotifyPropertyChanged
-    {
-        private ushort _value;
-
-        public LightChannel()
-        {
-        }
-
-        public LightChannel(string channel, ushort value)
-        {
-            Channel = channel;
-            Value = value;
-        }
-
-        public string Channel { get; set; }
-
-        public ushort Value
-        {
-            get => _value;
-            set
-            {
-                if (value != _value)
-                {
-                    _value = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
 
     /// <summary>
     /// 光源控制器物件
@@ -445,286 +800,5 @@ namespace ApexVisIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
-    public class LightSerial : CustomSerial
-    {
-        #region Varibles
-        private int _channelNumber;
-        private bool _disposed;
-        #endregion
-
-        public LightSerial()
-        {
-        }
-
-        public LightSerial(int chs)
-        {
-            ChannelNumber = chs;
-            Channels.Clear();
-            for (int i = 0; i < ChannelNumber; i++)
-            {
-                Channels.Add(new LightChannel($"Ch{i + 1}", 0));
-            }
-        }
-
-        /// <summary>
-        /// 光源通道數
-        /// </summary>
-        public int ChannelNumber
-        {
-            get => _channelNumber;
-            set
-            {
-                _channelNumber = value;
-                Channels.Clear();
-                for (int i = 0; i < _channelNumber; i++)
-                {
-                    Channels.Add(new LightChannel($"Ch{i + 1}", 0));
-                }
-            }
-        }
-
-
-        public ObservableCollection<LightChannel> Channels { get; set; } = new ObservableCollection<LightChannel>();
-
-        /// <summary>
-        /// 開啟 COM，
-        /// 預設 9600, N, 8, 1
-        /// </summary>
-        /// <param name="com">COM PORT 名稱</param>
-        public override void ComOpen(string com)
-        {
-            base.ComOpen(com);
-        }
-
-        /// <summary>
-        /// 開啟 COM
-        /// </summary>
-        /// <param name="com">COM PORT 名稱</param>
-        /// <param name="baudRate"></param>
-        /// <param name="parity"></param>
-        /// <param name="dataBits"></param>
-        /// <param name="stopBits"></param>
-        public override void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits)
-        {
-            base.ComOpen(com, baudRate, parity, dataBits, stopBits);
-        }
-
-        /// <summary>
-        /// 開啟 COM
-        /// </summary>
-        /// <param name="com">COM PORT 名稱</param>
-        /// <param name="baudRate"></param>
-        /// <param name="parity"></param>
-        /// <param name="dataBits"></param>
-        /// <param name="stopBits"></param>
-        public override void ComOpen(int baudRate, Parity parity, int dataBits, StopBits stopBits)
-        {
-            base.ComOpen(baudRate, parity, dataBits, stopBits);
-        }
-
-        public override void ComClose()
-        {
-            base.ComClose();
-        }
-
-        public override void Write(string str)
-        {
-            try
-            {
-                _serialPort.Write(str);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public override string ReadLine()
-        {
-            try
-            {
-                return _serialPort.ReadLine();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public bool Test(out string result)
-        {
-            result = string.Empty;
-            if (IsComOpen)
-            {
-                try
-                {
-                    Write("\r\n");
-                    _ = ReadLine();
-                    return true;
-                }
-                catch (TimeoutException T)
-                {
-                    result = $"控制器沒有回應 {T.Message}";
-                    return false;
-                }
-            }
-            else
-            {
-                result = "SerialPort 未開啟";
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 重置所有通道
-        /// </summary>
-        public void ResetAllChannel()
-        {
-            if (IsComOpen)
-            {
-                string cmd = string.Empty;
-                for (int i = 1; i < ChannelNumber; i++)
-                {
-                    cmd += $"{i},0,";
-                }
-                cmd += $"{ChannelNumber},0\r\n";
-
-                try
-                {
-                    Write(cmd);
-                    _ = ReadLine();
-                    foreach (LightChannel ch in Channels)
-                    {
-                        ch.Value = 0;
-                    }
-                }
-                catch (TimeoutException T)
-                {
-                    throw new Exception($"重置光源設置失敗: {T.Message}");
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"重置光源設置失敗: {ex.Message}");
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("SerialPort 未開啟");
-            }
-        }
-
-        /// <summary>
-        /// 嘗試重置所有通道
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns>若成功回傳 true, 否則 false</returns>
-        public bool TryResetAllChannel(out string result)
-        {
-            if (IsComOpen)
-            {
-                result = string.Empty;
-                string cmd = string.Empty;
-                for (int i = 1; i < ChannelNumber; i++)
-                {
-                    cmd += $"{i},0,";
-                }
-                cmd += $"{ChannelNumber},0\r\n";
-
-                try
-                {
-                    Write(cmd);
-                    _ = ReadLine();
-                    foreach (LightChannel ch in Channels)
-                    {
-                        ch.Value = 0;
-                    }
-                    return true;
-                }
-                catch (TimeoutException T)
-                {
-                    result = $"重置光源設置失敗: {T.Message}";
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    result = $"重置光源設置失敗: {ex.Message}";
-                    return false;
-                }
-            }
-            else
-            {
-                result = "SerialPort 未開啟";
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 設定通道 Value (ch1 ~)
-        /// </summary>
-        /// <param name="ch">通道</param>
-        /// <param name="value">設定值</param>
-        public void SetChannelValue(int ch, ushort value)
-        {
-            if (0 < ch && ch <= ChannelNumber)
-            {
-                string cmd = $"{ch},{value}\r\n";
-                Write(cmd);
-                _ = ReadLine();
-                Channels[ch - 1].Value = value;
-            }
-            else
-            {
-                throw new ArgumentException("指定的通道不存在");
-            }
-        }
-
-        /// <summary>
-        /// 一次設置所有通道
-        /// </summary>
-        /// <param name="ch1">Ch1 設定值</param>
-        /// <param name="ch2">Ch2 設定值</param>
-        /// <param name="ch3">Ch3 設定值</param>
-        /// <param name="ch4">Ch4 設定值</param>
-        public void SetAllChannelValue(ushort ch1 = 0, ushort ch2 = 0, ushort ch3 = 0, ushort ch4 = 0)
-        {
-            string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
-            Write(cmd);
-            _ = ReadLine();
-            if (Channels.Count > 0) { Channels[0].Value = ch1; }
-            if (Channels.Count > 1) { Channels[1].Value = ch2; }
-            if (Channels.Count > 2) { Channels[2].Value = ch3; }
-            if (Channels.Count > 3) { Channels[3].Value = ch4; }
-        }
-
-        /// <summary>
-        /// 取得通道 Value
-        /// </summary>
-        /// <param name="ch">通道</param>
-        /// <returns>返回通道值</returns>
-        public int GetChannelValue(int ch)
-        {
-            if (0 < ch && ch <= ChannelNumber)
-            {
-                return Channels[ch - 1].Value;
-            }
-            else
-            {
-                throw new ArgumentException("指定的通道不存在");
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed) { return; }
-
-            if (disposing)
-            {
-                if (_serialPort.IsOpen) { _serialPort.Close(); }
-                _serialPort.Dispose();
-                _serialPort = null;
-            }
-            _disposed = true;
-        }
-    }
+#endif
 }

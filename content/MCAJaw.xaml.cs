@@ -171,7 +171,7 @@ namespace ApexVisIns.content
                     break;
                 case MainWindow.InitModes.EDIT:
                     // 只連線 MongoDB
-                    Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
+                    _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
                     ////InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
@@ -183,6 +183,10 @@ namespace ApexVisIns.content
             //InitLightCtrl(_cancellationTokenSource.Token).Wait();
             //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
+            //byte[] data = new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 };
+            //byte[] crc = SerialPortBase.CRC16LH(new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 });
+            //Debug.WriteLine($"{string.Join(" , ", crc)}");
+            //Debug.WriteLine($"{string.Join(" , ", data.Concat(crc))}");
             #endregion
 
             if (!loaded)
@@ -589,6 +593,20 @@ namespace ApexVisIns.content
                     {
                         MongoAccess.CreateCollection("Lots");
                         MongoAccess.CreateCollection("Spec");
+                        MongoAccess.CreateCollection("Auth");
+
+                        //AuthLevel[] authLevels = new AuthLevel[] {
+                        //    new AuthLevel() { Password = "intai", Level =1  },
+                        //    new AuthLevel() { Password = "qc", Level =2  },
+                        //    new AuthLevel() { Password = "eng", Level =5  },
+                        //};
+                        //MongoAccess.InsertMany("Auth", authLevels);
+
+                        MongoAccess.FindAll("Auth", Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
+                        foreach (AuthLevel item in levels)
+                        {
+                            MainWindow.PasswordDict.Add(item.Password, item.Level);
+                        }
 
                         MainWindow.MsgInformer.TargetProgressValue += 17;
 

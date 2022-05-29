@@ -242,7 +242,7 @@
             <materialDesign:Card x:Name="HistoryCard" Style="{StaticResource PanelTopCard}" Background="WhiteSmoke" Padding="6 8"
                                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <StackPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Visible">
+                    <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
                         <ComboBox x:Name="DefectFilterCombobox" DockPanel.Dock="Left" HorizontalAlignment="Right" Padding="8 3" Cursor="Hand" MinWidth="180" 
                                   materialDesign:HintAssist.Hint="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
                                   Style="{StaticResource MaterialDesignOutlinedComboBox}">
@@ -252,7 +252,6 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <!--//-->
                         <Button Margin="12 0 0 0" HorizontalAlignment="Right" Height="24" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="{StaticResource ColorInfo}"
                                 Foreground="{StaticResource ColorInfo}" Click="FilterButton_Click">
                             <StackPanel Orientation="Horizontal">
@@ -260,9 +259,22 @@
                                 <TextBlock VerticalAlignment="Center" Text="過濾"/>
                             </StackPanel>
                         </Button>
-                    </StackPanel>
+                    </StackPanel>-->
                     <!--//-->
-                    <Separator Margin="0 10" />
+                    <TextBlock x:Name="LotHeader" Margin="0 9 0 0" FontSize="16" FontWeight="Bold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="批次檢驗紀錄" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
+                                        <Setter Property="Text" Value="{x:Null}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <Separator Margin="0 6" />
                     <!--//-->
 
                     <!--#region 批號紀錄 -->
@@ -350,6 +362,10 @@
                             <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088L].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                            
+                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088T].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008R].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
@@ -396,7 +412,7 @@
                     <!--#endregion-->
 
                     <!--#region 檢驗紀錄 DataGrid -->
-                    <TextBlock x:Name="RecordHeader" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" />
+                    <TextBlock x:Name="RecordHeader" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>
                     <Separator Margin="0 6"/>
 
                     <DataGrid CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}"
@@ -488,6 +504,10 @@
 
                             <!--//-->
                             <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088L], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--//-->
+                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088T], StringFormat={}{0:0.0000}, FallbackValue=--}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->

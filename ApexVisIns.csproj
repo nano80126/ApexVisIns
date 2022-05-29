@@ -23,9 +23,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="algorithm\product\Apex\**" />
     <Compile Remove="content\Main\**" />
+    <EmbeddedResource Remove="algorithm\product\Apex\**" />
     <EmbeddedResource Remove="content\Main\**" />
+    <None Remove="algorithm\product\Apex\**" />
     <None Remove="content\Main\**" />
+    <Page Remove="algorithm\product\Apex\**" />
     <Page Remove="content\Main\**" />
   </ItemGroup>
 

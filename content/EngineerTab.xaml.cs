@@ -110,58 +110,6 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 測試用按鈕
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-#if false
-                OpenCvSharp.Cv2.DestroyAllWindows();
-
-                MainWindow.PreAngleCorrection();
-
-                MainWindow.ApexAngleCorrectionFlags.Steps = 0;
-                MainWindow.ApexAngleCorrectionFlags.LastWindowWidth = 0;
-                MainWindow.ApexAngleCorrectionFlags.MaxWindowWidth = 0;
-                MainWindow.ApexAngleCorrectionFlags.WidthStable = 0;
-                MainWindow.ApexAngleCorrectionFlags.CircleStable = 0;
-                MainWindow.ApexAngleCorrectionFlags.CorrectionMode = 1; 
-#endif
-            }
-            catch (Exception ex)
-            {
-                //MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-                MainWindow.MsgInformer?.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-            }
-        }
-
-        private void Button2_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.ApexAngleCorrectionFlags.Steps = 0b0101;
-        }
-
-        private void Button3_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.LightCtrls[0].SetAllChannelValue(128, 0, 0, 108);
-            MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
-        }
-
-        private void Button4_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.LightCtrls[0].SetAllChannelValue(128, 0, 0, 108);
-            MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
-        }
-
-        private void Button5_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.LightCtrls[0].ResetAllChannel();
-            MainWindow.LightCtrls[1].ResetAllChannel();
-        }
-
-        /// <summary>
         /// Preview Mouse Scroll Event 
         /// </summary>
         /// <param name="sender"></param>

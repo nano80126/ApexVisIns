@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Linq;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Libmongocrypt;
+using MongoDB.Bson.Serialization.Attributes;
+
 
 namespace ApexVisIns
 {
@@ -30,7 +35,6 @@ namespace ApexVisIns
         private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
         private ImageSource _chartSource;
         private int _onNavIndex;
-        private bool _loginFlag;
         private int _authLevel;
         #endregion
 
@@ -63,7 +67,7 @@ namespace ApexVisIns
         /// <summary>
         /// 密碼字典表 { "密碼", 等級 }
         /// </summary>
-        private Dictionary<string, int> PasswordDict { get; } = new Dictionary<string, int>();
+        internal Dictionary<string, int> PasswordDict { get; } = new Dictionary<string, int>();
 
         /// <summary>
         /// 權限等級
@@ -212,6 +216,21 @@ namespace ApexVisIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+    }
+
+
+    public class AuthLevel
+    {
+        [BsonId]
+        public ObjectId ObjID { get; set; }
+
+
+        [BsonElement(nameof(Password))]
+        public string Password { get; set; }
+
+
+        [BsonElement(nameof(Level))]
+        public int Level { get; set; }
     }
 
 
@@ -1195,7 +1214,6 @@ namespace ApexVisIns
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
             OnPropertyChanged(nameof(Count));
         }
-
 
         public new bool Remove(TKey key)
         {

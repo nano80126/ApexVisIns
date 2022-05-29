@@ -104,9 +104,9 @@
             <!--#endregion-->
 
             <!--#region 光源控制 Resources -->
-            <!--ComPort 列舉-->
+            <!--Serial Port 列舉-->
             <local:SerialEnumer x:Key="SerialEnumer"/>
-            <local:LightEnumer x:Key="LightEnumer"/>
+            <!--<local:LightEnumer x:Key="LightEnumer"/> 待移除 -->
             <!--光源控制器-->
             <!--<local:LightController x:Key="LightController" ChannelNumber="4"/>-->
             <local:LightSerial x:Key="LightCtrl" ChannelNumber="4"/>
@@ -130,7 +130,6 @@
             <!--#region Major -->
             <pd:ApexDefect x:Key="ApexDefect"/>
             <!--#endregion-->
-
             
             <!--#endregion-->
             

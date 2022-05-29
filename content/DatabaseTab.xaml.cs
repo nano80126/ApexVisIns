@@ -274,26 +274,31 @@ namespace ApexVisIns.content
             }
         }
 
+
+        /// <summary>
+        /// 保留但不使用
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FilterButton_Click(object sender, RoutedEventArgs e)
         {
+            //if (JawFullSpecInsCol.Count < 10)
+            //{
 
-            if (JawFullSpecInsCol.Count < 10)
-            {
-
-                JawFullSpecInsCol.Add(new JawFullSpecIns
-                {
-                    LotNumber = "123",
-                    OK = false,
-                    DateTime = DateTime.Now,
-                    Results = new Dictionary<string, double>() {
-                        { "0.088R", 0.001 }
-                    }
-                });
-            }
-            else
-            {
-                JawFullSpecInsCol.Clear();
-            }
+            //    JawFullSpecInsCol.Add(new JawFullSpecIns
+            //    {
+            //        LotNumber = "123",
+            //        OK = false,
+            //        DateTime = DateTime.Now,
+            //        Results = new Dictionary<string, double>() {
+            //            { "0.088R", 0.001 }
+            //        }
+            //    });
+            //}
+            //else
+            //{
+            //    JawFullSpecInsCol.Clear();
+            //}
         }
 
 
@@ -305,7 +310,5 @@ namespace ApexVisIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-
-      
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ApexVisIns.content;
 using ApexVisIns.Product;
-using Basler.Pylon;
 using MaterialDesignThemes.Wpf;
 using OpenCvSharp;
 using System;
@@ -54,13 +53,6 @@ namespace ApexVisIns
         #endregion
 
         #region Light Controller
-        /// <summary>
-        /// Com Port 列舉器，
-        /// 綁在 MainWindow
-        /// </summary>
-        [Obsolete("這邊要移除")]
-        public LightEnumer LightEnumer { get; set; }
-
         //public static LightSerial LightCtrl { get; set; }
         /// <summary>
         /// 光源控制器
@@ -74,9 +66,6 @@ namespace ApexVisIns
         public static WISE4050 ModbusTCPIO { get; set; }
 
         public IOWindow IOWindow { get; set; }
-
-        [Obsolete("待確認")]
-        public Thread IOThread { get; set; }
         #endregion
 
         #region EtherCAT Motion
@@ -110,7 +99,7 @@ namespace ApexVisIns
         {
             AUTO = 1,
             EDIT = 2,
-            //WARM = 3,
+            // WARM = 3,
         }
 
         /// <summary>
@@ -524,7 +513,7 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void MsgInformer_ProgressValueChanged(object sender, MsgInformer.ProgressValueChangedEventArgs e)
         {
-            Debug.WriteLine($"{e.OldValue} {e.NewValue} {e.Duration}");
+            //Debug.WriteLine($"{e.OldValue} {e.NewValue} {e.Duration}");
             Dispatcher.Invoke(() =>
             {
                 //MainProgress.Value = e.OldValue;
@@ -556,8 +545,8 @@ namespace ApexVisIns
                     //LoginFlag = true;
                     AuthLevel = 9;
                     //IOWindow?.PropertyChange(nameof(LoginFlag));
-                    LoginPasswordHint.Text = string.Empty;
-                    LoginPasswordHint.Visibility = Visibility.Hidden;
+                    //LoginPasswordHint.Text = string.Empty;
+                    //LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
                 }
                 else if (PasswordDict.TryGetValue(LoginPassword.Password, out int level))
@@ -565,6 +554,9 @@ namespace ApexVisIns
                     //LoginFlag = true;
                     AuthLevel = level;
                     //
+                    //LoginPasswordHint.Text = string.Empty;
+                    //LoginPasswordHint.Visibility = Visibility.Hidden;
+                    LoginDialog.IsOpen = false;
                 }
                 else
                 {
@@ -616,6 +608,8 @@ namespace ApexVisIns
         {
             if (e.Key == Key.Return)
             {
+
+
                 LoginBtn.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
                 {
                     RoutedEvent = Mouse.PreviewMouseDownEvent,
@@ -632,10 +626,13 @@ namespace ApexVisIns
         {
             //LoginFlag = false;
             AuthLevel = 0;
+            OnNavIndex = 0;
         }
         #endregion
 
-        #region 公用物件操作 (Apex 使用)
+        #region 公用物件操作 (Apex 使用，MCA_Jaw 不使用)
+#if false
+
         /// <summary>
         /// 開始窗戶、耳朵相機連續拍攝
         /// </summary>
@@ -729,7 +726,6 @@ namespace ApexVisIns
 
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
 
-#if true
         /// <summary>
         /// 啟動窗戶、耳朵相機 Grabber
         /// </summary>
@@ -788,11 +784,10 @@ namespace ApexVisIns
             }
         }
 #endif
-
         // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
         #endregion
 
-     
+
     }
 
     /// <summary>
@@ -891,10 +886,9 @@ namespace ApexVisIns
             progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
         }
 
-
         public static void SetPercent(this ProgressBar progressBar, double fromValue, double toValue, TimeSpan timeSpan)
         {
-            DoubleAnimation animation = new DoubleAnimation(fromValue, toValue, timeSpan, FillBehavior.HoldEnd);
+            DoubleAnimation animation = new(fromValue, toValue, timeSpan, FillBehavior.HoldEnd);
             progressBar.BeginAnimation(RangeBase.ValueProperty, animation);
         }
     }

@@ -265,9 +265,8 @@
                      Height="38" ToolBarTray.IsLocked="True" Focusable="False" FlowDirection="LeftToRight">
                 <!--//-->
                 
-                
-                <!--#region Toolbar Contents -->
-
+                <!--保留測試按鈕-->
+                <!--#region Toolbar Contents  -->
                 <!--<Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="0 0 0 0" Text="測試1" VerticalAlignment="Center"/>
@@ -278,26 +277,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="0 0 0 0" Text="測試2" VerticalAlignment="Center"/>
                     </StackPanel>
-                </Button>
-
-                <Button VerticalAlignment="Center" Click="Button3_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0 0 0 0" Text="測試3" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <Button VerticalAlignment="Center" Click="Button4_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0 0 0 0" Text="測試4" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-                <Button VerticalAlignment="Center" Click="Button5_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0 0 0 0" Text="測試5" VerticalAlignment="Center"/>
-                    </StackPanel>
                 </Button>-->
-                
                 <!--#endregion-->
             </ToolBar>
         </ToolBarTray>

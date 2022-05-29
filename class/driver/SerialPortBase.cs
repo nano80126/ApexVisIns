@@ -7,9 +7,10 @@ using System.IO.Ports;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ApexVisIns
+
+namespace ApexVisIns.Driver
 {
-    interface ICustomSerial
+    internal interface ISerialPortBase
     {
         /// <summary>
         /// COM 名稱
@@ -30,26 +31,25 @@ namespace ApexVisIns
 
         public void ComOpen(string com, int baudRate, Parity parity, int dataBits, StopBits stopBits);
 
+        public void ComOpen(int baudRate, Parity parity, int dataBits, StopBits stopBits);
+
         public void ComClose();
-
-        public void Write(string cmd);
-
-        public string ReadLine();
+        //public void Write(string cmd);
+        //public string ReadLine();
     }
 
 
-    [Obsolete("use SerialPortBase instead")]
-    public abstract class CustomSerial : ICustomSerial, INotifyPropertyChanged, IDisposable
+    public abstract class SerialPortBase : ISerialPortBase, INotifyPropertyChanged, IDisposable
     {
         #region Variables
         protected SerialPort _serialPort;
         protected int _timeout = 200;
-        private bool _disposed;
+        protected bool _disposed;
         #endregion
 
         public string ComPort { get; set; }
 
-        public bool IsComOpen { get => _serialPort != null && _serialPort.IsOpen; }
+        public bool IsComOpen => _serialPort != null && _serialPort.IsOpen;
 
         public int Timeout
         {
@@ -65,7 +65,7 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 開啟 COM
+        /// 開啟 COM (預設 9600, N, 8, 1)
         /// </summary>
         /// <param name="com"></param>
         public virtual void ComOpen(string com)
@@ -132,15 +132,112 @@ namespace ApexVisIns
         /// 寫入命令
         /// </summary>
         /// <param name="cmd"></param>
-        public virtual void Write(string cmd)
+        protected virtual void Write(string cmd)
+        {
+            try
+            {
+                _serialPort.Write(cmd);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            throw new NotImplementedException();
+        }
+
+        protected virtual void Write(byte[] data)
+        {
+            try
+            {
+                _serialPort.Write(data, 0, data.Length);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        protected virtual void Read(byte[] buffer, out int length)
+        {
+            try
+            {
+                length = _serialPort.Read(buffer, 0, buffer.Length);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        protected virtual string ReadLine()
         {
             throw new NotImplementedException();
         }
 
-        public virtual string ReadLine()
+
+        /// <summary>
+        /// Modbus 專用 CRC 計算
+        /// </summary>
+        /// <param name="dataBytes"></param>
+        /// <returns></returns>
+        protected byte[] CRC16LH(byte[] dataBytes)
         {
-            throw new NotImplementedException();
+            ushort crc = 0xffff;
+            ushort polynom = 0xA001;
+
+            for (int i = 0; i < dataBytes.Length; i++)
+            {
+                crc ^= dataBytes[i];    // XOR
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((crc & 0x01) == 0x01)
+                    {
+                        crc >>= 1;
+                        crc ^= polynom;
+                    }
+                    else
+                    {
+                        crc >>= 1;
+                    }
+                }
+            }
+
+            byte[] result = BitConverter.GetBytes(crc);
+            return result;
         }
+
+        /// <summary>
+        /// Modbus 專用 CRC 計算
+        /// </summary>
+        /// <param name="dataBytes"></param>
+        /// <returns></returns>
+        protected byte[] CRC16HL(byte[] dataBytes)
+        {
+            ushort crc = 0xffff;
+            ushort polynom = 0xA001;
+
+            for (int i = 0; i < dataBytes.Length; i++)
+            {
+                crc ^= dataBytes[i];
+                for (int j = 0; j < 8; j++)
+                {
+                    if ((crc & 0x01) == 0x01)
+                    {
+                        crc >>= 1;
+                        crc ^= polynom;
+                    }
+                    else
+                    {
+                        crc >>= 1;
+                    }
+                }
+            }
+
+            byte[] result = BitConverter.GetBytes(crc).Reverse().ToArray();
+            return result;
+        }
+
 
         public virtual void PropertyChange(string propertyName = null)
         {
@@ -161,16 +258,17 @@ namespace ApexVisIns
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) { return; }
-
-            if (disposing)
+            if (!_disposed)
             {
-                _serialPort.Close();
-                _serialPort.Dispose();
-                _serialPort = null;
-            }
+                if (disposing)
+                {
+                    _serialPort.Close();
+                    _serialPort.Dispose();
+                    _serialPort = null;
+                }
 
-            _disposed = true;
+                _disposed = true;
+            }
         }
     }
 }

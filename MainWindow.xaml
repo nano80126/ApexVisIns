@@ -270,7 +270,8 @@
                                        OverlayBackground="{DynamicResource ColorBlueGrayTranparent}"
                                        KeyUp="LoginDialog_KeyUp"
                                        DialogTheme="Dark" 
-                                       DialogOpened="DialogHost_DialogOpened" DialogClosing="DialogHost_DialogClosing">
+                                       DialogOpened="DialogHost_DialogOpened" 
+                                       DialogClosing="DialogHost_DialogClosing">
                 <!--// Dialog 內容, 登入方法、邏輯需要再確認 -->
                 <materialDesign:DialogHost.DialogContent>
                     <DockPanel MinWidth="320" Margin="16" MouseDown="Panels_MouseDown" Background="Transparent">

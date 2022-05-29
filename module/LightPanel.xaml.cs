@@ -94,19 +94,7 @@ namespace ApexVisIns.module
         {
             if (LightControl.IsComOpen)
             {
-                string cmd = string.Empty;
-                for (int i = 0; i < LightControl.ChannelNumber; i++)
-                {
-                    LightChannel ch = LightControl.Channels[i];
-                    cmd += $"{i + 1},{ch.Value},";
-                }
-                cmd = $"{cmd.TrimEnd(',')}\r\n";
-
-                LightControl.Write(cmd);
-
-                //// 新增至 MsgInformer 
-                //Debug.WriteLine(cmd);
-                //Debug.WriteLine(ret);
+                LightControl.SetAllChannelValue();
             }
             else
             {
