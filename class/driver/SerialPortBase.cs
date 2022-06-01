@@ -140,10 +140,9 @@ namespace ApexVisIns.Driver
             }
             catch (Exception)
             {
-
                 throw;
             }
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         protected virtual void Write(byte[] data)

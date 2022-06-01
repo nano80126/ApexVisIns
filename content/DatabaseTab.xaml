@@ -422,12 +422,12 @@
                         <DataGrid.Style>
                             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
                                 <!--780 - 305-->
-                                <Setter Property="MaxHeight" Value="475"/>
+                                <Setter Property="MaxHeight" Value="479"/>
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
                                         <!--960 - 305-->
-                                        <Setter Property="MaxHeight" Value="655"/>
+                                        <Setter Property="MaxHeight" Value="659"/>
                                     </DataTrigger>
 
                                     <DataTrigger Binding="{Binding JawFullSpecInsCol.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" 

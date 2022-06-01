@@ -82,10 +82,25 @@ namespace ApexVisIns.Product
         private string _note;
         private double _correction;
         private bool _enable;
+        private double _correctionSecret;
 
         public JawSpecSetting() { }
 
-        public JawSpecSetting(int id, bool enable, string key, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, string note = null)
+
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <param name="enable">是否啟用</param>
+        /// <param name="key">Dictionary Key</param>
+        /// <param name="item">Item Name</param>
+        /// <param name="centerSpec">規格中心</param>
+        /// <param name="lowerCtrlLimit">管制下限</param>
+        /// <param name="upperCtrlLimit">管制上限</param>
+        /// <param name="correction">校正值 1</param>
+        /// <param name="correction2">校正值 2 (開發者專用)</param>
+        /// <param name="note">備註</param>
+        public JawSpecSetting(int id, bool enable, string key, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, double correction2 = 0, string note = null)
         {
             ID = id;
             Enable = enable;
@@ -96,6 +111,7 @@ namespace ApexVisIns.Product
             LowerCtrlLimit = lowerCtrlLimit;
             UpperCtrlLimit = upperCtrlLimit;
             Correction = correction;
+            CorrectionSecret = correction2;
             Note = note ?? string.Empty;
         }
 
@@ -128,6 +144,20 @@ namespace ApexVisIns.Product
                 if (value != _correction)
                 {
                     _correction = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        public double CorrectionSecret
+        {
+            get => _correctionSecret;
+            set
+            {
+                if (value != _correctionSecret)
+                {
+                    _correctionSecret = value;
                     OnPropertyChanged();
                 }
             }

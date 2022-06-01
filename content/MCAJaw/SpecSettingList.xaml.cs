@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Text.Json;
-using System.IO;
 
 namespace ApexVisIns.content
 {
@@ -60,7 +48,22 @@ namespace ApexVisIns.content
             });
             File.WriteAllText(JsonPath, jsonStr);
         }
+    }
 
-     
+
+    public class BindingProxy : Freezable
+    {
+        protected override Freezable CreateInstanceCore()
+        {
+            return new BindingProxy();
+        }
+
+        public Visibility Visibility
+        {
+            get => (Visibility)GetValue(VisibilityProperty);
+            set => SetValue(VisibilityProperty, value);
+        }
+
+        public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Register(nameof(Visibility), typeof(Visibility), typeof(BindingProxy));
     }
 }

@@ -186,10 +186,16 @@ Apex 外觀瑕疵檢測
 	
 * [ ] 確認 DatabaseTab DataGrid 有0.088合
 
-
 * [ ] 新增 SerialPortBase 驅動
 
 * [ ] 新增 TCPIPBase驅動
+
+* [ ] CameraTab 新增搭配鏡頭
+	* 廠商
+	* 型號
+	* 放大倍率
+
+* [ ] 新增開發者校正值
 
 ### Config Logic
 

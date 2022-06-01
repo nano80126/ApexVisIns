@@ -46,6 +46,7 @@ namespace ApexVisIns.content
         private int _jawTab;
 
         private Task _testTask;
+        private CancellationTokenSource _testCancelTokenSource;
 
         public enum INS_STATUS
         {
@@ -342,7 +343,6 @@ namespace ApexVisIns.content
                     // string path = @"./devices/device.json";
                     string path = $@"{Directory.GetCurrentDirectory()}\cameras\camera.json";
 
-
                     if (File.Exists(path))
                     {
                         using StreamReader reader = new StreamReader(path);
@@ -357,10 +357,10 @@ namespace ApexVisIns.content
                             {
                                 throw new TimeoutException();
                             }
-
+                            
                             // 已連線之 Camera
                             List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-
+                            
                             // 排序 Devices
                             Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
 
@@ -371,7 +371,7 @@ namespace ApexVisIns.content
                                 // 確認 Device 為在線上之 Camera 
                                 if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                                 {
-                                    Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
+                                    // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
 
                                     switch (dev.TargetFeature)
                                     {
@@ -595,17 +595,20 @@ namespace ApexVisIns.content
                         MongoAccess.CreateCollection("Spec");
                         MongoAccess.CreateCollection("Auth");
 
-                        //AuthLevel[] authLevels = new AuthLevel[] {
-                        //    new AuthLevel() { Password = "intai", Level =1  },
-                        //    new AuthLevel() { Password = "qc", Level =2  },
-                        //    new AuthLevel() { Password = "eng", Level =5  },
-                        //};
-                        //MongoAccess.InsertMany("Auth", authLevels);
+#if false
+                        AuthLevel[] authLevels = new AuthLevel[] {
+                            new AuthLevel() { Password = "intai", Level = 1 },
+                            new AuthLevel() { Password = "qc", Level = 2 },
+                            new AuthLevel() { Password = "eng", Level = 5 },
+                        };
+                        MongoAccess.InsertMany("Auth", authLevels);
+#endif
 
                         MongoAccess.FindAll("Auth", Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
+                            //Debug.WriteLine($"{item.Password} {item.Level}");
                         }
 
                         MainWindow.MsgInformer.TargetProgressValue += 17;
@@ -682,18 +685,19 @@ namespace ApexVisIns.content
             }
             else // 若規格列表不存在
             {
-                string[] keys = new string[] { "0.088R", "0.088L", "0.088T","0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
+                string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
                 string[] items = new string[] { "0.088-R", "0.088-L", "0.088合", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
                 double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0 };
                 double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
                 double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
                 double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                double[] correc2 = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
                 JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
                 for (int i = 0; i < keys.Length; i++)
                 {
                     int id = JawSpecGroup.SpecList.Count + 1;
-                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i]));
+                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
                     JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0));
                 }
             }
@@ -756,63 +760,79 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
-#if false
-            if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
+#if true
+            //if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
+
+            //Debug.WriteLine($"{_testTask.Status}");
+            //_testCancelTokenSource = new();
+
+            if (_testCancelTokenSource != null && !_testCancelTokenSource.IsCancellationRequested)
+            {
+                _testCancelTokenSource.Cancel();
+                return;
+            }
+
+            _testCancelTokenSource = new();
 
             _testTask = Task.Run(async () =>
             {
-                for (int i = 0; i < 300; i++)
+                for (int i = 0; i < 150; i++)
                 {
+                    if (_testCancelTokenSource.IsCancellationRequested) { break; }
+
                     // MainWindow.ListJawParam();
                     DateTime t1 = DateTime.Now;
 #endif
 
-            if (Status != INS_STATUS.READY) { return; }
+                    if (Status != INS_STATUS.READY) { return; }
 
-            // 清空當下 Collection
-            JawSpecGroup.Collection1.Clear();
-            JawSpecGroup.Collection2.Clear();
-            JawSpecGroup.Collection3.Clear();
+                    // 清空當下 Collection
+                    JawSpecGroup.Collection1.Clear();
+                    JawSpecGroup.Collection2.Clear();
+                    JawSpecGroup.Collection3.Clear();
 
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+                    //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-            Status = INS_STATUS.INSPECTING;
+                    Status = INS_STATUS.INSPECTING;
 
-            //bool b = await
-            Task.Run(() =>
-            {
-                JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
-                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                return _jawFullSpecIns;
-            }).ContinueWith(t =>
-            {
-                // 判斷是否插入資料庫
-                //if (true)
-                //{
-                JawFullSpecIns data = t.Result;
-                data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                data.DateTime = DateTime.Now;
-                MongoAccess.InsertOne("Spec", data);
-                //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                //Debug.WriteLine(json);
+                    //bool b = await
+                    await Task.Run(() =>
+                    {
+                        JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
+                        MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                        return _jawFullSpecIns;
+                    }).ContinueWith(t =>
+                    {
+                        // 判斷是否插入資料庫
+                        //if (true)
+                        //{
+                        JawFullSpecIns data = t.Result;
+                        data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                        data.DateTime = DateTime.Now;
+                        MongoAccess.InsertOne("Spec", data);
+                        //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                        //Debug.WriteLine(json);
 
-                //return data.OK;
-                //}
-                Status = INS_STATUS.READY;
+                        //return data.OK;
+                        //}
+                        Status = INS_STATUS.READY;
 
-                //Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+                        Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
-                return data.OK;
-                //return 
-            });
+                        return data.OK;
+                        //return 
+                    });
 
-            //if (!b) break;
+                    //if (!b) break;
 
-#if false
+#if true
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-                    _ = SpinWait.SpinUntil(() => false, 3000);
+                    _ = SpinWait.SpinUntil(() => false || _testCancelTokenSource.IsCancellationRequested, 3000);
                 }
+            }, _testCancelTokenSource.Token).ContinueWith(t =>
+            {
+                _testCancelTokenSource.Cancel();
             });
 #endif
         }
@@ -860,7 +880,6 @@ namespace ApexVisIns.content
             //// Debug.WriteLine(json);
             //// _ = 
         }
-
         #endregion
 
 

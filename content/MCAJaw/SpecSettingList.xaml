@@ -5,7 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:pd="clr-namespace:ApexVisIns.Product"
-        xmlns:local="clr-namespace:ApexVisIns.content" 
+        xmlns:local="clr-namespace:ApexVisIns.content"             
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+
         d:DataContext="{d:DesignInstance Type=pd:JawSpecGroup}"
         mc:Ignorable="d" 
         d:DesignHeight="450" d:DesignWidth="800"
@@ -90,9 +92,12 @@
                     <Setter Property="MinWidth" Value="80"/>
                     <Setter Property="BorderThickness" Value="0"/>
                 </Style>
+
+                <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
+                    Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"/>
             </DataGrid.Resources>
 
-
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" MinWidth="60" IsReadOnly="True"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
@@ -129,6 +134,15 @@
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}"
                                     EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
+
+                <!--//-->
+                <DataGridTextColumn Header="校正值(開發)" MinWidth="120" Binding="{Binding CorrectionSecret}"
+                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"
+                                    Visibility="{Binding Visibility, Source={StaticResource proxy}}">
+                </DataGridTextColumn>
+
                 <!--//-->
                 <DataGridTextColumn Header="備註" MinWidth="120" Binding="{Binding Note}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
@@ -148,6 +162,7 @@
             <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 量測開度差需要啟用前開、後開與開度差" Foreground="{StaticResource ColorDeepOrange}"/>
             <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 變更備註須重啟程式才會套用變更" Foreground="{StaticResource ColorDeepOrange}"/>
 
+            <!--<TextBlock Text="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"/>-->
             <!--<TextBox materialDesign:TextFieldAssist.UnderlineBrush="Transparent"/>-->
         </StackPanel>
     </Grid>

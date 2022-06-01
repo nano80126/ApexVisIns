@@ -359,8 +359,9 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// 數字 小於 轉換器
+    /// 數字小於比較器轉
     /// </summary>
+    [ValueConversion(typeof(int), typeof(bool))]
     public class NumberLessConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -375,20 +376,41 @@ namespace ApexVisIns.Converter
     }
 
     /// <summary>
-    /// 數字 大於 轉換器
+    /// 數字大於比較器轉
     /// </summary>
+    [ValueConversion(typeof(int), typeof(bool))]
     public class NumberGreaterConvert : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) >= System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// 數字大於比較器轉 Visibility
+    /// </summary>
+    [ValueConversion(typeof(int), typeof(Visibility))]
+    public class NumberGreaterConvertToVisibility : NumberGreaterConvert
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
+            //return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) >= System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     #endregion
 
     #region DateTime 轉換器
