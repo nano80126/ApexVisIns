@@ -98,7 +98,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region Local Object (方便呼叫)
         /// <summary>
         /// WISE-4050/LAN IO 控制器

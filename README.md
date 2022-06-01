@@ -184,7 +184,7 @@ Apex 外觀瑕疵檢測
 * [x] 測試WISE4050連線Timeout錯誤處理
 	* 需要處理 (使用 connectAsync)
 	
-* [ ] 確認 DatabaseTab DataGrid 有0.088合
+* [ ] 確認 DatabaseTab DataGrid 有 0.088合
 
 * [ ] 新增 SerialPortBase 驅動
 
@@ -196,6 +196,12 @@ Apex 外觀瑕疵檢測
 	* 放大倍率
 
 * [ ] 新增開發者校正值
+
+* [ ] 測試各種彎曲
+
+* [ ] 處理平面度重複性問題
+
+* [ ] 0.088 左右差異問題
 
 ### Config Logic
 

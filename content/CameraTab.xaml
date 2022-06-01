@@ -595,12 +595,14 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/><!--separetor-->
+                            <ColumnDefinition Width="auto"/>
+                            <!--separetor-->
                             <ColumnDefinition/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/><!--separetor-->
+                            <ColumnDefinition Width="auto"/>
+                            <!--separetor-->
                             <ColumnDefinition/>
-                            <ColumnDefinition/> 
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions >
 
                         <Grid.RowDefinitions>
@@ -700,7 +702,7 @@
                         <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
                                  GotFocus="TextBox_GotFocus"
                                  Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
-                        
+
                         <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                         <!--#endregion-->
                         <!--//===============================================================================================================//-->
@@ -710,7 +712,7 @@
 
                         <TextBlock Grid.Row="2" Grid.Column="6" Text="Gain Auto"/>
                         <TextBlock Grid.Row="3" Grid.Column="6" Text="Gain"/>
-                        
+
                         <TextBlock Grid.Row="4" Grid.Column="6" Text="Black Level"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="6" Text="Gamma Enable"/>
@@ -746,21 +748,22 @@
                     </Grid>
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
+
+
                     <!-- For Action -->
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <!--<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Visible">
                         <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0" Style="{StaticResource MaterialDesignOutlinedButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentSave" Width="30" Height="26" VerticalAlignment="Center"/>
                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Bottom" Text="儲存"/>
                             </StackPanel>
                         </Button>
-                        <!--//-->
-                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0" 
-                                Style="{StaticResource MaterialDesignOutlinedButton}">456</Button>
-                    </StackPanel>
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0" Style="{StaticResource MaterialDesignOutlinedButton}">456</Button>
+                    </StackPanel>-->
 
-                    <!--<TextBlock DockPanel.Dock="Bottom" Text="{Binding ElementName=test, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
-                               HorizontalAlignment="Center" Visibility="Collapsed"/>-->
+                    <!--////////////////////////////////////////////////////////////////////////////////////////////-->
+                    <!--這邊新增 Tab 或 Column，增加鏡頭參數-->
+                    <!--////////////////////////////////////////////////////////////////////////////////////////////-->
 
                 </DockPanel>
             </materialDesign:Card>
