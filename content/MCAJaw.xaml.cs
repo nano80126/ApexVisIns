@@ -629,7 +629,6 @@ namespace ApexVisIns.content
         }
         #endregion
 
-
         #region 初始化 SpecList
         private void InitSpecSettingPath()
         {
@@ -702,7 +701,6 @@ namespace ApexVisIns.content
             }
         }
         #endregion
-
 
         #region 主控版 , +/- 數量
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -795,7 +793,7 @@ namespace ApexVisIns.content
                     Status = INS_STATUS.INSPECTING;
 
                     //bool b = await
-                    await Task.Run(() =>
+                    bool b =  await Task.Run(() =>
                     {
                         JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
                         MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
@@ -822,7 +820,7 @@ namespace ApexVisIns.content
                         //return 
                     });
 
-                    //if (!b) break;
+                    if (!b) break;
 
 #if true
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");

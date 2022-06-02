@@ -52,7 +52,6 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-
             </Button>
         </DockPanel>
         <!--</StackPanel>-->

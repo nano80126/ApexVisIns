@@ -27,7 +27,6 @@ namespace ApexVisIns
         private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
         #endregion
 
-
         #region 
         /// <summary>
         /// Jaw 左右 enum，013、024等演算法所需 param
@@ -445,7 +444,7 @@ namespace ApexVisIns
 
                 #region 計算 0.024 左 (實際上是右)
                 spec = specList?[7];
-                 spec2 = specList?[5];
+                spec2 = specList?[5];
                 double d_024R = (Math.Abs(LCY - LtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret - spec2.CorrectionSecret / 2 : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
@@ -581,19 +580,19 @@ namespace ApexVisIns
                 #region 計算 平面度
                 spec = specList?[13];
                 //Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                ////Cal007FlatnessValue(src, datumY, out double f_007);
+                Cal007FlatnessValue(src, datumY, out double f_007);
                 if (spec != null && spec.Enable && results != null)
                 {
-                    Cal007FlatnessValue(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    //Cal007FlatnessValue(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
                         results[spec.Item].Add(f_007);
                     }
                 }
-                #endregion
                 //Debug.WriteLine($"DatumY: {datumY}, f007: {f_007}");
-                spec = null; 
+                #endregion
+                spec = null;
             }
             catch (Exception)
             {
@@ -869,15 +868,15 @@ namespace ApexVisIns
             double sumLength = 0;
 
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
-            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 5, 0);
+            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 5, 1);
 
             //Cv2.ImShow($"013canny{leftRight}", canny);
 
-            //Debug.WriteLine("-------------------------013-------------------------");
-            //foreach (LineSegmentPoint item in lineH)
-            //{
-            //    Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-            //}
+            Debug.WriteLine("-------------------------013-------------------------");
+            foreach (LineSegmentPoint item in lineH)
+            {
+                Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+            }
             //Debug.WriteLine("-----------------------------------------------------");
 
             double min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
@@ -905,6 +904,7 @@ namespace ApexVisIns
             canny.Dispose();
             //Debug.WriteLine(distance);
 
+            Debug.WriteLine($"TopY: {topY} BotY: {botY}");
             //Debug.WriteLine($"{leftRight} :013 Value {distance}");
 
             return limitL <= distance && distance <= limitU;
@@ -1048,51 +1048,60 @@ namespace ApexVisIns
         /// <returns></returns>
         public bool Cal007FlatnessValue(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             // ROIs
-            Rect roi1 = new(135, (int)(baseDatumY + 50), 50, 40);
-            Rect roi2 = new(260, (int)(baseDatumY + 50), 440, 40);
-            Rect roi3 = new(800, (int)(baseDatumY + 50), 150, 40);
+            Rect roi = new Rect(140, (int)(baseDatumY + 50), 780, 40);
+
+            Rect[] rois = new Rect[] {
+                new(140, (int)(baseDatumY + 50), 50, 40), // PIN 前
+                new(260, (int)(baseDatumY + 50), 50, 40),
+                new(330, (int)(baseDatumY + 50), 50, 40),
+                new(400, (int)(baseDatumY + 50), 50, 40),
+                new(470, (int)(baseDatumY + 50), 50, 40),
+                new(540, (int)(baseDatumY + 50), 50, 40),
+                new(610, (int)(baseDatumY + 50), 50, 40),
+                new(680, (int)(baseDatumY + 50), 40, 40),
+                new(800, (int)(baseDatumY + 50), 50, 40), // 最後區
+                new(870, (int)(baseDatumY + 50), 50, 40), // 最後區
+            };
+
+            //LineSegmentPoint[] lineH1 = new LineSegmentPoint[0];
+            //LineSegmentPoint[] lineH2 = new LineSegmentPoint[0];
+            //LineSegmentPoint[] lineH3 = new LineSegmentPoint[0];
             // 
 
-            Methods.GetRoiCanny(src, roi1, 45, 60, out Mat canny1);
-            Methods.GetHoughLinesHFromCanny(canny1, roi1.Location, out LineSegmentPoint[] lineH1, 5);
+            //Methods.GetRoiCanny(src, roi1, 20, 50, out Mat canny1);
+            //Methods.GetHoughLinesHFromCanny(canny1, roi1.Location, out lineH1, 5);
 
-            Methods.GetRoiCanny(src, roi2, 45, 60, out Mat canny2);
-            Methods.GetHoughLinesHFromCanny(canny2, roi2.Location, out LineSegmentPoint[] lineH2, 5);
+            //Methods.GetRoiCanny(src, roi2, 20, 50, out Mat canny2);
+            //Methods.GetHoughLinesHFromCanny(canny2, roi2.Location, out lineH2, 5);
 
-            Methods.GetRoiCanny(src, roi3, 45, 60, out Mat canny3);
-            Methods.GetHoughLinesHFromCanny(canny3, roi3.Location, out LineSegmentPoint[] lineH3, 5);
+            //Methods.GetRoiCanny(src, roi3, 20, 50, out Mat canny3);
+            //Methods.GetHoughLinesHFromCanny(canny3, roi3.Location, out lineH3, 5);
 
-#if DEBUG
-            //Cv2.Rectangle(src, roi1, Scalar.Black, 1);
-            //Cv2.Rectangle(src, roi2, Scalar.Black, 1);
-            //Cv2.Rectangle(src, roi3, Scalar.Black, 1);
+            Methods.GetRoiCanny(src, roi, 20, 50, out Mat canny);
 
-            //Cv2.ImShow("cann1", canny1);
-            //Cv2.ImShow("cann2", canny2);
-            //Cv2.ImShow("cann3", canny3);
-#endif
+            List<double> maxLineY = new();
+            for (int i = 0; i < rois.Length; i++)
+            {
+                //Cv2.Rectangle(src, rois[i], Scalar.Black, 1);
+                Mat c = new(canny, rois[i].Subtract(new Point(roi.X, roi.Y)));
+                Methods.GetHoughLinesHFromCanny(c, rois[i].Location, out LineSegmentPoint[] lineH, 5);
+                maxLineY.Add(lineH.Max(l => (l.P1.Y + l.P2.Y) / 2));
+            }
+            // Mat c1 = new Mat(canny, roi1.Subtract(new Point(roi.Left, roi.Top)));
+            // Mat c2 = new Mat(canny, roi2.Subtract(new Point(roi.Left, roi.Top)));
+            // Mat c3 = new Mat(canny, roi3.Subtract(new Point(roi.Left, roi.Top)));
+            //Debug.WriteLine($"{string.Join(",", maxLineY)}");
 
-
-            //LineSegmentPoint[] orderLine = lineH1.Concat(lineH2).Concat(lineH3).OrderBy(line => line.P1.Y + line.P2.Y).OrderBy(line => line.P1.X).ToArray();
-
-            //for (int i = 0; i < orderLine.Length; i++)
-            //{
-            //    Debug.WriteLine($"{orderLine[i].P1} {orderLine[i].P2} {orderLine[i].Length()}");
-            //    Cv2.Line(src, orderLine[i].P1, orderLine[i].P2, Scalar.Black, 1);
-            //}
-
+#if false
             LineSegmentPoint[] line = lineH1.Concat(lineH2).Concat(lineH3).Where(line => line.Length() > 30).OrderBy(line => line.P1.Y + line.P2.Y).OrderBy(line => line.P1.X).ToArray();
-
             List<LineSegmentPoint> lineList = new();
 
             //Debug.WriteLine($"-----------------------------------------------------------------");
             // 過濾重複點
             for (int i = 0; i < line.Length; i++)
             {
-                //Debug.WriteLine($"{line[i].P1} {line[i].P2} {line[i].Length()}");
-                //Cv2.Line(src, line[i].P1, line[i].P2, Scalar.Black, 1);
-
                 // 第一條線直接新增
                 if (i == 0)
                 {
@@ -1139,12 +1148,15 @@ namespace ApexVisIns
 
             //flatValue = (lineList.Max(l => Math.Max(l.P1.Y, l.P2.Y)) - lineList.Min(l => Math.Min(l.P1.Y, l.P2.Y))) * Cam3Unit + correction;
             flatValue = (lineList.Max(l => (l.P1.Y + l.P2.Y) / 2) - lineList.Min(l => (l.P1.Y + l.P2.Y) / 2)) * Cam3Unit + correction;
+#endif
+            canny.Dispose();
+            //canny1.Dispose();
+            //canny2.Dispose();
 
-            canny1.Dispose();
-            canny2.Dispose();
+            flatValue = ((maxLineY.Max() - maxLineY.Min()) * Cam3Unit) + correction;
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
             return flatValue <= limitU;
         }
-
     }
 }
