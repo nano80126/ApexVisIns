@@ -514,10 +514,10 @@ namespace ApexVisIns
 
                 #region 計算 0.088-R
                 spec = specList?[0];    // 
-                Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
+                //Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
                 if (spec != null && spec.Enable && results != null)
                 {
-                //    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction + spec.CorrectionSecret);
+                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -528,10 +528,10 @@ namespace ApexVisIns
 
                 #region 計算 0.088-L
                 spec = specList?[1];    // 
-                Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
+                //Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
                 if (spec != null && spec.Enable && results != null)
                 {
-                   // Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction + spec.CorrectionSecret);
+                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -1014,9 +1014,24 @@ namespace ApexVisIns
             //}
             //Debug.WriteLine($"{X}");
 
+            // 隱藏 correction
+            double subCorrection = 0;
+            switch (leftRight)
+            {
+                case JawPos.Left:
+                    subCorrection = (src.Width / 2 - X - 400) * 0.00004 + 0.0014;
+                    break;
+                case JawPos.Right:
+                    subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
+                    break;
+                default:
+                    break;
+            }
+
             // 計算 0.088 距離
-            distance = (Math.Abs(compareX - X) * Cam2Unit) + correction;
-            Debug.WriteLine($"088 {leftRight} : {Math.Abs(compareX - X)} {compareX} {X}");
+            distance = (Math.Abs(compareX - X) * Cam2Unit) + correction + subCorrection;
+            //Debug.WriteLine($"088 {leftRight} : {Math.Abs(compareX - X)}, {compareX}, {X}");
+            //Debug.WriteLine($"Distance: {distance}, {subCorrection}");
             // 銷毀 canny
             canny.Dispose();
 
