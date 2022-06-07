@@ -7,12 +7,21 @@
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            d:DataContext="{d:DesignInstance Type=local:CameraTab}"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded" 
             Unloaded="StackPanel_Unloaded"
             d:DesignHeight="900" d:DesignWidth="1600"
             UseLayoutRounding="True"
             Orientation="Vertical">
+    <StackPanel.Resources>
+        
+    </StackPanel.Resources>
+
+    <!--<StackPanel.CommandBindings>
+        <CommandBinding Command="{StaticResource }" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed"></CommandBinding>
+    </StackPanel.CommandBindings>-->
+    
     <Grid>
         <Grid.Style>
             <Style TargetType="{x:Type Grid}">
@@ -479,13 +488,6 @@
                             -->
                         </StackPanel.Resources>
                         <!--#endregion-->
-
-                        <!--
-                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" 
-                                    FontWeight="Bold" Text="已讀取 : " 
-                                    Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                        -->
-
                         <TextBox Margin="0 0 48 0" Padding="5 4" TextAlignment="Center" FontWeight="Bold"
                                  IsReadOnly="True" MinWidth="120"
                                  materialDesign:HintAssist.Hint="UserSet Now"
@@ -507,8 +509,6 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-
-
                         <!--#region UserSet Actions -->
                         <StackPanel x:Name="UserSetActionPanel" Orientation="Horizontal" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
                             <!--讀取 UserSet-->
@@ -558,197 +558,223 @@
 
                     </StackPanel>
                     <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <Separator DockPanel.Dock="Top" Margin="0 8 0 0"/>
                     <!--//-->
-                    <Grid DockPanel.Dock="Top" Background="{x:Null}" MinHeight="300" HorizontalAlignment="Stretch">
-                        <Grid.Resources>
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="MinWidth" Value="120" />
-                                <Setter Property="Padding" Value="0 4"/>
-                                <Setter Property="Margin" Value="0 8"/>
-                                <!--<Setter Property="Background" Value="Red"/>-->
-                                <!--<Setter Property="TextAlignment" Value="Right"/>-->
-                            </Style>
-                            <!-- // -->
-                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <!--<Setter Property="Padding" Value="0 2"/>-->
-                                <!-- Padding 要寫在行內 -->
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="Margin" Value="0 8"/>
-                                <Setter Property="MinWidth" Value="120"/>
-                                <Setter Property="TextAlignment" Value="Center"/>
-                            </Style>
-                            <!-- // -->
-                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                                <Setter Property="Padding" Value="5 4"/>
-                                <Setter Property="MinWidth" Value="120"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                <Setter Property="materialDesign:ComboBoxAssist.ShowSelectedItem" Value="False"/>
-                            </Style>
-                        </Grid.Resources>
+                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0" DockPanel.Dock="Top">
+                        <RadioButton Style="{StaticResource MaterialDesignTabRadioButtonBottom}" Margin="0" Cursor="Hand" IsChecked="True"
+                                     Content="CAMERA" FontWeight="Bold" Checked="ChangeCameraFunctionRadioButton_Checked">
+                            <RadioButton.CommandParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource MaterialDesignTabRadioButtonBottom}" Margin="0" Cursor="Hand"
+                                     Content="LENS" FontWeight="Bold" Checked="ChangeCameraFunctionRadioButton_Checked">
+                            <RadioButton.CommandParameter>
+                                <sys:Int32>1</sys:Int32>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                    </StackPanel>
 
-                        <!--#region Layout definition -->
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <!--separetor-->
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <!--separetor-->
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions >
+                    <TabControl DockPanel.Dock="Top" Background="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                                BorderBrush="{x:Null}" BorderThickness="0" Padding="0" SelectedIndex="{Binding CameraFuncTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CameraTab, AncestorLevel=1}}">
+                        <TabItem Header="{x:Null}" Margin="0" Height="0">
+                            <Grid Background="{x:Null}" MinHeight="300" HorizontalAlignment="Stretch">
+                                <Grid.Resources>
+                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="MinWidth" Value="120" />
+                                        <Setter Property="Padding" Value="0 4"/>
+                                        <Setter Property="Margin" Value="0 8"/>
+                                        <!--<Setter Property="Background" Value="Red"/>-->
+                                        <!--<Setter Property="TextAlignment" Value="Right"/>-->
+                                    </Style>
+                                    <!-- // -->
+                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                        <!--<Setter Property="Padding" Value="0 2"/>-->
+                                        <!-- Padding 要寫在行內 -->
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Margin" Value="0 8"/>
+                                        <Setter Property="MinWidth" Value="120"/>
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                    </Style>
+                                    <!-- // -->
+                                    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                                        <Setter Property="Padding" Value="5 4"/>
+                                        <Setter Property="MinWidth" Value="120"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="materialDesign:ComboBoxAssist.ShowSelectedItem" Value="False"/>
+                                    </Style>
+                                </Grid.Resources>
 
-                        <Grid.RowDefinitions>
-                            <!-- 1~3 -->
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <!-- 4~6 -->
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <!-- 7~9 -->
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <!-- 10~12 -->
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <!-- 12~14 -->
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <!--#endregion-->
+                                <!--#region Layout definition -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <!--separetor-->
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <!--separetor-->
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions >
 
-                        <!--#region AOI Controls -->
-                        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+                                <Grid.RowDefinitions>
+                                    <!-- 1~3 -->
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <!-- 4~6 -->
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <!-- 7~9 -->
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <!-- 10~12 -->
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <!-- 12~14 -->
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <!--#endregion-->
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Sensor Width"/>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Sensor Height"/>
+                                <!--#region AOI Controls -->
+                                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Max Width"/>
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Max Height"/>
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Width"/>
-                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Height"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Sensor Width"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Sensor Height"/>
 
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="X Offset"/>
-                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Y Offset"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Max Width"/>
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Max Height"/>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Width"/>
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Height"/>
 
-                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Center X"/>
-                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Center Y"/>
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="X Offset"/>
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Y Offset"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="10" Grid.Column="0" Text="Center X"/>
+                                <TextBlock Grid.Row="11" Grid.Column="0" Text="Center Y"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBox x:Name="OffsetXtxt" Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
+                                <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <TextBox x:Name="OffsetXtxt" Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
                                  Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBox x:Name="OffsetYtxt" Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
+                                <TextBox x:Name="OffsetYtxt" Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
                                  Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
-                        <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
 
-                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
-                        <!--#endregion-->
-                        <!--//===============================================================================================================//-->
-                        <!--#region Acquisition Control-->
-                        <TextBlock Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="Acquisition Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                        <Separator Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+                                <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                <!--#endregion-->
+                                <!--//===============================================================================================================//-->
+                                <!--#region Acquisition Control-->
+                                <TextBlock Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="Acquisition Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                <Separator Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="3" Text="Trigger Selector"/>
-                        <TextBlock Grid.Row="3" Grid.Column="3" Text="Trigger Mode"/>
-                        <TextBlock Grid.Row="4" Grid.Column="3" Text="Trigger Source"/>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Text="Trigger Selector"/>
+                                <TextBlock Grid.Row="3" Grid.Column="3" Text="Trigger Mode"/>
+                                <TextBlock Grid.Row="4" Grid.Column="3" Text="Trigger Source"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="3" Text="Exposure Mode"/>
-                        <TextBlock Grid.Row="6" Grid.Column="3" Text="Exposure Auto"/>
-                        <TextBlock Grid.Row="7" Grid.Column="3" Text="Exposure Time"/>
+                                <TextBlock Grid.Row="5" Grid.Column="3" Text="Exposure Mode"/>
+                                <TextBlock Grid.Row="6" Grid.Column="3" Text="Exposure Auto"/>
+                                <TextBlock Grid.Row="7" Grid.Column="3" Text="Exposure Time"/>
 
-                        <TextBlock Grid.Row="8" Grid.Column="3" Text="Fix FPS"/>
-                        <TextBlock Grid.Row="9" Grid.Column="3" Text="FPS"/>
+                                <TextBlock Grid.Row="8" Grid.Column="3" Text="Fix FPS"/>
+                                <TextBlock Grid.Row="9" Grid.Column="3" Text="FPS"/>
 
-                        <ComboBox Grid.Row="2" Grid.Column="4" SelectedItem="{Binding TriggerSelector}" ItemsSource="{Binding TriggerSelectorEnum}"/>
-                        <ComboBox Grid.Row="3" Grid.Column="4" SelectedItem="{Binding TriggerMode}" ItemsSource="{Binding TriggerModeEnum}"/>
-                        <ComboBox Grid.Row="4" Grid.Column="4" SelectedItem="{Binding TriggerSource}" ItemsSource="{Binding TriggerSourceEnum}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="4" SelectedItem="{Binding TriggerSelector}" ItemsSource="{Binding TriggerSelectorEnum}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="4" SelectedItem="{Binding TriggerMode}" ItemsSource="{Binding TriggerModeEnum}"/>
+                                <ComboBox Grid.Row="4" Grid.Column="4" SelectedItem="{Binding TriggerSource}" ItemsSource="{Binding TriggerSourceEnum}"/>
 
-                        <ComboBox Grid.Row="5" Grid.Column="4" SelectedItem="{Binding ExposureMode}" ItemsSource="{Binding ExposureModeEnum}"/>
-                        <ComboBox Grid.Row="6" Grid.Column="4" SelectedItem="{Binding ExposureAuto}" ItemsSource="{Binding ExposureAutoEnum}"/>
-                        <TextBox Grid.Row="7" Grid.Column="4" Padding="0 3"
+                                <ComboBox Grid.Row="5" Grid.Column="4" SelectedItem="{Binding ExposureMode}" ItemsSource="{Binding ExposureModeEnum}"/>
+                                <ComboBox Grid.Row="6" Grid.Column="4" SelectedItem="{Binding ExposureAuto}" ItemsSource="{Binding ExposureAutoEnum}"/>
+                                <TextBox Grid.Row="7" Grid.Column="4" Padding="0 3"
                                  GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                  Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F3}}"/>
 
-                        <!--<TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding ElementName=TestName2, Path=ActualHeight}"></TextBlock>-->
+                                <!--<TextBlock Grid.Row="4" Grid.Column="4" Text="{Binding ElementName=TestName2, Path=ActualHeight}"></TextBlock>-->
 
-                        <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
 
-                        <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
+                                <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}"
                                  GotFocus="TextBox_GotFocus"
                                  Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
 
-                        <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
-                        <!--#endregion-->
-                        <!--//===============================================================================================================//-->
-                        <!--#region Analog Control -->
-                        <TextBlock Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Text="Analog Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                        <Separator Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+                                <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                <!--#endregion-->
+                                <!--//===============================================================================================================//-->
+                                <!--#region Analog Control -->
+                                <TextBlock Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Text="Analog Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                <Separator Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="6" Text="Gain Auto"/>
-                        <TextBlock Grid.Row="3" Grid.Column="6" Text="Gain"/>
+                                <TextBlock Grid.Row="2" Grid.Column="6" Text="Gain Auto"/>
+                                <TextBlock Grid.Row="3" Grid.Column="6" Text="Gain"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="6" Text="Black Level"/>
+                                <TextBlock Grid.Row="4" Grid.Column="6" Text="Black Level"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="6" Text="Gamma Enable"/>
-                        <TextBlock Grid.Row="6" Grid.Column="6" Text="Gamma Selector"/>
-                        <TextBlock Grid.Row="7" Grid.Column="6" Text="Gamma"/>
+                                <TextBlock Grid.Row="5" Grid.Column="6" Text="Gamma Enable"/>
+                                <TextBlock Grid.Row="6" Grid.Column="6" Text="Gamma Selector"/>
+                                <TextBlock Grid.Row="7" Grid.Column="6" Text="Gamma"/>
 
-                        <!--標記上下限-->
-                        <ComboBox Grid.Row="2" Grid.Column="7" SelectedItem="{Binding GainAuto}" ItemsSource="{Binding GainAutoEnum}"/>
-                        <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3"
+                                <!--標記上下限-->
+                                <ComboBox Grid.Row="2" Grid.Column="7" SelectedItem="{Binding GainAuto}" ItemsSource="{Binding GainAutoEnum}"/>
+                                <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3"
                                  GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                  IsEnabled="{Binding GainAuto, Converter={StaticResource StringEqualConverter}, ConverterParameter=Off}"
                                  Text="{Binding Gain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}"/>
 
 
-                        <!--標記上下限-->
-                        <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3"
+                                <!--標記上下限-->
+                                <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3"
                                  GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                  Text="{Binding BlackLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}"/>
 
-                        <CheckBox Grid.Row="5" Grid.Column="7" IsChecked="{Binding GammaEnable}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                <CheckBox Grid.Row="5" Grid.Column="7" IsChecked="{Binding GammaEnable}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
 
-                        <ComboBox Grid.Row="6" Grid.Column="7" SelectedItem="{Binding GammaSelector}" ItemsSource="{Binding GammaSelectorEnum}"/>
+                                <ComboBox Grid.Row="6" Grid.Column="7" SelectedItem="{Binding GammaSelector}" ItemsSource="{Binding GammaSelectorEnum}"/>
 
-                        <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3"
+                                <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3"
                                  GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
                                  IsEnabled="{Binding GammaSelector, Converter={StaticResource StringEqualConverter}, ConverterParameter=User}"
                                  Text="{Binding Gamma, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:f1}}"/>
-                        <!--#endregion-->
-                        <!--//===============================================================================================================//-->
-                        <!--//-->
-                        <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
-                    </Grid>
-                    <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                                <!--#endregion-->
+                                <!--//===============================================================================================================//-->
+                                <!--//-->
+                                <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                            </Grid>
+                        </TabItem>
 
+                        <TabItem Header="{x:Null}" Margin="0" Height="0">
+                            <Grid Background="{x:Null}" MinHeight="300" HorizontalAlignment="Stretch">
+                                
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8 0 0 "/>
 
                     <!-- For Action -->
                     <!--<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Visible">

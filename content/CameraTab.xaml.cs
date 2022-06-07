@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,7 +20,7 @@ namespace ApexVisIns.content
     /// <summary>
     /// CameraTab.xaml 的互動邏輯
     /// </summary>
-    public partial class CameraTab : StackPanel
+    public partial class CameraTab : StackPanel, INotifyPropertyChanged
     {
         #region Resources
 
@@ -39,6 +41,7 @@ namespace ApexVisIns.content
         /// Index of DeivceCam in use
         /// </summary>
         private int _devInUse = -1;
+        private int _cameraFuncTab;
         #endregion
 
         #region Properties
@@ -46,10 +49,24 @@ namespace ApexVisIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
+        
+
         /// <summary>
-        /// Informer 物件
+        /// Function Tab(相機、鏡頭)
         /// </summary>
-        //public MsgInformer MsgInformer { get; set; }
+        public int CameraFuncTab
+        {
+            get => _cameraFuncTab;
+            set
+            {
+                if (value != _cameraFuncTab)
+                {
+                    _cameraFuncTab = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         #endregion
 
         #region Flags
@@ -713,10 +730,24 @@ namespace ApexVisIns.content
             MainWindow.CameraEnumer.CameraCofingSaved = false;
         }
 
-        //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    ComboBox comboBox = sender as ComboBox;
-        //    Debug.WriteLine($"{comboBox.SelectedItem} {comboBox.SelectedValue}");
-        //}
+        /// <summary>
+        /// 變更功能 Tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeCameraFunctionRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            int idx = (int)((sender as RadioButton).CommandParameter ?? 0);
+            CameraFuncTab = idx;
+        }
+
+
+        #region PropertyChanged
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }
