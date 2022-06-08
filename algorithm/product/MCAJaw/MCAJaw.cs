@@ -48,7 +48,6 @@ namespace ApexVisIns
         };
         #endregion
 
-
         public void ListJawParam()
         {
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
@@ -445,7 +444,9 @@ namespace ApexVisIns
                 #region 計算 0.024 左 (實際上是右)
                 spec = specList?[7];
                 spec2 = specList?[5];
-                double d_024R = (Math.Abs(LCY - LtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret - spec2.CorrectionSecret / 2 : 0);
+                double d_024R = (Math.Abs(LCY - LtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+
+                Debug.WriteLine($"LCY: {LCY}, {LtopY}");
                 if (spec != null && spec.Enable && results != null)
                 {
                     lock (results)
@@ -459,7 +460,9 @@ namespace ApexVisIns
                 #region 計算 0.024 右 (實際上是左)
                 spec = specList?[8];
                 spec2 = specList?[6];
-                double d_024L = (Math.Abs(RCY - RtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret - spec2.CorrectionSecret / 2 : 0);
+                double d_024L = (Math.Abs(RCY - RtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+
+                Debug.WriteLine($"RCY: {RCY}, {RtopY}");
                 if (spec != null && spec.Enable && results != null)
                 {
                     lock (results)
@@ -793,7 +796,7 @@ namespace ApexVisIns
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
-            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px");
+            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px, Distance: {distance}");
 
             leftCanny.Dispose();
             rightCanny.Dispose();
@@ -897,11 +900,20 @@ namespace ApexVisIns
             botY = maxH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
             // 計算 0.013 距離
             distance = (Math.Abs(topY - botY) * Cam1Unit) + correction;
+
+            Debug.WriteLine($"TopY: {topY} BotY: {botY}");
+            // 計算 offset
+            double offset = correction / Cam1Unit;
+            double topY_Offset = offset * (topY - (src.Height / 2)) / (topY + botY - src.Height);
+            double botY_Offset = offset * (botY - (src.Height / 2)) / (topY + botY - src.Height);
+            topY += topY_Offset;
+            botY += botY_Offset;
             // 銷毀 canny
             canny.Dispose();
             //Debug.WriteLine(distance);
-
-            Debug.WriteLine($"TopY: {topY} BotY: {botY}");
+            
+            Debug.WriteLine($"TopY: {topY} BotY: {botY}, offset: {offset}");
+            Debug.WriteLine($"------------------------------------------------");
             //Debug.WriteLine($"{leftRight} :013 Value {distance}");
 
             return limitL <= distance && distance <= limitU;

@@ -443,6 +443,18 @@ namespace ApexVisIns
                 }
             }
 
+            if (BaslerCam != null)
+            {
+                if (BaslerCam.IsOpen)
+                {
+                    if (BaslerCam.IsGrabbing)
+                    {
+                        Basler_StopStreamGrabber(BaslerCam);
+                    }
+                    BaslerCam.Close();
+                }
+            }
+
             // Servo Off & 關閉 Motion 控制 
             if (ServoMotion != null && ServoMotion.DeviceOpened)
             {
