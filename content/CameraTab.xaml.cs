@@ -268,8 +268,8 @@ namespace ApexVisIns.content
 
             if (idx > -1)
             {
-                CameraCard.DataContext = MainWindow.CameraEnumer.CameraConfigs[idx];
-
+                // CameraCard.DataContext = MainWindow.CameraEnumer.CameraConfigs[idx];
+                // CameraInfoGrid.DataContext = MainWindow.CameraEnumer.CameraConfigs[idx];
                 if (MainWindow.CameraEnumer.CameraConfigs[idx].Online)
                 {
                     // serialNumber 已經在列表中
@@ -312,6 +312,9 @@ namespace ApexVisIns.content
                     UserSetActionPanel.DataContext = null;
                     #endregion
                 }
+
+                // 最後才綁定 DataContext，否則會有Binding Exception 產生
+                CameraCard.DataContext = MainWindow.CameraEnumer.CameraConfigs[idx];
             }
         }
 
