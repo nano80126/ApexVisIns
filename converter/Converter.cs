@@ -174,7 +174,7 @@ namespace ApexVisIns.Converter
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return base.ConvertBack(value, targetType, parameter, culture);
         }
     }
 
@@ -216,6 +216,43 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
+
+
+    /// <summary>
+    /// 字串 Equal 轉 Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(string), typeof(Visibility))]
+    public class StringEqualToVisibility : StringEqualConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetType, parameter, culture);
+        }
+    }
+
+
+    /// <summary>
+    /// 字串 Equal 轉 Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(string), typeof(Visibility))]
+    public class StringEqualToVisibilityInverse : StringEqualConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetType, parameter, culture);
+        }
+    }
+
 
     /// <summary>
     /// 字串 Equal 反向轉換器

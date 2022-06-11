@@ -4,9 +4,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ApexVisIns.Product;
+using Microsoft.Win32;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -32,6 +35,7 @@ namespace ApexVisIns.content
         #region Variables
         private DateTime _startDate = DateTime.Today;
         private DateTime _endDate = DateTime.Today;
+        private string _selectedLotNumber = string.Empty;
         #endregion
 
         #region Properties
@@ -71,6 +75,19 @@ namespace ApexVisIns.content
                 if (value != _endDate)
                 {
                     _endDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string SelectedLotNumber
+        {
+            get => _selectedLotNumber != string.Empty ? $"{_selectedLotNumber} 檢驗紀錄" : string.Empty;
+            set
+            {
+                if (value != _selectedLotNumber)
+                {
+                    _selectedLotNumber = value;
                     OnPropertyChanged();
                 }
             }
@@ -246,11 +263,17 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 搜尋檢驗紀錄
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchResultsByLotNumber_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                RecordHeader.Text = string.Empty;
+                //RecordHeader.Text = string.Empty;
+                SelectedLotNumber = string.Empty;
                 JawFullSpecInsCol.Clear();
                 string lotNumber = (sender as Button).CommandParameter as string;
 
@@ -258,9 +281,12 @@ namespace ApexVisIns.content
 
                 MainWindow.MongoAccess.FindAll("Spec", filter, out List<JawFullSpecIns> data);
 
+                //RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
+                SelectedLotNumber = lotNumber;
                 if (data.Count > 0)
                 {
-                    RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
+                    //RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
+                    SelectedLotNumber = lotNumber;
                     foreach (JawFullSpecIns item in data)
                     {
                         JawFullSpecInsCol.Add(item);
@@ -274,6 +300,76 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 輸出 .CSV
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ExportCSV_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new()
+            {
+                FileName = string.Empty,
+                Filter = "CSV File(*.csv)|*.csv",
+                InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                (sender as Button).IsEnabled = false;
+
+                await Task.Run(() =>
+                {
+                    string path = saveFileDialog.FileName;
+                    string lotNumber = _selectedLotNumber;
+
+                    JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
+
+                    string expoertTime =
+                        $"輸出日期,{DateTime.Now:yyyy:MM:dd}{Environment.NewLine}" +
+                        $"輸出時間,{DateTime.Now:HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
+
+                    string a = $"批號,{lotNumber}{Environment.NewLine}";
+                    string b =
+                        $"資料日期,{header.DateTime:yyyy:MM:dd}{Environment.NewLine}" +
+                        $"資料時間,{header.DateTime:HH:mm:ss}{Environment.NewLine}";
+
+                    string c = $"項目";
+                    string d = $"數量";
+
+                    foreach (string k in header.LotResults.Keys)
+                    {
+                        c += $",{header.LotResults[k].Name}";
+                        d += $",{header.LotResults[k].Count}";
+                    }
+
+                    c += Environment.NewLine;
+                    d += Environment.NewLine + Environment.NewLine;
+                    //string e = Environment.NewLine;
+
+
+                    string o = $"";
+                    string p = string.Empty;
+
+                    foreach (JawFullSpecIns item in JawFullSpecInsCol)
+                    {
+                        p += $",{item.DateTime:HH:mm:ss}";
+                        foreach (string key in item.Results.Keys)
+                        {
+
+                            p += $",{item.Results[key]}";
+                        }
+
+                        p += item.OK ? ",良品" : ",不良";
+                    }
+
+
+                    File.WriteAllText(path, expoertTime + a + b + c + d);
+                });
+
+                (sender as Button).IsEnabled = true;
+            }
+        }
 
         /// <summary>
         /// 保留但不使用

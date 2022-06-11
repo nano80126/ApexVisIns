@@ -123,6 +123,8 @@ namespace ApexVisIns
             //InitializePanels();
 
             LoadTabItems();
+
+            //Debug.WriteLine($"{string.Empty.ToString() == ""}");
         }
 
         /// <summary>

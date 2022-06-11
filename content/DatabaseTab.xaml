@@ -412,7 +412,22 @@
                     <!--#endregion-->
 
                     <!--#region 檢驗紀錄 DataGrid -->
-                    <TextBlock x:Name="RecordHeader" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>
+                    <!--<TextBlock x:Name="RecordHeader1" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>-->
+                    <DockPanel Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverse}, 
+                        ConverterParameter={x:Static sys:String.Empty}, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBlock x:Name="RecordHeader" DockPanel.Dock="Left" Margin="0 12 0 0" VerticalAlignment="Bottom" FontSize="16" FontWeight="Bold" 
+                                   Text="{Binding SelectedLotNumber, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Padding="12 0" Height="19" DockPanel.Dock="Right" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
+                                materialDesign:ButtonAssist.CornerRadius="10" Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ExportCSV_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="輸出 .CSV" FontSize="14"/>
+                                <materialDesign:PackIcon Kind="FileExport" Margin="8 0 0 0"/>
+                            </StackPanel>
+                        </Button>
+                        <!--<TextBlock x:Name="RecordHeader1" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" 
+                                   Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}"/>-->
+                    </DockPanel>
                     <Separator Margin="0 6"/>
 
                     <DataGrid CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}"

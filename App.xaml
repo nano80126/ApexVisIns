@@ -43,6 +43,8 @@
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
 
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
+            <cvt:StringEqualToVisibility x:Key="StringEqualToVisibility"/>
+            <cvt:StringEqualToVisibilityInverse x:Key="StringEqualToVisibilityInverse"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
             <cvt:StringAllEqualConverter x:Key="StringAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
