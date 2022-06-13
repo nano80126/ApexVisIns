@@ -928,13 +928,26 @@ namespace ApexVisIns.CustomProperty
 {
     public class StatusHelper : DependencyObject
     {
+        /// <summary>
+        /// Hardware is connected
+        /// </summary>
         public static readonly DependencyProperty ConnectedProperty = DependencyProperty.RegisterAttached("Connected", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
-
+        /// <summary>
+        /// Camera is Grabbing
+        /// </summary>
         public static readonly DependencyProperty GrabbingProperty = DependencyProperty.RegisterAttached("IsGrabbing", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
+        /// <summary>
+        /// Motor is alarm
+        /// </summary>
+        public static readonly DependencyProperty MotorAlarmProperty = DependencyProperty.RegisterAttached("MotorAlarm", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
-        public static readonly DependencyProperty AlarmProperty = DependencyProperty.RegisterAttached("Alarm", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
+
+        /// <summary>
+        /// Bit Property
+        /// </summary>
+        public static readonly DependencyProperty BitProperty = DependencyProperty.RegisterAttached("Bit", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
 
         public static void SetConnected(DependencyObject target, bool value)
@@ -957,15 +970,26 @@ namespace ApexVisIns.CustomProperty
             return (bool)target.GetValue(GrabbingProperty);
         }
 
-        public static void SetAlarm(DependencyObject target, bool value)
+        public static void SetMotorAlarm(DependencyObject target, bool value)
         {
-            target.SetValue(AlarmProperty, value);
+            target.SetValue(MotorAlarmProperty, value);
         }
 
-        public static bool GetAlarm(DependencyObject target)
+        public static bool GetMotorAlarm(DependencyObject target)
         {
-            return (bool)target.GetValue(AlarmProperty);
+            return (bool)target.GetValue(MotorAlarmProperty);
         }
+
+        public static void SetBit (DependencyObject target, bool value)
+        {
+            target.SetValue(BitProperty, value);
+        }
+
+        public static bool GetBit(DependencyObject target)
+        {
+            return (bool)target.GetValue(BitProperty);
+        }
+
     }
 
     public class ProcedureBlock : DependencyObject

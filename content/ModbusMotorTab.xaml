@@ -4,6 +4,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"             
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                        xmlns:ctProperty="clr-namespace:ApexVisIns.CustomProperty"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
             xmlns:app="clr-namespace:ApexVisIns"
             xmlns:local="clr-namespace:ApexVisIns.content" 
@@ -195,6 +196,86 @@
         <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
                    Background="{StaticResource ColorSecondaryTransparent}"/>
 
+
+        <!--#region NewRegion -->
+        <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
+            <StackPanel.Resources>
+                
+            </StackPanel.Resources>
+            <!--//-->
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" Background="WhiteSmoke" 
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="MotorStatusHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="AxisArrowInfo" Width="30" Height="26"/>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="伺服軸狀態" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.Resources>
+                            <Style TargetType="Ellipse" x:Key="DiSignal">
+                                <Setter Property="Width" Value="20"/>
+                                <Setter Property="Height" Value="20"/>
+                                <Setter Property="Margin" Value="0 4"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Stroke" Value="{StaticResource ColorYellowTransparent}"/>
+                                <Setter Property="StrokeThickness" Value="1"/>
+                                <Setter Property="Fill" Value="{StaticResource ColorSecondary}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Bit), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                        <Setter Property="Fill" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+                            <x:Array Type="sys:String" x:Key="strs">
+                                <sys:String>1</sys:String>
+                                <sys:String>2</sys:String>
+                                <sys:String>3</sys:String>
+                            </x:Array>
+                        </Grid.Resources>
+
+                        <ItemsControl ItemsSource="{Binding Source={StaticResource strs}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="8 0" HorizontalAlignment="Right">
+                                        <TextBlock Margin="12 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="DIX"/>
+                                        <TextBlock Margin="0 0 24 0" MinWidth="80" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" Text="SVON"/>
+                                        <!--// 這邊用 String formaet 顯示 DIX 和 功能-->
+                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="True" Style="{StaticResource DiSignal}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0" Background="{StaticResource ColorSecondaryTransparent}"/>
+
+                    </Grid>
+                </DockPanel>
+            </materialDesign:Card>
+        </StackPanel>
+        <!--#endregion-->
+
+
+        <Grid Grid.Column="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="50*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="1" Background="Tan"/>
+            <GridSplitter Grid.Row="1"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Black" ShowsPreview="True" Height="3" />
+            <StackPanel Grid.Row="2" Grid.Column="0" Background="Brown"/>
+        </Grid>
 
 
         <!-- Separator -->
