@@ -197,8 +197,6 @@
                 <!--//-->
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         ToolTip="運動控制頁面" ToolTipService.Placement="Right"
-                         ToolTipService.VerticalOffset="11" ToolTipService.HorizontalOffset="8"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
                          IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
                     Converter={StaticResource NumberGreaterConvert}, ConverterParameter=5, UpdateSourceTrigger=PropertyChanged}"

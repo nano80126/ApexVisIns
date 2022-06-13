@@ -115,7 +115,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //InitDateTimePickers();
+            // InitDateTimePickers();
 
             if (!loaded)
             {
@@ -314,57 +314,69 @@ namespace ApexVisIns.content
                 InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}"
             };
 
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 (sender as Button).IsEnabled = false;
 
                 await Task.Run(() =>
                 {
-                    string path = saveFileDialog.FileName;
-                    string lotNumber = _selectedLotNumber;
-
-                    JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
-
-                    string expoertTime =
-                        $"輸出日期,{DateTime.Now:yyyy:MM:dd}{Environment.NewLine}" +
-                        $"輸出時間,{DateTime.Now:HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
-
-                    string a = $"批號,{lotNumber}{Environment.NewLine}";
-                    string b =
-                        $"資料日期,{header.DateTime:yyyy:MM:dd}{Environment.NewLine}" +
-                        $"資料時間,{header.DateTime:HH:mm:ss}{Environment.NewLine}";
-
-                    string c = $"項目";
-                    string d = $"數量";
-
-                    foreach (string k in header.LotResults.Keys)
+                    try
                     {
-                        c += $",{header.LotResults[k].Name}";
-                        d += $",{header.LotResults[k].Count}";
-                    }
+                        string path = saveFileDialog.FileName;
+                        string lotNumber = _selectedLotNumber;
 
-                    c += Environment.NewLine;
-                    d += Environment.NewLine + Environment.NewLine;
-                    //string e = Environment.NewLine;
+                        JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
 
+                        string expoertTime =
+                                $"輸出日期,{DateTime.Now:yyyy:MM:dd}{Environment.NewLine}" +
+                                $"輸出時間,{DateTime.Now:HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
 
-                    string o = $"";
-                    string p = string.Empty;
+                        string a = $"批號,{lotNumber}{Environment.NewLine}";
+                        string b =
+                                $"資料日期,{header.DateTime:yyyy:MM:dd}{Environment.NewLine}" +
+                                $"資料時間,{header.DateTime:HH:mm:ss}{Environment.NewLine}";
 
-                    foreach (JawFullSpecIns item in JawFullSpecInsCol)
-                    {
-                        p += $",{item.DateTime:HH:mm:ss}";
-                        foreach (string key in item.Results.Keys)
+                        string c = $"項目";
+                        string d = $"數量";
+
+                        foreach (string k in header.LotResults.Keys)
                         {
-
-                            p += $",{item.Results[key]}";
+                            c += $",{header.LotResults[k].Name}";
+                            d += $",{header.LotResults[k].Count}";
                         }
 
-                        p += item.OK ? ",良品" : ",不良";
+                        c += Environment.NewLine;
+                        d += Environment.NewLine + Environment.NewLine;
+                        // string e = Environment.NewLine;
+
+                        string o = $"時間";
+                        string p = string.Empty;
+
+                        bool ResultHeaderAppended = false;
+                        foreach (JawFullSpecIns item in JawFullSpecInsCol)
+                        {
+                            p += $"{item.DateTime:HH:mm:ss}";
+
+                            //foreach (string key in item.Results.Keys)
+                            foreach (string key in header.LotResults.Keys)
+                            {
+                                if (key == "good") { continue; }
+                                if (!ResultHeaderAppended) { o += $",{header.LotResults[key].Name}"; }
+                                p += $",{item.Results[key]:f4}";
+                            }
+                            ResultHeaderAppended = true;
+
+                            p += (item.OK ? ",良品" : ",不良") + Environment.NewLine;
+                        }
+                        o += $",結果{Environment.NewLine}";
+
+                        File.WriteAllText(path, expoertTime + a + b + c + d + o + p);
                     }
-
-
-                    File.WriteAllText(path, expoertTime + a + b + c + d);
+                    catch (Exception ex)
+                    {
+                        MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, ex.Message);
+                    }
                 });
 
                 (sender as Button).IsEnabled = true;

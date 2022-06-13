@@ -273,6 +273,11 @@ namespace ApexVisIns
             ModeWindow modeWindow = new() { Owner = this };
             if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}, MainWindow.xaml Line: 280"); }
             #endregion
+
+
+            #region 保留測試區
+
+            #endregion
         }
 
         /// <summary>
@@ -352,6 +357,13 @@ namespace ApexVisIns
                         //    FocusVisualStyle = null
                         //};
                         //tabItem.Content = MotionTab;
+                        ModbusMotorTab modbusMotorTab = new ModbusMotorTab()
+                        {
+                            Name = "MotorTab",
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = modbusMotorTab;
                         break;
                     case 3:
                         DatabaseTab = new DatabaseTab()

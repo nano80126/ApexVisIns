@@ -124,7 +124,6 @@
                     </Style>
                 </materialDesign:Card.Style>
                 -->
-
                 <StackPanel Orientation="Vertical" Margin="2 0">
                     <ItemsControl ItemsSource="{Binding CameraConfigs, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                         <ItemsControl.ItemsPanel>

@@ -1,0 +1,211 @@
+﻿<StackPanel x:Class="ApexVisIns.content.ModbusMotorTab"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"             
+            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:app="clr-namespace:ApexVisIns"
+            xmlns:local="clr-namespace:ApexVisIns.content" 
+            mc:Ignorable="d" 
+            d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Setter Property="Height" Value="780" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window},AncestorLevel=1}}" Value="Maximized">
+                        <Setter Property="Height" Value="960"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <!--//-->
+        <Grid.ColumnDefinitions>
+            <!--1st-->
+            <ColumnDefinition Width="auto"/>
+            <!--Separator-->
+            <ColumnDefinition Width="auto"/>
+            <!--2nd-->
+            <ColumnDefinition Width="1*"/>
+            <!--Separator-->
+            <ColumnDefinition Width="auto"/>
+            <!--3rd-->
+            <ColumnDefinition Width="1*"/>
+            <!--Separator-->
+            <ColumnDefinition Width="auto"/>
+            <!--4th-->
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <!--//-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <!--#region 1st Column, 1st Row, 馬達連線 -->
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" Orientation="Vertical" Width="300" VerticalAlignment="Top" Background="{x:Null}">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                </Style>
+            </StackPanel.Resources>
+            
+            <!--#region COMPORT 選擇 -->
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="ComHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="SerialPort" Width="30" Height="26"/>
+                        <!--//-->
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="序列埠選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.Resources>
+                            <x:Array x:Key="Bauds" Type="sys:Int32">
+                                <sys:Int32>4800</sys:Int32>
+                                <sys:Int32>9600</sys:Int32>
+                                <sys:Int32>19200</sys:Int32>
+                                <sys:Int32>38400</sys:Int32>
+                                <sys:Int32>57600</sys:Int32>
+                                <sys:Int32>115200</sys:Int32>
+                            </x:Array>
+
+                            <x:Array x:Key="Protocols" Type="sys:String">
+                                <sys:String>E,8,1</sys:String>
+                                <sys:String>E,8,2</sys:String>
+                            </x:Array>
+                        </Grid.Resources>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <!--//-->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <!--//-->
+                        <TextBlock Text="序列埠" Grid.Column="0" Grid.Row="0"/>
+                        <ComboBox Grid.Column="1" x:Name="ComportSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  materialDesign:HintAssist.Hint="COM"
+                                  ItemsSource="{Binding ComPortSource, Source={StaticResource SerialEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  MouseRightButtonUp="Comport_MouseRightButtonUp"
+                                  Margin="0 4"/>
+                        <!--//-->
+                        <TextBlock Grid.Row="1" Text="Baud"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="BaudSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  ItemsSource="{Binding Source={StaticResource Bauds}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  Margin="0 4" SelectedIndex="0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <!--//-->
+                        <TextBlock Grid.Row="2" Text="通訊協定"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  ItemsSource="{Binding Source={StaticResource Protocols}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  Margin="0 4" SelectedIndex="0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <!--//-->
+                        <Button Grid.Row="3" Grid.Column="1" Padding="0 0" Margin="0 4 0 0" Height="{Binding ActualHeight, ElementName=ComportSelector, Mode=OneWay}" 
+                                Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="SerialPortConnect_Click">
+                            <TextBlock Text="連線" Margin="0"/>
+                        </Button>
+                    </Grid>
+                </DockPanel>
+            </materialDesign:Card>
+            <!--#endregion-->
+            <!--#region 站號選擇 -->
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="AntiqueWhite">
+                <DockPanel Background="Transparent" Margin="2 0">
+                    <DockPanel x:Name="StationHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="FlagTriangle" Width="30" Height="26"/>
+                        <!--//-->
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="站號選擇" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <DockPanel>
+                        <DockPanel.Resources>
+                            <x:Array x:Key="Stations" Type="sys:Int32">
+                                <sys:Int32>0x01</sys:Int32>
+                                <sys:Int32>0x02</sys:Int32>
+                                <sys:Int32>0x03</sys:Int32>
+                                <sys:Int32>0x04</sys:Int32>
+                                <sys:Int32>0x05</sys:Int32>
+                                <sys:Int32>0x06</sys:Int32>
+                                <sys:Int32>0x07</sys:Int32>
+                                <sys:Int32>0x08</sys:Int32>
+                                <sys:Int32>0x09</sys:Int32>
+                                <sys:Int32>0x0A</sys:Int32>
+                                <sys:Int32>0x0B</sys:Int32>
+                                <sys:Int32>0x0C</sys:Int32>
+                                <sys:Int32>0x0D</sys:Int32>
+                                <sys:Int32>0x0E</sys:Int32>
+                            </x:Array>
+                        </DockPanel.Resources>
+                        <!--//-->
+                        <TextBlock Text="站號" DockPanel.Dock="Left"/>
+                        <ComboBox DockPanel.Dock="Right" Grid.Row="2" Grid.Column="1" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                  materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
+                                  ItemsSource="{Binding Source={StaticResource Stations}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                  Margin="0 4" SelectedIndex="0"
+                                  MinWidth="80">
+                            <ComboBox.Resources>
+                                <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}"/>
+                            </ComboBox.Resources>
+                            
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StringFormat={}{0:X2}H}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </DockPanel>
+                </DockPanel>
+            </materialDesign:Card>
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+
+        <!-- Separator -->
+        <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+
+
+        <!-- Separator -->
+        <Separator Grid.Column="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+
+        <!-- Separator -->
+        <Separator Grid.Column="5" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
+
+
+    </Grid>
+</StackPanel>
