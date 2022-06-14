@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ApexVisIns.Control
+namespace LockPlate.Control
 {
     /// <summary>
     /// ProcedureBlock.xaml 的互動邏輯

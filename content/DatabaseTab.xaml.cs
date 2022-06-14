@@ -19,13 +19,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ApexVisIns.Product;
+using LockPlate.Product;
 using Microsoft.Win32;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     /// <summary>
     /// DatabaseTab.xaml 的互動邏輯

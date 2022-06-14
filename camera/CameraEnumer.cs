@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// Basler Camera Enumerator

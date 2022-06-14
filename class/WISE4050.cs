@@ -1,7 +1,7 @@
-﻿using ApexVisIns.Driver;
+﻿using LockPlate.Driver;
 using System;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     public class WISE4050 : TCPIPBase
     {

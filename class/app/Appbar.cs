@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 
-namespace ApexVisIns
+namespace LockPlate
 {
     public partial class MainWindow : Window
     {

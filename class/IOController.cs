@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// Advantech PCI 1730U I/O Card 控制器

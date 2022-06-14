@@ -17,7 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// IO_Window.xaml 的互動邏輯

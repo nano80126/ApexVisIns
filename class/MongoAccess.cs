@@ -12,7 +12,7 @@ using MongoDB.Driver;
 using MongoDB.Libmongocrypt;
 
 
-namespace ApexVisIns
+namespace LockPlate
 {
 
     /// <summary>

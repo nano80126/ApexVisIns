@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// Basler Camera Information, for camera enumerator

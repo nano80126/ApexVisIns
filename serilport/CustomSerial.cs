@@ -7,7 +7,7 @@ using System.IO.Ports;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     interface ICustomSerial
     {

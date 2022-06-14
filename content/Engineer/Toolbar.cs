@@ -6,13 +6,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using ApexVisIns.Algorithm;
+using LockPlate.Algorithm;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     public partial class EngineerTab : StackPanel
     {

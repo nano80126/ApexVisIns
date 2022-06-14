@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     /// <summary>
     /// ModbusMoterTab.xaml 的互動邏輯

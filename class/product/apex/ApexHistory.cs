@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApexVisIns.Product
+namespace LockPlate.Product
 {
     public class ApexHistory
     {

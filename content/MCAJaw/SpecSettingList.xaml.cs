@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     /// <summary>
     /// SpecSettingList.xaml 的互動邏輯

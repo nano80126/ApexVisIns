@@ -20,7 +20,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     /// <summary>
     /// Programming.xaml 的互動邏輯

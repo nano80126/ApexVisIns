@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApexVisIns.Algorithm
+namespace LockPlate.Algorithm
 {
     public abstract class Algorithm : IDisposable
     {

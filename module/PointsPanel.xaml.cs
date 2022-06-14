@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace ApexVisIns.module
+namespace LockPlate.module
 {
     /// <summary>
     /// PointsPanel.xaml 的互動邏輯

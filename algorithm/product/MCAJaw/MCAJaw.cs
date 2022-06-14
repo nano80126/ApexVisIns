@@ -1,4 +1,4 @@
-﻿using ApexVisIns.Product;
+﻿using LockPlate.Product;
 using Basler.Pylon;
 using OpenCvSharp;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ApexVisIns
+namespace LockPlate
 {
 
     public partial class MainWindow : System.Windows.Window

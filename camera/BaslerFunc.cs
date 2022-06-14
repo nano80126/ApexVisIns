@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using Basler.Pylon;
 using OpenCvSharp;
 using System.Windows.Media;
-using ApexVisIns.content;
+using LockPlate.content;
 using System.Threading;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// General Basler Function For Some Operation (暫時保留)

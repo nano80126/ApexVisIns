@@ -1,5 +1,5 @@
-﻿using ApexVisIns.content;
-using ApexVisIns.Product;
+﻿using LockPlate.content;
+using LockPlate.Product;
 using MaterialDesignThemes.Wpf;
 using OpenCvSharp;
 using System;
@@ -20,7 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -165,7 +165,7 @@ namespace ApexVisIns
             //Debug.WriteLine($"------------------------");
 
             #region Find Resource
-            MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer = FindResource(nameof(LockPlate.MsgInformer)) as MsgInformer;
             MsgInformer.EnableCollectionBinding();
             MsgInformer.ProgressValueChanged += MsgInformer_ProgressValueChanged;   // 綁定 ProgressBar Value Changed 事件
             MsgInformer.EnableProgressBar();
@@ -924,7 +924,7 @@ namespace ApexVisIns
 /// <summary>
 /// 自訂義 property 用
 /// </summary>
-namespace ApexVisIns.CustomProperty
+namespace LockPlate.CustomProperty
 {
     public class StatusHelper : DependencyObject
     {

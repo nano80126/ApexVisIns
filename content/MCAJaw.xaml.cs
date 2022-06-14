@@ -1,4 +1,4 @@
-﻿using ApexVisIns.Product;
+﻿using LockPlate.Product;
 using Basler.Pylon;
 using MongoDB.Driver;
 using System;
@@ -19,7 +19,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ApexVisIns.content
+namespace LockPlate.content
 {
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯

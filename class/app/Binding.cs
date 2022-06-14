@@ -17,7 +17,7 @@ using MongoDB.Libmongocrypt;
 using MongoDB.Bson.Serialization.Attributes;
 
 
-namespace ApexVisIns
+namespace LockPlate
 {
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     /// This file is for binding data of application (public bindings) 

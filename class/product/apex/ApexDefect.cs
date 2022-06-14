@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace ApexVisIns.Product
+namespace LockPlate.Product
 {
     public class ApexDefect : INotifyPropertyChanged, IDisposable
     {

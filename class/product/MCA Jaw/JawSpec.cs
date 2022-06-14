@@ -11,7 +11,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using MongoDB.Bson;
 
-namespace ApexVisIns.Product
+namespace LockPlate.Product
 {
     /// <summary>
     /// MCA Jaw 規格輸出

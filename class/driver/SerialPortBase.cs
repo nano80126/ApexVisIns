@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 
-namespace ApexVisIns.Driver
+namespace LockPlate.Driver
 {
     internal interface ISerialPortBase
     {

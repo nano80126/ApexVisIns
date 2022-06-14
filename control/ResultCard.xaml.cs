@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
 
-namespace ApexVisIns.Control
+namespace LockPlate.Control
 {
     /// <summary>
     /// ResultCard.xaml 的互動邏輯
