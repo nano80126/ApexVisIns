@@ -50,13 +50,42 @@ namespace ApexVisIns
             MotorNumber = motors;
         }
 
+        /// <summary>
+        /// 數位輸入
+        /// </summary>
+        public ObservableCollection<IOChannel> DIs = new();
 
+        /// <summary>
+        /// 數位輸出
+        /// </summary>
+        public ObservableCollection<IOChannel> DOs = new();
+
+
+        #region Private Methods
+
+
+
+        private void ReadIO()
+        {
+
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 寫入命令
+        /// </summary>
+        /// <param name="data"></param>
         protected override void Write(byte[] data)
         {
             base.Write(data);
         }
 
-
+        /// <summary>
+        /// 讀取回傳
+        /// </summary>
+        /// <returns></returns>
         protected byte[] Read()
         {
             byte[] buffer = new byte[16];
@@ -67,7 +96,38 @@ namespace ApexVisIns
             return buffer;
         }
 
+
+
+
+
+
+
+
+        public class IOChannel
+        {
+            // string Name => get
+
+            public string Name => Input ? $"DI{Number}" : $"DO{Number}";
+
+            public bool Input { get; set; }
+
+            public int Number { get; set; }
+
+            public string Function { get; set; }
+
+            public bool On { get; set; }
+
+            #region PropertyChanged
+            //public event PropertyChangedEventHandler PropertyChanged;
+            //private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            //{
+            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            //} 
+            #endregion
+        }
     }
+
+
 }
 
 

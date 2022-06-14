@@ -230,6 +230,15 @@
                                 </Style.Triggers>
                             </Style>
 
+
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorSecondary}"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+
                             <x:Array Type="sys:String" x:Key="strs">
                                 <sys:String>1</sys:String>
                                 <sys:String>2</sys:String>
@@ -237,7 +246,29 @@
                             </x:Array>
                         </Grid.Resources>
 
-                        <ItemsControl ItemsSource="{Binding Source={StaticResource strs}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="I/O資訊" Margin="0 0 0 0"/>
+
+                        <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Source={StaticResource strs}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
@@ -255,8 +286,60 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Row="1" Grid.ColumnSpan="2" Width="1" Margin="0" Background="{StaticResource ColorSecondaryTransparent}"/>
 
-                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0" Background="{StaticResource ColorSecondaryTransparent}"/>
+                        <Separator Grid.Row="2" Grid.ColumnSpan="2" Margin="0 8"/>
+
+                        <ItemsControl Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Source={StaticResource strs}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="8 0" HorizontalAlignment="Right">
+                                        <TextBlock Margin="12 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="DIX"/>
+                                        <TextBlock Margin="0 0 24 0" MinWidth="80" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" Text="SVON"/>
+                                        <!--// 這邊用 String formaet 顯示 DIX 和 功能-->
+                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="True" Style="{StaticResource DiSignal}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.Row="3" Grid.ColumnSpan="2"  Width="1" Margin="0" Background="{StaticResource ColorSecondaryTransparent}"/>
+
+                        <Separator Grid.Row="4" Grid.ColumnSpan="2" Margin="0 8" Background="{StaticResource ColorOrange}"/>
+
+                        <TextBlock Grid.Row="5" Text="位置資訊"/>
+                        
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="120" Foreground="Black"
+                                   Text="命令 Command" TextAlignment="Left" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="120" Foreground="Black"
+                                   Text="實際 Actual" TextAlignment="Left"  FontWeight="SemiBold" FontSize="14"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+
+                        <Separator Grid.Row="8" Grid.ColumnSpan="2" Margin="0 8" Background="{StaticResource ColorOrange}"/>
+
+                        <TextBlock Grid.Row="9" Text="狀態"/>
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="120" Foreground="Black"
+                                   Text="警報" TextAlignment="Left"  FontWeight="SemiBold" FontSize="14"/>
+                        <TextBox Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        
+
+                        <Button Grid.Row="11" Grid.Column="1" Content="重置錯誤" 
+                                Style="{StaticResource MaterialDesignOutlinedButton}"/>
 
                     </Grid>
                 </DockPanel>
