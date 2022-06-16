@@ -36,8 +36,11 @@
   <ItemGroup>
     <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
+    <Compile Remove="class\ShihlinSDE.cs" />
     <Compile Remove="content\MainTab.xaml.cs" />
+    <Compile Remove="content\ModbusMotorTab.xaml.cs" />
     <Compile Remove="content\MotionTab.xaml.cs" />
+    <Compile Remove="IOWindow.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +53,9 @@
 
   <ItemGroup>
     <Page Remove="content\MainTab.xaml" />
+    <Page Remove="content\ModbusMotorTab.xaml" />
     <Page Remove="content\MotionTab.xaml" />
+    <Page Remove="IOWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -61,14 +61,11 @@ namespace ApexVisIns
         #endregion
 
         #region I/O Controller
-        public static IOController IOController { get; set; }
-
         public static WISE4050 ModbusTCPIO { get; set; }
-
-        public IOWindow IOWindow { get; set; }
         #endregion
 
         #region EtherCAT Motion
+        [Obsolete]
         public static ServoMotion ServoMotion { get; set; }
         #endregion
 
@@ -128,32 +125,6 @@ namespace ApexVisIns
         }
 
         /// <summary>
-        /// 初始化 Panel's MainWindow
-        /// </summary>
-        [Obsolete]
-        private void InitializePanels()
-        {
-            #region Set Tabs's and Panels's MainWindows ref
-            // MainTab
-            //MainTab.MainWindow = this;
-            // MCA Jaw Tab
-#if true
-            //JawTab.MainWindow = this;
-            // Device Tab
-            //DeviceTab.MainWindow = this;
-            // Motion Tab
-            //MotionTab.MainWindow = this;
-            // Engineer Tab
-            //EngineerTab.MainWindow = this;
-            //EngineerTab.ConfigPanel.MainWindow = this;
-            //EngineerTab.LightPanel.MainWindow = this;
-            //EngineerTab.DigitalIOPanel.MainWindow = this;
-#endif
-            #endregion
-
-        }
-
-        /// <summary>
         /// 主視窗載入，
         /// 資源尋找等初始化在此
         /// </summary>
@@ -204,9 +175,6 @@ namespace ApexVisIns
             #endregion
 
             #region IO Controller
-            // PCI Card
-            IOController = FindResource(nameof(IOController)) as IOController;
-            IOController.EnableCollectionBinding(); // 啟用 Collection Binding，避免跨執行緒錯誤
             // IO Module (WISE-4050/LAN)
             ModbusTCPIO = FindResource(nameof(ModbusTCPIO)) as WISE4050;
             #endregion
@@ -294,16 +262,8 @@ namespace ApexVisIns
             SerialEnumer?.Dispose();
             // LightEnumer.WorkerEnd(); // deprecated class
 
-            ServoMotion?.Dispose();      // 處置 ServoMotion
-            IOController?.Dispose();     // 處置 IOController
-
             MsgInformer?.DisableCollectionBinding();
             MsgInformer?.DisposeProgressTask();
-
-            if (IOWindow != null)
-            {
-                IOWindow.Close();
-            }
         }
 
         /// <summary>
@@ -349,21 +309,8 @@ namespace ApexVisIns
                         };
                         tabItem.Content = CameraTab;
                         break;
-                    case 2:  // 這邊可以刪
-                        //MotionTab = new MotionTab()
-                        //{
-                        //    Name = "MotionTab",
-                        //    Focusable = true,
-                        //    FocusVisualStyle = null
-                        //};
-                        //tabItem.Content = MotionTab;
-                        ModbusMotorTab modbusMotorTab = new ModbusMotorTab()
-                        {
-                            Name = "MotorTab",
-                            Focusable = true,
-                            FocusVisualStyle = null
-                        };
-                        tabItem.Content = modbusMotorTab;
+                    case 2:
+                        // 空位保留
                         break;
                     case 3:
                         DatabaseTab = new DatabaseTab()
@@ -390,47 +337,6 @@ namespace ApexVisIns
                         break;
                 }
             }
-        }
-
-        /// <summary>
-        /// 開啟 IO Window
-        /// </summary>
-        public void CreateIOWindow()
-        {
-            //IOThread = new(() =>
-            //{
-
-            if (IOWindow == null)
-            {
-                IOWindow = new IOWindow(this);
-            }
-            IOWindow?.Show();
-            //    IOWindow.Closed += (sender2, e2) => IOWindow.Dispatcher.InvokeShutdown();
-            //    System.Windows.Threading.Dispatcher.Run();
-            //});
-            //IOThread.SetApartmentState(ApartmentState.STA);
-            //IOThread.Start();
-        }
-
-        /// <summary>
-        /// 開啟 IO Window
-        /// </summary>
-        [Obsolete("No Used in MCA Jaw")]
-        public void OpenIOWindow()
-        {
-            //IOThread.SetApartmentState(ApartmentState.STA);
-            //IOThread.Start();
-        }
-
-        /// <summary>
-        /// 顯示 IO 視窗
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowIOWindow_Click(object sender, RoutedEventArgs e)
-        {
-            IOWindow.Show();
-            IOWindow.Activate();
         }
 
         /// <summary>
@@ -469,15 +375,6 @@ namespace ApexVisIns
                 }
             }
 
-            // Servo Off & 關閉 Motion 控制 
-            if (ServoMotion != null && ServoMotion.DeviceOpened)
-            {
-                ServoMotion.SetAllServoOff();
-                ServoMotion.DisableAllTimer();
-                ServoMotion.CloseDevice();
-            }
-
-
             // 重製 & 關閉所有光源
             if (LightCtrls != null)
             {
@@ -498,8 +395,6 @@ namespace ApexVisIns
             }
 
             _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
-            _ = SpinWait.SpinUntil(() => ServoMotion == null || !ServoMotion.DeviceOpened, 3000);
-            // SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
             _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
             Close();
@@ -617,7 +512,6 @@ namespace ApexVisIns
             {
                 //LoginFlag = true;
                 AuthLevel = 9;
-                if (IOWindow != null) { IOWindow.PropertyChange(nameof(LoginFlag)); }
                 e.Handled = true;
             }
             else

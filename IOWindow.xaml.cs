@@ -104,11 +104,11 @@ namespace ApexVisIns
 
         private void RefreshIO()
         {
-            for (int i = 0; i < MainWindow.IOController.DiArrayColl.Count; i++)
-            {
-                ErrorCode err = MainWindow.IOController.ReadDI(i);
-                Debug.WriteLine($"ErrorCode: {err}");
-            }
+            //for (int i = 0; i < MainWindow.IOController.DiArrayColl.Count; i++)
+            //{
+            //    //ErrorCode err = MainWindow.IOController.ReadDI(i);
+            //    //Debug.WriteLine($"ErrorCode: {err}");
+            //}
         }
 
         #region PropertyChanged

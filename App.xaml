@@ -51,8 +51,6 @@
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
-            <!--<cvt:GetIndexConvertor x:Key="GetIndexConvertor"/>-->
-            <!--<cvt:GetListElementConvert x:Key="GetListElementConvert"/>-->
             <!--#endregion-->
 
             <!--#region App 應用程式 Resources -->
@@ -64,13 +62,12 @@
             <!--#region 相機 Resources -->
             <!--相機列舉器-->
             <local:CameraEnumer x:Key="CameraEnumer"/>
-            <!-- 相機 DEBUG 測試使用 -->
+            <!-- 測試用相機 -->
             <local:BaslerCam x:Key="BaslerCam" ConfigName="Default">
                 <local:BaslerCam.Config>
                     <local:BaslerConfig Name="Default"/>
                 </local:BaslerCam.Config>
             </local:BaslerCam>
-            
             <!-- 相機陣列 4 台-->
             <x:Array x:Key="BaslerCams" Type="local:BaslerCam">
                 <!--  Camera 1 // ConfigName 為 EnginnerTab 使用 -->
@@ -91,27 +88,12 @@
                         <local:BaslerConfig Name="Default"/>
                     </local:BaslerCam.Config>
                 </local:BaslerCam>
-                <!-- Camera 4 -->
-                <!--<local:BaslerCam ConfigName="Default">
-                    <local:BaslerCam.Config>
-                        <local:BaslerConfig Name="Default"/>
-                    </local:BaslerCam.Config>
-                </local:BaslerCam>-->
             </x:Array>
             
-            <!--EtherCAT for ServoMotion -->
-            <!--Motion 列舉-->
-            <!--<local:MotionEnumer x:Key="MotionEnumer"/>-->
-            <!--Motion 物件-->
-            <!--<local:ServoMotion x:Key="ServoMotion"/>-->
-            <!--#endregion-->
-
             <!--#region 光源控制 Resources -->
             <!--Serial Port 列舉-->
             <local:SerialEnumer x:Key="SerialEnumer"/>
-            <!--<local:LightEnumer x:Key="LightEnumer"/> 待移除 -->
-            <!--光源控制器-->
-            <!--<local:LightController x:Key="LightController" ChannelNumber="4"/>-->
+            <!--測試用光源控制器-->
             <local:LightSerial x:Key="LightCtrl" ChannelNumber="4"/>
             <!--光源控制器陣列-->
             <x:Array x:Key="LightCtrls" Type="local:LightSerial">
@@ -121,8 +103,6 @@
             <!--#endregion-->
 
             <!--#region IO 控制 Resources -->
-            <!--<local:IOController x:Key="IOController" Description="DemoDevice,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>-->
-            <local:IOController x:Key="IOController" Description="PCI-1730,BID#0" EnabledDiPorts="2" EnabledDoPorts="2"/>
             <local:WISE4050 x:Key="ModbusTCPIO" IP="192.168.1.1" Port="502"/>
             <!--#endregion-->
 

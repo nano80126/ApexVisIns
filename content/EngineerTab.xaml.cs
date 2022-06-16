@@ -106,7 +106,7 @@ namespace ApexVisIns.content
         {
             ConfigPanel.EngineerTab = this;
             LightPanel.EngineerTab = this;
-            DigitalIOPanel.EngineerTab = this;
+            //DigitalIOPanel.EngineerTab = this;
         }
 
         /// <summary>

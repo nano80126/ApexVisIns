@@ -31,22 +31,24 @@ namespace ApexVisIns.content
         /// Jaw 檢驗結果 (綁 Lot)
         /// </summary>
         public JawInspection JawInspection { get; set; }
-
         /// <summary>
         /// Jaw 規格設定 (包含檢驗結果)
         /// </summary>
         public JawSpecGroup JawSpecGroup { get; set; }
-
-        // public JawSpecGroup JawSpecGroup2 { get; set; }
         #endregion
 
         #region Variables
+        /// <summary>
+        /// 初始化用 TokenSource
+        /// </summary>
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
         private int _jawTab;
 
+#if false
         private Task _testTask;
-        private CancellationTokenSource _testCancelTokenSource;
+        private CancellationTokenSource _testCancelTokenSource; 
+#endif
 
         public enum INS_STATUS
         {
@@ -65,9 +67,13 @@ namespace ApexVisIns.content
         }
 
         private INS_STATUS _status = INS_STATUS.UNKNOWN;
-
+        /// <summary>
+        /// 規格路徑
+        /// </summary>
         private string SpecDirectory { get; } = @$"specification";
-
+        /// <summary>
+        /// 規格檔案
+        /// </summary>
         private string SpecPath { get; } = $@"MCAJaw.json";
         #endregion
 

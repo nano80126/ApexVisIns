@@ -22,8 +22,7 @@ namespace ApexVisIns.content
     /// </summary>
     public partial class CameraTab : StackPanel, INotifyPropertyChanged
     {
-        #region Resources
-
+        #region Resources (xaml 內)
         #endregion
 
         #region Varibles
@@ -50,7 +49,6 @@ namespace ApexVisIns.content
         /// </summary>
         public MainWindow MainWindow { get; set; }
         
-
         /// <summary>
         /// Function Tab(相機、鏡頭)
         /// </summary>

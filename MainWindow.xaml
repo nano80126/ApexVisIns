@@ -342,17 +342,6 @@
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
                             <StackPanel Orientation="Vertical" MinWidth="180">
-                                <Button x:Name="ShowIOWindow" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
-                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
-                                        Click="ShowIOWindow_Click" Visibility="Collapsed">
-                                    <Button.Content>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <materialDesign:PackIcon Width="24" Height="18" Kind="AlarmPanel" VerticalAlignment="Center"/>
-                                            <TextBlock Margin="8 0 0 0 " Text="顯示ＩＯ" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Button.Content>
-                                </Button>
-
                                 <Button FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
                                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
                                         Click="Logout_Click" 
