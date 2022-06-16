@@ -204,6 +204,10 @@ Apex 外觀瑕疵檢測
 * [ ] 0.088 左右差異問題
 	* 初步測試完成
 
+* [ ] 移除多於物件
+	* IO Window
+	* Servomotion
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

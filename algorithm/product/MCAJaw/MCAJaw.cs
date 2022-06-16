@@ -18,8 +18,8 @@ namespace ApexVisIns
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
-        private readonly double cam1Mag = 0.21745;
-        private readonly double cam2Mag = 0.255;
+        private readonly double cam1Mag = 0.2186;
+        private readonly double cam2Mag = 0.2532;
         private readonly double cam3Mag = 0.11;
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
@@ -104,13 +104,13 @@ namespace ApexVisIns
                     // COM2 光源控制器 (24V, 2CH)
                     LightCtrls[1].SetAllChannelValue(96, 0);
                     // 等待光源
-                    _ = SpinWait.SpinUntil(() => false, 80);
+                    _ = SpinWait.SpinUntil(() => false, 150);
 
                     count = 0;
                     // 拍照要 Dispacker
                     Dispatcher.Invoke(() =>
                     {
-                        while (count < 3)
+                        while (count < 2)
                         {
                             cam1.Camera.ExecuteSoftwareTrigger();
                             using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
@@ -150,7 +150,7 @@ namespace ApexVisIns
                     // COM2 光源控制器 (24V, 2CH)
                     LightCtrls[1].SetAllChannelValue(0, 128);
                     // 等待光源
-                    _ = SpinWait.SpinUntil(() => false, 80);
+                    _ = SpinWait.SpinUntil(() => false, 150);
 
                     count = 0;
                     // 拍照要 Dispacker
@@ -373,8 +373,6 @@ namespace ApexVisIns
                 }
                 // Debug.WriteLine($"d005MAX: {d_005Max}");
                 #endregion
-
-                //return;
 
                 #region 計算前開 // LX、RX 前開基準，後面會用到
                 spec = specList?[10];
@@ -680,8 +678,8 @@ namespace ApexVisIns
 
             //Dispatcher.Invoke(() =>
             //{
-            //Cv2.ImShow("Left Canny", leftCanny);
-            //Cv2.ImShow("Right Canny", rightCanny);
+            //  Cv2.ImShow("Left Canny", leftCanny);
+            //  Cv2.ImShow("Right Canny", rightCanny);
             //});
 
             #region 左邊
@@ -731,7 +729,6 @@ namespace ApexVisIns
             sumLength = maxH_R.Sum(line => line.Length());
             // 計算平均 Y 座標
             RightY = maxH_R.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
-
 
 #if false
             Debug.WriteLine($"R Center: {center} {min} {max}");
@@ -901,7 +898,7 @@ namespace ApexVisIns
             // 計算 0.013 距離
             distance = (Math.Abs(topY - botY) * Cam1Unit) + correction;
 
-            Debug.WriteLine($"TopY: {topY} BotY: {botY}");
+            Debug.WriteLine($"{leftRight} TopY: {topY} BotY: {botY}");
             // 計算 offset
             double offset = correction / Cam1Unit;
             double topY_Offset = offset * (topY - (src.Height / 2)) / (topY + botY - src.Height);
@@ -912,7 +909,7 @@ namespace ApexVisIns
             canny.Dispose();
             //Debug.WriteLine(distance);
             
-            Debug.WriteLine($"TopY: {topY} BotY: {botY}, offset: {offset}");
+            Debug.WriteLine($"{leftRight} TopY: {topY} BotY: {botY}, offset: {offset}");
             Debug.WriteLine($"------------------------------------------------");
             //Debug.WriteLine($"{leftRight} :013 Value {distance}");
 
@@ -971,16 +968,16 @@ namespace ApexVisIns
             double sumR = lineR.Sum(line => line.Length());
             rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumR);
 
-            //Dispatcher.Invoke(() =>
-            //{
-            //    Cv2.Rectangle(src, roi, Scalar.Black, 1);
-            //    Cv2.ImShow($"srcBack", new Mat(src, roi));
-            //    Cv2.ImShow($"cannyBack", canny);
-            //});
+            // Dispatcher.Invoke(() =>
+            // {
+            //     Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            //     Cv2.ImShow($"srcBack", new Mat(src, roi));
+            //     Cv2.ImShow($"cannyBack", canny);
+            // });
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
-            //Debug.WriteLine($"Right: {rightX} Left: {leftX} {rightX - leftX}");
+            Debug.WriteLine($"Right: {rightX} Left: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
             // 銷毀 canny
             canny.Dispose();
 

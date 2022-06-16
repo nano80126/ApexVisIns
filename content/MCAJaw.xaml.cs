@@ -757,7 +757,7 @@ namespace ApexVisIns.content
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
-#if true
+#if false
             //if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
 
             //Debug.WriteLine($"{_testTask.Status}");
@@ -781,48 +781,49 @@ namespace ApexVisIns.content
                     DateTime t1 = DateTime.Now;
 #endif
 
-                    if (Status != INS_STATUS.READY) { return; }
+            if (Status != INS_STATUS.READY) { return; }
+            DateTime t1 = DateTime.Now;
 
-                    // 清空當下 Collection
-                    JawSpecGroup.Collection1.Clear();
-                    JawSpecGroup.Collection2.Clear();
-                    JawSpecGroup.Collection3.Clear();
 
-                    //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // 清空當下 Collection
+            JawSpecGroup.Collection1.Clear();
+            JawSpecGroup.Collection2.Clear();
+            JawSpecGroup.Collection3.Clear();
 
-                    Status = INS_STATUS.INSPECTING;
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-                    //bool b = await
-                    bool b =  await Task.Run(() =>
-                    {
-                        JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
-                        MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                        return _jawFullSpecIns;
-                    }).ContinueWith(t =>
-                    {
-                        // 判斷是否插入資料庫
-                        //if (true)
-                        //{
-                        JawFullSpecIns data = t.Result;
-                        data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                        data.DateTime = DateTime.Now;
-                        MongoAccess.InsertOne("Spec", data);
-                        //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                        //Debug.WriteLine(json);
+            Status = INS_STATUS.INSPECTING;
 
-                        //return data.OK;
-                        //}
-                        Status = INS_STATUS.READY;
+            //bool b = await
+            Task.Run(() =>
+                {
+                    JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
+                    MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                    return _jawFullSpecIns;
+                }).ContinueWith(t =>
+                {
+                    // 判斷是否插入資料庫
+                    //if (true)
+                    //{
+                    JawFullSpecIns data = t.Result;
+                    data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                    data.DateTime = DateTime.Now;
+                    MongoAccess.InsertOne("Spec", data);
+                    //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                    //Debug.WriteLine(json);
 
-                        Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
+                    //return data.OK;
+                    //}
+                    Status = INS_STATUS.READY;
 
-                        return data.OK;
-                        //return 
-                    });
+                    Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
-                    if (!b) break;
+                    return data.OK;
+                    //return 
+                });
+            //if (!b) break;
 
-#if true
+#if false
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
                     _ = SpinWait.SpinUntil(() => false || _testCancelTokenSource.IsCancellationRequested, 3000);
