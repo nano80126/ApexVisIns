@@ -343,6 +343,8 @@ namespace ApexVisIns.content
 
                 Dispatcher.Invoke(() =>
                 {
+                    string sn = cam.Camera.CameraInfo[CameraInfoKey.SerialNumber];
+                    //Debug.WriteLine($"SN:{sn}");
                     if (AssistRect.Area > 0)
                     {
 #if false
@@ -369,8 +371,26 @@ namespace ApexVisIns.content
                         //Debug.WriteLine($"{XPos.Length} {string.Join(",", XPos)}");
                         //Cv2.ImShow($"roi", roiMat);
                         Cv2.ImShow($"canny", canny); 
+
 #endif
-                        MainWindow.JawInsSequenceCam1(mat);
+                        //string sn = cam.Camera.CameraInfo[CameraInfoKey.SerialNumber];
+                        //Debug.WriteLine($"SN:{sn}");
+
+                        switch (sn)
+                        {
+                            case "24214356":    // 前相機
+                                MainWindow.JawInsSequenceCam1(mat);
+                                break;
+                            case "24214384":    // 下相機
+                                MainWindow.JawInsSequenceCam2(mat);
+                                break;
+                            case "24115540":    // 側相機
+                                MainWindow.JawInsSequenceCam3(mat);
+                                break;
+                            default:
+                                break;
+                        }
+                        //MainWindow.JawInsSequenceCam1(mat);
                         //MainWindow.JawInsSequenceCam2(mat);
                         //MainWindow.JawInsSequenceCam3(mat);
                     }
