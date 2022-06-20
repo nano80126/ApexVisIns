@@ -208,6 +208,11 @@ namespace ApexVisIns.content
             ShortCutDatePicker.SelectedItem = ShortCutDatePicker.Items[^1];
         }
 
+        /// <summary>
+        /// 日期區間搜尋
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DateTimeFindBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -239,6 +244,11 @@ namespace ApexVisIns.content
             }
         }
 
+        /// <summary>
+        /// 批號搜尋
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LotNumberFindBtn_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -293,6 +303,9 @@ namespace ApexVisIns.content
                         // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()} {item.OK} {string.Join(",", item.Results.Keys)}");
                     }
                 }
+                //Debug.WriteLine(JawFullSpecInsCol[0].Results["0.088R"]);
+                //Debug.WriteLine(JawFullSpecInsCol[0].Results["0.088R"].GetType());
+                //Debug.WriteLine("-------------------------------------");
             }
             catch (Exception ex)
             {
@@ -361,7 +374,8 @@ namespace ApexVisIns.content
                             //foreach (string key in item.Results.Keys)
                             foreach (string key in header.LotResults.Keys)
                             {
-                                if (key == "good") { continue; }
+                                if (!item.Results.ContainsKey(key)) { continue; }
+                                //if (key == "good") { continue; }
                                 if (!ResultHeaderAppended) { o += $",{header.LotResults[key].Name}"; }
                                 p += $",{item.Results[key]:f4}";
                             }

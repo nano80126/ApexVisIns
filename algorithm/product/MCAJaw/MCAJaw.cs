@@ -18,7 +18,7 @@ namespace ApexVisIns
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
-        private readonly double cam1Mag = 0.2186;
+        private readonly double cam1Mag = 0.21772;
         private readonly double cam2Mag = 0.2532;
         private readonly double cam3Mag = 0.11;
 
@@ -783,8 +783,8 @@ namespace ApexVisIns
         public void CalFrontDistanceValue(Mat src, Point leftPt, Point rightPt, out double leftX, out double rightX, out double distance, double correction = 0)
         {
             // 計算 roi
-            Rect leftRoi = new(leftPt.X - 35, leftPt.Y - 85, 26, 40);
-            Rect rightRoi = new(rightPt.X + 9, rightPt.Y - 85, 26, 40);
+            Rect leftRoi = new(leftPt.X - 35, leftPt.Y - 73, 26, 30);
+            Rect rightRoi = new(rightPt.X + 9, rightPt.Y - 73, 26, 30);
 
             double sumLength = 0;
             LineSegmentPoint[] lineV;
@@ -792,15 +792,20 @@ namespace ApexVisIns
             Methods.GetRoiCanny(src, leftRoi, 75, 150, out Mat leftCanny);
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
+            Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
+            Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);
+
             // 左
-            Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 0);
+            Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 2, 3);
             sumLength = lineV.Sum(line => line.Length());
             leftX = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
+            leftX = lineV.Max(x => Math.Max(x.P1.X, x.P2.X));
 
             // 右
-            Methods.GetHoughLinesVFromCanny(rightCanny, rightRoi.Location, out lineV, 5, 0);
+            Methods.GetHoughLinesVFromCanny(rightCanny, rightRoi.Location, out lineV, 5, 2, 3);
             sumLength = lineV.Sum(line => line.Length());
             rightX = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
+            rightX = lineV.Min(x => Math.Min(x.P1.X, x.P2.X));
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
@@ -878,7 +883,7 @@ namespace ApexVisIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
-            Cv2.Rectangle(src, roi, Scalar.Black, 2);
+            //Cv2.Rectangle(src, roi, Scalar.Black, 2);
 
             //Cv2.ImShow($"013canny{leftRight}", canny);
 

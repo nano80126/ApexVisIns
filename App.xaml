@@ -51,6 +51,8 @@
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
+
+            <cvt:DictionaryGetValueConverter x:Key="DictionaryGetValueConverter"/>
             <!--#endregion-->
 
             <!--#region App 應用程式 Resources -->

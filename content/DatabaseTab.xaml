@@ -514,59 +514,73 @@
                             </DataGridTemplateColumn>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088R], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088R}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088L], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088L}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.088T], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088T}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.008R], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008R}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.008R], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008L}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.013R], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013R}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.013L], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013L}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.024R], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024R}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[0.024L], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024L}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[contour], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[back], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=back}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="前開" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[front], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="前開" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=front}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[bfDiff], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=bfDiff}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" Binding="{Binding Results[flatness], StringFormat={}{0:0.0000}, FallbackValue=--}"
+                            <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=flatness}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                         </DataGrid.Columns>

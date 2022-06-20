@@ -208,6 +208,8 @@ Apex 外觀瑕疵檢測
 	* IO Window
 	* Servomotion
 
+* [ ] MCA_Jaw 錯誤捕捉
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

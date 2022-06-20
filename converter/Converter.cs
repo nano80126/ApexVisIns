@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -198,7 +199,6 @@ namespace ApexVisIns.Converter
     }
     #endregion
 
-
     #region 字串 Equal 轉換器
     /// <summary>
     /// 字串 Equal 轉換器
@@ -305,7 +305,6 @@ namespace ApexVisIns.Converter
         }
     }
     #endregion
-
 
     #region 數學運算轉換器
     /// <summary>
@@ -446,11 +445,12 @@ namespace ApexVisIns.Converter
             throw new NotImplementedException();
         }
     }
-
-
     #endregion
 
     #region DateTime 轉換器
+    /// <summary>
+    /// Datetime 轉 LocalTime
+    /// </summary>
     [ValueConversion(typeof(DateTime), typeof(DateTime))]
     public class DateTimeToLocalConverter : IValueConverter
     {
@@ -468,23 +468,7 @@ namespace ApexVisIns.Converter
     #endregion
 
 
-
-
-
-    public class BooleanNotNullOrFalseConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
+    #region Enum 轉換器
     /// <summary>
     /// Enum 轉 Description
     /// </summary>
@@ -524,11 +508,52 @@ namespace ApexVisIns.Converter
             return string.Empty;
         }
     }
+    #endregion
+
+
+    #region Dictionary 轉換器
+    [ValueConversion(typeof(Dictionary<string,double>), typeof(double))]
+    public class DictionaryGetValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((value as Dictionary<string, double>).TryGetValue(parameter as string, out double v))
+            {
+                return v;
+            }
+            else
+            {
+                return "--";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    #endregion
+
+
+
+    public class BooleanNotNullOrFalseConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
     /// <summary>
     /// Multiple value 轉陣列
     /// </summary>
+    [Obsolete("待更新")]
     public class CombineValueConvert : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
