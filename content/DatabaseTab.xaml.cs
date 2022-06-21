@@ -170,6 +170,11 @@ namespace ApexVisIns.content
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
+        /// <summary>
+        /// 重置選擇日期
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ShortCutDatePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DateTime dt;

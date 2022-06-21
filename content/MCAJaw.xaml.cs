@@ -689,13 +689,16 @@ namespace ApexVisIns.content
             }
             else // 若規格列表不存在
             {
-                string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "flatness" };
-                string[] items = new string[] { "0.088-R", "0.088-L", "0.088合", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "平面度" };
-                double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0 };
-                double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0 };
-                double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.007 };
-                double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                double[] correc2 = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contourR", "contourL", "flatness" };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.088和", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度R", "輪廓度L", "平面度" };
+                double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0 };
+                double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0 };
+                double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.007 };
+                //double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                double[] correc = new double[center.Length];
+                Array.Fill(correc, 0);
+                double[] correc2 = new double[center.Length];
+                Array.Fill(correc2, 0);
 
                 JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
                 for (int i = 0; i < keys.Length; i++)
@@ -887,77 +890,6 @@ namespace ApexVisIns.content
         #endregion
 
 
-#if false
-        /// <summary>
-        /// 單張拍攝
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SingleGrab_Click(object sender, RoutedEventArgs e)
-        {
-
-
-
-        }
-
-        /// <summary>
-        /// 啟動連續拍攝
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StartContinuousGrab_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
-            {
-                if (!MainWindow.BaslerCams[i].IsGrabbing)
-                {
-                    MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// 停止連續拍攝
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StopContinuousGrab_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
-            {
-                if (MainWindow.BaslerCams[i].IsGrabbing)
-                {
-                    MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CameraTrigger_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
-            {
-                BaslerCam cam = MainWindow.BaslerCams[i];
-
-                cam.Camera.ExecuteSoftwareTrigger();
-
-                IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
-                OpenCvSharp.Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
-
-                OpenCvSharp.Cv2.ImShow($"mat{i}", mat);
-                // if (MainWindow.BaslerCams[i].IsGrabbing)
-                // {
-                //     MainWindow.Basler_ContinousGrab(MainWindow.BaslerCams[i]);
-                // }
-            }
-        }
-#endif
-
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -965,7 +897,6 @@ namespace ApexVisIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-    
     }
 
     /// <summary>

@@ -902,6 +902,10 @@ namespace ApexVisIns
                 /// </summary>
                 LIGHT,
                 /// <summary>
+                /// JAW Inspection Error
+                /// </summary>
+                JAW, 
+                /// <summary>
                 /// OpenCv Process Error Code
                 /// </summary>
                 OPENCV,

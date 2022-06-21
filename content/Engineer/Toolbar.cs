@@ -174,7 +174,7 @@ namespace ApexVisIns.content
         }
 
         /// <summary>
-        /// 啟動 StreamGrabber，此方法啟動時，改為 RetrieveResult 取得影像，
+        /// 啟動 StreamGrabber，此方法啟動時，改為 RetrieveResult 取得影像
         /// </summary>
         /// <param name="cam"></param>
         private void Basler_StartStreamGrabber(BaslerCam cam)
