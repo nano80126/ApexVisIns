@@ -76,10 +76,10 @@ namespace LockPlate
             // 3. 
             try
             {
-                MainWindow.ServoMotion.ResetAllError();
+                //MainWindow.ServoMotion.ResetAllError();
 
                 // 重新 Servo On
-                MainWindow.ServoMotion.SetAllServoOn();
+                //MainWindow.ServoMotion.SetAllServoOn();
             }
             catch (Exception ex)
             {

@@ -61,15 +61,18 @@ namespace LockPlate
         #endregion
 
         #region I/O Controller
+        [Obsolete("驅動重寫")]
         public static IOController IOController { get; set; }
 
+        [Obsolete("MIM 鎖片沒有使用")]
         public static WISE4050 ModbusTCPIO { get; set; }
 
-        public IOWindow IOWindow { get; set; }
+        //public IOWindow IOWindow { get; set; }
         #endregion
 
-        #region EtherCAT Motion
-        public static ServoMotion ServoMotion { get; set; }
+        #region Motor
+        public static ShihlinSDE ShihlinSDE { get; set; }
+        //public static ServoMotion ServoMotion { get; set; }
         #endregion
 
         #region Database
@@ -198,6 +201,7 @@ namespace LockPlate
             #endregion
 
             #region EtherCAT Motion
+            ShihlinSDE = FindResource(nameof(ShihlinSDE)) as ShihlinSDE;
             // MCA Jaw 用不到
             //ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
             //ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
@@ -294,16 +298,16 @@ namespace LockPlate
             SerialEnumer?.Dispose();
             // LightEnumer.WorkerEnd(); // deprecated class
 
-            ServoMotion?.Dispose();      // 處置 ServoMotion
+            //ServoMotion?.Dispose();      // 處置 ServoMotion
             IOController?.Dispose();     // 處置 IOController
 
             MsgInformer?.DisableCollectionBinding();
             MsgInformer?.DisposeProgressTask();
 
-            if (IOWindow != null)
-            {
-                IOWindow.Close();
-            }
+            //if (IOWindow != null)
+            //{
+            //    IOWindow.Close();
+            //}
         }
 
         /// <summary>
@@ -392,25 +396,6 @@ namespace LockPlate
             }
         }
 
-        /// <summary>
-        /// 開啟 IO Window
-        /// </summary>
-        public void CreateIOWindow()
-        {
-            //IOThread = new(() =>
-            //{
-
-            if (IOWindow == null)
-            {
-                IOWindow = new IOWindow(this);
-            }
-            IOWindow?.Show();
-            //    IOWindow.Closed += (sender2, e2) => IOWindow.Dispatcher.InvokeShutdown();
-            //    System.Windows.Threading.Dispatcher.Run();
-            //});
-            //IOThread.SetApartmentState(ApartmentState.STA);
-            //IOThread.Start();
-        }
 
         /// <summary>
         /// 開啟 IO Window
@@ -422,16 +407,6 @@ namespace LockPlate
             //IOThread.Start();
         }
 
-        /// <summary>
-        /// 顯示 IO 視窗
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowIOWindow_Click(object sender, RoutedEventArgs e)
-        {
-            IOWindow.Show();
-            IOWindow.Activate();
-        }
 
         /// <summary>
         /// 程式完整關閉 
@@ -469,14 +444,6 @@ namespace LockPlate
                 }
             }
 
-            // Servo Off & 關閉 Motion 控制 
-            if (ServoMotion != null && ServoMotion.DeviceOpened)
-            {
-                ServoMotion.SetAllServoOff();
-                ServoMotion.DisableAllTimer();
-                ServoMotion.CloseDevice();
-            }
-
 
             // 重製 & 關閉所有光源
             if (LightCtrls != null)
@@ -498,7 +465,6 @@ namespace LockPlate
             }
 
             _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
-            _ = SpinWait.SpinUntil(() => ServoMotion == null || !ServoMotion.DeviceOpened, 3000);
             // SpinWait.SpinUntil(() => LightCtrls_old.All(ctrl => !ctrl.IsComOpen), 3000);
             _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
 
@@ -617,7 +583,6 @@ namespace LockPlate
             {
                 //LoginFlag = true;
                 AuthLevel = 9;
-                if (IOWindow != null) { IOWindow.PropertyChange(nameof(LoginFlag)); }
                 e.Handled = true;
             }
             else

@@ -41,6 +41,9 @@ namespace LockPlate.content
         /// Index of DeivceCam in use
         /// </summary>
         private int _devInUse = -1;
+        /// <summary>
+        /// Index of Function Tab
+        /// </summary>
         private int _cameraFuncTab;
         #endregion
 

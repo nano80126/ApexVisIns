@@ -4,10 +4,11 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"             
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                        xmlns:ctProperty="clr-namespace:LockPlate.CustomProperty"
+            xmlns:ctProperty="clr-namespace:LockPlate.CustomProperty"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
             xmlns:app="clr-namespace:LockPlate"
             xmlns:local="clr-namespace:LockPlate.content" 
+            d:DataContext="{d:DesignInstance Type=local:ModbusMotorTab}"
             mc:Ignorable="d" 
             d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -76,8 +77,12 @@
                             </x:Array>
 
                             <x:Array x:Key="Protocols" Type="sys:String">
-                                <sys:String>E,8,1</sys:String>
-                                <sys:String>E,8,2</sys:String>
+                                <sys:String>7,N,2</sys:String>
+                                <sys:String>7,E,1</sys:String>
+                                <sys:String>7,O,1</sys:String>
+                                <sys:String>8,N,2</sys:String>
+                                <sys:String>8,E,1</sys:String>
+                                <sys:String>8,O,1</sys:String>
                             </x:Array>
                         </Grid.Resources>
 
@@ -116,7 +121,7 @@
                         </ComboBox>
                         <!--//-->
                         <TextBlock Grid.Row="2" Text="通訊協定"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ProtocolSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Stretch"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding Source={StaticResource Protocols}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -129,9 +134,22 @@
                         </ComboBox>
                         <!--//-->
                         <Button Grid.Row="3" Grid.Column="1" Padding="0 0" Margin="0 4 0 0" Height="{Binding ActualHeight, ElementName=ComportSelector, Mode=OneWay}" 
-                                Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="SerialPortConnect_Click">
-                            <TextBlock Text="連線" Margin="0"/>
+                                Click="SerialPortConnect_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                    <Setter Property="Content" Value="連線"/>
+                                    <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource ColorInfo}"/>
+                                    <!--//-->
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsComOpen, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Content" Value="斷線"/>
+                                            <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </Grid>
                 </DockPanel>
@@ -148,37 +166,36 @@
                     <!--//-->
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
-                    <DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
                         <DockPanel.Resources>
-                            <x:Array x:Key="Stations" Type="sys:Int32">
-                                <sys:Int32>0x01</sys:Int32>
-                                <sys:Int32>0x02</sys:Int32>
-                                <sys:Int32>0x03</sys:Int32>
-                                <sys:Int32>0x04</sys:Int32>
-                                <sys:Int32>0x05</sys:Int32>
-                                <sys:Int32>0x06</sys:Int32>
-                                <sys:Int32>0x07</sys:Int32>
-                                <sys:Int32>0x08</sys:Int32>
-                                <sys:Int32>0x09</sys:Int32>
-                                <sys:Int32>0x0A</sys:Int32>
-                                <sys:Int32>0x0B</sys:Int32>
-                                <sys:Int32>0x0C</sys:Int32>
-                                <sys:Int32>0x0D</sys:Int32>
-                                <sys:Int32>0x0E</sys:Int32>
+                            <x:Array x:Key="Stations" Type="sys:Byte">
+                                <sys:Byte>0x01</sys:Byte>
+                                <sys:Byte>0x02</sys:Byte>
+                                <sys:Byte>0x03</sys:Byte>
+                                <sys:Byte>0x04</sys:Byte>
+                                <sys:Byte>0x05</sys:Byte>
+                                <sys:Byte>0x06</sys:Byte>
+                                <sys:Byte>0x07</sys:Byte>
+                                <sys:Byte>0x08</sys:Byte>
+                                <sys:Byte>0x09</sys:Byte>
+                                <sys:Byte>0x0A</sys:Byte>
+                                <sys:Byte>0x0B</sys:Byte>
+                                <sys:Byte>0x0C</sys:Byte>
+                                <sys:Byte>0x0D</sys:Byte>
+                                <sys:Byte>0x0E</sys:Byte>
                             </x:Array>
                         </DockPanel.Resources>
                         <!--//-->
-                        <TextBlock Text="站號" DockPanel.Dock="Left"/>
-                        <ComboBox DockPanel.Dock="Right" Grid.Row="2" Grid.Column="1" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <TextBlock Text="站號" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                        <ComboBox  DockPanel.Dock="Right" Grid.Row="2" Grid.Column="1" x:Name="StationSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 3" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding Source={StaticResource Stations}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  Margin="0 4" SelectedIndex="0"
-                                  MinWidth="80">
+                                  Margin="0 4" SelectedIndex="0" MinWidth="80">
                             <ComboBox.Resources>
                                 <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}"/>
                             </ComboBox.Resources>
-                            
+
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding StringFormat={}{0:X2}H}"/>
@@ -186,6 +203,11 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </DockPanel>
+
+                    <Button DockPanel.Dock="Top" Padding="0" Margin="0 4 0 0" Height="{Binding ActualHeight, ElementName=ComportSelector, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" 
+                            Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
+                            Content="讀取馬達資訊" Click="ReadMotorInfo_Click"/>
                 </DockPanel>
             </materialDesign:Card>
             <!--#endregion-->
@@ -383,14 +405,12 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" 
                                    MinWidth="120" Foreground="Black" FontWeight="SemiBold" FontSize="14" Text="加減速時間"/>
                         <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 MinWidth="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}"
                                  Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         
                         <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" 
                                    MinWidth="120" Foreground="Black" FontWeight="SemiBold" FontSize="14" Text="轉速"/>
                         <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 MinWidth="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}"
                                  Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         
@@ -479,25 +499,22 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" 
                                    MinWidth="120" Foreground="Black" FontWeight="SemiBold" FontSize="14" Text="加減速時間"/>
                         <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 MinWidth="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}"
                                  Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" 
                                    MinWidth="120" Foreground="Black" FontWeight="SemiBold" FontSize="14" Text="轉速"/>
                         <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 MinWidth="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}"
                                  Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         
                         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Left" 
                                    MinWidth="120" Foreground="Black" FontWeight="SemiBold" FontSize="14" Text="轉速"/>
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 MinWidth="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}"
                                  Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding PosActual, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->                        
                         <Button Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="開始 JOG" Margin="0 8" 
-                                Height="26" Width="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}">
+                                Height="26">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
 

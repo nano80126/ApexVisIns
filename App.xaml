@@ -105,6 +105,10 @@
             <!--Motion 物件-->
             <!--<local:ServoMotion x:Key="ServoMotion"/>-->
             <!--#endregion-->
+            
+            <!--#region Shihlin Motor -->
+            <local:ShihlinSDE x:Key="ShihlinSDE" MotorNumber="2"/>
+            <!--#endregion-->
 
             <!--#region 光源控制 Resources -->
             <!--Serial Port 列舉-->

@@ -171,7 +171,7 @@ namespace LockPlate.content
                     break;
                 case MainWindow.InitModes.EDIT:
                     // 只連線 MongoDB
-                    _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
+                    //_ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
                     ////InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
