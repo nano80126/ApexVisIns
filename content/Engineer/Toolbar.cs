@@ -375,6 +375,9 @@ namespace ApexVisIns.content
 #endif
                         //string sn = cam.Camera.CameraInfo[CameraInfoKey.SerialNumber];
                         //Debug.WriteLine($"SN:{sn}");
+                        //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
+                        //Cv2.ImShow("canny", canny);
+
 
                         switch (sn)
                         {

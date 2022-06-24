@@ -347,10 +347,10 @@
                                     </Grid>
                                     <!--#endregion-->
 
-                                    <Separator Grid.Row="1" Grid.ColumnSpan="100" Margin="0 8"/>
+                                    <Separator Grid.Row="1" Grid.ColumnSpan="100" Margin="0 8" />
 
                                     <!--#region 2nd row -->
-                                    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0 12 0 0">
+                                    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0">
                                         <Grid.Resources>
                                             <Style TargetType="TextBlock" x:Key="Header">
                                                 <Setter Property="FontSize" Value="18"/>
@@ -416,6 +416,7 @@
                                             <!--separator-->
                                             <RowDefinition Height="auto"/>
 
+                                            <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
@@ -583,27 +584,37 @@
                                         <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <!--#region 0.005MAX 輪廓度 -->
+                                        <!--#region 0.005MAX 輪廓度 R -->
                                         <TextBlock Grid.Row="16" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding  LotResults[contour].Name, StringFormat={}{0} 不良}"/>
+                                                   Text="{Binding  LotResults[contourR].Name, StringFormat={}{0} 不良}"/>
                                         <TextBlock Grid.Row="16" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[contour].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[contour].Count, Mode=OneWay}"/>
-                                        <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                                   Text="{Binding LotResults[contourR].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[contourR].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="17" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
-                                        <Separator Grid.Row="18" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
+                                        <!--#region 0.005MAX 輪廓度 L-->
+                                        <TextBlock Grid.Row="17" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                   Text="{Binding  LotResults[contourL].Name, StringFormat={}{0} 不良}"/>
+                                        <TextBlock Grid.Row="17" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
+                                                   Text="{Binding LotResults[contourL].Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button Grid.Row="17" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="17" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[contourL].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="17" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                        <!--#endregion-->
+
+                                        <TextBlock Grid.Row="18" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
+                                        <Separator Grid.Row="19" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
 
                                         <!--#region 平面度 -->
-                                        <TextBlock Grid.Row="19" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}" 
+                                        <TextBlock Grid.Row="20" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}" 
                                                     Text="{Binding LotResults[flatness].Name, StringFormat={}{0} 不良}" />
-                                        <TextBlock Grid.Row="19" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
+                                        <TextBlock Grid.Row="20" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
                                                    Text="{Binding LotResults[flatness].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="19" Grid.Column="2" Click="MinusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="19" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"/>
-                                        <Button Grid.Row="19" Grid.Column="4" Click="PlusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Plus}"/>
+                                        <Button Grid.Row="20" Grid.Column="2" Click="MinusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                        <TextBox Grid.Row="20" Grid.Column="3" Padding="0 4" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"/>
+                                        <Button Grid.Row="20" Grid.Column="4" Click="PlusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
                                     </Grid>
 
