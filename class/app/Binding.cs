@@ -638,6 +638,8 @@ namespace ApexVisIns
             get => _targetProgressValue;
             set
             {
+                Debug.WriteLine($"TargetProgressChanged  Value: {value} TargetValue: {_targetProgressValue}      Binding.cs line 641");
+
                 if (value > _targetProgressValue)
                 {
                     // 1 % = 25 ms

@@ -163,8 +163,7 @@ namespace ApexVisIns.content
             if (!JawSpecGroup.SyncBinding) { JawSpecGroup.EnableCollectionBinding(); }
             #endregion
 
-            // 載入規格設定
-            LoadSpecList();
+       
 
             switch (MainWindow.InitMode)
             {
@@ -198,6 +197,9 @@ namespace ApexVisIns.content
             if (!loaded)
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
+                // 載入規格設定
+                LoadSpecList();
+
                 loaded = true;
             }
         }
@@ -636,6 +638,9 @@ namespace ApexVisIns.content
         #endregion
 
         #region 初始化 SpecList
+        /// <summary>
+        /// 初始化規格路徑
+        /// </summary>
         private void InitSpecSettingPath()
         {
             string directory = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}";
@@ -657,14 +662,29 @@ namespace ApexVisIns.content
             SettingList.JsonPath = path;
         }
 
-        private void LoadSpecList()
+        /// <summary>
+        /// 載入規格設定
+        /// </summary>
+        internal void LoadSpecList()
         {
-            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResults.Count > 0) { return; }
+            SettingList.MCAJaw = this;
+
+#if false
+            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResults.Count > 0)
+            {
+                RenderTransform
+            }
             else
             {
                 JawSpecGroup.SpecList.Clear();
                 JawInspection.LotResults.Clear();
-            }
+            } 
+#endif
+            Dispatcher.InvokeAsync(() =>
+            {
+                JawSpecGroup.SpecList.Clear();
+                JawInspection.LotResults.Clear();
+            }).Wait();
 
             string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
@@ -679,12 +699,16 @@ namespace ApexVisIns.content
                     NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                 });
 
-
-                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
-                foreach (JawSpecSetting element in list)
+                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+                foreach (JawSpecSetting item in list)
                 {
-                    JawSpecGroup.SpecList.Add(element);
-                    JawInspection.LotResults.Add(element.Key, new JawInspection.ResultElement(element.Item, element.Note, 0));
+                    //Debug.WriteLine($"{item.Key} {item.Enable}");
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        JawSpecGroup.SpecList.Add(item);
+                        JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
+                    });
                 }
             }
             else // 若規格列表不存在
@@ -700,12 +724,12 @@ namespace ApexVisIns.content
                 double[] correc2 = new double[center.Length];
                 Array.Fill(correc2, 0);
 
-                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0));
+                JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                 for (int i = 0; i < keys.Length; i++)
                 {
                     int id = JawSpecGroup.SpecList.Count + 1;
                     JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
-                    JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0));
+                    JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
                 }
             }
         }

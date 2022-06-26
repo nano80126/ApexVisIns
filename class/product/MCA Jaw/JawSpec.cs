@@ -364,15 +364,27 @@ namespace ApexVisIns.Product
 
             public ResultElement() { }
 
-            public ResultElement(string name, string note, int count)
+            public ResultElement(string name, string note, int count, bool enable)
             {
                 Name = name;
                 Note = note;
                 Count = count;
+                Enable = enable;
             }
 
+            /// <summary>
+            /// 規格名稱
+            /// </summary>
             public string Name { get; set; }
+
+            /// <summary>
+            /// 規格 Note
+            /// </summary>
             public string Note { get; set; }
+
+            /// <summary>
+            /// 檢驗數量
+            /// </summary>
             public int Count
             {
                 get => _count;
@@ -386,12 +398,18 @@ namespace ApexVisIns.Product
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            /// <summary>
+            /// 是否啟用
+            /// </summary>
+            public bool Enable { get; set; }
 
+            #region MyRegion
+            public event PropertyChangedEventHandler PropertyChanged;
             private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+            } 
+            #endregion
         }
     }
 

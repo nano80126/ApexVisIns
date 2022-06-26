@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,6 +14,12 @@ namespace ApexVisIns.content
     /// </summary>
     public partial class SpecSettingList : Border
     {
+
+        #region Properties
+        public MCAJaw MCAJaw { get; set; }
+        #endregion
+
+
         /// <summary>
         /// JSON FILE 儲存路徑
         /// </summary>
@@ -31,22 +40,14 @@ namespace ApexVisIns.content
         {
             Product.JawSpecGroup jawSpecGroup = DataContext as Product.JawSpecGroup;
 
-            #region
-            //Debug.WriteLine($"{jawSpecGroup.Collection1.Count}");
-            //Debug.WriteLine($"{jawSpecGroup.Collection2.Count}");
-            //Debug.WriteLine($"{jawSpecGroup.Collection3.Count}");
-            //foreach (Product.JawSpecSetting item in jawSpecGroup.SpecList)
-            //{
-            //    Debug.WriteLine($"{item.Item}");
-            //}  
-            #endregion 無用
-
             string jsonStr = JsonSerializer.Serialize(jawSpecGroup.SpecList, new JsonSerializerOptions
             {
                 WriteIndented = true,
                 NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString
             });
             File.WriteAllText(JsonPath, jsonStr);
+
+            _ = Task.Run(() => MCAJaw.LoadSpecList());
         }
     }
 

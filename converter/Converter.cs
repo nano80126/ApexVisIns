@@ -17,12 +17,12 @@ namespace ApexVisIns.Converter
     [ValueConversion(typeof(bool), typeof(bool))]
     public class BooleanInverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return !(bool)value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //Debug.WriteLine($"ConvertBack: {value}");
             return !(bool)value;
@@ -75,6 +75,10 @@ namespace ApexVisIns.Converter
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToVisibility : IValueConverter
     {
+        public Visibility TrueValue { get; set; }
+
+        public Visibility FalseValue { get; set; }
+
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)value ? Visibility.Visible : Visibility.Collapsed;
@@ -90,12 +94,16 @@ namespace ApexVisIns.Converter
     /// 布林轉Visibility 反向轉換器
     /// </summary>
     [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class BooleanToVisibilityInverse : BooleanToVisibility
+    public class BooleanToVisibilityInverse : BooleanInverter
     {
+        public Visibility TrueValue { get; set; }
+
+        public Visibility FalseValue { get; set; }
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //return (bool)value ? Visibility.Visible : Visibility.Hidden;
-            return (Visibility)base.Convert(value, targetType, parameter, culture) == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            return (bool)base.Convert(value, targetType, parameter, culture) ? TrueValue : FalseValue;
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

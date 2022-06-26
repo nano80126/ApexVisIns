@@ -348,10 +348,10 @@ namespace ApexVisIns
                         isNG = !ok;
                     }
 
-                    Debug.WriteLine($"1: {DateTime.Now:mm:ss.fff}");
+                    Debug.WriteLine($"1111111: {DateTime.Now:mm:ss.fff}");
                     // 資料庫物件新增  key, value
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
-                    Debug.WriteLine($"2: {DateTime.Now:mm:ss.fff}");
+                    Debug.WriteLine($"2222222: {DateTime.Now:mm:ss.fff}");
                 }
 
                 // 判斷是否為良品

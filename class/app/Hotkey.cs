@@ -251,6 +251,18 @@ namespace ApexVisIns
                 (AppTabControl.Items[idx] as TabItem).Content != null ? idx : OnNavIndex;
         }
 
+        private void SwitchJawTabCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (OnNavIndex == 0)
+            {
+                byte idx = byte.Parse(e.Parameter as string, CultureInfo.CurrentCulture);
+
+                MCAJaw.JawTab = idx < MCAJaw.MCAJawTab.Items.Count &&
+                    (MCAJaw.MCAJawTab.Items[idx] as TabItem).IsEnabled &&
+                    (MCAJaw.MCAJawTab.Items[idx] as TabItem).Content != null ? idx : MCAJaw.JawTab;
+            }
+        }
+
         private void GlobalTest(object sender, ExecutedRoutedEventArgs e)
         {
             Debug.WriteLine($"{OnNavIndex}");
