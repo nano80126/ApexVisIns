@@ -66,17 +66,17 @@
         <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
         <!--Tab-->
         <!--D1 means 1 -->
-        <KeyBinding Modifiers="Ctrl" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/>
+        <KeyBinding Modifiers="Alt" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/>
         <!--D2 means 2 -->
-        <KeyBinding Modifiers="Ctrl" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/>
+        <KeyBinding Modifiers="Alt" Key="D2" Command="{StaticResource SwitchTab}" CommandParameter="1"/>
         <!--D3 means 3-->
-        <KeyBinding Modifiers="Ctrl" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/>
+        <KeyBinding Modifiers="Alt" Key="D3" Command="{StaticResource SwitchTab}" CommandParameter="2"/>
         <!--D4 means 4-->
-        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/>
+        <KeyBinding Modifiers="Alt" Key="D4" Command="{StaticResource SwitchTab}" CommandParameter="3"/>
         <!--D5 means 5-->
-        <KeyBinding Modifiers="Ctrl" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/>
+        <KeyBinding Modifiers="Alt" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4"/>
         <!--D6 means 6-->
-        <KeyBinding Modifiers="Ctrl" Key="D6" Command="{StaticResource SwitchTab}" CommandParameter="5"/>
+        <KeyBinding Modifiers="Alt" Key="D6" Command="{StaticResource SwitchTab}" CommandParameter="5"/>
         <!--Config-->
 
         <!--Global-->
