@@ -10,7 +10,9 @@
             xmlns:local="clr-namespace:LockPlate.content" 
             d:DataContext="{d:DesignInstance Type=local:ModbusMotorTab}"
             mc:Ignorable="d" 
-            d:DesignHeight="450" d:DesignWidth="800">
+            d:DesignHeight="900" d:DesignWidth="1600"
+            UseLayoutRounding="True"
+            Orientation="Vertical">
     <Grid>
         <Grid.Style>
             <Style TargetType="{x:Type Grid}">
@@ -289,7 +291,7 @@
 
                         <TextBlock Grid.Row="0" Text="I/O資訊" Margin="0 0 0 0"/>
 
-                        <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Source={StaticResource strs}}">
+                        <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Path=DIs, Source={StaticResource ShihlinSDE}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
@@ -298,11 +300,17 @@
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="8 0" HorizontalAlignment="Right">
-                                        <TextBlock Margin="12 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="DIX"/>
-                                        <TextBlock Margin="0 0 24 0" MinWidth="80" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" Text="SVON"/>
+                                    <StackPanel Orientation="Horizontal" Margin="8 0" HorizontalAlignment="Stretch">
+                                        <TextBlock TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}  {0, -4}   {1, -7}  ">
+                                                    <Binding Path="Name"/>
+                                                    <Binding Path="Function"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
                                         <!--// 這邊用 String formaet 顯示 DIX 和 功能-->
-                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="True" Style="{StaticResource DiSignal}"/>
+                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="{Binding On}" Style="{StaticResource DiSignal}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -311,7 +319,7 @@
 
                         <Separator Grid.Row="2" Grid.ColumnSpan="2" Margin="0 8"/>
 
-                        <ItemsControl Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Source={StaticResource strs}}">
+                        <ItemsControl Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding Path=DOs, Source={StaticResource ShihlinSDE}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
@@ -321,18 +329,16 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Margin="8 0" HorizontalAlignment="Left">
-                                        <!--<TextBlock Margin="12 0" VerticalAlignment="Center" FontWeight="SemiBold" Text="DIX" Background="Red-->
-                                        <!--<TextBlock Margin="0 0 24 0" MinWidth="80" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" Text="SVON"/>-->
-                                        <TextBlock Margin="12 0 24 0" Width="120" VerticalAlignment="Center" FontWeight="SemiBold" Background="Red">
+                                        <TextBlock TextAlignment="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14">
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}DO{0}   {1}">
-                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=Self}"/>
-                                                    <Binding Path="Margin" RelativeSource="{RelativeSource Mode=Self}"/>
+                                                <MultiBinding StringFormat="{}  {0, -4}   {1, -7}  ">
+                                                    <Binding Path="Name"/>
+                                                    <Binding Path="Function"/>
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
                                         <!--// 這邊用 String formaet 顯示 DIX 和 功能-->
-                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="True" Style="{StaticResource DiSignal}"/>
+                                        <Ellipse VerticalAlignment="Center" HorizontalAlignment="Right" ctProperty:StatusHelper.Bit="{Binding On}" Style="{StaticResource DiSignal}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -344,16 +350,18 @@
                         <TextBlock Grid.Row="5" Text="位置資訊"/>
                         <!--<TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>-->
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="20 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" Foreground="Black" Background="Red"
+                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="20 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" Foreground="Black"
                                    Text="命令 Command" TextAlignment="Left" FontWeight="SemiBold" FontSize="14"/>
                         <TextBox Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" 
+                                 Text="{Binding CmdPos, Source={StaticResource ShihlinSDE}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
                         <TextBlock Grid.Row="7" Grid.Column="0" Margin="20 0 0 0"  HorizontalAlignment="Left" VerticalAlignment="Center" MinWidth="120" Foreground="Black"
                                    Text="實際 Actual" TextAlignment="Left"  FontWeight="SemiBold" FontSize="14"/>
                         <TextBox Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 4" Padding="0 2" IsReadOnly="True" Cursor="Arrow"
-                                 Focusable="False" MaxWidth="120" TextAlignment="Center" Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Focusable="False" MaxWidth="120" TextAlignment="Center" 
+                                 Text="{Binding ResPos, Source={StaticResource ShihlinSDE}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                         <!--//-->
                         <Separator Grid.Row="8" Grid.ColumnSpan="2" Margin="0 8" Background="{StaticResource ColorOrange}"/>

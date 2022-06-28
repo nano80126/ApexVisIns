@@ -67,10 +67,13 @@ namespace LockPlate.content
 
         private void ReadMotorInfo_Click(object sender, RoutedEventArgs e)
         {
-            //MainWindow.ShihlinSDE.
-            //MainWindow.ShihlinSDE.ReadServo((byte)StationSelector.SelectedItem);
-            MainWindow.ShihlinSDE.ReadIO((byte)StationSelector.SelectedItem);
-            //MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
+            // 讀取 IO 資訊 
+            // 啟動 Task 讀取 IO
+
+            //MainWindow.ShihlinSDE.ReadIO((byte)StationSelector.SelectedItem);
+            //MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
+            MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
+            // 
 
             Debug.WriteLine($"------------------------------------------");
         }

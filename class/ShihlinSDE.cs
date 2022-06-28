@@ -23,6 +23,14 @@ namespace LockPlate
         #endregion
 
 
+        #region private
+        private Task _pollingTask;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        
+        private Timer _pollingTimer;
+        private int _cmdPos;
+        private int _resPos;
+        #endregion
 
 
         #region Private
@@ -71,7 +79,6 @@ namespace LockPlate
             SPS = 0x2C
         }
 
-
         public enum DOFunctions
         {
             NONE = 0x00,
@@ -98,7 +105,6 @@ namespace LockPlate
             POS6 = 0x16,
         }
         #endregion
-
 
 
         #region Properties
@@ -130,6 +136,32 @@ namespace LockPlate
             }
         }
 
+
+        public int CmdPos
+        {
+            get => _cmdPos;
+            set
+            {
+                if (value != _cmdPos)
+                {
+                    _cmdPos = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int ResPos
+        {
+            get => _resPos;
+            set
+            {
+                if (value != _resPos)
+                {
+                    _resPos = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         #endregion
 
         public ShihlinSDE()
@@ -155,6 +187,7 @@ namespace LockPlate
 
 
         #region Private Methods
+
         /// <summary>
         /// 讀取 SERVO ON/OFF, 控制模式
         /// </summary>
@@ -186,6 +219,9 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadIO(byte station)
         {
+            DIs.Clear();
+            DOs.Clear();
+
             byte[] cmd = new byte[] { station, 0x03, 0x02, 0x06, 0x00, 0x08 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
@@ -203,7 +239,7 @@ namespace LockPlate
             Debug.WriteLine($"ret: {string.Join(",", retStr)}");
 
             Debug.WriteLine($"{(response[0] << 8) + (response[1] << 4) + response[2]}");
-            if ((response[0] << 8) + (response[1] << 4) + response[2] == 0x140)
+            if ((response[0] << 8) + (response[1] << 4) + response[2] == ((station << 8) + 0b01000000))
             {
                 for (int i = 3; i < response.Length - 6; i++)
                 {
@@ -217,20 +253,36 @@ namespace LockPlate
                     });
                 }
 
-                short DO1_3 = (short)((response[^6] << 8) + response[^5]);
-                short DO4_6 = (short)((response[^4] << 8) + response[^3]);
+                short[] DO_temp = new short[] {
+                    (short)((response[^6] << 8) + response[^5]),
+                    (short)((response[^4] << 8) + response[^3])
+                };
 
-                DOs.Add(new IOChannel()
+                for (int i = 0; i < DO_temp.Length; i++)
                 {
-                    // DO1_3 & 0b11111
-                    Function = ((DOFunctions)(DO1_3 & 0b11111)).ToString(),
-                    Number = 1,
-                    On = true,
-                    Input = false
-                });
+                    for (int j = 0; j < 3; j++)
+                    {
+                        DOs.Add(new IOChannel()
+                        {
+                            Function = $"{(DOFunctions)((DO_temp[i] >> (5 * j)) & 0b11111)}",
+                            Number = (3 * i) + j + 1,
+                            On = false,
+                            Input = false
+                        });
+                    }
+                }
 
-                Debug.WriteLine($"{DO1_3} {DO1_3 & 0b11111} {(DO1_3 >> 5) & 0b11111} {(DO1_3 >> 10) & 0b11111}");
-                Debug.WriteLine($"{DO4_6} {DO4_6 & 0b11111} {(DO4_6 >> 5) & 0b11111} {(DO4_6 >> 10) & 0b11111}");
+
+                foreach (IOChannel item in DIs)
+                {
+                    Debug.WriteLine($"{item.Name} {item.Function}");
+                }
+
+                Debug.WriteLine($"-------------------------------");
+                foreach (IOChannel item in DOs)
+                {
+                    Debug.WriteLine($"{item.Name} {item.Function}");
+                }
             }
         }
 
@@ -240,7 +292,37 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadIOStatus(byte station)
         {
+            byte[] cmd = new byte[] { station, 0x03, 0x02, 0x04, 0x00, 0x02 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
+            Write(cmd);
+            Debug.WriteLine($"data: {string.Join(",", cmd)}");
+
+            _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x02) + 2, 1000);
+
+            byte[] response = Read();
+
+            string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+            Debug.WriteLine($"ret: {string.Join(",", resStr)}");
+
+            if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+            {
+                short temp = (short)((response[3] << 8) + response[4]);
+
+                Debug.WriteLine($"{temp}");
+                for (int i = 0; i < DIs.Count; i++)
+                {
+                    DIs[i].On = ((temp >> i) & 0b01) == 0b01;
+                }
+
+                temp = (short)((response[5] << 8) + response[6]);
+
+                Debug.WriteLine($"{temp}");
+                for (int i = 0; i < DOs.Count; i++)
+                {
+                    DOs[i].On = ((temp >> i) & 0b01) == 0b01;
+                }
+            }
         }
 
         /// <summary>
@@ -250,22 +332,44 @@ namespace LockPlate
         public void ReadPos(byte station)
         {
             // 讀取 馬達迴授脈波數(電子齒輪比前)
-            byte[] cmd = new byte[] { station, 0x03, 0x00, 0x24, 0x00, 0x02 };
+            byte[] cmd = new byte[] { station, 0x03, 0x00, 0x02, 0x00, 0x02 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-            Debug.WriteLine($"data: {string.Join(",", cmd)}");
-
             Write(cmd);
-            _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + 2 * 0x02 + 2, 1000);
+            _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
             byte[] response = Read();
 
-            string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-            Debug.WriteLine($"ret: {string.Join(",", retStr)}");
 
-            if (response[0] == 0x01 && response[1] == 0x03 && response[2] == 0x04)
+            if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
             {
-                Debug.WriteLine($"現在位置 {(response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16)}");
+                int cmdpl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                CmdPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
             }
+
+            // 讀取 馬達迴授脈波數(電子齒輪比前)
+            cmd = new byte[] { station, 0x03, 0x00, 0x24, 0x00, 0x02 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            Write(cmd);
+            _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
+            response = Read();
+
+            if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+            {
+                int pospl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                ResPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+            }
+        }
+        #endregion
+
+        #region Public Methods
+        public void EnableTask()
+        {
+            //Task.Factory.StartNew(() =>
+            //{
+            //    Debug.WriteLine("123");
+
+            //}, _cancellationTokenSource.Token, TaskCreationOptions.LongRunning);
         }
         #endregion
 
@@ -295,8 +399,12 @@ namespace LockPlate
         /// <summary>
         /// IO 通道
         /// </summary>
-        public class IOChannel
+        public class IOChannel : INotifyPropertyChanged 
         {
+            #region Private
+            private bool _on;
+            #endregion
+
             public IOChannel() { }
 
             public IOChannel(bool input, int number, string function, bool on)
@@ -315,14 +423,24 @@ namespace LockPlate
 
             public string Function { get; set; }
 
-            public bool On { get; set; }
+            public bool On {
+                get => _on;
+                set
+                {
+                    if (value != _on)
+                    {
+                        _on = value;
+                        OnPropertyChanged();
+                    }
+                }
+            }
 
             #region PropertyChanged
-            //public event PropertyChangedEventHandler PropertyChanged;
-            //private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            //{
-            //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            //} 
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
             #endregion
         }
     }

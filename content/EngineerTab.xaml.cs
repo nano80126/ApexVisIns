@@ -363,5 +363,198 @@ namespace LockPlate.content
             }
         }
         #endregion
+
+
+        #region 測試用區塊
+        /// <summary>
+        /// 前進
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button1_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 5);
+
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 0, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 0, false);
+            }
+        }
+
+
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 0);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 1, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 1, false);
+            }
+        }
+
+        private void Button3_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 1);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 2, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 2, false);
+            }
+        }
+
+        private void Button4_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 4);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 5, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 5, false);
+            }
+        }
+
+        private void Button5_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 3);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 4, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 4, false);
+            }
+        }
+
+        private void Button6_Click(object sender, RoutedEventArgs e)
+        {
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 2);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 3, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 3, false);
+            }
+        }
+
+        private void Button7_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime t1 = DateTime.Now;
+
+            (sender as Button).IsEnabled = false;
+
+            bool status = MainWindow.IOController.ReadDIBitValue(0, 5);
+
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 0, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 0, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 0), 1000);
+            SpinWait.SpinUntil(() => false, 200);
+
+            Debug.WriteLine($"status: {status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 1, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 1, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 1), 1000);
+            SpinWait.SpinUntil(() => false, 200);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 2, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 2, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 2), 1000);
+            SpinWait.SpinUntil(() => false, 200);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 3, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 3, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 3), 1000);
+            SpinWait.SpinUntil(() => false, 200);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 4, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 4, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 4), 1000);
+            SpinWait.SpinUntil(() => false, 200);
+
+            Debug.WriteLine($"{status}");
+            if (status)
+            {
+                MainWindow.IOController.WriteDOBit(0, 5, true);
+                SpinWait.SpinUntil(() => false, 200);
+                MainWindow.IOController.WriteDOBit(0, 5, false);
+            }
+            else
+            {
+                (sender as Button).IsEnabled = true;
+                return;
+            }
+
+            status = SpinWait.SpinUntil(() => MainWindow.IOController.ReadDIBitValue(0, 5), 1000);
+
+            (sender as Button).IsEnabled = true;
+
+            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds}");
+        }
+        #endregion
     }
 }

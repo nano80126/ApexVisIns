@@ -81,10 +81,7 @@ namespace LockPlate
         /// </summary>
         public static MongoAccess MongoAccess { get; set; }
         #endregion
-
-        #region Major
-        public static ApexDefect ApexDefect { get; set; }
-        #endregion
+       
 
         #region Resources
         // public Crosshair Crosshair;         // 待刪
@@ -202,9 +199,6 @@ namespace LockPlate
 
             #region EtherCAT Motion
             ShihlinSDE = FindResource(nameof(ShihlinSDE)) as ShihlinSDE;
-            // MCA Jaw 用不到
-            //ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
-            //ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
             #endregion
 
             #region IO Controller

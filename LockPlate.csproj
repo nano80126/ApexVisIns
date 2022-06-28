@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
+    <Compile Remove="class\IOController - back.cs" />
     <Compile Remove="content\MainTab.xaml.cs" />
     <Compile Remove="content\MotionTab.xaml.cs" />
     <Compile Remove="IOWindow.xaml.cs" />
