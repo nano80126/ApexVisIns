@@ -604,7 +604,7 @@ namespace ApexVisIns
 
         #region Varibles
         private int _progress;
-        private int _targetProgressValue;
+        private int _lastProgressValue;
 
         private Task progressTask;
         private CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
@@ -630,6 +630,8 @@ namespace ApexVisIns
                 }
             }
         }
+
+#if false //Deprecated
         /// <summary>
         /// 目標 Progress Value
         /// </summary>
@@ -638,12 +640,16 @@ namespace ApexVisIns
             get => _targetProgressValue;
             set
             {
-                Debug.WriteLine($"TargetProgressChanged  Value: {value} TargetValue: {_targetProgressValue}      Binding.cs line 641");
+                Debug.WriteLine($"TargetProgressChanged  Value: {value} TargetValue: {_targetProgressValue}      Binding.cs line 641 {DateTime.Now:mm:ss.fff}");
 
                 if (value > _targetProgressValue)
                 {
-                    // 1 % = 25 ms
+                    // 計算時間 1 % = 25 ms
                     TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 25);
+                    // 更新 TargetProgressValue
+                    _targetProgressValue = value;
+                    //
+                    // 插入工作序列
                     ProgressAnimation.Add(() =>
                     {
                         OnProgressValueChanged(_progress, value, timeSpan);
@@ -652,11 +658,10 @@ namespace ApexVisIns
                         ProgressValue = value;
                     });
                 }
-                // 即時更新
-                _targetProgressValue = value;
                 OnPropertyChanged();
             }
-        }
+        } 
+#endif
 
         /// <summary>
         /// 啟用 ProgressBar
@@ -694,6 +699,27 @@ namespace ApexVisIns
                 progressTask.Dispose();
                 ProgressAnimation.Clear();
             }
+        }
+
+        /// <summary>
+        /// 推進 ProgressBarValue
+        /// </summary>
+        /// <param name="value"></param>
+        public void AdvanceProgressValue(int value)
+        {
+            // 下個進度值
+            int toValue = _lastProgressValue + value;
+            _lastProgressValue = toValue;
+            TimeSpan timeSpan = TimeSpan.FromMilliseconds(value * 25);
+
+            ProgressAnimation.Add(() =>
+            {
+                OnProgressValueChanged(_progress, toValue, timeSpan);
+                // 等待動畫結束後更新
+                _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, timeSpan);
+                ProgressValue = toValue;
+                //Debug.WriteLine($"ProgressValue: {ProgressValue}");
+            });
         }
 
         public void EnableCollectionBinding()

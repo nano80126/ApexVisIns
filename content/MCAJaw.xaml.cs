@@ -209,6 +209,7 @@ namespace ApexVisIns.content
 
         }
 
+
         #region 初始化
         /// <summary>
         /// 硬體初始化
@@ -379,7 +380,7 @@ namespace ApexVisIns.content
                                 if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                                 {
                                     // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
-
+                                    //SpinWait.SpinUntil(() => false, );
                                     switch (dev.TargetFeature)
                                     {
                                         case CameraConfigBase.TargetFeatureType.MCA_Front:
@@ -388,7 +389,9 @@ namespace ApexVisIns.content
                                                 BaslerCam1 = MainWindow.BaslerCams[0];
                                                 if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    _ = SpinWait.SpinUntil(() => false, 25);
+                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
                                             break;
@@ -398,7 +401,9 @@ namespace ApexVisIns.content
                                                 BaslerCam2 = MainWindow.BaslerCams[1];
                                                 if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    _ = SpinWait.SpinUntil(() => false, 50);
+                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
                                             break;
@@ -408,7 +413,9 @@ namespace ApexVisIns.content
                                                 BaslerCam3 = MainWindow.BaslerCams[2];
                                                 if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
-                                                    MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    _ = SpinWait.SpinUntil(() => false, 75);
+                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
                                             break;
@@ -501,7 +508,9 @@ namespace ApexVisIns.content
 
                     if (LightCOM2.IsComOpen)
                     {
-                        MainWindow.MsgInformer.TargetProgressValue += 17;
+                        //MainWindow.MsgInformer.TargetProgressValue += 17;
+                        MainWindow.MsgInformer.AdvanceProgressValue(17);
+
 
                         LightCtrlInitilized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.LIGHT, "光源控制初始化完成");
@@ -541,7 +550,8 @@ namespace ApexVisIns.content
 
                     if (ModbusTCPIO.Conneected)
                     {
-                        MainWindow.MsgInformer.TargetProgressValue += 17;
+                        //MainWindow.MsgInformer.TargetProgressValue += 17;
+                        MainWindow.MsgInformer.AdvanceProgressValue(17);
 
                         IOCtrlInitialized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.IO, "IO 控制初始化完成");
@@ -618,7 +628,8 @@ namespace ApexVisIns.content
                             //Debug.WriteLine($"{item.Password} {item.Level}");
                         }
 
-                        MainWindow.MsgInformer.TargetProgressValue += 17;
+                        //MainWindow.MsgInformer.TargetProgressValue += 17;
+                        MainWindow.MsgInformer.AdvanceProgressValue(17);
 
                         DatabaseInitialized = true;
                         MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.DATABASE, "資料庫初始化完成");
@@ -636,6 +647,7 @@ namespace ApexVisIns.content
             }, ct);
         }
         #endregion
+
 
         #region 初始化 SpecList
         /// <summary>
@@ -669,6 +681,7 @@ namespace ApexVisIns.content
         {
             SettingList.MCAJaw = this;
 
+
 #if false
             if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResults.Count > 0)
             {
@@ -680,6 +693,8 @@ namespace ApexVisIns.content
                 JawInspection.LotResults.Clear();
             } 
 #endif
+
+
             Dispatcher.InvokeAsync(() =>
             {
                 JawSpecGroup.SpecList.Clear();
@@ -713,12 +728,12 @@ namespace ApexVisIns.content
             }
             else // 若規格列表不存在
             {
-                string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contourR", "contourL", "flatness" };
-                string[] items = new string[] { "0.088-R", "0.088-L", "0.088和", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度R", "輪廓度L", "平面度" };
-                double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0 };
-                double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0 };
-                double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.007 };
-                //double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.088和", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平面度" };
+                double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+                double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+                double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+                // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 double[] correc = new double[center.Length];
                 Array.Fill(correc, 0);
                 double[] correc2 = new double[center.Length];
@@ -734,6 +749,7 @@ namespace ApexVisIns.content
             }
         }
         #endregion
+
 
         #region 主控版 , +/- 數量
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -786,6 +802,7 @@ namespace ApexVisIns.content
             JawInspection.LotResults[key].Count++;
         }
         #endregion
+
 
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)

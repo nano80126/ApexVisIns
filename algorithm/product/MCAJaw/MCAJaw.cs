@@ -85,8 +85,9 @@ namespace ApexVisIns
                 double d_front = 0;
                 // 後開
                 double d_back = 0;
+
                 // 開設張數
-                int count = 0;
+                // int count = 0;
 
                 List<Task> task1 = new();
                 List<Task> task2 = new();
@@ -110,18 +111,26 @@ namespace ApexVisIns
                     // 拍照要 Dispacker
                     Dispatcher.Invoke(() =>
                     {
-                        //while (count < (i == 0 ? 2 : 3))
-                        //{
                         for (int j = 0; j < (i == 0 ? 2 : 3); j++)
                         {
+                            Debug.WriteLine($"camera1: count: {j}");
+                            // 等待 Trigger Ready
+                            bool ready = cam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                            if (!ready)
+                            {
+                                j--;
+                                continue;
+                            }
+
                             cam1.Camera.ExecuteSoftwareTrigger();
+
                             using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
                             if (grabResult != null && grabResult.GrabSucceeded)
                             {
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                                if (count == 0)
+                                if (i + j == 0)
                                 {
                                     if (CheckPart(mat)) { partExist = true; }
                                 }
@@ -130,15 +139,12 @@ namespace ApexVisIns
                                 {
                                     task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results)));
                                 }
-                                else { count += 999; }  // 跳出迴圈
+                                else { j += 999; }  // 跳出迴圈
 
                                 ImageSource1 = mat.ToImageSource();
-                                //count++;
-                                //Debug.WriteLine($"111: {DateTime.Now:mm:ss.fff}");
                             }
                             else { j--; }
                         }
-                        //}
                     });
 
                     // DateTime t1 = DateTime.Now;
@@ -159,14 +165,21 @@ namespace ApexVisIns
                     // 等待光源
                     _ = SpinWait.SpinUntil(() => false, 120);
 
-                    count = 0;
+                    //count = 0;
                     // 拍照要 Dispacker
                     Dispatcher.Invoke(() =>
                     {
-                        // while (count < 2)
-                        // {
                         for (int j = 0; j < 2; j++)
                         {
+                            Debug.WriteLine($"camera2: count: {j}");
+                            // 等待 Trigger Ready
+                            bool ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                            if (!ready)
+                            {
+                                j--;
+                                continue;
+                            }
+
                             cam2.Camera.ExecuteSoftwareTrigger();
                             using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
@@ -175,15 +188,13 @@ namespace ApexVisIns
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
                                 if (partExist) { task2.Add(Task.Run(() => JawInsSequenceCam2(mat, specList, cam2results))); }
-                                else { count += 999; }  // 跳出迴圈
-                                                        // JawInsSequenceCam2(mat, specList, cam2results);
+                                else { j += 999; }  // 跳出迴圈
+                                                    // JawInsSequenceCam2(mat, specList, cam2results);
 
                                 ImageSource2 = mat.ToImageSource();
-                                count++;
                             }
                             else { j--; }
                         }
-                        //}
                     });
 
                     #endregion
@@ -193,16 +204,25 @@ namespace ApexVisIns
 
                 #region CAMERA 3 平面度
                 // COM2 光源控制器 (24V, 2CH)
-                LightCtrls[1].SetAllChannelValue(128, 256);
+                LightCtrls[1].SetAllChannelValue(256, 96);
                 // 等待光源
                 _ = SpinWait.SpinUntil(() => false, 120);
 
-                count = 0;
+                //count = 0;
                 // 拍照要 Dispacker
                 Dispatcher.Invoke(() =>
                 {
-                    while (count < 4)
+                    for (int j = 0; j < 5; j++)
                     {
+                        Debug.WriteLine($"camera3: count: {j}");
+                        bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                        Debug.WriteLine($"{ready}");
+                        if (!ready)
+                        {
+                            j--;
+                            continue;
+                        }
+
                         cam3.Camera.ExecuteSoftwareTrigger();
                         IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
@@ -211,22 +231,23 @@ namespace ApexVisIns
                             Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
                             if (partExist) { task3.Add(Task.Run(() => JawInsSequenceCam3(mat, specList, cam3results))); }
-                            else { count += 999; }
+                            else { j += 999; }
                             // JawInsSequenceCam3(mat, specList, cam3results);
 
                             ImageSource3 = mat.ToImageSource();
-                            count++;
+                            // count++;
+                        }
+                        else
+                        {
+                            j--;
                         }
                     }
                 });
-
 
                 #endregion
 
                 LightCtrls[1].SetAllChannelValue(0, 0);
                 if (!partExist) { throw new MCAJawException("未檢測到料件"); }
-
-                Debug.WriteLine($"st: {DateTime.Now:mm:ss.fff}");
 
                 // 等待所有 計算完成
                 //try
@@ -240,13 +261,13 @@ namespace ApexVisIns
                 //}
                 //Task.WhenAll(task1.Concat(task2).Concat(task3)).Wait();
 
-                Debug.WriteLine($"end: {DateTime.Now:mm:ss.fff}");
-
-                // Camera 1 結果
                 // DateTime stTime = DateTime.Now;
+
+                #region 計算不良數量
+                // Camera 1 結果 (前開)
                 foreach (string key in cam1results.Keys)
                 {
-                    Debug.WriteLine($"{key} {cam1results[key].Count}");
+                    //Debug.WriteLine($"{key} {cam1results[key].Count}");
                     //
                     double avg = 0;
                     if (key is "輪廓度R" or "輪廓度L")
@@ -278,7 +299,7 @@ namespace ApexVisIns
                     if (key == "前開") { d_front = avg; }
                 }
 
-                // Camera 2 結果
+                // Camera 2 結果 (後開)
                 foreach (string key in cam2results.Keys)
                 {
                     //Debug.WriteLine($"{key} {cam2results[key].Count}");
@@ -332,6 +353,25 @@ namespace ApexVisIns
                 foreach (string item in cam3results.Keys)
                 {
                     Debug.WriteLine($"平面度 {string.Join(",", cam3results[item])}");
+
+#if false
+                    Dictionary<double, int> dict = new Dictionary<double, int>();
+                    foreach (double value in cam3results[item])
+                    {
+                        if (!dict.ContainsKey(value))
+                        {
+                            dict.Add(value, 1);
+                        }
+                        else
+                        {
+                            dict[value]++;
+                        }
+                    } 
+#endif
+
+                    // Debug.WriteLine($"{dict.Values.Max()}");
+                    // Debug.WriteLine($"{string.Join(",", dict)}");
+
                     double avg = cam3results[item].Average();
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
                     MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
@@ -348,14 +388,13 @@ namespace ApexVisIns
                         isNG = !ok;
                     }
 
-                    Debug.WriteLine($"1111111: {DateTime.Now:mm:ss.fff}");
                     // 資料庫物件新增  key, value
-                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
-                    Debug.WriteLine($"2222222: {DateTime.Now:mm:ss.fff}");
+                    if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add($"{spec.Key}", avg); }
                 }
-
                 // 判斷是否為良品
                 MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawSpecGroup.Col1Result && MCAJaw.JawSpecGroup.Col2Result && MCAJaw.JawSpecGroup.Col3Result ? 1 : 0;
+                #endregion
+
                 //Debug.WriteLine($"Total takes {(DateTime.Now - stTime).TotalMilliseconds} ms");
             }
             catch (OpenCVException ex)
@@ -368,7 +407,7 @@ namespace ApexVisIns
             }
             catch (Exception ex)
             {
-                MsgInformer.AddError(MsgInformer.Message.MsgCode.EX, ex.Message);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.JAW, ex.Message);
             }
         }
 
@@ -424,7 +463,7 @@ namespace ApexVisIns
                 #endregion
 
                 #region 計算輪廓度 2 左 (實際上是右) 
-                spec = specList?[12];
+                spec = specList?[13];
                 if (spec != null && spec.Enable && results != null)
                 {
                     CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -442,7 +481,7 @@ namespace ApexVisIns
                 #endregion
 
                 #region 計算輪廓度 2 右 (實際上是左)
-                spec = specList?[13];
+                spec = specList?[14];
                 if (spec != null && spec.Enable && results != null)
                 {
                     CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -460,9 +499,9 @@ namespace ApexVisIns
                 #endregion
 
                 #region 左右輪廓度高低差
-                Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
-                Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
-                spec = specList?[14];   // 平面度
+                //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
+                //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
+                spec = specList?[12];   // 平面度
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
@@ -676,7 +715,7 @@ namespace ApexVisIns
                 // Debug.WriteLine($"datumY: {datumY}");
 
                 #region 計算 平面度
-                spec = specList?[14];
+                spec = specList?[15];
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
@@ -885,7 +924,7 @@ namespace ApexVisIns
         /// <param name="correction">校正值</param>
         /// <param name="upperLimit">管制上限 (default: 0.005)</param>
         /// <returns></returns>
-        public bool CalContourValue2(Mat src, Point basePt, double baseX, JawPos leftRight, out Point p1, out Point p2,  out double c_005max, double correction = 0, double upperLimit = 0.005)
+        public bool CalContourValue2(Mat src, Point basePt, double baseX, JawPos leftRight, out Point p1, out Point p2, out double c_005max, double correction = 0, double upperLimit = 0.005)
         {
             Rect roi;
 
@@ -1356,11 +1395,12 @@ namespace ApexVisIns
         /// 計算平面度
         /// </summary>
         /// <returns></returns>
-        public bool Cal007FlatnessValue(Mat src, double baseDatumY, out double[] arrayY,out double flatValue, double correction = 0, double limitU = 0.007)
+        public bool Cal007FlatnessValue(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             // ROIs
             Rect roi = new(140, (int)(baseDatumY + 50), 860, 40);
+            //Rect roi = new(140, (int)(baseDatumY + 50), 800, 40);
 
             Rect[] rois = new Rect[] {
                 // PIN 前
@@ -1394,18 +1434,15 @@ namespace ApexVisIns
 
             //
             // LineSegmentPoint[] lineH1 = new LineSegmentPoint[0];
-            // LineSegmentPoint[] lineH2 = new LineSegmentPoint[0];
-            // LineSegmentPoint[] lineH3 = new LineSegmentPoint[0];
             // 
 
             Methods.GetRoiCanny(src, roi, 25, 60, out Mat canny);
             Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
-
             List<double> minLineY = new();
             for (int i = 0; i < rois.Length; i++)
             {
-                Cv2.Rectangle(src, rois[i], Scalar.Black, 1);
+                //Cv2.Rectangle(src, rois[i], Scalar.Black, 1);
                 Mat c = new(canny, rois[i].Subtract(new Point(roi.X, roi.Y)));
                 // Mat c2 = new(canny, rois[i]);
                 Methods.GetHoughLinesHFromCanny(c, rois[i].Location, out LineSegmentPoint[] lineH, 5, 5, 3);
@@ -1413,6 +1450,15 @@ namespace ApexVisIns
                 // Methods.GetRoiOtsu(src, rois[i].Subtract(new Point(roi.X, roi.Y)), 0, 255, out Mat Otsu, out byte threshhold);
                 // Cv2.ImShow($"otsu{i}", Otsu);
                 // Cv2.Rectangle(canny, rois[i].Subtract(new Point(roi.X, roi.Y)), Scalar.Gray, 2);
+                //Debug.WriteLine($"{i} {lineH.Length}");
+
+                if (i > 20)
+                {
+                    foreach (LineSegmentPoint item in lineH)
+                    {
+                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
+                    }
+                }
 
                 if (lineH.Length > 0)
                 {
@@ -1426,77 +1472,23 @@ namespace ApexVisIns
                         if (y - minLineY[i - 1] > 5) { continue; }
                         minLineY.Add(y);
                     }
+
+#if DEBUG
                     foreach (LineSegmentPoint line in lineH)
                     {
                         Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
-                    }
+                    } 
+#endif
                 }
             }
             // 
             // Mat c1 = new Mat(canny, roi1.Subtract(new Point(roi.Left, roi.Top)));
             // Mat c2 = new Mat(canny, roi2.Subtract(new Point(roi.Left, roi.Top)));
             // Mat c3 = new Mat(canny, roi3.Subtract(new Point(roi.Left, roi.Top)));
-            //Debug.WriteLine($"{string.Join(",", minLineY)}, count: {minLineY.Count}, {rois.Length}");
+            // Debug.WriteLine($"{string.Join(",", minLineY)}, count: {minLineY.Count}, {rois.Length}");
             // 
 
-#if false
-            LineSegmentPoint[] line = lineH1.Concat(lineH2).Concat(lineH3).Where(line => line.Length() > 30).OrderBy(line => line.P1.Y + line.P2.Y).OrderBy(line => line.P1.X).ToArray();
-            List<LineSegmentPoint> lineList = new();
-
-            //Debug.WriteLine($"-----------------------------------------------------------------");
-            // 過濾重複點
-            for (int i = 0; i < line.Length; i++)
-            {
-                // 第一條線直接新增
-                if (i == 0)
-                {
-                    lineList.Add(line[i]);
-                    continue;
-                }
-
-                //lineList.All(l => l.P2.X < line[i].P1.X);
-
-                // 線二P1.X > 列表所有線P2.X : 直接新增 
-                if (lineList.All(l => l.P2.X < line[i].P1.X))
-                {
-                    // 新增
-                    lineList.Add(line[i]);
-                }
-                // 線二 p1 介於 線一中間
-                else if (line[i].P1.X >= lineList[^1].P1.X && line[i].P1.X <= lineList[^1].P2.X)
-                {
-                    // 兩線接近 : 直接新增
-                    if (Math.Abs(line[i].P2.Y - lineList[^1].P1.Y) <= 1)
-                    {
-                        lineList.Add(line[i]);
-                        continue;
-                    }
-
-                    if (line[i].P1.Y < lineList[^1].P1.Y)
-                    {
-                        // 取代
-                        lineList[^1] = line[i];
-                    }
-                }
-            }
-
-            /*
-            Debug.WriteLine($"---------------------------------------"); // foreach (LineSegmentPoint item in lineList)
-            foreach (LineSegmentPoint item in lineList)
-            {
-                Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-            }
-            Debug.WriteLine($"---------------------------------------"); // foreach (LineSegmentPoint item in lineList)
-            */
-
-            //LineSegmentPoint max = lineList.Max(line => (line.P1.Y + line.P2.Y));
-
-            //flatValue = (lineList.Max(l => Math.Max(l.P1.Y, l.P2.Y)) - lineList.Min(l => Math.Min(l.P1.Y, l.P2.Y))) * Cam3Unit + correction;
-            flatValue = (lineList.Max(l => (l.P1.Y + l.P2.Y) / 2) - lineList.Min(l => (l.P1.Y + l.P2.Y) / 2)) * Cam3Unit + correction;
-#endif
             canny.Dispose();
-            // canny1.Dispose();
-            // canny2.Dispose();
 
             arrayY = minLineY.ToArray();
             flatValue = ((minLineY.Max() - minLineY.Min()) * Cam3Unit) + correction;

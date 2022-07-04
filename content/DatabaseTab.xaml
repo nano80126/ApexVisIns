@@ -318,6 +318,8 @@
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                             </Style>
+
+                            <!--<local:BindingProxy></local:BindingProxy>-->
                         </DataGrid.Resources>
 
                         <DataGrid.Columns>
@@ -391,6 +393,15 @@
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
+                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourR].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourL].Count}"
+                                                HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                                ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--// 這邊要改什麼 ? -->
                             <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contour].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
@@ -399,10 +410,11 @@
                             <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[back].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
-
+                            
                             <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[bfDiff].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                            
                             <!--//-->
                             <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
@@ -559,6 +571,16 @@
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
+                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--//-->
+                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True" 
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
+                                                HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+
+                            <!--// 改平面度 ? -->
                             <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" 
                                                 Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>

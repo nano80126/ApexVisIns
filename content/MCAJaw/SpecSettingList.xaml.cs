@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -49,22 +47,5 @@ namespace ApexVisIns.content
 
             _ = Task.Run(() => MCAJaw.LoadSpecList());
         }
-    }
-
-
-    public class BindingProxy : Freezable
-    {
-        protected override Freezable CreateInstanceCore()
-        {
-            return new BindingProxy();
-        }
-
-        public Visibility Visibility
-        {
-            get => (Visibility)GetValue(VisibilityProperty);
-            set => SetValue(VisibilityProperty, value);
-        }
-
-        public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Register(nameof(Visibility), typeof(Visibility), typeof(BindingProxy));
     }
 }

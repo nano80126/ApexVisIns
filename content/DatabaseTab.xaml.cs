@@ -293,6 +293,7 @@ namespace ApexVisIns.content
                 string lotNumber = (sender as Button).CommandParameter as string;
 
                 FilterDefinition<JawFullSpecIns> filter = Builders<JawFullSpecIns>.Filter.Eq("LotNumber", lotNumber);
+                    //& Builders<JawFullSpecIns>.Filter.;
 
                 MainWindow.MongoAccess.FindAll("Spec", filter, out List<JawFullSpecIns> data);
 
@@ -306,6 +307,8 @@ namespace ApexVisIns.content
                     {
                         JawFullSpecInsCol.Add(item);
                         // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()} {item.OK} {string.Join(",", item.Results.Keys)}");
+
+                        //Debug.WriteLine(item.Results["flatness2"]);
                     }
                 }
                 //Debug.WriteLine(JawFullSpecInsCol[0].Results["0.088R"]);
@@ -346,7 +349,7 @@ namespace ApexVisIns.content
 
                         JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
 
-                        string expoertTime =
+                        string time =
                                 $"輸出日期,{DateTime.Now:yyyy:MM:dd}{Environment.NewLine}" +
                                 $"輸出時間,{DateTime.Now:HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
 
@@ -360,8 +363,11 @@ namespace ApexVisIns.content
 
                         foreach (string k in header.LotResults.Keys)
                         {
-                            c += $",{header.LotResults[k].Name}";
-                            d += $",{header.LotResults[k].Count}";
+                            if (header.LotResults[k].Enable)
+                            {
+                                c += $",{header.LotResults[k].Name}";
+                                d += $",{header.LotResults[k].Count}";
+                            }
                         }
 
                         c += Environment.NewLine;
@@ -376,21 +382,31 @@ namespace ApexVisIns.content
                         {
                             p += $"{item.DateTime:HH:mm:ss}";
 
-                            //foreach (string key in item.Results.Keys)
+                            // foreach (string key in item.Results.Keys)
                             foreach (string key in header.LotResults.Keys)
                             {
                                 if (!item.Results.ContainsKey(key)) { continue; }
-                                //if (key == "good") { continue; }
+                                // if (key == "good") { continue; }
+                           
+                                // 生成 Header
                                 if (!ResultHeaderAppended) { o += $",{header.LotResults[key].Name}"; }
-                                p += $",{item.Results[key]:f4}";
+                                p += $",{item.Results[key]:f5}";
                             }
+
+#if false
+                            #region 待刪除
+                            if (!ResultHeaderAppended) { o += $",平面度2"; }
+                            p += $",{item.Results["flatness2"]:f5}";
+                            #endregion  
+#endif
+
                             ResultHeaderAppended = true;
 
                             p += (item.OK ? ",良品" : ",不良") + Environment.NewLine;
                         }
                         o += $",結果{Environment.NewLine}";
 
-                        File.WriteAllText(path, expoertTime + a + b + c + d + o + p);
+                        File.WriteAllText(path, time + a + b + c + d + o + p);
                     }
                     catch (Exception ex)
                     {

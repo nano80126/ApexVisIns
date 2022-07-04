@@ -92,6 +92,12 @@
                     <Setter Property="BorderThickness" Value="0"/>
                 </Style>
 
+
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
+                    <Setter Property="Background" Value="{StaticResource ColorPrimaryTransparent}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}"/>
+                </Style>
+                
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
                     Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"/>
             </DataGrid.Resources>
@@ -158,8 +164,8 @@
         </DataGrid>
 
         <StackPanel Grid.Row="3" Margin="12 0 0 12" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 啟用原先未啟用的規格需要確認已校正完畢" Foreground="{StaticResource ColorError}"/>
             <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 量測開度差需要啟用前開、後開與開度差" Foreground="{StaticResource ColorDeepOrange}"/>
-            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 變更備註須重啟程式才會套用變更" Foreground="{StaticResource ColorDeepOrange}"/>
             <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 確保在同一批使用同樣的設定，否則可能造成輸出格式錯誤" Foreground="{StaticResource ColorDeepOrange}"/>
 
             <!--<TextBlock Text="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"/>-->
