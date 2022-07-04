@@ -204,11 +204,15 @@ Apex 外觀瑕疵檢測
 * [ ] 0.088 左右差異問題
 	* 初步測試完成
 
-* [ ] 移除多於物件
+* [x] 移除多於物件
 	* IO Window
 	* Servomotion
 
 * [ ] MCA_Jaw 錯誤捕捉
+
+* [ ] Databasetab highlight enable element
+
+* [ ] DatabaseTab 設定期限
 
 ### Config Logic
 

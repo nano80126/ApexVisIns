@@ -137,6 +137,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// DatePicker & TimePicker 初始化
         /// </summary>
+        [Obsolete("Deprecated")]
         private void InitDateTimePickers()
         {
             DatePicker.SelectedDate = DateTime.Today;
