@@ -484,64 +484,121 @@ namespace ApexVisIns
                 #endregion
 
                 #region 計算輪廓度 2 左 (實際上是右) 
-                spec = specList?[13];
-                if (spec != null && spec.Enable && results != null)
+                //spec = specList?[13];
+                if ((specList?[12] != null && specList[12].Enable) || (specList?[13] != null && specList[13].Enable))
                 {
-                    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                    lock (results)
-                    {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005R);
-                    }
+                    GetContourCornerPoint(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L);
                 }
-                else if (results == null)
-                {
-                    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                    Debug.WriteLine($"c_005R: {c_005R}");
-                }
+                //if (spec != null && spec.Enable && results != null)
+                //{
+                //    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+                //    lock (results)
+                //    {
+                //        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                //        results[spec.Item].Add(c_005R);
+                //    }
+                //}
+                //else if (results == null)
+                //{
+                //    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+                //    Debug.WriteLine($"c_005R: {c_005R}");
+                //}
                 #endregion
 
                 #region 計算輪廓度 2 右 (實際上是左)
-                spec = specList?[14];
-                if (spec != null && spec.Enable && results != null)
+                //spec = specList?[14];
+                if ((specList?[12]?.Enable == true) || (specList?[14]?.Enable == true))
                 {
-                    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                    lock (results)
-                    {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005L);
-                    }
+                    GetContourCornerPoint(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R);
                 }
-                else if (results == null)
-                {
-                    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                    Debug.WriteLine($"c_005L: {c_005L}");
-                }
+                //if (spec != null && spec.Enable && results != null)
+                //{
+                //    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+                //    lock (results)
+                //    {
+                //        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                //        results[spec.Item].Add(c_005L);
+                //    }
+                //}
+                //else if (results == null)
+                //{
+                //    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
+                //    Debug.WriteLine($"c_005L: {c_005L}");
+                //}
                 #endregion
 
-                #region 左右輪廓度高低差
-                Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-
-                //Debug.WriteLine($"L: {cPt1L} {cPt2L} R: {cPt1R} {cPt2R}");
-                //Debug.WriteLine($"Subpiex Point: {string.Join(", ", ptarr)}");
-                foreach (Point2f item in subPtsArr)
+                #region 計算輪廓度 (3 項)
+                if (specList?[12] != null || specList?[13] != null || specList?[14] != null)
                 {
-                    Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                    Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
+                    // Debug.WriteLine($"L: {cPt1L} {cPt2L} R: {cPt1R} {cPt2R}");
+                    // Debug.WriteLine($"Subpiex Point: {string.Join(", ", ptarr)}");
+                    foreach (Point2f item in subPtsArr)
+                    {
+                        Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                    }
+
+                    spec = specList?[12];
+                    if (spec?.Enable == true && results != null)
+                    {
+                        double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit;
+                        lock (results)
+                        {
+                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                            results[spec.Item].Add(c_005);
+                        }
+                    }
+                    else if (results == null)
+                    {
+                        Debug.WriteLine($"c_005: {Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit}");
+                    }
+
+                    spec = specList?[13];
+                    if (spec?.Enable == true && results != null)
+                    {
+                        double c_005R = Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit;
+                        lock (results)
+                        {
+                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                            results[spec.Item].Add(c_005R);
+                        }
+                    }
+                    else if (results == null)
+                    {
+                        Debug.WriteLine($"c_005R: {Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit}");
+                    }
+
+                    spec = specList?[14];
+                    if (spec?.Enable == true && results != null)
+                    {
+                        double c_005L = Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit;
+                        lock (results)
+                        {
+                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                            results[spec.Item].Add(c_005L);
+                        }
+                    }
+                    else if (results == null)
+                    {
+                        Debug.WriteLine($"c_005L: {Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit}");
+                    }
                 }
+
+
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
                 spec = specList?[12];   // 平面度
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                if (spec != null && spec.Enable && results != null)
-                {
-                    // Debug.WriteLine($"Cos(30) {Math.Cos(Math.PI * 30 / 180)}");
-                    double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit;
-                    lock (results)
-                    {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005);
-                    }
-                }
+                //if (spec != null && spec.Enable && results != null)
+                //{
+                //    // Debug.WriteLine($"Cos(30) {Math.Cos(Math.PI * 30 / 180)}");
+                //    double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit;
+                //    lock (results)
+                //    {
+                //        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                //        results[spec.Item].Add(c_005);
+                //    }
+                //}
                 #endregion
 
                 #region 計算 0.008 左 (實際上是右)
@@ -988,7 +1045,7 @@ namespace ApexVisIns
             center = Math.Abs(max - min) > 10 ? (min + max) / 2 : max;    // 先判斷有辨識到最小值
             #endregion
 
-            #region 測試區
+            #region 尋找轉角點
             // 連接輪廓點
             Point[] pts = contours.SelectMany(pts => pts).ToArray();
             // > baseX && < center
@@ -1043,7 +1100,86 @@ namespace ApexVisIns
             return c_005max < upperLimit;
         }
 
+        public void GetContourCornerPoint(Mat src, Point basePt, double baseX, JawPos leftRight, out Point p1, out Point p2)
+        {
+            Rect roi;
 
+            switch (leftRight)
+            {
+                case JawPos.Left:
+                    roi = new((int)baseX + 2, basePt.Y - 50, 20, 70);
+                    break;
+                case JawPos.Right:
+                    roi = new((int)baseX - 22, basePt.Y - 50, 20, 70);
+                    break;
+                default:
+                    roi = new();
+                    break;
+            }
+
+            LineSegmentPoint[] lineH;
+            double min, max, center;
+
+
+            // 取得 Canny
+            Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
+            // 取得輪廓點
+            Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
+
+            #region 計算中心值
+            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out lineH, 2, 2, 5);
+
+            min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
+            max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
+            center = Math.Abs(max - min) > 10 ? (min + max) / 2 : max;    // 先判斷有辨識到最小值
+            #endregion
+
+            #region 尋找轉角點
+            // 連接輪廓點
+            Point[] pts = contours.SelectMany(pts => pts).ToArray();
+            // > baseX && < center
+
+            Point[] filter = Array.Empty<Point>();
+            // 點 1, 2
+            //Point p1;
+            p2 = new();
+            switch (leftRight)
+            {
+                case JawPos.Left:
+                    filter = pts.Where(pt => pt.X > baseX && pt.Y < center).Distinct().OrderBy(pt => pt.X).ToArray();
+                    // 尋找點 2
+                    for (int i = 1; i <= filter.Length; i++)
+                    {
+                        if (i == 1) { continue; }
+
+                        if (filter[^i].X < filter[^(i - 1)].X && filter[^i].Y == filter[^(i - 1)].Y)
+                        {
+                            p2 = filter[^(i - 1)];
+                            break;
+                        }
+                    }
+                    break;
+                case JawPos.Right:
+                    filter = pts.Where(pt => pt.X < baseX && pt.Y < center).Distinct().OrderByDescending(pt => pt.X).ToArray();
+                    // 尋找點 2
+                    for (int i = 1; i <= filter.Length; i++)
+                    {
+                        if (i == 1) { continue; }
+
+                        if (filter[^i].X > filter[^(i - 1)].X && filter[^i].Y == filter[^(i - 1)].Y)
+                        {
+                            p2 = filter[^(i - 1)];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+            p1 = filter[0];
+        }
 
 
         /// <summary>

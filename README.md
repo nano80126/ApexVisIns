@@ -218,6 +218,9 @@ Apex 外觀瑕疵檢測
 	 * 輪廓度都改掉
 	 * 
 
+* [ ] if (spec != null && spec.enable) 改 if (spec?.Enable == true)
+
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

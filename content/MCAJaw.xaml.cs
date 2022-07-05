@@ -163,7 +163,6 @@ namespace ApexVisIns.content
             if (!JawSpecGroup.SyncBinding) { JawSpecGroup.EnableCollectionBinding(); }
             #endregion
 
-       
 
             switch (MainWindow.InitMode)
             {
@@ -192,6 +191,14 @@ namespace ApexVisIns.content
             //byte[] crc = SerialPortBase.CRC16LH(new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 });
             //Debug.WriteLine($"{string.Join(" , ", crc)}");
             //Debug.WriteLine($"{string.Join(" , ", data.Concat(crc))}");
+
+            //Debug.WriteLine($"Arr: {arr?[5]}");
+            //Debug.WriteLine($"Arr: {arr?[5].GetType()}");
+            //Debug.WriteLine($"Arr: {arr?[5] == null}");
+
+            Point pt = new Point();
+            Debug.WriteLine($"pt: {pt}");
+
             #endregion
 
             if (!loaded)
