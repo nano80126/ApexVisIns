@@ -378,6 +378,8 @@ namespace ApexVisIns.content
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
                         //Cv2.ImShow("canny", canny);
 
+                        // Cv2.ImWrite("part1.png", mat);
+
 
                         switch (sn)
                         {

@@ -214,6 +214,10 @@ Apex 外觀瑕疵檢測
 
 * [ ] DatabaseTab 設定期限
 
+* [ ] cornerSubPixel()
+	 * 輪廓度都改掉
+	 * 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

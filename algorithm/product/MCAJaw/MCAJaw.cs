@@ -111,7 +111,7 @@ namespace ApexVisIns
                     // 拍照要 Dispacker
                     Dispatcher.Invoke(() =>
                     {
-                        for (int j = 0; j < (i == 0 ? 2 : 3); j++)
+                        for (int j = 0; j < (i == 0 ? 6 : 7); j++)
                         {
                             Debug.WriteLine($"camera1: count: {j}");
                             // 等待 Trigger Ready
@@ -216,7 +216,7 @@ namespace ApexVisIns
                     {
                         Debug.WriteLine($"camera3: count: {j}");
                         bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
-                        Debug.WriteLine($"{ready}");
+                        //Debug.WriteLine($"{ready}");
                         if (!ready)
                         {
                             j--;
@@ -267,12 +267,33 @@ namespace ApexVisIns
                 // Camera 1 結果 (前開)
                 foreach (string key in cam1results.Keys)
                 {
-                    //Debug.WriteLine($"{key} {cam1results[key].Count}");
+                    Debug.WriteLine($"{key} {cam1results[key].Count}");
                     //
                     double avg = 0;
-                    if (key is "輪廓度R" or "輪廓度L")
+
+                    // 過濾輪廓度極值
+                    if (key is "輪廓度R" or "輪廓度L" or "輪廓度")
                     {
-                        avg = cam1results[key].Max();
+                        double max = cam1results[key].Max();
+                        double min = cam1results[key].Min();
+                        avg = cam1results[key].Average();
+
+                        Debug.WriteLine($"{string.Join(",", cam1results[key])}");
+                        int count = cam1results[key].Count;
+
+                        if (max >= avg + Cam1Unit) // 超過萬分之8
+                        {
+                            cam1results[key].RemoveAll(x => x >= max);
+                        }
+                        else if (avg >= min + Cam1Unit)
+                        {
+                            cam1results[key].RemoveAll(x => x <= min);
+                        }
+                        avg = cam1results[key].Average();
+
+                        Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
+
+                        Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
                     else
                     {
@@ -499,19 +520,26 @@ namespace ApexVisIns
                 #endregion
 
                 #region 左右輪廓度高低差
+                Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
+
+                //Debug.WriteLine($"L: {cPt1L} {cPt2L} R: {cPt1R} {cPt2R}");
+                //Debug.WriteLine($"Subpiex Point: {string.Join(", ", ptarr)}");
+                foreach (Point2f item in subPtsArr)
+                {
+                    Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                }
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
                 spec = specList?[12];   // 平面度
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
-                    Debug.WriteLine($"Cos(30) {Math.Cos(Math.PI * 30 / 180)}");
-
-                    double f_007 = Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit / Math.Cos(Math.PI * 30 / 180);
+                    // Debug.WriteLine($"Cos(30) {Math.Cos(Math.PI * 30 / 180)}");
+                    double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit;
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(f_007);
+                        results[spec.Item].Add(c_005);
                     }
                 }
                 #endregion
@@ -1006,20 +1034,17 @@ namespace ApexVisIns
             p1 = filter[0];
 
 #if DEBUG
-            Cv2.Circle(src, p1, 5, Scalar.Gray, 2);
-            Cv2.Circle(src, p2, 5, Scalar.Gray, 2);
+            //Cv2.Circle(src, p1, 5, Scalar.Gray, 2);
+            //Cv2.Circle(src, p2, 5, Scalar.Gray, 2);
 #endif
-
-            // foreach (Point pt in filter)
-            // {
-            //     Debug.WriteLine($"{pt}");
-            // }
-            Debug.WriteLine($"{leftRight} p1 : {p1}");
             #endregion
 
             c_005max = (Math.Abs(p1.Y - p2.Y) * Cam1Unit) + correction;
             return c_005max < upperLimit;
         }
+
+
+
 
         /// <summary>
         /// 計算前開 (計算開度差用)
@@ -1451,14 +1476,6 @@ namespace ApexVisIns
                 // Cv2.ImShow($"otsu{i}", Otsu);
                 // Cv2.Rectangle(canny, rois[i].Subtract(new Point(roi.X, roi.Y)), Scalar.Gray, 2);
                 //Debug.WriteLine($"{i} {lineH.Length}");
-
-                if (i > 20)
-                {
-                    foreach (LineSegmentPoint item in lineH)
-                    {
-                        Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-                    }
-                }
 
                 if (lineH.Length > 0)
                 {
