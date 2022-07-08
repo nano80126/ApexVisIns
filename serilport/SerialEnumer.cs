@@ -4,7 +4,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public class SerialEnumer : LongLifeWorker
     {

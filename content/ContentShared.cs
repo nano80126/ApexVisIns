@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ApexVisIns.content
+namespace MCAJawIns.content
 {
     public class BindingProxy : Freezable
     {

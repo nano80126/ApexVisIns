@@ -3,7 +3,7 @@ using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
 using System.Windows;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// OffsetPanel.xaml 的互動邏輯

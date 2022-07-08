@@ -1,7 +1,7 @@
-﻿using ApexVisIns.Driver;
+﻿using MCAJawIns.Driver;
 using System;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public class WISE4050 : TCPIPBase
     {

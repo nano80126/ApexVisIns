@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
-using ApexVisIns.content;
+using MCAJawIns.content;
 using Automation.BDaq;
 using System.Diagnostics;
 using System.Threading;
 using System.Collections;
 using System.Globalization;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// DigitalIOPanel.xaml 的互動邏輯

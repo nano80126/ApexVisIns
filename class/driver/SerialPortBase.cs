@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 
-namespace ApexVisIns.Driver
+namespace MCAJawIns.Driver
 {
     internal interface ISerialPortBase
     {

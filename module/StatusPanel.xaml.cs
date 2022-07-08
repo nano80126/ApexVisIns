@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// StatusPanel.xaml 的互動邏輯

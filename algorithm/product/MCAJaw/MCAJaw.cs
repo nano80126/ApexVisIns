@@ -1,4 +1,4 @@
-﻿using ApexVisIns.Product;
+﻿using MCAJawIns.Product;
 using Basler.Pylon;
 using OpenCvSharp;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
 
     public partial class MainWindow : System.Windows.Window
@@ -62,7 +62,7 @@ namespace ApexVisIns
         /// <param name="cam2">相機 2</param>
         /// <param name="cam3">相機 3</param>
         /// <param name="jawFullSpecIns">檢驗結果物件</param>
-        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawFullSpecIns jawFullSpecIns = null)
+        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
         {
             // 1. 擷取影像 
             // 2. 取得 Canny
@@ -111,7 +111,7 @@ namespace ApexVisIns
                     // 拍照要 Dispacker
                     Dispatcher.Invoke(() =>
                     {
-                        for (int j = 0; j < (i == 0 ? 6 : 7); j++)
+                        for (int j = 0; j < (i == 0 ? 2 : 3); j++)
                         {
                             Debug.WriteLine($"camera1: count: {j}");
                             // 等待 Trigger Ready
@@ -212,7 +212,7 @@ namespace ApexVisIns
                 // 拍照要 Dispacker
                 Dispatcher.Invoke(() =>
                 {
-                    for (int j = 0; j < 5; j++)
+                    for (int j = 0; j < 3; j++)
                     {
                         Debug.WriteLine($"camera3: count: {j}");
                         bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
@@ -267,8 +267,7 @@ namespace ApexVisIns
                 // Camera 1 結果 (前開)
                 foreach (string key in cam1results.Keys)
                 {
-                    Debug.WriteLine($"{key} {cam1results[key].Count}");
-                    //
+                    //Debug.WriteLine($"{key} {cam1results[key].Count}");
                     double avg = 0;
 
                     // 過濾輪廓度極值
@@ -278,10 +277,10 @@ namespace ApexVisIns
                         double min = cam1results[key].Min();
                         avg = cam1results[key].Average();
 
-                        Debug.WriteLine($"{string.Join(",", cam1results[key])}");
                         int count = cam1results[key].Count;
 
-                        if (max >= avg + Cam1Unit) // 超過萬分之8
+                        // 過濾極端值
+                        if (max >= avg + Cam1Unit)
                         {
                             cam1results[key].RemoveAll(x => x >= max);
                         }
@@ -290,10 +289,9 @@ namespace ApexVisIns
                             cam1results[key].RemoveAll(x => x <= min);
                         }
                         avg = cam1results[key].Average();
-
-                        Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
-
-                        Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
+                        
+                        // Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
+                        // Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
                     else
                     {
@@ -484,11 +482,14 @@ namespace ApexVisIns
                 #endregion
 
                 #region 計算輪廓度 2 左 (實際上是右) 
-                //spec = specList?[13];
-                if ((specList?[12] != null && specList[12].Enable) || (specList?[13] != null && specList[13].Enable))
-                {
-                    GetContourCornerPoint(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L);
-                }
+                GetContourCornerPoint(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L);
+#if false
+                // spec = specList?[13];
+                //if ((specList?[12]?.Enable == true) || (specList?[13]?.Enable == true))
+                //{
+                //    GetContourCornerPoint(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L);
+                //}
+
                 //if (spec != null && spec.Enable && results != null)
                 //{
                 //    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -502,15 +503,18 @@ namespace ApexVisIns
                 //{
                 //    CalContourValue2(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L, out double c_005R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 //    Debug.WriteLine($"c_005R: {c_005R}");
-                //}
+                //}  
+#endif
                 #endregion
 
                 #region 計算輪廓度 2 右 (實際上是左)
-                //spec = specList?[14];
-                if ((specList?[12]?.Enable == true) || (specList?[14]?.Enable == true))
-                {
-                    GetContourCornerPoint(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R);
-                }
+                // spec = specList?[14];
+                GetContourCornerPoint(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R);
+#if false
+                //if ((specList?[12]?.Enable == true) || (specList?[14]?.Enable == true))
+                //{
+                //    GetContourCornerPoint(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R);
+                //}
                 //if (spec != null && spec.Enable && results != null)
                 //{
                 //    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -524,70 +528,75 @@ namespace ApexVisIns
                 //{
                 //    CalContourValue2(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R, out double c_005L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 //    Debug.WriteLine($"c_005L: {c_005L}");
-                //}
+                //}  
+#endif
                 #endregion
 
                 #region 計算輪廓度 (3 項)
-                if (specList?[12] != null || specList?[13] != null || specList?[14] != null)
+                // 抓取 亞像素角點
+                Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
+#if DEBUG
+                foreach (Point2f item in subPtsArr)
                 {
-                    Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-                    // Debug.WriteLine($"L: {cPt1L} {cPt2L} R: {cPt1R} {cPt2R}");
-                    // Debug.WriteLine($"Subpiex Point: {string.Join(", ", ptarr)}");
-                    foreach (Point2f item in subPtsArr)
-                    {
-                        Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
-                    }
+                    Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                }
+#endif
 
-                    spec = specList?[12];
-                    if (spec?.Enable == true && results != null)
+                #region 輪廓度 (高低差)
+                spec = specList?[12];
+                if (spec?.Enable == true && results != null)
+                {
+                    double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                    lock (results)
                     {
-                        double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit;
-                        lock (results)
-                        {
-                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                            results[spec.Item].Add(c_005);
-                        }
-                    }
-                    else if (results == null)
-                    {
-                        Debug.WriteLine($"c_005: {Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit}");
-                    }
-
-                    spec = specList?[13];
-                    if (spec?.Enable == true && results != null)
-                    {
-                        double c_005R = Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit;
-                        lock (results)
-                        {
-                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                            results[spec.Item].Add(c_005R);
-                        }
-                    }
-                    else if (results == null)
-                    {
-                        Debug.WriteLine($"c_005R: {Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit}");
-                    }
-
-                    spec = specList?[14];
-                    if (spec?.Enable == true && results != null)
-                    {
-                        double c_005L = Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit;
-                        lock (results)
-                        {
-                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                            results[spec.Item].Add(c_005L);
-                        }
-                    }
-                    else if (results == null)
-                    {
-                        Debug.WriteLine($"c_005L: {Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit}");
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(c_005);
                     }
                 }
+                else if (results == null)
+                {
+                    Debug.WriteLine($"c_005: {Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit}");
+                }
+                #endregion
 
+                #region 輪廓度 (右)
+                spec = specList?[13];
+                if (spec?.Enable == true && results != null)
+                {
+                    double c_005R = Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(c_005R);
+                    }
+                }
+                else if (results == null)
+                {
+                    Debug.WriteLine($"c_005R: {Math.Abs(subPtsArr[0].Y - subPtsArr[1].Y) * Cam1Unit}");
+                }
+                #endregion
 
+                #region 輪廓度 (左)
+                spec = specList?[14];
+                if (spec?.Enable == true && results != null)
+                {
+                    double c_005L = Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(c_005L);
+                    }
+                }
+                else if (results == null)
+                {
+                    Debug.WriteLine($"c_005L: {Math.Abs(subPtsArr[2].Y - subPtsArr[3].Y) * Cam1Unit}");
+                }
+                #endregion
+
+#if false
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
-                spec = specList?[12];   // 平面度
+                //spec = specList?[12];   // 平面度
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 //if (spec != null && spec.Enable && results != null)
                 //{
@@ -598,7 +607,8 @@ namespace ApexVisIns
                 //        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
                 //        results[spec.Item].Add(c_005);
                 //    }
-                //}
+                //}  
+#endif
                 #endregion
 
                 #region 計算 0.008 左 (實際上是右)
@@ -656,7 +666,6 @@ namespace ApexVisIns
                 #region 計算 0.024 左 (實際上是右) (重寫)
                 spec = specList?[7];
                 // double d_024R = (Math.Abs(LCY - LtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                // Debug.WriteLine($"RbotY024 {LbotY024}, RtopY013 {LtopY013}");
                 if (spec != null && spec.Enable && results != null)
                 {
                     Cal024DistanceValue(src, baseL, JawPos.Left, LX, LtopY013, out double LbotY024, out double d_024R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -671,7 +680,6 @@ namespace ApexVisIns
                 #region 計算 0.024 右 (實際上是左) (重寫)
                 spec = specList?[8];
                 // double d_024L = (Math.Abs(RCY - RtopY) * Cam1Unit) + (spec != null ? spec.Correction + spec.CorrectionSecret : 0);
-                // Debug.WriteLine($"RbotY024 {RbotY024}, RtopY013 {RtopY013}");
                 if (spec != null && spec.Enable && results != null)
                 {
                     Cal024DistanceValue(src, baseR, JawPos.Right, RX, RtopY013, out double RbotY024, out double d_024L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -804,7 +812,7 @@ namespace ApexVisIns
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
-                    Cal007FlatnessValue(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -813,7 +821,7 @@ namespace ApexVisIns
                 }
                 else if (results == null)
                 {
-                    Cal007FlatnessValue(src, datumY, out double[] arrayY, out double f_007);
+                    Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007);
                     Debug.WriteLine($"f007: {f_007} {string.Join(",", arrayY)} {arrayY.Length}");
                 }
                 #endregion
@@ -1630,7 +1638,7 @@ namespace ApexVisIns
                     foreach (LineSegmentPoint line in lineH)
                     {
                         Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
-                    } 
+                    }
 #endif
                 }
             }
@@ -1646,6 +1654,299 @@ namespace ApexVisIns
             arrayY = minLineY.ToArray();
             flatValue = ((minLineY.Max() - minLineY.Min()) * Cam3Unit) + correction;
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+            return flatValue <= limitU;
+        }
+
+        /// <summary>
+        /// 計算平面度
+        /// </summary>
+        /// <returns></returns>
+        public bool Cal007FlatnessValue2(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
+        {
+            DateTime t1 = DateTime.Now;
+
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // ROIs
+            Rect roi = new(120, (int)(baseDatumY + 50), 880, 40);
+            // Rect roi = new(140, (int)(baseDatumY + 50), 800, 40);
+            Mat src2 = new(src, roi);
+
+            // Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
+            // Methods.GetRoiCanny(src, roi, 40, 80, out Mat canny2);
+            // Methods.GetRoiCanny(src, roi, 30, 60, out Mat canny3);
+            // Methods.GetContoursFromCanny(canny, roi.Location, out Point[][] _, out Point[] pts);
+
+            byte[][] ths = {
+                new byte[] { 50, 120 },
+                new byte[] { 40, 80}, 
+                new byte[] { 35, 70},
+                new byte[] { 30, 60},
+            };
+
+            List<double> listY_L = new();
+            List<double> listY_L2 = new();
+            List<double> listY_R = new();
+            List<double> listY_R2 = new();
+
+            int cnt = 0, cnt2 = 0;
+
+            for (int i = 580; i >= 120; i -= 20)
+            {
+                if (i is (>= 170 and < 260)) { continue; }
+                // 計算迴圈次數
+                cnt++;
+
+                foreach (byte[] th in ths)
+                {
+                    bool canBreak = false;
+
+                    // roi 1
+                    Rect subRoi = new(i, (int)(baseDatumY + 50), 20, 40);
+                    Methods.GetRoiCanny(src, subRoi, th[0], th[1], out Mat c);
+                    Methods.GetHoughLinesHFromCanny(c, subRoi.Location, out LineSegmentPoint[] lineH, 5, 5, 3);
+
+                    // roi 2
+                    Rect subRoi2 = new(i + 10, (int)(baseDatumY + 50), 20, 40);
+                    Methods.GetRoiCanny(src, subRoi2, th[0], th[1], out Mat c2);
+                    Methods.GetHoughLinesHFromCanny(c2, subRoi2.Location, out LineSegmentPoint[] lineH2, 5, 5, 3);
+                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+
+                    if (lineH.Length > 0)
+                    {
+                        double minY = lineH.Min(l => (l.P1.Y + l.P2.Y) / 2);
+                        Methods.GetContoursFromCanny(c, subRoi.Location, out Point[][] _, out Point[] pts);
+                        // 過濾無關點
+                        pts = pts.Where(pt => minY - 1 <= pt.Y && pt.Y <= minY + 1).OrderBy(pt => pt.X).ToArray();
+                        // 
+
+                        #region 計算 subpixel Y
+                        double num = 0.0, sum = 0.0;
+                        for (int j = 1; j < pts.Length; j++)
+                        {
+                            double dis = pts[j].DistanceTo(pts[j - 1]);
+                            sum += dis;
+                            num += (pts[j - 1].Y + pts[j].Y) / 2 * dis;
+                        }
+                        double y = num / sum;
+                        #endregion
+
+                        if (listY_L.Count == 0)
+                        {
+                            listY_L.Add(y);
+                            canBreak = true;
+                            //foreach (LineSegmentPoint line in lineH)
+                            //{
+                            //    Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
+                            //}
+                            //break;
+                        }
+                        else
+                        {
+                            if (Math.Abs(y - listY_L[^1]) > 2) { continue; }
+
+                            listY_L.Add(y);
+                            canBreak = true;
+
+                            //foreach (LineSegmentPoint line in lineH)
+                            //{
+                            //    Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
+                            //}
+                            //break;
+                        }
+                    }
+
+                    if (lineH2.Length > 0)
+                    {
+                        double minY = lineH2.Min(l => (l.P1.Y + l.P2.Y) / 2);
+                        Methods.GetContoursFromCanny(c2, subRoi2.Location, out Point[][] _, out Point[] pts);
+                        // 過濾無關點
+                        pts = pts.Where(pt => minY - 1 <= pt.Y && pt.Y <= minY + 1).OrderBy(pt => pt.X).ToArray();
+                        // 
+
+                        #region 計算 subpixel Y
+                        double num = 0.0, sum = 0.0;
+                        for (int j = 1; j < pts.Length; j++)
+                        {
+                            double dis = pts[j].DistanceTo(pts[j - 1]);
+                            sum += dis;
+                            num += (pts[j - 1].Y + pts[j].Y) / 2 * dis;
+                        }
+                        double y = num / sum;
+                        #endregion
+
+                        if (listY_L2.Count == 0)
+                        {
+                            listY_L2.Add(y);
+                            canBreak = true;
+
+                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                        else
+                        {
+                            if (Math.Abs(y - listY_L2[^1]) > 2) { continue; }
+
+                            listY_L2.Add(y);
+                            canBreak = true;
+
+                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                    }
+
+                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+                    //Cv2.Line(src, subRoi2.X, subRoi2.Top, subRoi2.X, subRoi2.Bottom, Scalar.Gray, 1);
+
+                    if (canBreak) { break; }
+                }
+            }
+
+            for (int i = 600; i <= 980; i += 20)
+            {
+                if (i is (>= 720 and < 800)) { continue; }
+                // 計算迴圈次數
+                cnt2++;
+
+                foreach (byte[] th in ths)
+                {
+                    bool canBreak = false;
+
+                    // roi 1
+                    Rect subRoi = new(i, (int)(baseDatumY + 50), 20, 40);
+                    Methods.GetRoiCanny(src, subRoi, th[0], th[1], out Mat c);
+                    Methods.GetHoughLinesHFromCanny(c, subRoi.Location, out LineSegmentPoint[] lineH, 5, 5, 3);
+                    
+                    // roi 2
+                    Rect subRoi2 = new(i - 10, (int)(baseDatumY + 50), 20, 40);
+                    Methods.GetRoiCanny(src, subRoi2, th[0], th[1], out Mat c2);
+                    Methods.GetHoughLinesHFromCanny(c2, subRoi2.Location, out LineSegmentPoint[] lineH2, 5, 5, 3);
+
+                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+
+                    if (lineH.Length > 0)
+                    {
+                        double minY = lineH.Min(l => (l.P1.Y + l.P2.Y) / 2);
+                        Methods.GetContoursFromCanny(c, subRoi.Location, out Point[][] _, out Point[] pts);
+                        // 過濾無關點
+                        pts = pts.Where(pt => minY - 1 <= pt.Y && pt.Y <= minY + 1).OrderBy(pt => pt.X).ToArray();
+                        // double Y = pts.Aggregate(0.0, (sum, next) => sum);
+                        // double y = pts.Average(pt => pt.Y);
+
+                        #region 計算 subpixel Y
+                        double num = 0.0, sum = 0.0;
+                        for (int j = 1; j < pts.Length; j++)
+                        {
+                            double dis = pts[j].DistanceTo(pts[j - 1]);
+                            sum += dis;
+                            num += (pts[j - 1].Y + pts[j].Y) / 2 * dis;
+                        }
+                        double y = num / sum;
+                        #endregion
+
+                        // Debug.WriteLine($"{string.Join(",", pts)} {num / sum}");
+
+                        if (listY_R.Count == 0)
+                        {
+                            listY_R.Add(y);
+                            canBreak = true;
+
+                            //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                        else
+                        {
+                            // 與上一筆相差太多，代表可能邊緣抓取錯誤，直接略過
+                            if (Math.Abs(y - listY_R[^1]) > 2) { continue; }
+
+                            listY_R.Add(y);
+                            canBreak = true;
+
+                            //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                    }
+
+                    if (lineH2.Length > 0)
+                    {
+                        double minY = lineH2.Min(l => (l.P1.Y + l.P2.Y) / 2);
+                        Methods.GetContoursFromCanny(c2, subRoi2.Location, out Point[][] _, out Point[] pts);
+                        // 過濾無關點
+                        pts = pts.Where(pt => minY - 1 <= pt.Y && pt.Y <= minY + 1).OrderBy(pt => pt.X).ToArray();
+                        //
+
+                        #region 計算 subpixel Y
+                        double num = 0.0, sum = 0.0;
+                        for (int j = 1; j < pts.Length; j++)
+                        {
+                            double dis = pts[j].DistanceTo(pts[j - 1]);
+                            sum += dis;
+                            num += (pts[j - 1].Y + pts[j].Y) / 2 * dis;
+                        }
+                        double y = num / sum;
+                        #endregion
+
+                        // Debug.WriteLine($"{string.Join(",", pts)} {num / sum}");
+
+                        if (listY_R2.Count == 0)
+                        {
+                            listY_R2.Add(y);
+                            canBreak = true;
+
+                            //foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                        else
+                        {
+                            // 與上一筆相差太多，代表可能邊緣抓取錯誤，直接略過
+                            if (Math.Abs(y - listY_R2[^1]) > 2) { continue; }
+
+                            listY_R2.Add(y);
+                            canBreak = true;
+
+                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                        }
+                    }
+
+                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+                    //Cv2.Line(src, subRoi2.X, subRoi2.Top, subRoi2.X, subRoi2.Bottom, Scalar.Gray, 1);
+
+                    c.Dispose();
+                    c2.Dispose();
+
+                    if (canBreak) { break; }
+                }
+            }
+
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            // canny.Dispose();
+
+            double[] arrayYL = listY_L.ToArray();
+            double[] arrayYL2 = listY_L2.ToArray();
+            double[] arrayYR = listY_R.ToArray();
+            double[] arrayYR2 = listY_R2.ToArray();
+
+            Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
+            Debug.WriteLine($"{listY_R.Count} {listY_R2.Count}");
+
+            for (int i = 0; i < Math.Max(listY_L.Count, listY_L2.Count); i++)
+            {
+                arrayYL[i] = Math.Sqrt(arrayYL[i] * arrayYL2[i]);
+            }
+
+            for (int i = 0; i < Math.Max(listY_R.Count, listY_R2.Count); i++)
+            {
+                arrayYR2[i] = Math.Sqrt(arrayYR[i] * arrayYR2[i]);
+            }
+
+            Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
+            Debug.WriteLine($"{listY_R.Count} {listY_R2.Count}");
+
+            //Debug.WriteLine($"cnt: {cnt2} R: {string.Join(",", arrayYR)} {arrayYR.Length}");
+
+            arrayY = arrayYL.Reverse().Concat(arrayYR2).ToArray();
+            //Debug.WriteLine($"cnt: {cnt + cnt2}, {arrayY.Length} Arr: {string.Join(",", arrayY)}");
+
+
+            flatValue = ((arrayY.Max() - arrayY.Min()) * Cam3Unit) + correction;
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds}");
 
             return flatValue <= limitU;
         }

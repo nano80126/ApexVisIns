@@ -6,13 +6,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using ApexVisIns.Algorithm;
+using MCAJawIns.Algorithm;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ApexVisIns.content
+namespace MCAJawIns.content
 {
     public partial class EngineerTab : StackPanel
     {
@@ -378,9 +378,6 @@ namespace ApexVisIns.content
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
                         //Cv2.ImShow("canny", canny);
 
-                        // Cv2.ImWrite("part1.png", mat);
-
-
                         switch (sn)
                         {
                             case "24214356":    // 前相機
@@ -596,8 +593,6 @@ namespace ApexVisIns.content
                     #region UI Thread here
                     Dispatcher.Invoke(() =>
                     {
-
-
 
                     });
                     #endregion

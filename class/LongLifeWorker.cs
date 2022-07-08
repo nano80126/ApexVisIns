@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Data;
 using Basler.Pylon;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public abstract class LongLifeWorker : IDisposable
     {

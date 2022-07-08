@@ -12,7 +12,7 @@ using MongoDB.Driver;
 using MongoDB.Libmongocrypt;
 
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
 
     /// <summary>
@@ -30,7 +30,6 @@ namespace ApexVisIns
 
 
         #endregion
-
 
         #region Public
         public string Host { get; set; }
@@ -182,7 +181,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 列出所有 Database
         /// </summary>
@@ -216,7 +214,6 @@ namespace ApexVisIns
                 throw;
             }
         }
-
 
         /// <summary>
         /// 插入一筆 document
@@ -282,7 +279,6 @@ namespace ApexVisIns
             }
         }
 
-
         /// <summary>
         /// 搜尋第一筆符合條件 Document
         /// </summary>
@@ -347,6 +343,50 @@ namespace ApexVisIns
             }
         }
 
+        public UpdateResult UpdateOne<T>(string cName, FilterDefinition<T> filter, UpdateDefinition<T> update)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                return collection.UpdateOne(filter, update);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        public void Empty<T>(string cName)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                _ = collection.DeleteMany(Builders<T>.Filter.Empty);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        public DeleteResult DeleteMany<T>(string cName, FilterDefinition<T> filter)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                return collection.DeleteMany(filter);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

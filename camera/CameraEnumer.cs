@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// <summary>
     /// Basler Camera Enumerator

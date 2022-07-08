@@ -1,10 +1,10 @@
-﻿<Application x:Class="ApexVisIns.App"
+﻿<Application x:Class="MCAJawIns.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:pd="clr-namespace:ApexVisIns.Product"
-             xmlns:local="clr-namespace:ApexVisIns"
-             xmlns:cvt="clr-namespace:ApexVisIns.Converter"
+             xmlns:pd="clr-namespace:MCAJawIns.Product"
+             xmlns:local="clr-namespace:MCAJawIns"
+             xmlns:cvt="clr-namespace:MCAJawIns.Converter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>

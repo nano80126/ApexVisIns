@@ -15,7 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ApexVisIns.content
+namespace MCAJawIns.content
 {
     /// <summary>
     /// CameraTab.xaml 的互動邏輯

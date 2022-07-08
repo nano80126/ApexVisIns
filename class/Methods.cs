@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public class Methods
     {
@@ -1330,6 +1330,7 @@ namespace ApexVisIns
             try
             {
                 LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
+                // Debug.WriteLine($"lineSeg.Length: {lineSeg.Length}");
 
                 // 1. 保留 Ygap < 3 的線 2. 確認 X 偏移大於 Y 偏移 3. 平移 roi.X, roi.Y
                 lineSegH = lineSeg.Where(line =>

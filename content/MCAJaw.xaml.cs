@@ -1,5 +1,6 @@
-﻿using ApexVisIns.Product;
+﻿using MCAJawIns.Product;
 using Basler.Pylon;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
-namespace ApexVisIns.content
+
+namespace MCAJawIns.content
 {
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯
@@ -195,10 +200,6 @@ namespace ApexVisIns.content
             //Debug.WriteLine($"Arr: {arr?[5]}");
             //Debug.WriteLine($"Arr: {arr?[5].GetType()}");
             //Debug.WriteLine($"Arr: {arr?[5] == null}");
-
-            Point pt = new Point();
-            Debug.WriteLine($"pt: {pt}");
-
             #endregion
 
             if (!loaded)
@@ -615,11 +616,21 @@ namespace ApexVisIns.content
 
                     if (MongoAccess.Connected)
                     {
+                        // 建立組態集合 (目前只有資料庫保存時間設定)
+                        MongoAccess.CreateCollection("Configs");
+                        // 建立批次結果集合
                         MongoAccess.CreateCollection("Lots");
-                        MongoAccess.CreateCollection("Spec");
+                        // 建立量測結果集合
+                        MongoAccess.CreateCollection("Measurements");
+                        // 建立權限集合
                         MongoAccess.CreateCollection("Auth");
 
 #if false
+                        MongoAccess.InsertOne("Configs", new MCAJawConfig()
+                        {
+                            DataReserveMonths = 6,
+                        });
+
                         AuthLevel[] authLevels = new AuthLevel[] {
                             new AuthLevel() { Password = "intai", Level = 1 },
                             new AuthLevel() { Password = "qc", Level = 2 },
@@ -632,8 +643,17 @@ namespace ApexVisIns.content
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
-                            //Debug.WriteLine($"{item.Password} {item.Level}");
                         }
+
+                        MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
+
+                        DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
+                        DeleteResult result =  MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
+                        Debug.WriteLine($"C1: {result.DeletedCount}");
+                        result =  MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
+                        Debug.WriteLine($"C2: {result.DeletedCount}");
+
+                        Debug.WriteLine($"Delete Datetime: {dt}");
 
                         //MainWindow.MsgInformer.TargetProgressValue += 17;
                         MainWindow.MsgInformer.AdvanceProgressValue(17);
@@ -837,10 +857,8 @@ namespace ApexVisIns.content
                     // MainWindow.ListJawParam();
                     DateTime t1 = DateTime.Now;
 #endif
-
             if (Status != INS_STATUS.READY) { return; }
             DateTime t1 = DateTime.Now;
-
 
             // 清空當下 Collection
             JawSpecGroup.Collection1.Clear();
@@ -853,31 +871,30 @@ namespace ApexVisIns.content
 
             //bool b = await
             Task.Run(() =>
-                {
-                    JawFullSpecIns _jawFullSpecIns = new(JawInspection.LotNumber);
-                    MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                    return _jawFullSpecIns;
-                }).ContinueWith(t =>
-                {
-                    // 判斷是否插入資料庫
-                    //if (true)
-                    //{
-                    JawFullSpecIns data = t.Result;
-                    data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
-                    data.DateTime = DateTime.Now;
-                    MongoAccess.InsertOne("Spec", data);
-                    //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                    //Debug.WriteLine(json);
+            {
+                JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
+                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                return _jawFullSpecIns;
+            }).ContinueWith(t =>
+            {
+                // 判斷是否插入資料庫
+                //if (true)
+                //{
+                JawMeasurements data = t.Result;
+                data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                data.DateTime = DateTime.Now;
+                MongoAccess.InsertOne("Measurements", data);
+                //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+                //Debug.WriteLine(json);
 
-                    //return data.OK;
-                    //}
-                    Status = INS_STATUS.READY;
+                //return data.OK;
+                //}
+                Status = INS_STATUS.READY;
 
-                    Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
+                Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
-                    return data.OK;
-                    //return 
-                });
+                return data.OK;
+            });
             //if (!b) break;
 
 #if false
@@ -947,6 +964,27 @@ namespace ApexVisIns.content
         #endregion
     }
 
+    #region MyRegion
+    public class MCAJawConfig
+    {
+        public MCAJawConfig()
+        {
+            DateTime = DateTime.Now;
+        }
+
+        [BsonId]
+        public ObjectId ObjID { get; set; }
+
+        [BsonElement(nameof(DataReserveMonths))]
+        public ushort DataReserveMonths { get; set; }
+
+        [BsonElement(nameof(DateTime))]
+        public DateTime DateTime { get; set; }
+    }
+    #endregion
+
+
+    #region Converter
     /// <summary>
     /// MCA Jaw 檢驗狀態顏色轉換器
     /// </summary>
@@ -969,7 +1007,7 @@ namespace ApexVisIns.content
                 MCAJaw.INS_STATUS.ERROR => new SolidColorBrush(Color.FromArgb(0xff, 0xE9, 0x1E, 0x63)),
                 MCAJaw.INS_STATUS.IDLE => new SolidColorBrush(Color.FromArgb(0xff, 0xFF, 0xC1, 0x07)),
                 MCAJaw.INS_STATUS.UNKNOWN => new SolidColorBrush(Color.FromArgb(0xbb, 0x9E, 0x9E, 0x9E)),
-       
+
                 _ => new SolidColorBrush(Colors.Red),   // Default
             };
             //return new SolidColorBrush(Colors.Red);
@@ -980,4 +1018,5 @@ namespace ApexVisIns.content
             throw new NotImplementedException();
         }
     }
+    #endregion
 }

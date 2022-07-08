@@ -1,4 +1,4 @@
-﻿<Window x:Class="ApexVisIns.MainWindow"
+﻿<Window x:Class="MCAJawIns.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -6,9 +6,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=System"
-        xmlns:local="clr-namespace:ApexVisIns"
-        xmlns:uc="clr-namespace:ApexVisIns.module"
-        xmlns:content="clr-namespace:ApexVisIns.content"
+        xmlns:local="clr-namespace:MCAJawIns"
+        xmlns:uc="clr-namespace:MCAJawIns.module"
+        xmlns:content="clr-namespace:MCAJawIns.content"
         d:DataContext="{d:DesignInstance Type=local:MainWindow}"
         mc:Ignorable="d"
         

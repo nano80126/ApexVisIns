@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// PointsPanel.xaml 的互動邏輯

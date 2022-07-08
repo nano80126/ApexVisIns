@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
     新增 Light  Exception
 */
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// <summary>
     /// 拋出例外表示這區塊不應該被執行到

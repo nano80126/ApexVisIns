@@ -9,11 +9,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using ApexVisIns.content;
+using MCAJawIns.content;
 using System.ComponentModel;
 using System.Windows.Data;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// ConfigPanel.xaml 的互動邏輯

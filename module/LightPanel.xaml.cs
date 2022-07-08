@@ -14,10 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf;
-using ApexVisIns.content;
+using MCAJawIns.content;
 using System.Threading;
 
-namespace ApexVisIns.module
+namespace MCAJawIns.module
 {
     /// <summary>
     /// LightPanel.xaml 的互動邏輯

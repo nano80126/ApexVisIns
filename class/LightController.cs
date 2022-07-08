@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using ApexVisIns.Driver;
+using MCAJawIns.Driver;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// <summary>
     /// 光源控制器通道

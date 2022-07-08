@@ -1,5 +1,5 @@
-﻿using ApexVisIns.content;
-using ApexVisIns.Product;
+﻿using MCAJawIns.content;
+using MCAJawIns.Product;
 using MaterialDesignThemes.Wpf;
 using OpenCvSharp;
 using System;
@@ -20,7 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -74,10 +74,6 @@ namespace ApexVisIns
         /// MongoDB 存取
         /// </summary>
         public static MongoAccess MongoAccess { get; set; }
-        #endregion
-
-        #region Major
-        public static ApexDefect ApexDefect { get; set; }
         #endregion
 
         #region Resources
@@ -136,7 +132,7 @@ namespace ApexVisIns
             //Debug.WriteLine($"------------------------");
 
             #region Find Resource
-            MsgInformer = FindResource(nameof(ApexVisIns.MsgInformer)) as MsgInformer;
+            MsgInformer = FindResource(nameof(MCAJawIns.MsgInformer)) as MsgInformer;
             MsgInformer.EnableCollectionBinding();
             MsgInformer.ProgressValueChanged += MsgInformer_ProgressValueChanged;   // 綁定 ProgressBar Value Changed 事件
             MsgInformer.EnableProgressBar();
@@ -184,12 +180,6 @@ namespace ApexVisIns
             //MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
             #endregion
 
-
-            #region ApexDefect 上線檢驗用
-            // Main Tab 使用
-            //ApexDefect = FindResource(nameof(ApexDefect)) as ApexDefect;
-            #endregion
-
             // 載入後, focus 視窗
             _ = Focus();
 
@@ -202,46 +192,10 @@ namespace ApexVisIns
 
             // AppTabControl.Items[]
 
-
-#if false
-            bool once = false;
-            foreach (TabItem item in AppTabControl.Items)
-            {
-                Debug.WriteLine(item.Header);
-                Debug.WriteLine(item.Content);
-                Debug.WriteLine(item.Content == null);
-
-                if (item.Content == null && !once)
-                {
-                    item.Content = new content.DeviceTab()
-                    {
-                        Name = "DeviceTab",
-                        Focusable = true,
-                        FocusVisualStyle = null
-                    };
-
-                    once = true;
-                }
-            } 
-#endif
-
-#if false
-            //Dictionary<int, OpenCvSharp.Rect> rrr = new Dictionary<int, OpenCvSharp.Rect>() {
-            //    { 120, new OpenCvSharp.Rect(10,10,10,10)},
-            //    { 240, new OpenCvSharp.Rect(20,10,10,10)},
-            //    { 360, new OpenCvSharp.Rect(30,10,10,10)},
-            //};
-
-            //foreach (int item in rrr.Keys)
-            //{
-            //    Debug.WriteLine($"{item}, {rrr[item]}");
-            //}  
-#endif
             #region 開啟 Mode Dialog
             ModeWindow modeWindow = new() { Owner = this };
             if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}, MainWindow.xaml Line: 280"); }
             #endregion
-
 
             #region 保留測試區
 
@@ -273,8 +227,6 @@ namespace ApexVisIns
         /// <param name="e"></param>
         private void Window_Closed(object sender, EventArgs e)
         {
-
-
 
         }
 
@@ -549,165 +501,6 @@ namespace ApexVisIns
             OnNavIndex = 0;
         }
         #endregion
-
-        #region 公用物件操作 (Apex 使用，MCA_Jaw 不使用)
-#if false
-
-        /// <summary>
-        /// 開始窗戶、耳朵相機連續拍攝
-        /// </summary>
-        public void StartWindowEarCameraContinous()
-        {
-            // 窗戶
-            if (!BaslerCams[0].IsContinuousGrabbing && !BaslerCams[0].IsGrabberOpened)
-            {
-                BaslerCams[0].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-                BaslerCams[0].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-                BaslerCams[0].IsContinuousGrabbing = true;
-            }
-
-            // 耳朵
-            if (!BaslerCams[1].IsContinuousGrabbing && !BaslerCams[1].IsGrabberOpened)
-            {
-                BaslerCams[1].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-                BaslerCams[1].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-                BaslerCams[1].IsContinuousGrabbing = true;
-            }
-        }
-        /// <summary>
-        /// 停止窗戶、耳朵相機連續拍攝
-        /// </summary>
-        public void StopWindowEarCameraContinous()
-        {
-            if (BaslerCams[0].Camera.StreamGrabber.IsGrabbing && BaslerCams[0].IsContinuousGrabbing)
-            {
-                BaslerCams[0].Camera.StreamGrabber.Stop();
-                BaslerCams[0].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCams[0].IsContinuousGrabbing = false;
-            }
-
-            if (BaslerCams[1].Camera.StreamGrabber.IsGrabbing && BaslerCams[1].IsContinuousGrabbing)
-            {
-                BaslerCams[1].Camera.StreamGrabber.Stop();
-                BaslerCams[1].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCams[1].IsContinuousGrabbing = false;
-            }
-        }
-
-        /// <summary>
-        /// 開始管件表面相機連續拍攝
-        /// </summary>
-        public void StartSurfaceCameraContinous()
-        {
-            // 表面 1 
-            if (!BaslerCams[2].IsContinuousGrabbing && !BaslerCams[2].IsGrabberOpened)
-            {
-                BaslerCams[2].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-                BaslerCams[2].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-                BaslerCams[2].IsContinuousGrabbing = true;
-            }
-
-            // 表面 2
-            if (!BaslerCams[3].IsContinuousGrabbing && !BaslerCams[3].IsGrabberOpened)
-            {
-                BaslerCams[3].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
-                BaslerCams[3].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
-
-                BaslerCams[3].IsContinuousGrabbing = true;
-            }
-        }
-
-        /// <summary>
-        /// 停止管件表面相機連續拍攝
-        /// </summary>
-        public void StopSurfaceCameraContinous()
-        {
-            if (BaslerCams[2].Camera.StreamGrabber.IsGrabbing && BaslerCams[2].IsContinuousGrabbing)
-            {
-                BaslerCams[2].Camera.StreamGrabber.Stop();
-                BaslerCams[2].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCams[2].IsContinuousGrabbing = false;
-            }
-
-            if (BaslerCams[3].Camera.StreamGrabber.IsGrabbing && BaslerCams[3].IsContinuousGrabbing)
-            {
-                BaslerCams[3].Camera.StreamGrabber.Stop();
-                BaslerCams[3].Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
-
-                BaslerCams[3].IsContinuousGrabbing = false;
-            }
-        }
-
-        // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
-
-        /// <summary>
-        /// 啟動窗戶、耳朵相機 Grabber
-        /// </summary>
-        public void StartWindowEarGrabber()
-        {
-            if (!BaslerCams[0].IsGrabberOpened && !BaslerCams[0].IsGrabbing)
-            {
-                // 啟動 StreamGrabber 連續拍攝
-                BaslerCams[0].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
-
-                BaslerCams[0].Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
-                BaslerCams[0].IsGrabberOpened = true;
-                BaslerCams[0].IsContinuousGrabbing = false;
-
-                // 
-                //BaslerCams[0].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
-            }
-
-            if (!BaslerCams[1].IsGrabberOpened && !BaslerCams[1].IsGrabbing)
-            {
-                // 啟動 StreamGrabber 連續拍攝
-                BaslerCams[1].Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
-
-                BaslerCams[1].Camera.WaitForFrameTriggerReady(500, TimeoutHandling.ThrowException);
-                BaslerCams[1].IsGrabberOpened = true;
-                BaslerCams[1].IsContinuousGrabbing = false;
-
-                // 
-                //BaslerCams[1].Camera.StreamGrabber.ImageGrabbed -= MainTab.StreamGrabber_ImageGrabbed;
-            }
-        }
-
-        /// <summary>
-        /// 停止窗戶、耳朵相機 Grabber
-        /// </summary>
-        public void StopWindowEarGrabber()
-        {
-            if (BaslerCams[0].IsGrabbing)
-            {
-                // 啟動 StreamGrabber 連續拍攝
-                BaslerCams[0].Camera.StreamGrabber.Stop();
-                BaslerCams[0].IsGrabberOpened = false;
-
-                // 
-                //BaslerCams[0].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
-            }
-
-            if (BaslerCams[1].IsGrabbing)
-            {
-                // 啟動 StreamGrabber 連續拍攝
-                BaslerCams[1].Camera.StreamGrabber.Stop();
-                BaslerCams[1].IsGrabberOpened = false;
-
-                // 
-                //BaslerCams[1].Camera.StreamGrabber.ImageGrabbed += MainTab.StreamGrabber_ImageGrabbed;
-            }
-        }
-#endif
-        // /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
-        #endregion
-
-
     }
 
     /// <summary>
@@ -818,7 +611,7 @@ namespace ApexVisIns
 /// <summary>
 /// 自訂義 property 用
 /// </summary>
-namespace ApexVisIns.CustomProperty
+namespace MCAJawIns.CustomProperty
 {
     public class StatusHelper : DependencyObject
     {

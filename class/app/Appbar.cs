@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public partial class MainWindow : Window
     {

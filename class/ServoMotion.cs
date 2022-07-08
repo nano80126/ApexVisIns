@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Data;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
 
     [Obsolete("因 PCI Card不會常常插拔，故不需要開 LongLifeWorker 來處理")]

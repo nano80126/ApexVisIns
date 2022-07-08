@@ -19,13 +19,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ApexVisIns.Product;
+using MCAJawIns.Product;
 using Microsoft.Win32;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 
-namespace ApexVisIns.content
+namespace MCAJawIns.content
 {
     /// <summary>
     /// DatabaseTab.xaml 的互動邏輯
@@ -52,7 +52,7 @@ namespace ApexVisIns.content
         /// <summary>
         /// 量測查詢結果
         /// </summary>
-        public ObservableCollection<JawFullSpecIns> JawFullSpecInsCol { get; set; } = new();
+        public ObservableCollection<JawMeasurements> JawFullSpecInsCol { get; set; } = new();
 
         public DateTime StartDate
         {
@@ -99,6 +99,11 @@ namespace ApexVisIns.content
         /// 已載入旗標
         /// </summary>
         private bool loaded;
+
+        /// <summary>
+        /// 是否已經回收
+        /// </summary>
+        private bool recycled;
         #endregion
 
         public DatabaseTab()
@@ -115,7 +120,7 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // InitDateTimePickers();
+            LoadDatabaseConfig(recycled);
 
             if (!loaded)
             {
@@ -293,28 +298,21 @@ namespace ApexVisIns.content
                 JawFullSpecInsCol.Clear();
                 string lotNumber = (sender as Button).CommandParameter as string;
 
-                FilterDefinition<JawFullSpecIns> filter = Builders<JawFullSpecIns>.Filter.Eq("LotNumber", lotNumber);
-                    //& Builders<JawFullSpecIns>.Filter.;
+                FilterDefinition<JawMeasurements> filter = Builders<JawMeasurements>.Filter.Eq("LotNumber", lotNumber);
+                //& Builders<JawFullSpecIns>.Filter.;
 
-                MainWindow.MongoAccess.FindAll("Spec", filter, out List<JawFullSpecIns> data);
+                MainWindow.MongoAccess.FindAll("Measurements", filter, out List<JawMeasurements> data);
 
                 //RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
                 SelectedLotNumber = lotNumber;
                 if (data.Count > 0)
                 {
-                    //RecordHeader.Text = $"{lotNumber} 檢驗紀錄";
                     SelectedLotNumber = lotNumber;
-                    foreach (JawFullSpecIns item in data)
+                    foreach (JawMeasurements item in data)
                     {
                         JawFullSpecInsCol.Add(item);
-                        // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()} {item.OK} {string.Join(",", item.Results.Keys)}");
-
-                        //Debug.WriteLine(item.Results["flatness2"]);
                     }
                 }
-                //Debug.WriteLine(JawFullSpecInsCol[0].Results["0.088R"]);
-                //Debug.WriteLine(JawFullSpecInsCol[0].Results["0.088R"].GetType());
-                //Debug.WriteLine("-------------------------------------");
             }
             catch (Exception ex)
             {
@@ -379,16 +377,17 @@ namespace ApexVisIns.content
                         string p = string.Empty;
 
                         bool ResultHeaderAppended = false;
-                        foreach (JawFullSpecIns item in JawFullSpecInsCol)
+                        foreach (JawMeasurements item in JawFullSpecInsCol)
                         {
-                            p += $"{item.DateTime:HH:mm:ss}";
+                            // 先轉 localtime
+                            p += $"{item.DateTime.ToLocalTime():HH:mm:ss}";
 
                             // foreach (string key in item.Results.Keys)
                             foreach (string key in header.LotResults.Keys)
                             {
                                 if (!item.Results.ContainsKey(key)) { continue; }
                                 // if (key == "good") { continue; }
-                           
+
                                 // 生成 Header
                                 if (!ResultHeaderAppended) { o += $",{header.LotResults[key].Name}"; }
                                 p += $",{item.Results[key]:f5}";
@@ -426,8 +425,8 @@ namespace ApexVisIns.content
         /// <param name="e"></param>
         private void FilterButton_Click(object sender, RoutedEventArgs e)
         {
-            //if (JawFullSpecInsCol.Count < 10)
-            //{
+            // if (JawFullSpecInsCol.Count < 10)
+            // {
 
             //    JawFullSpecInsCol.Add(new JawFullSpecIns
             //    {
@@ -443,6 +442,81 @@ namespace ApexVisIns.content
             //{
             //    JawFullSpecInsCol.Clear();
             //}
+        }
+
+
+        private void SaveDatabaseRecycle_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataReserveSelector.SelectedIndex != -1)
+            {
+                ushort month = (ushort)DataReserveSelector.SelectedItem;
+
+                try
+                {
+                    FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Empty;
+                    UpdateDefinition<MCAJawConfig> update = Builders<MCAJawConfig>.Update.Set("DataReserveMonths", month);
+
+                    UpdateResult result = MainWindow.MongoAccess.UpdateOne("Configs", filter, update);
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 載入資料庫設定
+        /// </summary>
+        private void LoadDatabaseConfig(bool recycling)
+        {
+            try
+            {
+                if (!MainWindow.MongoAccess.Connected) { return; }
+
+                FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Empty;
+
+                MainWindow.MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
+
+                DataReserveSelector.SelectedIndex = DataReserveSelector.Items.IndexOf(config.DataReserveMonths);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 清除過期資料
+        /// </summary>
+        [Obsolete("deprecated, obsolete data has been deleted in MCAJaw.cs MongoInit()")]
+        private void RecycleObsoleteData(ushort months)
+        {
+            try
+            {
+                // 清除舊資料
+                // 清除舊資料
+
+                DateTime dateTime = DateTime.Now.AddDays(months * -1);
+                Debug.WriteLine($"{dateTime}");
+                // Debug.WriteLine($"{dateTime.ToLocalTime()}");
+
+                // 尋找在特定 filter 之前的資料
+                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Lt("DateTime", dateTime);
+
+                DeleteResult result =  MainWindow.MongoAccess.DeleteMany("Lots", filter);
+
+
+                //MainWindow.MongoAccess.FindAll("Lots", filter, out List<JawFullSpecIns> config);
+                Debug.WriteLine($"configs: {result.DeletedCount}");
+
+                // 設置已回收旗標
+                recycled = true;
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
+            }
         }
 
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApexVisIns.Algorithm
+namespace MCAJawIns.Algorithm
 {
     public abstract class Algorithm : IDisposable
     {

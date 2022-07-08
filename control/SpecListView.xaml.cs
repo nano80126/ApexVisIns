@@ -22,7 +22,7 @@ using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace ApexVisIns.Control
+namespace MCAJawIns.Control
 {
     /// <summary>
     /// SpecListView.xaml 的互動邏輯

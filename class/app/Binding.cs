@@ -1,23 +1,20 @@
-﻿using OpenCvSharp;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
+using OpenCvSharp;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using System.Linq;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MongoDB.Libmongocrypt;
-using MongoDB.Bson.Serialization.Attributes;
 
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     /// This file is for binding data of application (public bindings) 
@@ -109,41 +106,7 @@ namespace ApexVisIns
             INIT_HARDWARE_FAILED = 1,
             SET_CAMERA_TRIGGER_MODE = 2
         }
-
-        /// <summary>
-        /// 檢驗狀態旗標
-        /// </summary>
-        [Obsolete("Not used in MCA Jaw")]
-        public enum InsStatus
-        {
-            [Description("初始化")]
-            INIT = 0,
-            [Description("準備完成")]
-            READY = 1,
-            [Description("閒置")]
-            IDLE = 2,
-            [Description("檢驗中")]
-            RUNNING = 3,
-            [Description("完成")]
-            DONE = 4,
-            [Description("錯誤")]
-            ERROR = 5
-        }
         #endregion
-
-        /// <summary>
-        /// 主影像 Source
-        /// </summary>
-        [Obsolete("轉移到 Indicator")]
-        public ImageSource ImageSource
-        {
-            get => _imgSrc;
-            set
-            {
-                _imgSrc = value;
-                OnPropertyChanged();
-            }
-        }
 
         /// <summary>
         /// 相機影像 1
@@ -219,15 +182,16 @@ namespace ApexVisIns
     }
 
 
+    /// <summary>
+    /// 權限等級
+    /// </summary>
     public class AuthLevel
     {
         [BsonId]
         public ObjectId ObjID { get; set; }
 
-
         [BsonElement(nameof(Password))]
         public string Password { get; set; }
-
 
         [BsonElement(nameof(Level))]
         public int Level { get; set; }
@@ -631,7 +595,7 @@ namespace ApexVisIns
             }
         }
 
-#if false //Deprecated
+#if false // Deprecated
         /// <summary>
         /// 目標 Progress Value
         /// </summary>
@@ -800,20 +764,6 @@ namespace ApexVisIns
         public int NewInfo { get; private set; }
 
         public int InfoCount => InfoSource.Count;
-
-        /// <summary>
-        /// 新增 Information
-        /// </summary>
-        /// <param name="msg">Message, 強制 type 為 info</param>
-        [Obsolete("待廢")]
-        public void AddInfo(Message msg)
-        {
-            msg.MsgType = Message.MessageType.Info;
-            InfoSource.Push(msg);
-            NewInfo++;
-            OnPropertyChanged(nameof(NewInfo));
-            OnPropertyChanged(nameof(InfoCount));
-        }
 
         /// <summary>
         /// 新增 Success 訊息
@@ -1028,6 +978,7 @@ namespace ApexVisIns
         }
         #endregion
     }
+
 
     /// <summary>
     /// Observable Stack
@@ -1285,12 +1236,10 @@ namespace ApexVisIns
             }
         }
 
-
         public new bool TryGetValue(TKey key, out TValue value)
         {
             return base.TryGetValue(key, out value);
         }
-
 
         public new int Count => base.Count;
     }

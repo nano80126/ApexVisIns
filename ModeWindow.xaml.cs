@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     /// <summary>
     /// ModeWindow.xaml 的互動邏輯

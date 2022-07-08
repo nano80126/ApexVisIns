@@ -11,7 +11,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using MongoDB.Bson;
 
-namespace ApexVisIns.Product
+namespace MCAJawIns.Product
 {
     /// <summary>
     /// MCA Jaw 規格輸出
@@ -253,10 +253,10 @@ namespace ApexVisIns.Product
         public bool Col3Result => Collection3.All(item => item.OK);
     }
 
-
     /// <summary>
     /// MAC Jaw 檢驗主物件，
-    /// 狀態、計數等功能
+    /// 狀態、計數等功能，
+    /// 存入 (Lots) 資料庫用
     /// </summary>
     public class JawInspection : INotifyPropertyChanged
     {
@@ -325,7 +325,6 @@ namespace ApexVisIns.Product
             }
         }
 
-
         /// <summary>
         /// 批號檢驗結果
         /// </summary>
@@ -380,6 +379,7 @@ namespace ApexVisIns.Product
             /// <summary>
             /// 規格 Note
             /// </summary>
+            [BsonIgnore]
             public string Note { get; set; }
 
             /// <summary>
@@ -401,6 +401,7 @@ namespace ApexVisIns.Product
             /// <summary>
             /// 是否啟用
             /// </summary>
+            [BsonIgnore]
             public bool Enable { get; set; }
 
             #region MyRegion
@@ -414,16 +415,16 @@ namespace ApexVisIns.Product
     }
 
     /// <summary>
-    /// Jaw 全尺寸物件，存入資料庫用
+    /// Jaw 全尺寸量測結果物件物件，存入 (Measurements) 資料庫用
     /// </summary>
-    public class JawFullSpecIns
+    public class JawMeasurements
     {
-        public JawFullSpecIns()
+        public JawMeasurements()
         {
             Results = new Dictionary<string, double>();
         }
 
-        public JawFullSpecIns(string lotNumber)
+        public JawMeasurements(string lotNumber)
         {
             LotNumber = lotNumber;
             Results = new Dictionary<string, double>();

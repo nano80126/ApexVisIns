@@ -5,10 +5,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System;
-using ApexVisIns.content;
+using MCAJawIns.content;
 using System.Globalization;
 
-namespace ApexVisIns
+namespace MCAJawIns
 {
     public partial class MainWindow : Window
     {
