@@ -1916,22 +1916,51 @@ namespace MCAJawIns
             Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             // canny.Dispose();
 
-            double[] arrayYL = listY_L.ToArray();
-            double[] arrayYL2 = listY_L2.ToArray();
-            double[] arrayYR = listY_R.ToArray();
-            double[] arrayYR2 = listY_R2.ToArray();
+            //double[] arrayYL = listY_L.ToArray();
+            //double[] arrayYL2 = listY_L2.ToArray();
+            //double[] arrayYR = listY_R.ToArray();
+            //double[] arrayYR2 = listY_R2.ToArray();
 
-            Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
-            Debug.WriteLine($"{listY_R.Count} {listY_R2.Count}");
+            //Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
+            //Debug.WriteLine($"{listY_R.Count} {listY_R2.Count}");
 
-            for (int i = 0; i < Math.Max(listY_L.Count, listY_L2.Count); i++)
+            int len1 = Math.Max(listY_L.Count, listY_L2.Count);
+            int len2 = Math.Max(listY_L.Count, listY_L2.Count);
+
+            double[] arrayL = new double[len1];
+            double[] arrayR = new double[len2];
+
+            for (int i = 0; i < len1; i++)
             {
-                arrayYL[i] = Math.Sqrt(arrayYL[i] * arrayYL2[i]);
+                if (listY_L.Count - 1 >= i && listY_L2.Count - 1 >= i)
+                {
+                    arrayL[i] = (listY_L[i] + listY_L2[i]) / 2;
+                }
+                else if (listY_L.Count - 1 >= i && listY_L2.Count - 1 < i)
+                {
+                    arrayL[i] = (listY_L[i]);
+                }
+                else if (listY_L.Count - 1 < i && listY_L2.Count - 1 >= i)
+                {
+                    arrayL[i] = (listY_L2[i]);
+                }
             }
 
-            for (int i = 0; i < Math.Max(listY_R.Count, listY_R2.Count); i++)
+            for (int i = 0; i < len2; i++)
             {
-                arrayYR2[i] = Math.Sqrt(arrayYR[i] * arrayYR2[i]);
+                //arrayYR2[i] = Math.Sqrt(arrayYR[i] * arrayYR2[i]);
+                if (listY_R.Count - 1 >= i && listY_R2.Count - 1 >= i)
+                {
+                    arrayR[i] = (listY_R[i] + listY_R2[i]) / 2;
+                }
+                else if (listY_L.Count - 1 >= i && listY_L2.Count - 1 < i)
+                {
+                    arrayR[i] = (listY_R[i]);
+                }
+                else if (listY_L.Count - 1 < i && listY_L2.Count - 1 >= i)
+                {
+                    arrayR[i] = (listY_R2[i]);
+                }
             }
 
             Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
@@ -1939,7 +1968,7 @@ namespace MCAJawIns
 
             //Debug.WriteLine($"cnt: {cnt2} R: {string.Join(",", arrayYR)} {arrayYR.Length}");
 
-            arrayY = arrayYL.Reverse().Concat(arrayYR2).ToArray();
+            arrayY = arrayL.Reverse().Concat(arrayR).ToArray();
             //Debug.WriteLine($"cnt: {cnt + cnt2}, {arrayY.Length} Arr: {string.Join(",", arrayY)}");
 
 

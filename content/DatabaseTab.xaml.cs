@@ -478,7 +478,10 @@ namespace MCAJawIns.content
 
                 MainWindow.MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
 
-                DataReserveSelector.SelectedIndex = DataReserveSelector.Items.IndexOf(config.DataReserveMonths);
+                if (config != null)
+                {
+                    DataReserveSelector.SelectedIndex = DataReserveSelector.Items.IndexOf(config.DataReserveMonths);
+                }
             }
             catch (Exception ex)
             {

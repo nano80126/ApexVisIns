@@ -200,6 +200,27 @@ namespace MCAJawIns.content
             //Debug.WriteLine($"Arr: {arr?[5]}");
             //Debug.WriteLine($"Arr: {arr?[5].GetType()}");
             //Debug.WriteLine($"Arr: {arr?[5] == null}");
+
+
+            double[] arr = new double[] { 1, 2, 3, 54, 5, 6, 76 };
+            double[] arr2 = new double[10];
+            //Debug.WriteLine($"{Array.)}");
+
+            Array.ForEach(arr, e => {
+                e += 2;
+                Debug.WriteLine($"{e}");
+            });
+            Debug.WriteLine($"{string.Join(",", arr)}");
+
+
+            Array.ForEach(arr2, e => {
+                e += 2;
+                Debug.WriteLine($"{e}");
+            });
+            Debug.WriteLine($"{string.Join(",", arr2)}");
+            SpinWait.SpinUntil(() => false, 100);
+            Debug.WriteLine($"{string.Join(",", arr2)}");
+
             #endregion
 
             if (!loaded)
@@ -645,15 +666,14 @@ namespace MCAJawIns.content
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
 
+
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
-
-                        DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
-                        DeleteResult result =  MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
-                        Debug.WriteLine($"C1: {result.DeletedCount}");
-                        result =  MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
-                        Debug.WriteLine($"C2: {result.DeletedCount}");
-
-                        Debug.WriteLine($"Delete Datetime: {dt}");
+                        if (config != null)
+                        {
+                            DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
+                            DeleteResult result = MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
+                            result = MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
+                        }
 
                         //MainWindow.MsgInformer.TargetProgressValue += 17;
                         MainWindow.MsgInformer.AdvanceProgressValue(17);
