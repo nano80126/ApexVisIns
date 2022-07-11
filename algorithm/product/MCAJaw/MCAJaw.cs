@@ -20,7 +20,7 @@ namespace MCAJawIns
 
         private readonly double cam1Mag = 0.21772;
         private readonly double cam2Mag = 0.2532;
-        private readonly double cam3Mag = 0.11;
+        private readonly double cam3Mag = 0.1063;
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
         private double Cam2Unit => Cam2PixelSize / 25.4 / cam2Mag;
@@ -289,7 +289,7 @@ namespace MCAJawIns
                             cam1results[key].RemoveAll(x => x <= min);
                         }
                         avg = cam1results[key].Average();
-                        
+
                         // Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
                         // Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
@@ -812,7 +812,8 @@ namespace MCAJawIns
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
-                    Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    //Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    Cal007FlatnessValue3(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -821,8 +822,8 @@ namespace MCAJawIns
                 }
                 else if (results == null)
                 {
-                    Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007);
-                    Debug.WriteLine($"f007: {f_007} {string.Join(",", arrayY)} {arrayY.Length}");
+                    Cal007FlatnessValue3(src, datumY, out double f_007);
+                    Debug.WriteLine($"f007: {f_007}");
                 }
                 #endregion
                 spec = null;
@@ -1668,20 +1669,48 @@ namespace MCAJawIns
 
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             // ROIs
-            Rect roi = new(120, (int)(baseDatumY + 50), 880, 40);
+            Rect roi = new(120, (int)(baseDatumY + 65), 880, 20);
             // Rect roi = new(140, (int)(baseDatumY + 50), 800, 40);
-            Mat src2 = new(src, roi);
 
-            // Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
-            // Methods.GetRoiCanny(src, roi, 40, 80, out Mat canny2);
+            //Mat src2 = new(src, roi);
+            //Mat blur = new();
+            //Cv2.BilateralFilter(src2, blur, 7, 10, 5);
+
+            Mat src2 = new Mat(src, roi);
+            unsafe
+            {
+                byte* b = src2.DataPointer;
+
+                for (int i = 0; i < src2.Width; i += 5)
+                {
+                    if (i is (>= 590 and < 650)) { b += 5; continue; }
+
+                    for (int j = 1; j < src2.Height; j++)
+                    {
+                        //Debug.WriteLine($"({i}, {j}) : {b[1200 * j]}");
+
+                        if (b[1200 * j] - b[1200 * (j - 1)] < -20)
+                        {
+                            b[1200 * j] = 0;
+                            break;
+                        }
+                    }
+
+                    b += 5;
+                }
+            }
+
+            //Cv2.ImShow("src2", src2);
+
             // Methods.GetRoiCanny(src, roi, 30, 60, out Mat canny3);
             // Methods.GetContoursFromCanny(canny, roi.Location, out Point[][] _, out Point[] pts);
 
             byte[][] ths = {
                 new byte[] { 50, 120 },
-                new byte[] { 40, 80}, 
+                new byte[] { 40, 80},
                 new byte[] { 35, 70},
                 new byte[] { 30, 60},
+                // new byte[] { 25, 50},
             };
 
             List<double> listY_L = new();
@@ -1693,7 +1722,7 @@ namespace MCAJawIns
 
             for (int i = 580; i >= 120; i -= 20)
             {
-                if (i is (>= 170 and < 260)) { continue; }
+                if (i is (>= 200 and < 260)) { continue; }
                 // 計算迴圈次數
                 cnt++;
 
@@ -1702,12 +1731,12 @@ namespace MCAJawIns
                     bool canBreak = false;
 
                     // roi 1
-                    Rect subRoi = new(i, (int)(baseDatumY + 50), 20, 40);
+                    Rect subRoi = new(i, (int)(baseDatumY + 65), 20, 20);
                     Methods.GetRoiCanny(src, subRoi, th[0], th[1], out Mat c);
                     Methods.GetHoughLinesHFromCanny(c, subRoi.Location, out LineSegmentPoint[] lineH, 5, 5, 3);
 
                     // roi 2
-                    Rect subRoi2 = new(i + 10, (int)(baseDatumY + 50), 20, 40);
+                    Rect subRoi2 = new(i + 10, (int)(baseDatumY + 65), 20, 20);
                     Methods.GetRoiCanny(src, subRoi2, th[0], th[1], out Mat c2);
                     Methods.GetHoughLinesHFromCanny(c2, subRoi2.Location, out LineSegmentPoint[] lineH2, 5, 5, 3);
                     //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
@@ -1735,11 +1764,6 @@ namespace MCAJawIns
                         {
                             listY_L.Add(y);
                             canBreak = true;
-                            //foreach (LineSegmentPoint line in lineH)
-                            //{
-                            //    Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
-                            //}
-                            //break;
                         }
                         else
                         {
@@ -1747,12 +1771,6 @@ namespace MCAJawIns
 
                             listY_L.Add(y);
                             canBreak = true;
-
-                            //foreach (LineSegmentPoint line in lineH)
-                            //{
-                            //    Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
-                            //}
-                            //break;
                         }
                     }
 
@@ -1779,8 +1797,6 @@ namespace MCAJawIns
                         {
                             listY_L2.Add(y);
                             canBreak = true;
-
-                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                         else
                         {
@@ -1788,10 +1804,11 @@ namespace MCAJawIns
 
                             listY_L2.Add(y);
                             canBreak = true;
-
-                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                     }
+
+                    //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                    //foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
 
                     //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
                     //Cv2.Line(src, subRoi2.X, subRoi2.Top, subRoi2.X, subRoi2.Bottom, Scalar.Gray, 1);
@@ -1802,7 +1819,7 @@ namespace MCAJawIns
 
             for (int i = 600; i <= 980; i += 20)
             {
-                if (i is (>= 720 and < 800)) { continue; }
+                if (i is (>= 700 and < 780)) { continue; }
                 // 計算迴圈次數
                 cnt2++;
 
@@ -1811,16 +1828,16 @@ namespace MCAJawIns
                     bool canBreak = false;
 
                     // roi 1
-                    Rect subRoi = new(i, (int)(baseDatumY + 50), 20, 40);
+                    Rect subRoi = new(i, (int)(baseDatumY + 65), 20, 20);
                     Methods.GetRoiCanny(src, subRoi, th[0], th[1], out Mat c);
                     Methods.GetHoughLinesHFromCanny(c, subRoi.Location, out LineSegmentPoint[] lineH, 5, 5, 3);
-                    
+
                     // roi 2
-                    Rect subRoi2 = new(i - 10, (int)(baseDatumY + 50), 20, 40);
+                    Rect subRoi2 = new(i - 10, (int)(baseDatumY + 65), 20, 20);
                     Methods.GetRoiCanny(src, subRoi2, th[0], th[1], out Mat c2);
                     Methods.GetHoughLinesHFromCanny(c2, subRoi2.Location, out LineSegmentPoint[] lineH2, 5, 5, 3);
 
-                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+                    // Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
 
                     if (lineH.Length > 0)
                     {
@@ -1848,8 +1865,6 @@ namespace MCAJawIns
                         {
                             listY_R.Add(y);
                             canBreak = true;
-
-                            //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                         else
                         {
@@ -1858,8 +1873,6 @@ namespace MCAJawIns
 
                             listY_R.Add(y);
                             canBreak = true;
-
-                            //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                     }
 
@@ -1882,14 +1895,10 @@ namespace MCAJawIns
                         double y = num / sum;
                         #endregion
 
-                        // Debug.WriteLine($"{string.Join(",", pts)} {num / sum}");
-
                         if (listY_R2.Count == 0)
                         {
                             listY_R2.Add(y);
                             canBreak = true;
-
-                            //foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                         else
                         {
@@ -1898,13 +1907,14 @@ namespace MCAJawIns
 
                             listY_R2.Add(y);
                             canBreak = true;
-
-                            foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
                         }
                     }
 
-                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
+                    //foreach (LineSegmentPoint line in lineH) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+                    //foreach (LineSegmentPoint line in lineH2) { Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1); }
+
                     //Cv2.Line(src, subRoi2.X, subRoi2.Top, subRoi2.X, subRoi2.Bottom, Scalar.Gray, 1);
+                    //Cv2.Line(src, subRoi.X, subRoi.Top, subRoi.X, subRoi.Bottom, Scalar.Black, 1);
 
                     c.Dispose();
                     c2.Dispose();
@@ -1916,16 +1926,8 @@ namespace MCAJawIns
             Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             // canny.Dispose();
 
-            //double[] arrayYL = listY_L.ToArray();
-            //double[] arrayYL2 = listY_L2.ToArray();
-            //double[] arrayYR = listY_R.ToArray();
-            //double[] arrayYR2 = listY_R2.ToArray();
-
-            //Debug.WriteLine($"{listY_L.Count} {listY_L2.Count}");
-            //Debug.WriteLine($"{listY_R.Count} {listY_R2.Count}");
-
             int len1 = Math.Max(listY_L.Count, listY_L2.Count);
-            int len2 = Math.Max(listY_L.Count, listY_L2.Count);
+            int len2 = Math.Max(listY_R.Count, listY_R2.Count);
 
             double[] arrayL = new double[len1];
             double[] arrayR = new double[len2];
@@ -1953,11 +1955,11 @@ namespace MCAJawIns
                 {
                     arrayR[i] = (listY_R[i] + listY_R2[i]) / 2;
                 }
-                else if (listY_L.Count - 1 >= i && listY_L2.Count - 1 < i)
+                else if (listY_R.Count - 1 >= i && listY_R2.Count - 1 < i)
                 {
                     arrayR[i] = (listY_R[i]);
                 }
-                else if (listY_L.Count - 1 < i && listY_L2.Count - 1 >= i)
+                else if (listY_R.Count - 1 < i && listY_R2.Count - 1 >= i)
                 {
                     arrayR[i] = (listY_R2[i]);
                 }
@@ -1971,13 +1973,91 @@ namespace MCAJawIns
             arrayY = arrayL.Reverse().Concat(arrayR).ToArray();
             //Debug.WriteLine($"cnt: {cnt + cnt2}, {arrayY.Length} Arr: {string.Join(",", arrayY)}");
 
-
             flatValue = ((arrayY.Max() - arrayY.Min()) * Cam3Unit) + correction;
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
-            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds}");
-
             return flatValue <= limitU;
+        }
+
+        /// <summary>
+        /// 計算平面度 (指標法)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="baseDatumY">基準 Y</param>
+        /// <param name="flatValue">平面度</param>
+        /// <param name="correction">校正值</param>
+        /// <param name="limitU">規格上限</param>
+        /// <returns></returns>
+        public unsafe bool Cal007FlatnessValue3(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
+        {
+            // 使用完刪除
+            DateTime t1 = DateTime.Now;
+            // ROI
+            Rect roi = new(120, (int)(baseDatumY + 60), 880, 30);
+            // 
+            Mat roiMat = new(src, roi);
+
+            byte* b = roiMat.DataPointer;
+
+            List<double> listY = new();
+            List<double> listY2 = new();
+            for (int i = 0; i < roiMat.Width; i+=3)
+            {
+                // 避開 pin
+                if (i is (>= 590 and < 650))
+                {
+                    b += 3;
+                    continue;
+                }
+
+                double[] grayArr = new double[roiMat.Height];
+                double tmpGrayAbs = 0;
+                int tmpY = 0;
+                for (int j = 0; j < roiMat.Height; j++)
+                {
+                    double avg = ((b[1200 * j] + b[1200 * j + 1] + b[1200 * j + 2]) / 3);
+                    grayArr[j] = avg;
+                    int k = j - 1;
+                    if (j == 0) continue;
+
+                    if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                    {
+                        tmpY = j;
+                        tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                    }
+
+                    if (grayArr[j] - grayArr[k] > 10) break;
+                }
+
+                // listY.Add(tmpY);
+
+                if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
+                {
+                    listY.Add(tmpY);
+
+                    b[1200 * tmpY] = 0;
+                    // b[1200 * tmpY + 1] = 0;
+                    // b[1200 * tmpY + 2] = 0;
+                    // b[1200 * tmpY - 1] = 0;
+                    // b[1200 * tmpY - 2] = 0;
+                    b[1200 * (tmpY + 1)] = 0;
+                    b[1200 * (tmpY + 2)] = 0;
+                    b[1200 * (tmpY - 1)] = 0;
+                    b[1200 * (tmpY - 2)] = 0;
+                }
+                else { listY.Add(listY[^1]); }
+
+                if (listY.Count > 5) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5] + listY[^6]) / 6); }
+                b += 3;
+            }
+
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+
+            //Debug.WriteLine($"ListY: {string.Join(",", listY)}");
+            //Debug.WriteLine($"ListY2: {string.Join(",", listY2)}");
+
+            flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
+            return false;
         }
     }
 }

@@ -340,9 +340,9 @@ namespace MCAJawIns.content
                 {
                     ImageViewbox.Width = 0.2 * ImageCanvas.Width;
                 }
-                else if (v > 200)
+                else if (v > 300)
                 {
-                    ImageViewbox.Width = 2 * ImageCanvas.Width;
+                    ImageViewbox.Width = 3 * ImageCanvas.Width;
                 }
                 else
                 {
@@ -350,6 +350,7 @@ namespace MCAJawIns.content
                     ImageViewbox.Width = ratio * ImageCanvas.Width;
                 }
                 OnPropertyChanged(nameof(ZoomRatio));
+
             }
         }
 
