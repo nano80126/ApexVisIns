@@ -1,5 +1,6 @@
-﻿using MCAJawIns.Product;
-using Basler.Pylon;
+﻿using Basler.Pylon;
+using MCAJawIns.Product;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
@@ -19,10 +20,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-
 
 namespace MCAJawIns.content
 {
@@ -50,10 +47,6 @@ namespace MCAJawIns.content
 
         private int _jawTab;
 
-#if false
-        private Task _testTask;
-        private CancellationTokenSource _testCancelTokenSource; 
-#endif
 
         public enum INS_STATUS
         {
@@ -797,7 +790,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-
+        
         #region 主控版 , +/- 數量
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -849,7 +842,6 @@ namespace MCAJawIns.content
             JawInspection.LotResults[key].Count++;
         }
         #endregion
-
 
         #region 觸發檢測
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
@@ -938,7 +930,11 @@ namespace MCAJawIns.content
                 // 刷新時間
                 JawInspection.DateTime = DateTime.Now;
                 // 插入資料庫
-                MongoAccess.InsertOne("Lots", JawInspection);
+                //MongoAccess.InsertOne("Lots", JawInspection);
+                // Upsert 資料庫
+                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Eq("LotNumber", JawInspection.LotNumber);
+                UpdateDefinition<JawInspection> update = Builders<JawInspection>.Update.Set("DateTime", JawInspection.DateTime).Set("LotResults", JawInspection.LotResults);
+                MongoAccess.UpsertOne("Lots", filter, update);
                 // 標記這批已插入資料庫
                 JawInspection.SetLotInserted(true);
             }
@@ -973,7 +969,6 @@ namespace MCAJawIns.content
             //// _ = 
         }
         #endregion
-
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

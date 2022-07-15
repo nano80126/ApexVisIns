@@ -358,6 +358,25 @@ namespace MCAJawIns
             }
         }
 
+        public UpdateResult UpsertOne<T>(string cName, FilterDefinition<T> filter, UpdateDefinition<T> update)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+
+                return collection.UpdateOne(filter, update, new UpdateOptions()
+                {
+                    IsUpsert = true,
+                });
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
         public void Empty<T>(string cName)
         {
             if (client != null)

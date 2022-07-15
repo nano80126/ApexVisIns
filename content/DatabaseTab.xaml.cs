@@ -348,25 +348,28 @@ namespace MCAJawIns.content
 
                         JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
 
+
                         string time =
-                                $"輸出日期,{DateTime.Now:yyyy:MM:dd}{Environment.NewLine}" +
-                                $"輸出時間,{DateTime.Now:HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
+                                $"輸出日期,{DateTime.Now:yyyy/MM/dd}{Environment.NewLine}" +
+                                $"輸出時間,{DateTime.Now.ToLocalTime():HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
 
                         string a = $"批號,{lotNumber}{Environment.NewLine}";
                         string b =
-                                $"資料日期,{header.DateTime:yyyy:MM:dd}{Environment.NewLine}" +
-                                $"資料時間,{header.DateTime:HH:mm:ss}{Environment.NewLine}";
+                                $"資料日期,{header.DateTime:yyyy/MM/dd}{Environment.NewLine}" +
+                                $"資料時間,{header.DateTime.ToLocalTime():HH:mm:ss}{Environment.NewLine}";
 
                         string c = $"項目";
                         string d = $"數量";
 
                         foreach (string k in header.LotResults.Keys)
                         {
-                            if (header.LotResults[k].Enable)
-                            {
-                                c += $",{header.LotResults[k].Name}";
-                                d += $",{header.LotResults[k].Count}";
-                            }
+                            Debug.WriteLine($"{header.LotResults[k].Name} {header.LotResults[k].Enable}");
+
+                            //if (header.LotResults[k].Enable)
+                            //{
+                            c += $",{header.LotResults[k].Name}";
+                            d += $",{header.LotResults[k].Count}";
+                            //}
                         }
 
                         c += Environment.NewLine;

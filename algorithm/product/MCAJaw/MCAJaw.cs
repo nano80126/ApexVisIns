@@ -18,8 +18,10 @@ namespace MCAJawIns
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
-        private readonly double cam1Mag = 0.21772;
-        private readonly double cam2Mag = 0.2532;
+        //private readonly double cam1Mag = 0.21867;
+        private readonly double cam1Mag = 0.21839;
+        //private readonly double cam2Mag = 0.25461;
+        private readonly double cam2Mag = 0.25431;
         private readonly double cam3Mag = 0.1063;
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
@@ -546,7 +548,8 @@ namespace MCAJawIns
                 spec = specList?[12];
                 if (spec?.Enable == true && results != null)
                 {
-                    double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                    //double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                    double c_005 = Math.Abs((subPtsArr[0].Y + subPtsArr[1].Y) / 2 - (subPtsArr[2].Y + subPtsArr[3].Y) / 2) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -813,7 +816,7 @@ namespace MCAJawIns
                 if (spec != null && spec.Enable && results != null)
                 {
                     //Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
-                    Cal007FlatnessValue3(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    Cal007FlatnessValue4(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -822,7 +825,7 @@ namespace MCAJawIns
                 }
                 else if (results == null)
                 {
-                    Cal007FlatnessValue3(src, datumY, out double f_007);
+                    Cal007FlatnessValue4(src, datumY, out double f_007);
                     Debug.WriteLine($"f007: {f_007}");
                 }
                 #endregion
@@ -1211,8 +1214,8 @@ namespace MCAJawIns
             Methods.GetRoiCanny(src, leftRoi, 75, 150, out Mat leftCanny);
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
-            //Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
-            //Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);
+            // Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
+            // Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);
 
             // 左
             Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 2, 3);
@@ -1228,7 +1231,7 @@ namespace MCAJawIns
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
-            //Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px, Distance: {distance}");
+            Debug.WriteLine($"前開: {Math.Abs(leftX - rightX)} px, Distance: {distance}");
 
             leftCanny.Dispose();
             rightCanny.Dispose();
@@ -1475,7 +1478,7 @@ namespace MCAJawIns
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
-            //Debug.WriteLine($"Right: {rightX} Left: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}
+            Debug.WriteLine($"Right: {rightX} Left: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
             // 銷毀 canny");
             canny.Dispose();
 
@@ -2059,5 +2062,147 @@ namespace MCAJawIns
             flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
             return false;
         }
+
+        /// <summary>
+        /// 計算平面度 (指標法)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="baseDatumY">基準 Y</param>
+        /// <param name="flatValue">平面度</param>
+        /// <param name="correction">校正值</param>
+        /// <param name="limitU">規格上限</param>
+        /// <returns></returns>
+        public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
+        {
+            // 使用完刪除
+            DateTime t1 = DateTime.Now;
+            // ROI
+            Rect roi = new(120, (int)(baseDatumY + 60), 860, 30);
+            // 
+            Mat roiMat = new(src, roi);
+            int srcWidth = src.Width;
+
+            byte* b = roiMat.DataPointer;
+
+            List<double> listY = new();
+            List<double> listY2 = new();
+
+
+            double[] grayArr;
+            double tmpGrayAbs = 0;
+            int tmpY = 0;
+
+            for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
+            {
+                // 避開 pin
+                if (i is (< 590 or >= 650) && i < roiMat.Width)
+                {
+                    grayArr = new double[roiMat.Height];
+                    tmpGrayAbs = 0;
+                    tmpY = 0;
+                    for (int j = 0; j < roiMat.Height; j++)
+                    {
+                        double avg = (b[srcWidth * j + i] + b[srcWidth * j + i + 1] + b[srcWidth * j + i + 2]) / 3;
+                        grayArr[j] = avg;
+                        int k = j - 1;
+                        if (j == 0) continue;
+
+                        //if (i == roiMat.Width / 2)
+                        //{
+                        //    Debug.WriteLine($"{j} {grayArr[j]} {grayArr[k]} {grayArr[j] - grayArr[k]}tmpY: {tmpY}");
+                        //}
+
+                        if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                        {
+                            tmpY = j;
+                            tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                        }
+
+                        if (grayArr[j] - grayArr[k] > 10) break;
+                    }
+
+                    // listY.Add(tmpY);
+
+                    //if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
+                    if (listY.Count == 0 || Math.Abs(tmpY - listY[^1]) < 3)
+                    {
+                        listY.Add(tmpY);
+
+#if DEBUG
+                        b[srcWidth * tmpY + i] = 0;
+                        // b[1200 * tmpY + 1] = 0;
+                        // b[1200 * tmpY + 2] = 0;
+                        // b[1200 * tmpY - 1] = 0;
+                        // b[1200 * tmpY - 2] = 0;
+                        b[srcWidth * (tmpY + 1) + i] = 0;
+                        b[srcWidth * (tmpY + 2) + i] = 0;
+                        b[srcWidth * (tmpY - 1) + i] = 0;
+                        b[srcWidth * (tmpY - 2) + i] = 0; 
+#endif
+                    }
+                    else { listY.Add(listY[^1]); }
+
+                    if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
+                }
+
+
+                if (i2 > 0)
+                {
+                    grayArr = new double[roiMat.Height];
+                    tmpGrayAbs = 0;
+                    tmpY = 0;
+                    for (int j = 0; j < roiMat.Height; j++)
+                    {
+                        double avg = (b[srcWidth * j + i2] + b[srcWidth * j + i2 + 1] + b[srcWidth * j + i2 + 2]) / 3;
+                        grayArr[j] = avg;
+                        int k = j - 1;
+                        if (j == 0) continue;
+
+                        if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                        {
+                            tmpY = j;
+                            tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                        }
+
+                        if (grayArr[j] - grayArr[k] > 10) break;
+                    }
+
+
+                    if (Math.Abs(tmpY - listY[0]) < 3)
+                    {
+                        listY.Insert(0, tmpY);
+
+#if DEBUG
+
+                        b[srcWidth * tmpY + i2] = 50;
+                        // b[1200 * tmpY + 1] = 0;
+                        // b[1200 * tmpY + 2] = 0;
+                        // b[1200 * tmpY - 1] = 0;
+                        // b[1200 * tmpY - 2] = 0;
+                        b[srcWidth * (tmpY + 1) + i2] = 50;
+                        b[srcWidth * (tmpY + 2) + i2] = 50;
+                        b[srcWidth * (tmpY - 1) + i2] = 50;
+                        b[srcWidth * (tmpY - 2) + i2] = 50; 
+#endif
+                    }
+                    else { listY.Insert(0, listY[0]); }
+
+
+                    if (listY.Count > 4) { listY2.Insert(0, (listY[0] + listY[1] + listY[2] + listY[3] + listY[4]) / 5); }
+                }
+            }
+
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+
+            flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
+
+            roiMat.Dispose();
+
+            Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
+            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+
+            return false;
+        }
+
     }
 }
