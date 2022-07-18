@@ -664,8 +664,17 @@ namespace MCAJawIns.content
                         if (config != null)
                         {
                             DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
-                            DeleteResult result = MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
+                            DeleteResult result;
+                            result = MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
+                            if (result.DeletedCount > 0)
+                            {
+                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"批次舊資料已刪除, 刪除數量: {result.DeletedCount}");
+                            }
                             result = MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
+                            if (result.DeletedCount > 0)
+                            {
+                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"量測紀錄舊資料已刪除, 刪除數量: {result.DeletedCount}");
+                            }
                         }
 
                         //MainWindow.MsgInformer.TargetProgressValue += 17;

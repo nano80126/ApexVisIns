@@ -2130,10 +2130,6 @@ namespace MCAJawIns
 
 #if DEBUG
                         b[srcWidth * tmpY + i] = 0;
-                        // b[1200 * tmpY + 1] = 0;
-                        // b[1200 * tmpY + 2] = 0;
-                        // b[1200 * tmpY - 1] = 0;
-                        // b[1200 * tmpY - 2] = 0;
                         b[srcWidth * (tmpY + 1) + i] = 0;
                         b[srcWidth * (tmpY + 2) + i] = 0;
                         b[srcWidth * (tmpY - 1) + i] = 0;
@@ -2175,10 +2171,6 @@ namespace MCAJawIns
 #if DEBUG
 
                         b[srcWidth * tmpY + i2] = 50;
-                        // b[1200 * tmpY + 1] = 0;
-                        // b[1200 * tmpY + 2] = 0;
-                        // b[1200 * tmpY - 1] = 0;
-                        // b[1200 * tmpY - 2] = 0;
                         b[srcWidth * (tmpY + 1) + i2] = 50;
                         b[srcWidth * (tmpY + 2) + i2] = 50;
                         b[srcWidth * (tmpY - 1) + i2] = 50;

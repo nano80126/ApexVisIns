@@ -178,24 +178,14 @@ Apex 外觀瑕疵檢測
 	* 5 工程師
 	* 9 開發者
 
-* [x] 新增登出
-	* 加在關閉程式的 Menu 上方
+* [x] 新增 SerialPortBase 驅動
 
-* [x] 測試WISE4050連線Timeout錯誤處理
-	* 需要處理 (使用 connectAsync)
-	
-* [x] 確認 DatabaseTab DataGrid 有 0.088合
-
-* [ ] 新增 SerialPortBase 驅動
-
-* [ ] 新增 TCPIPBase驅動
+* [x] 新增 TCPIPBase驅動
 
 * [ ] CameraTab 新增搭配鏡頭
 	* 廠商
 	* 型號
 	* 放大倍率
-
-* [x] 新增開發者校正值
 
 * [ ] 測試各種彎曲
 
@@ -216,10 +206,14 @@ Apex 外觀瑕疵檢測
 
 * [ ] cornerSubPixel()
 	 * 輪廓度都改掉
-	 * 
+
+* [ ] 平面度subpixel 測試
+
+* [ ] Cameras, Lens, Specification, 建立在資料庫 config 內作為主要資料, 載入失敗才使用.json載入
 
 * [ ] if (spec != null && spec.enable) 改 if (spec?.Enable == true)
 
+* No matching camera found.
 
 ### Config Logic
 
