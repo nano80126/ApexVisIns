@@ -21,7 +21,8 @@
             <Grid Grid.Row="0" x:Name="Header" HorizontalAlignment="Stretch" Background="{StaticResource ColorGrayTransparent}">
                 <Grid.Resources>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
-                        <Setter Property="Padding" Value="8 3"/>
+                        <Setter Property="Padding" Value="6 3"/>
+                        <Setter Property="FontSize" Value="24"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                     </Style>
@@ -38,13 +39,18 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
+                <Border BorderThickness="0 0 1 0" Grid.Column="0" BorderBrush="{StaticResource ColorInfoTransparent}"/>
                 <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextAlignment="Center" Text="項目"/>
+                <Border BorderThickness="0 0 1 0" Grid.Column="1" BorderBrush="{StaticResource ColorInfoTransparent}"/>
                 <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center" Text="規格中心"/>
+                <Border BorderThickness="0 0 1 0" Grid.Column="2" BorderBrush="{StaticResource ColorInfoTransparent}"/>
                 <TextBlock Grid.Column="2" HorizontalAlignment="Stretch" TextAlignment="Center" Text="管制下限"/>
+                <Border BorderThickness="0 0 1 0" Grid.Column="3" BorderBrush="{StaticResource ColorInfoTransparent}"/>
                 <TextBlock Grid.Column="3" HorizontalAlignment="Stretch" TextAlignment="Center" Text="管制上限"/>
+                <Border BorderThickness="0 0 1 0" Grid.Column="4" BorderBrush="{StaticResource ColorInfoTransparent}"/>
                 <TextBlock Grid.Column="4" HorizontalAlignment="Stretch" TextAlignment="Center" Text="量測數值"/>
                 <!--<TextBlock Grid.Column="5" HorizontalAlignment="Stretch" TextAlignment="Center" Text="檢測結果"/>-->
-                <TextBlock Grid.Column="5" HorizontalAlignment="Stretch" TextAlignment="Center" Text="良品"/>
+                <TextBlock Grid.Column="5" HorizontalAlignment="Stretch" TextAlignment="Center" Text="判定"/>
 
                 <!--<TextBlock Grid.Column="7" HorizontalAlignment="Stretch" TextAlignment="Center" 
                        Text="{Binding ActualHeight, ElementName=Table, Converter={StaticResource MathMinusConverter}, ConverterParameter=25}"/>-->
@@ -70,6 +76,10 @@
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
                                 <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize"  Value="20"/>
+                                    </Style>
+                                    
                                     <Style TargetType="Rectangle">
                                         <Setter Property="Fill" Value="Transparent"/>
                                         <Style.Triggers>
@@ -81,18 +91,19 @@
                                     </Style>
                                     <!--//-->
                                     <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                        <Setter Property="FontSize" Value="16"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                                        <Setter Property="FontSize" Value="20"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}"/>
+                                        <Setter Property="Background" Value="{StaticResource ColorError}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                                                <Setter Property="Background" Value="LimeGreen"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                     <!--//-->
                                     <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                        <Setter Property="Width" Value="16"/>
-                                        <Setter Property="Height" Value="16"/>
+                                        <Setter Property="Width" Value="18"/>
+                                        <Setter Property="Height" Value="18"/>
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="Kind" Value="Close"/>
                                         <Style.Triggers>
@@ -104,7 +115,7 @@
                                 </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="col1" MinWidth="80"/>
+                                    <ColumnDefinition SharedSizeGroup="col1" Width="80"/>
                                     <ColumnDefinition SharedSizeGroup="col2"/>
                                     <ColumnDefinition SharedSizeGroup="col3"/>
                                     <ColumnDefinition SharedSizeGroup="col4"/>
@@ -118,7 +129,7 @@
                                 <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 
                                 <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
-                                <TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Item}"/>
+                                <TextBlock Grid.Column="0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Item}"/>
                                 <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}"/>
                                 <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
                                 <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>

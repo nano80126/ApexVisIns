@@ -20,6 +20,13 @@ namespace MCAJawIns.Product
     {
         private double _result;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item">項目</param>
+        /// <param name="cl">規格中心</param>
+        /// <param name="lcl">管制下限</param>
+        /// <param name="ucl">管制上限</param>
         public JawSpec(string item, double cl, double lcl, double ucl)
         {
             Item = item;
@@ -30,6 +37,14 @@ namespace MCAJawIns.Product
             UpperCtrlLimit = ucl;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item">項目</param>
+        /// <param name="cl">規格中心</param>
+        /// <param name="lcl">管制下限</param>
+        /// <param name="ucl">管制上限</param>
+        /// <param name="result">量測值</param>
         public JawSpec(string item, double cl, double lcl, double ucl, double result)
         {
             Item = item;
@@ -41,6 +56,16 @@ namespace MCAJawIns.Product
             Result = result;
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item">項目</param>
+        /// <param name="cl">規格中心</param>
+        /// <param name="lsl">規格下限</param>
+        /// <param name="usl">規格上限</param>
+        /// <param name="lcl">管制下限</param>
+        /// <param name="ucl">管制上限</param>
         public JawSpec(string item, double cl, double lsl, double usl, double lcl, double ucl)
         {
             Item = item;

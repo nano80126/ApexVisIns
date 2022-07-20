@@ -20,6 +20,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Media;
 
 namespace MCAJawIns.content
 {
@@ -44,8 +45,16 @@ namespace MCAJawIns.content
         /// 初始化用 TokenSource
         /// </summary>
         private readonly CancellationTokenSource _cancellationTokenSource = new();
-
+        
+        /// <summary>
+        /// Main & Spec Setting
+        /// </summary>
         private int _jawTab;
+
+        /// <summary>
+        /// NG 音效
+        /// </summary>
+        private readonly SoundPlayer SoundNG = new SoundPlayer(@".\sound\NG.wav");
 
 
         public enum INS_STATUS
@@ -362,7 +371,7 @@ namespace MCAJawIns.content
         /// <returns></returns>
         private Task InitCamera(CancellationToken ct)
         {
-            return Task.Run(() =>
+            return Task.Run((Action)(() =>
             {
                 if (CameraInitialized) { return; }
 
@@ -387,14 +396,14 @@ namespace MCAJawIns.content
                             {
                                 throw new TimeoutException();
                             }
-                            
+
                             // 已連線之 Camera
                             List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-                            
+
                             // 排序 Devices
                             Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
 
-                            Parallel.ForEach(devices, (dev) =>
+                            Parallel.ForEach(devices, (Action<CameraConfigBase>)((dev) =>
                             {
                                 Debug.WriteLine($"{dev.SerialNumber} {dev.Model} {dev.TargetFeature}");
 
@@ -449,7 +458,7 @@ namespace MCAJawIns.content
                                             break;
                                     }
                                 }
-                            });
+                            }));
 
 
                             if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
@@ -477,7 +486,7 @@ namespace MCAJawIns.content
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, $"相機初始化失敗: {ex.Message}");
                 }
-            }, ct);
+            }), ct);
         }
 
         /// <summary>
@@ -697,7 +706,6 @@ namespace MCAJawIns.content
         }
         #endregion
 
-
         #region 初始化 SpecList
         /// <summary>
         /// 初始化規格路徑
@@ -778,7 +786,7 @@ namespace MCAJawIns.content
             else // 若規格列表不存在
             {
                 string[] keys = new string[] { "0.088R", "0.088L", "0.088T", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
-                string[] items = new string[] { "0.088-R", "0.088-L", "0.088和", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平面度" };
+                string[] items = new string[] { "0.088-R", "0.088-L", "0.088和", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                 double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
                 double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
                 double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
@@ -798,7 +806,6 @@ namespace MCAJawIns.content
             }
         }
         #endregion
-
         
         #region 主控版 , +/- 數量
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -914,8 +921,15 @@ namespace MCAJawIns.content
 
                 Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
+
+                if (!data.OK)
+                {
+                    SoundNG.Play();
+                }
+
                 return data.OK;
             });
+
             //if (!b) break;
 
 #if false
@@ -986,6 +1000,18 @@ namespace MCAJawIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+
+        [Obsolete("測試用")]
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            JawSpecGroup.Collection1.Add(new JawSpec("測試1", 0, 0, 0.007, 0.005));
+            JawSpecGroup.Collection2.Add(new JawSpec("測試2", 0, 0, 0.007, 0.008));
+            JawSpecGroup.Collection3.Add(new JawSpec("測試3", 0, 0, 0.007, 0.005));
+
+            SoundNG.Play();
+            //soundAlarm.Play();
+        }
     }
 
     #region MyRegion

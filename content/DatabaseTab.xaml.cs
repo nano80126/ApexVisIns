@@ -398,7 +398,7 @@ namespace MCAJawIns.content
 
 #if false
                             #region 待刪除
-                            if (!ResultHeaderAppended) { o += $",平面度2"; }
+                            if (!ResultHeaderAppended) { o += $",平直度2"; }
                             p += $",{item.Results["flatness2"]:f5}";
                             #endregion  
 #endif

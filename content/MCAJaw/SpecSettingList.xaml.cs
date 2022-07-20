@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,11 +39,16 @@ namespace MCAJawIns.content
         {
             Product.JawSpecGroup jawSpecGroup = DataContext as Product.JawSpecGroup;
 
+
             string jsonStr = JsonSerializer.Serialize(jawSpecGroup.SpecList, new JsonSerializerOptions
             {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = true,
                 NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString
-            });
+            }); 
+
+            Debug.WriteLine($"{jsonStr}");
+
             File.WriteAllText(JsonPath, jsonStr);
 
             _ = Task.Run(() => MCAJaw.LoadSpecList());

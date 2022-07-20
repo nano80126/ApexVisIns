@@ -91,4 +91,13 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sound\Alarm.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="sound\NG.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

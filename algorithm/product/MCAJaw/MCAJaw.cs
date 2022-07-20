@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Media;
 
 namespace MCAJawIns
 {
@@ -27,6 +28,14 @@ namespace MCAJawIns
         private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
         private double Cam2Unit => Cam2PixelSize / 25.4 / cam2Mag;
         private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
+        #endregion
+
+
+        #region private
+        /// <summary>
+        /// 警告音效
+        /// </summary>
+        private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");
         #endregion
 
         #region 
@@ -204,7 +213,7 @@ namespace MCAJawIns
                     if (!partExist) { break; }
                 }
 
-                #region CAMERA 3 平面度
+                #region CAMERA 3 平直度
                 // COM2 光源控制器 (24V, 2CH)
                 LightCtrls[1].SetAllChannelValue(256, 96);
                 // 等待光源
@@ -249,7 +258,10 @@ namespace MCAJawIns
                 #endregion
 
                 LightCtrls[1].SetAllChannelValue(0, 0);
-                if (!partExist) { throw new MCAJawException("未檢測到料件"); }
+                if (!partExist) {
+                    SoundAlarm.Play();
+                    throw new MCAJawException("未檢測到料件"); 
+                }
 
                 // 等待所有 計算完成
                 //try
@@ -371,9 +383,11 @@ namespace MCAJawIns
                 #endregion
 
                 // Camera 3 結果
+                // 若平直度未檢測到，播放警告
+                if (cam3results.Keys.Count == 0) { SoundAlarm.Play(); }
                 foreach (string item in cam3results.Keys)
                 {
-                    Debug.WriteLine($"平面度 {string.Join(",", cam3results[item])}");
+                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[item])}");
 
 #if false
                     Dictionary<double, int> dict = new Dictionary<double, int>();
@@ -599,7 +613,7 @@ namespace MCAJawIns
 #if false
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt1L.Y - cPt1R.Y) * Cam1Unit}");
                 //Debug.WriteLine($"輪廓度高低差: {Math.Abs(cPt2L.Y - cPt2R.Y) * Cam1Unit}");
-                //spec = specList?[12];   // 平面度
+                //spec = specList?[12];   // 平直度
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 //if (spec != null && spec.Enable && results != null)
                 //{
@@ -810,7 +824,7 @@ namespace MCAJawIns
                 GetPomDatum(src, out double datumY);
                 // Debug.WriteLine($"datumY: {datumY}");
 
-                #region 計算 平面度
+                #region 計算 平直度
                 spec = specList?[15];
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
@@ -1565,7 +1579,7 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平面度
+        /// 計算平直度
         /// </summary>
         /// <returns></returns>
         public bool Cal007FlatnessValue(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
@@ -1663,7 +1677,7 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平面度
+        /// 計算平直度
         /// </summary>
         /// <returns></returns>
         public bool Cal007FlatnessValue2(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
@@ -1983,11 +1997,11 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平面度 (指標法)
+        /// 計算平直度 (指標法)
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="baseDatumY">基準 Y</param>
-        /// <param name="flatValue">平面度</param>
+        /// <param name="flatValue">平直度</param>
         /// <param name="correction">校正值</param>
         /// <param name="limitU">規格上限</param>
         /// <returns></returns>
@@ -2064,11 +2078,11 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平面度 (指標法)
+        /// 計算平直度 (指標法)
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="baseDatumY">基準 Y</param>
-        /// <param name="flatValue">平面度</param>
+        /// <param name="flatValue">平直度</param>
         /// <param name="correction">校正值</param>
         /// <param name="limitU">規格上限</param>
         /// <returns></returns>

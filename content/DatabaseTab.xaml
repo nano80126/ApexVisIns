@@ -492,7 +492,7 @@
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
-                            <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
+                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
                         </DataGrid.Columns>
@@ -677,7 +677,7 @@
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->
-                            <DataGridTextColumn Header="平面度" MinWidth="70" IsReadOnly="True" 
+                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True" 
                                                 Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=flatness}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
