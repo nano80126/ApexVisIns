@@ -22,7 +22,7 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         Topmost="False"
-        Title="ModeWindow" Height="100" Width="240"
+        Title="ModeWindow" Height="100" Width="300"
         Loaded="Window_Loaded"
         Unloaded="Window_Unloaded">
     <Window.Resources>
@@ -66,10 +66,16 @@
                         <Setter Property="FontWeight" Value="Bold"/>
                     </Style>
                     <Style TargetType="materialDesign:PackIcon" x:Key="ModeChoice">
-                        <Setter Property="Margin" Value="0 0 4 0"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Width" Value="30"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Kind" Value="CheckboxBlankOutline"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
+                                <Setter Property="Kind" Value="CheckboxOutline"/>
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding IsMouseCaptured, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
                                 <Setter Property="Kind" Value="CheckboxOutline"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -81,8 +87,8 @@
                              Command="{StaticResource ChangeModeAction}" CommandParameter="1">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
-                            <TextBlock VerticalAlignment="Center" Text="自動模式"/>
+                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}" VerticalAlignment="Center"/>
+                            <TextBlock VerticalAlignment="Center" Text="自動模式" FontSize="18"/>
                         </StackPanel>
                     </RadioButton.Content>
                 </RadioButton>
@@ -92,8 +98,8 @@
                              Command="{StaticResource ChangeModeAction}" CommandParameter="2">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}"/>
-                            <TextBlock VerticalAlignment="Center" Text="編輯模式"/>
+                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}" VerticalAlignment="Center"/>
+                            <TextBlock VerticalAlignment="Center" Text="編輯模式" FontSize="18"/>
                         </StackPanel>
                     </RadioButton.Content>
                 </RadioButton>

@@ -214,7 +214,9 @@ Apex 外觀瑕疵檢測
 
 * [ ] if (spec != null && spec.enable) 改 if (spec?.Enable == true)
 
-* No matching camera found.
+* [ ] No matching camera found.
+
+* [ ] 調整字體排版 (1.5倍、1倍)
 
 ### Config Logic
 

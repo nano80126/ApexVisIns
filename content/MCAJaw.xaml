@@ -365,36 +365,52 @@
                                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0">
                                         <Grid.Resources>
                                             <Style TargetType="TextBlock" x:Key="Header">
-                                                <Setter Property="FontSize" Value="24"/>
+                                                <Setter Property="FontSize" Value="20"/>
                                                 <Setter Property="FontWeight" Value="Bold"/>
                                                 <Setter Property="Foreground" Value="{StaticResource ColorGray}"/>
+                                                <!--//-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                                                        <Setter Property="FontSize" Value="24"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
 
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource Header}" x:Key="ItemText">
                                                 <!--<Setter Property="Margin" Value="80 0 0 0"/>-->
-                                                <Setter Property="FontSize" Value="20"/>
+                                                <Setter Property="FontSize" Value="16"/>
                                                 <Setter Property="FontWeight" Value="Bold"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="HorizontalAlignment" Value="Right"/>
-                                                <!--<Setter Property="Background" Value=""/>-->
+                                                <!--//-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                                                        <Setter Property="FontSize" Value="20"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
 
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource ItemText}" x:Key="ItemNoteText">
-                                                <Setter Property="FontSize" Value="20"/>
+                                                <Setter Property="FontSize" Value="16"/>
                                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                                 <Setter Property="Margin" Value="0 2 0 0"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <!--//-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                                                        <Setter Property="FontSize" Value="20"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
 
 
                                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" >
                                                 <Setter Property="Padding" Value="0"/>
                                                 <Setter Property="Width" Value="26"/>
-                                                <Setter Property="Height" Value="26"/>
-                                                <!--<Setter Property="Content" Value="{materialDesign:PackIcon Kind=Minus}"/>-->
+                                                <Setter Property="Height" Value="27"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
-                                                <!--<Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>-->
                                             </Style>
 
                                             <!--<Style x:Key="PlusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MinusButton}">
@@ -402,11 +418,17 @@
 
                                             <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                                                 <Setter Property="Margin" Value="1 4"/>
-                                                <Setter Property="Padding" Value="0" />
-                                                <Setter Property="FontSize" Value="18"/>
+                                                <Setter Property="FontSize" Value="20"/>
                                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                                 <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="IsReadOnly" Value="True"/>
+                                                <Setter Property="Cursor" Value="Arrow"/>
+                                                <!--<Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </Trigger>
+                                                </Style.Triggers>-->
                                             </Style>
 
                                         </Grid.Resources>
@@ -445,10 +467,10 @@
                                         </Grid.RowDefinitions>
                                         <!--//-->
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="3*"/>
+                                            <ColumnDefinition Width="4*"/>
                                             <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="auto"/>
                                         </Grid.ColumnDefinitions>
                                         <!--//-->
@@ -461,7 +483,7 @@
                                         <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}" 
                                                    Text="{Binding LotResults[good].Note, UpdateSourceTrigger=PropertyChanged}"/>
                                         <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="2" Text="{Binding LotResults[good].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[good].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
@@ -478,7 +500,7 @@
                                                    Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.088R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -494,7 +516,7 @@
                                                    Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="4" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.088L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -510,7 +532,7 @@
                                                    Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.088T].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088T].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -526,7 +548,7 @@
                                                    Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="6" Grid.Column="2" Click="MinusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -553,7 +575,7 @@
                                                    Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="9" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.008R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.008R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="9" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -569,7 +591,7 @@
                                                    Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="10" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.008L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.008L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="10" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -585,7 +607,7 @@
                                                    Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="11" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.013R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.013R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="11" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -601,7 +623,7 @@
                                                    Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="12" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.013L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.013L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="12" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -617,7 +639,7 @@
                                                    Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="13" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.024R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.024R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="13" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -633,7 +655,7 @@
                                                    Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="14" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[0.024L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.024L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="14" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -648,7 +670,7 @@
                                                    Text="{Binding LotResults[bfDiff].Note, UpdateSourceTrigger=PropertyChanged}"
                                                    Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="15" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[bfDiff].Count, Mode=OneWay}"
+                                        <TextBox Grid.Row="15" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[bfDiff].Count, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -664,7 +686,7 @@
                                                    Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[contour].Count, Mode=OneWay}"
+                                        <TextBox Grid.Row="16" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contour].Count, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -680,7 +702,7 @@
                                                    Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="17" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="17" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[contourR].Count, Mode=OneWay}"
+                                        <TextBox Grid.Row="17" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contourR].Count, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="17" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -696,7 +718,7 @@
                                                    Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="18" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="18" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[contourL].Count, Mode=OneWay}"
+                                        <TextBox Grid.Row="18" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contourL].Count, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="18" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
@@ -716,7 +738,7 @@
                                                    Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="21" Grid.Column="2" Click="MinusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Minus}"
                                                 Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="21" Grid.Column="3" Padding="0 2" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"
+                                        <TextBox Grid.Row="21" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"
                                                  Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <Button Grid.Row="21" Grid.Column="4" Click="PlusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Plus}"
                                                 Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
