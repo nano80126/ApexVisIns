@@ -371,7 +371,7 @@ namespace MCAJawIns.content
         /// <returns></returns>
         private Task InitCamera(CancellationToken ct)
         {
-            return Task.Run((Action)(() =>
+            return Task.Run(() =>
             {
                 if (CameraInitialized) { return; }
 
@@ -403,7 +403,7 @@ namespace MCAJawIns.content
                             // 排序 Devices
                             Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
 
-                            Parallel.ForEach(devices, (Action<CameraConfigBase>)((dev) =>
+                            _ = Parallel.ForEach(devices, (dev) =>
                             {
                                 Debug.WriteLine($"{dev.SerialNumber} {dev.Model} {dev.TargetFeature}");
 
@@ -458,7 +458,7 @@ namespace MCAJawIns.content
                                             break;
                                     }
                                 }
-                            }));
+                            });
 
 
                             if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
@@ -486,7 +486,7 @@ namespace MCAJawIns.content
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.CAMERA, $"相機初始化失敗: {ex.Message}");
                 }
-            }), ct);
+            }, ct);
         }
 
         /// <summary>
