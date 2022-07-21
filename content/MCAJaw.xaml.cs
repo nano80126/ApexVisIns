@@ -1002,6 +1002,7 @@ namespace MCAJawIns.content
         #endregion
 
 
+#if false
         [Obsolete("測試用")]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -1011,7 +1012,8 @@ namespace MCAJawIns.content
 
             SoundNG.Play();
             //soundAlarm.Play();
-        }
+        } 
+#endif
     }
 
     #region MyRegion

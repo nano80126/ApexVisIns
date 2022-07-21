@@ -72,7 +72,7 @@
                 <Separator Margin="12 6"/>
 
 
-                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}"/>
+                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}"/>-->
                 <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
 
