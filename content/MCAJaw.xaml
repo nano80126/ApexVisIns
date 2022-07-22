@@ -84,7 +84,7 @@
                 <Separator Margin="12 6"/>
 
 
-                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Hidden"/>
+                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
                 <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
 
@@ -346,8 +346,8 @@
                                             </Button.Style>
 
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="確認" FontSize="18" />
-                                                <materialDesign:PackIcon>
+                                                <TextBlock Text="確認" FontSize="{StaticResource BasicFont-lg}" />
+                                                <materialDesign:PackIcon VerticalAlignment="Center">
                                                     <materialDesign:PackIcon.Style>
                                                         <Style TargetType="materialDesign:PackIcon">
                                                             <Setter Property="Kind" Value="ExclamationBold"/>
@@ -362,8 +362,9 @@
                                             </StackPanel>
                                         </Button>
 
-                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 12 0 0" Padding="0 0" 
-                                                VerticalContentAlignment="Center" Height="30" FontSize="18" materialDesign:ButtonAssist.CornerRadius="5"
+                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" VerticalContentAlignment="Center" 
+                                                Margin="0 12 0 0" Padding="0 0" 
+                                                Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
                                                 Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
                                                 Click="ResetCount_Click"
                                                 Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>  
@@ -761,8 +762,7 @@
 
                                     <!--#region 3rd row -->
                                     <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
-                                            HorizontalAlignment="Center"
-                                            VerticalContentAlignment="Center" Height="30" FontSize="20" materialDesign:ButtonAssist.CornerRadius="5"
+                                            HorizontalAlignment="Center" VerticalContentAlignment="Center" Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}"
                                             Click="TriggerInspection_Click">
                                             <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
@@ -783,7 +783,7 @@
 
 
                                     <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2"
-                                            HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" FontSize="20" materialDesign:ButtonAssist.CornerRadius="5"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}"
                                             IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}"
                                             Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
@@ -815,7 +815,7 @@
                               materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
                               materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
                               materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="20" FontWeight="SemiBold" Padding="8 5.5"
+                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5"
                               Background="Transparent">
                         <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
@@ -865,7 +865,7 @@
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                               materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" 
                               materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="20" FontWeight="SemiBold" Padding="8 5.5" 
+                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5" 
                               Background="Transparent">
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
@@ -926,7 +926,7 @@
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                               materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" 
                               materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="20" FontWeight="SemiBold" Padding="8 5.5"
+                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5"
                               Background="Transparent">
                         <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">

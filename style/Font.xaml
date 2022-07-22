@@ -11,7 +11,7 @@
     <sys:Double x:Key="Header-sm">16</sys:Double>
     <sys:Double x:Key="Header">20</sys:Double>
     <sys:Double x:Key="Header-lg">24</sys:Double>
-    <sys:Double x:Key="Header-xl">20</sys:Double>
+    <sys:Double x:Key="Header-xl">26</sys:Double>
 
     <sys:Double x:Key="Title-xs">16.8</sys:Double>
     <sys:Double x:Key="Title-sm">19.2</sys:Double>

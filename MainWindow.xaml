@@ -176,22 +176,17 @@
                         SelectedIndex="{Binding OnNavIndex, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <!-- Resources -->
                 <TabControl.Resources>
-                    <Style TargetType="TextBlock">
+                    <Style TargetType="TextBlock" x:Key="ToolTipText">
                         <Setter Property="FontSize" Value="{StaticResource Header-xs}"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="FontWeight" Value="SemiBold"/>
                         <Setter Property="FontFamily" Value="微軟正黑體"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                <Setter Property="FontSize" Value="{StaticResource Header-sm}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
                     </Style>
 
                     <Style TargetType="ToolTip" BasedOn="{StaticResource MaterialDesignToolTip}">
                         <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Height" Value="26"/>
-                        <Setter Property="Padding" Value="8 0"/>
+                        <Setter Property="UseLayoutRounding" Value="True"/>
+                        <Setter Property="Height" Value="32"/>
                     </Style>
                 </TabControl.Resources>
                 
@@ -200,19 +195,18 @@
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="ViewList" Width="30" Height="26" Foreground="White" Background="Transparent"
-                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="0">
+                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
                             <materialDesign:PackIcon.ToolTip>
-                                <TextBlock Text="主畫面"/>
+                                <TextBlock Text="主畫面" Style="{StaticResource ToolTipText}"/>
                             </materialDesign:PackIcon.ToolTip>
                         </materialDesign:PackIcon>
-
                     </TabItem.Header>
                     <!--//-->
                     <!--<content:MainTab x:Name="MainTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                     <!--<content:MCAJaw x:Name="JawTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
-                <!--//-->
+                
                 <!--#region Config Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
@@ -220,9 +214,9 @@
                             Converter={StaticResource NumberGreaterConvert}, ConverterParameter=5, UpdateSourceTrigger=PropertyChanged}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="FileCog" Width="30" Height="26" Foreground="White" Background="Transparent"
-                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="0">
+                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
                             <materialDesign:PackIcon.ToolTip>
-                                <TextBlock Text="相機組態頁面"/>
+                                <TextBlock Text="相機組態頁面" Style="{StaticResource ToolTipText}"/>
                             </materialDesign:PackIcon.ToolTip>
                         </materialDesign:PackIcon>
                     </TabItem.Header>
@@ -230,7 +224,7 @@
                     <!--<content:DeviceTab x:Name="DeviceTab" Focusable="True" FocusVisualStyle="{x:Null}"/>-->
                 </TabItem>
                 <!--#endregion-->
-                <!--//-->
+                
                 <!--#region Motion Tab -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}" 
@@ -239,9 +233,9 @@
                          Visibility="Collapsed">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="Motion" Width="30" Height="26" Foreground="White" Background="Transparent"
-                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="0">
+                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
                             <materialDesign:PackIcon.ToolTip>
-                                <TextBlock Text="運動控制頁面"/>
+                                <TextBlock Text="運動控制頁面" Style="{StaticResource ToolTipText}"/>
                             </materialDesign:PackIcon.ToolTip>
                         </materialDesign:PackIcon>
                     </TabItem.Header>
@@ -259,9 +253,9 @@
                     <!--IsEnabled="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"-->
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="DatabaseSearch" Width="30" Height="26" Foreground="White" Background="Transparent"
-                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="0">
+                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
                             <materialDesign:PackIcon.ToolTip>
-                                <TextBlock Text="資料庫頁面"/>
+                                <TextBlock Text="資料庫頁面" Style="{StaticResource ToolTipText}"/>
                             </materialDesign:PackIcon.ToolTip>
                         </materialDesign:PackIcon>
                     </TabItem.Header>
@@ -271,16 +265,16 @@
                 <!--#endregion-->
 
                 <!--#region Engineer Tab -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True" 
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
                          Style="{StaticResource MaterialDesignNavigationRailTabItem}"
                          IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
                             Converter={StaticResource NumberGreaterConvert}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"
                          Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White" Background="Transparent"
-                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="0">
+                                                 ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
                             <materialDesign:PackIcon.ToolTip>
-                                <TextBlock Text="開發者頁面"/>
+                                <TextBlock Text="開發者頁面" Style="{StaticResource ToolTipText}"/>
                             </materialDesign:PackIcon.ToolTip>
                         </materialDesign:PackIcon>
                     </TabItem.Header>
