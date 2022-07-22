@@ -75,7 +75,7 @@
                             <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="FontSize"  Value="20"/>
+                                        <Setter Property="FontSize" Value="24"/>
                                     </Style>
                                     
                                     <Style TargetType="Rectangle">
@@ -136,7 +136,7 @@
                                 <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
                                                  IsEnabled="False" Grid.Column="5" Margin="12 3">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock>
+                                        <TextBlock FontSize="24">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Text" Value="不良"/>
