@@ -198,31 +198,6 @@ namespace MCAJawIns.content
             //byte[] crc = SerialPortBase.CRC16LH(new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 });
             //Debug.WriteLine($"{string.Join(" , ", crc)}");
             //Debug.WriteLine($"{string.Join(" , ", data.Concat(crc))}");
-
-            //Debug.WriteLine($"Arr: {arr?[5]}");
-            //Debug.WriteLine($"Arr: {arr?[5].GetType()}");
-            //Debug.WriteLine($"Arr: {arr?[5] == null}");
-
-
-            double[] arr = new double[] { 1, 2, 3, 54, 5, 6, 76 };
-            double[] arr2 = new double[10];
-            //Debug.WriteLine($"{Array.)}");
-
-            Array.ForEach(arr, e => {
-                e += 2;
-                Debug.WriteLine($"{e}");
-            });
-            Debug.WriteLine($"{string.Join(",", arr)}");
-
-
-            Array.ForEach(arr2, e => {
-                e += 2;
-                Debug.WriteLine($"{e}");
-            });
-            Debug.WriteLine($"{string.Join(",", arr2)}");
-            SpinWait.SpinUntil(() => false, 100);
-            Debug.WriteLine($"{string.Join(",", arr2)}");
-
             #endregion
 
             if (!loaded)

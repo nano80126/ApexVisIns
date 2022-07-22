@@ -132,7 +132,8 @@
                 <Image Grid.Column="0" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
 
                 <!--
-                    <TextBlock Grid.Column="0" Text="{Binding Title, FallbackValue=Default, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" VerticalAlignment="Center" Style="{StaticResource MainWindowTitle}" />
+                    <TextBlock Grid.Column="0" Text="{Binding Title, FallbackValue=Default, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}" 
+                VerticalAlignment="Center" Style="{StaticResource MainWindowTitle}" />
                 -->
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -182,7 +183,7 @@
                         <Setter Property="FontWeight" Value="SemiBold"/>
                         <Setter Property="FontFamily" Value="微軟正黑體"/>
                     </Style>
-
+                    <!--//-->
                     <Style TargetType="ToolTip" BasedOn="{StaticResource MaterialDesignToolTip}">
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="UseLayoutRounding" Value="True"/>
