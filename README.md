@@ -218,6 +218,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] 調整字體排版 (1.5倍、1倍)
 
+* [ ] 資料保存時間以年為單位
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

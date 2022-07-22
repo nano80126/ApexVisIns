@@ -62,9 +62,7 @@
                           VerticalAlignment="Top" HorizontalAlignment="Stretch" 
                           Height="{Binding ScrollViewerHeight, Mode=OneWay}"
                           Loaded="Scroller_Loaded">
-                <!--#region NewRegion -->
-
-                <!--<Grid Height="1000">-->
+                <!--#region Content -->
                 <ItemsControl ItemsSource="{Binding ItemsSource}" AlternationCount="100">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -157,8 +155,6 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
-                <!--</Grid>-->
                 <!--#endregion-->
             </ScrollViewer>
         </Grid>

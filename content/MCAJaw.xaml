@@ -33,10 +33,10 @@
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
-                <TextBlock Margin="12 0 0 0" Text="小 Jaw 檢測系統" FontSize="24" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas"
+                <TextBlock Margin="12 0 0 4" Text="小 Jaw 檢測系統" FontSize="{StaticResource Title}" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" 
                            Foreground="{StaticResource ColorInfo}"/>
 
-                <TextBlock Margin="12 8 0 0" Text="Ver. 1.0.0" FontSize="16" VerticalAlignment="Center" FontWeight="Bold" FontFamily="consolas" 
+                <TextBlock Margin="12 0 0 4" Text="Ver. 1.0.0" FontSize="{StaticResource Title-sm}" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" 
                            Foreground="{StaticResource ColorPrimaryTransparent}"/>
 
                 <Separator Margin="12 6"/>
@@ -45,22 +45,34 @@
                          SelectedIndex="{Binding JawTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}}" >
                     <ListBox.Resources>
                         <Style TargetType="TextBlock">
-                            <Setter Property="FontSize" Value="16"/>
+                            <Setter Property="FontSize" Value="{StaticResource Header-xs}"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
                             <Setter Property="FontFamily" Value="微軟正黑體"/>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                                    <Setter Property="FontSize" Value="{StaticResource Header-sm}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                        <!--//-->
+                        <Style TargetType="ToolTip" BasedOn="{StaticResource MaterialDesignToolTip}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="8 5"/>
                         </Style>
                     </ListBox.Resources>
                     <!--//-->
                     <ListBoxItem Padding="16 4" Cursor="Hand">
                         <ListBoxItem.ToolTip>
-                            <TextBlock Text="主畫面"/>
+                            <TextBlock Text="檢驗畫面"/>
                         </ListBoxItem.ToolTip>
                         <!--//-->
                         <materialDesign:PackIcon Kind="ViewGrid" Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                     <ListBoxItem Padding="16 4" Cursor="Hand" 
                                  IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
-                        Converter={StaticResource NumberGreaterConvert}, ConverterParameter=2, UpdateSourceTrigger=PropertyChanged}">
+                            Converter={StaticResource NumberGreaterConvert}, ConverterParameter=2, UpdateSourceTrigger=PropertyChanged}">
                         <ListBoxItem.ToolTip>
                             <TextBlock Text="規格設定"/>
                         </ListBoxItem.ToolTip>
@@ -72,7 +84,7 @@
                 <Separator Margin="12 6"/>
 
 
-                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}"/>
+                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Hidden"/>
                 <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
 
@@ -296,7 +308,7 @@
                                     <!--#region 1st row  -->
                                     <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                                     <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0">
-                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="Center" FontSize="32" FontWeight="SemiBold" 
+                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="Center" FontSize="{StaticResource Title-xl}" FontWeight="SemiBold" 
                                                    Text="{Binding Status, RelativeSource={RelativeSource AncestorType=local:MCAJaw, Mode=FindAncestor, AncestorLevel=1}, Converter={StaticResource EnumDescriptionConverter}}"
                                                    Foreground="{Binding Status,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:MCAJaw,AncestorLevel=1}, Converter={StaticResource MCAJawStatusColorConverter}}"/>
                                     </Border>
