@@ -151,6 +151,10 @@ namespace LockPlate.Driver
             {
                 _serialPort.Write(data, 0, data.Length);
             }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
             catch (Exception)
             {
                 throw;

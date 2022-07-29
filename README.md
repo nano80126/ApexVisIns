@@ -204,6 +204,8 @@ Apex 外觀瑕疵檢測
 * [ ] 0.088 左右差異問題
 	* 初步測試完成
 
+* [ ] 測試 光源控制器 Read 和發光時間差
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property
