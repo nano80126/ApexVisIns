@@ -80,7 +80,7 @@
                                   materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                   ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                   MouseRightButtonUp="CameraSelector_MouseRightButtonUp"
-                                  MinWidth="180" Margin="0 0 0 0">
+                                  MinWidth="180" Margin="0">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <!--Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"-->
@@ -580,15 +580,10 @@
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="MinWidth" Value="120" />
                                             <Setter Property="Padding" Value="0 4"/>
-                                            <Setter Property="Margin" Value="0 8"/>
-                                            <!--<Setter Property="Background" Value="Red"/>-->
-                                            <!--<Setter Property="TextAlignment" Value="Right"/>-->
-                                            <!--<Setter Property="Background" Value="Red"/>-->
+                                            <Setter Property="Margin" Value="8 8 0 8"/>
                                         </Style>
                                         <!-- // -->
                                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                            <!--<Setter Property="Padding" Value="0 2"/>-->
-                                            <!-- Padding 要寫在行內 -->
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="Margin" Value="0 8"/>
                                             <Setter Property="MinWidth" Value="120"/>
@@ -643,7 +638,7 @@
                                     <!--#endregion-->
 
                                     <!--#region AOI Controls -->
-                                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="AOI Controls" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
                                     <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
 
                                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Sensor Width"/>
@@ -670,16 +665,16 @@
                                     <TextBox Grid.Row="6" Grid.Column="1" Padding="0 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     <TextBox Grid.Row="7" Grid.Column="1" Padding="0 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                    <TextBox Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
-                                 Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBox Grid.Row="8" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}" 
+                                             Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                    <TextBox Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
-                                 Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBox Grid.Row="9" Grid.Column="1" Padding="0 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}" 
+                                             Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                                     <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
+                                              Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
                                     <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                  Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
+                                              Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
 
                                     <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
                                     <!--#endregion-->
