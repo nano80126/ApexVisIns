@@ -423,11 +423,7 @@ namespace LockPlate
         }
         #endregion
 
-        public ShihlinSDE()
-        {
-
-
-        }
+        public ShihlinSDE() { }
 
         public ShihlinSDE(int motors)
         {
@@ -760,6 +756,8 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void EnablePollingTask(byte station, PollingType type = PollingType.CAN_TEST)
         {
+            // 這邊測試一下拋出異常
+
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
@@ -811,7 +809,6 @@ namespace LockPlate
             try
             {
                 _cancellationTokenSource.Cancel();
-
                 _pollingTask.Wait();
                 _pollingTask.Dispose();
             }
@@ -828,57 +825,53 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void JogEnable(byte station)
         {
-            try
-            {
-                // 0x0901 寫入 0x0003：啟動 Jog
-                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x03 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+            // 0x0901 寫入 0x0003：啟動 Jog
+            byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x03 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2) 
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-
-                Debug.WriteLine($"{string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
 
                 // 加減速時間 換算
                 byte hTime = (byte)((JogAccDecTime >> 8) & 0xFF);
                 byte lTime = (byte)(JogAccDecTime & 0xFF);
 
-                Debug.WriteLine($"TIME {hTime} {lTime}");
+                //Debug.WriteLine($"TIME {hTime} {lTime}");
 
                 // RPM 換算
                 byte hRPM = (byte)((JogRPM >> 8) & 0xFF);
                 byte lRPM = (byte)(JogRPM & 0xFF);
 
-                Debug.WriteLine($"RPM {hRPM} {lRPM}");
-
                 // 0x0902 寫入 加減速 命令
                 cmd = new byte[] { station, 0x06, 0x09, 0x02, hTime, lTime };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2) 
                 response = Read();
 
-                retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"{string.Join(",", retStr)}");
+                //retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
 
                 // 0x0903 寫入 RPM 命令
                 cmd = new byte[] { station, 0x06, 0x09, 0x03, hRPM, lRPM };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2) 
                 response = Read();
 
-                retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"{string.Join(",", retStr)}");
+                //retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
             }
-            catch (Exception)
+            else
             {
-                throw;
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -887,26 +880,19 @@ namespace LockPlate
         /// </summary>
         public void JogClock(byte station)
         {
-            try
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0001：Jog 正轉
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x01 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0001：Jog 正轉
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x01 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, 1000);
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, Timeout);     // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)  
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"{string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
+            });
         }
 
         /// <summary>
@@ -914,26 +900,26 @@ namespace LockPlate
         /// </summary>
         public void JogCClock(byte station)
         {
-            try
+            //try
+            //{
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0000：Jog 逆轉
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x02 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0000：Jog 逆轉
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x02 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, 1000);
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, Timeout);      // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"{string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
+            });
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -941,26 +927,26 @@ namespace LockPlate
         /// </summary>
         public void JogStop(byte station)
         {
-            try
+            //try
+            //{
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0000：停止轉動
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x00 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0000：停止轉動
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x04, 0x00, 0x00 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, 1000);
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, Timeout);      // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"{string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
+            });
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -969,26 +955,29 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void JogDisable(byte station)
         {
-            try
-            {
-                // 0x0901 寫入 0x0000：停止 Jog
-                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+            //try
+            //{
+            // 0x0901 寫入 0x0000：停止 Jog
+            byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
+            if (Write(cmd))
+            {
+
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
+                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
 
                 //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
         #endregion
 
@@ -999,18 +988,18 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveEnable(byte station)
         {
-            try
-            {
-                // 0x0901 寫入 0x0004：啟動定位控制
-                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x04 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+            //try
+            //{
+            // 0x0901 寫入 0x0004：啟動定位控制
+            byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x04 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-
                 Debug.WriteLine($"啟動定位: {string.Join(",", retStr)}");
 
                 // 加減速時間 換算
@@ -1033,8 +1022,8 @@ namespace LockPlate
                 cmd = new byte[] { station, 0x06, 0x09, 0x02, hTime, lTime };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, 1000);
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
                 response = Read();
 
                 retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
@@ -1044,8 +1033,8 @@ namespace LockPlate
                 cmd = new byte[] { station, 0x06, 0x09, 0x03, hRPM, lRPM };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 2 + 4 + 2, 1000);
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
                 response = Read();
 
                 retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
@@ -1054,8 +1043,8 @@ namespace LockPlate
                 cmd = new byte[] { station, 0x10, 0x09, 0x05, 0x00, 0x02, 0x04, lhPul, llPul, hhPul, hlPul };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
                 response = Read();
 
                 string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
@@ -1064,10 +1053,11 @@ namespace LockPlate
                 // Debug.WriteLine($"寫入 {string.Join(",", cmdStr)}");
                 Debug.WriteLine($"寫入脈波數 {string.Join(",", retStr)}");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -1076,26 +1066,26 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveClock(byte station)
         {
-            try
+            //try
+            //{
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0001：Jog 正轉
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x01 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0001：Jog 正轉
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x01 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"正轉 {string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"正轉 {string.Join(",", retStr)}");
+            });
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -1104,26 +1094,26 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveCClock(byte station)
         {
-            try
+            //try
+            //{
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0001：Jog 正轉
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x02 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0001：Jog 正轉
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x02 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"逆轉 {string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"逆轉 {string.Join(",", retStr)}");
+            });
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -1132,26 +1122,26 @@ namespace LockPlate
         /// <param name="station"></param>
         public void PosMovePause(byte station)
         {
-            try
+            //try
+            //{
+            _pollingAct.Add(() =>
             {
-                _pollingAct.Add(() =>
-                {
-                    // 0x0904 寫入 0x0001：Jog 正轉
-                    byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x00 };
-                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+                // 0x0904 寫入 0x0001：Jog 正轉
+                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x07, 0x00, 0x00 };
+                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                    Write(cmd);
-                    _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
-                    byte[] response = Read();
+                _ = Write(cmd);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
+                byte[] response = Read();
 
-                    string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                    Debug.WriteLine($"暫停 {string.Join(",", retStr)}");
-                });
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"暫停 {string.Join(",", retStr)}");
+            });
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
 
@@ -1161,26 +1151,28 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveDisable(byte station)
         {
-            try
-            {
-                // 0x0901 寫入 0x0000：停止 Jog
-                byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+            //try
+            //{
+            // 0x0901 寫入 0x0000：停止 Jog
+            byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
+                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
 
                 //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
         #endregion
 
