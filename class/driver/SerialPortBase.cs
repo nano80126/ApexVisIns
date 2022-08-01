@@ -136,28 +136,31 @@ namespace LockPlate.Driver
         {
             try
             {
-                _serialPort.Write(cmd);
+                if (_serialPort != null)
+                {
+                    _serialPort.Write(cmd);
+                }
+                else
+                {
+                    throw new InvalidOperationException("通訊 SerialPort 為 null");
+                }
             }
             catch (Exception)
             {
                 throw;
             }
-            //throw new NotImplementedException();
         }
 
-        protected virtual void Write(byte[] data)
+        protected virtual bool Write(byte[] data)
         {
-            try
+            if (_serialPort?.IsOpen == true)
             {
                 _serialPort.Write(data, 0, data.Length);
+                return true;
             }
-            catch (NullReferenceException)
+            else
             {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
+                return false;
             }
         }
 

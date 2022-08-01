@@ -72,6 +72,18 @@ namespace LockPlate
 
 
     [Serializable]
+    public class ShihlinSDEException : Exception
+    {
+        public ShihlinSDEException() { }
+        public ShihlinSDEException(string message) : base(message) { }
+        public ShihlinSDEException(string message, Exception inner) : base(message, inner) { }
+        protected ShihlinSDEException(
+          SerializationInfo info,
+          StreamingContext context) : base(info, context) { }
+    }
+
+
+    [Serializable]
     public class DatabaseException : Exception
     {
         public DatabaseException() { }

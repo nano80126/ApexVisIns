@@ -206,6 +206,9 @@ Apex 外觀瑕疵檢測
 
 * [ ] 測試 光源控制器 Read 和發光時間差
 
+* [ ] 確認 Try Catch 層數
+	* 少用 Try catch，用 if 判斷
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

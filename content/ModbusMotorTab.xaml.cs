@@ -34,7 +34,6 @@ namespace LockPlate.content
         public MainWindow MainWindow { get; set; }
         #endregion
 
-
         public ModbusMotorTab()
         {
             InitializeComponent();
@@ -45,7 +44,6 @@ namespace LockPlate.content
             Keyboard.ClearFocus();
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
-
 
         private void Comport_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -72,32 +70,41 @@ namespace LockPlate.content
             Debug.WriteLine(MainWindow.ShihlinSDE.IsComOpen);
         }
 
-
         private void RefreshStationn_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.ShihlinSDE.ChangeTimeout(50);
-            foreach (byte stat in StationSelector.Items)
-            {
-                bool b = MainWindow.ShihlinSDE.CheckStat(stat);
 
-                Debug.WriteLine($"{b}");
-            }
             MainWindow.ShihlinSDE.ChangeTimeout(200);
         }
 
         private void ReadMotorInfo_Click(object sender, RoutedEventArgs e)
         {
-            // 讀取 IO 資訊 
-            // 啟動 Task 讀取 IO
-
-            MainWindow.ShihlinSDE.ReadIO((byte)StationSelector.SelectedItem);
-            MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
-            MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
-
-            // MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
-            // 
-            Debug.WriteLine($"------------------------------------------");
+            try
+            {
+                //讀取 IO 資訊
+                //啟動 Task 讀取 IO
+                MainWindow.ShihlinSDE.ReadIO((byte)StationSelector.SelectedItem);
+                MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
+                MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
+                MainWindow.ShihlinSDE.ReadAlarm((byte)StationSelector.SelectedItem);
+                //MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
+                Debug.WriteLine($"------------------------------------------");
+            }
+            catch (Exception ex)
+            {
+                //Debug.WriteLine($"{ex.Message}");
+                //throw;
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
+
+        private void ResetMotorAlarm_Click(object sender, RoutedEventArgs e)
+        {
+            //Debug.WriteLine($"-----------------------------------------------");
+            MainWindow.ShihlinSDE.ResetAlarm((byte)StationSelector.SelectedItem);
+            //Debug.WriteLine($"-----------------------------------------------");
+        }
+
 
         #region JOG
         private void JogPopupBox_Opened(object sender, RoutedEventArgs e)
@@ -194,6 +201,6 @@ namespace LockPlate.content
             }
         }
 
-     
+   
     }
 }

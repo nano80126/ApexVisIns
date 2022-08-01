@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -29,6 +30,9 @@ namespace LockPlate
         private int _posMoveRPM = 200;
         private int _posMoveAccDecTime = 1000;
         private int _posMovePulse = 4194304; // 22 位元
+
+        private bool _canTest = false;
+        private AlarmCode _alarmCode = AlarmCode.NONE;      // 0xff : 無警報
         #endregion
 
 
@@ -38,9 +42,7 @@ namespace LockPlate
         private CancellationTokenSource _cancellationTokenSource;
         
         private Timer _pollingTimer;
-    
         #endregion
-
 
         #region enum
         public enum DIFunctions : byte
@@ -113,6 +115,120 @@ namespace LockPlate
             POS5 = 0x15,
             POS6 = 0x16,
         }
+
+        public enum AlarmCode
+        {
+            [Description("過電壓")]
+            AL01 = 0x01,
+            [Description("低電壓")]
+            AL02 = 0x02,
+            [Description("過電流")]
+            AL03 = 0x03,
+            [Description("回生異常")]
+            AL04 = 0x04,
+            [Description("過負載 1")]
+            AL05 = 0x05,
+            [Description("過速度")]
+            AL06 = 0x06,
+            [Description("異常脈波控制命令")]
+            AL07 = 0x07,
+            [Description("位置控制誤差過大")]
+            AL08 = 0x08,
+            [Description("串列通訊異常")]
+            AL09 = 0x09,
+            [Description("串列通訊逾時")]
+            AL0A = 0x0A,
+            [Description("位置檢出器異常1")]
+            AL0B = 0x0B,
+            [Description("風扇異常")]
+            AL0D = 0x0D,
+            [Description("IGBT異常")]
+            AL0E = 0x0E,
+            [Description("記憶體異常")]
+            AL0F = 0x0F,
+            [Description("過負載2")]
+            AL10 = 0x10,
+            [Description("馬達匹配異常")]
+            AL11 = 0x11,
+            [Description("馬達碰撞錯誤")]
+            AL20 = 0x20,
+            [Description("馬達UVW斷線")]
+            AL21 = 0x21,
+            [Description("編碼器通訊異常")]
+            AL22 = 0x22,
+            [Description("馬達編碼器種類錯誤")]
+            AL24 = 0x24,
+            [Description("位置檢出器異常3")]
+            AL26 = 0x26,
+            [Description("位置檢出器異常4")]
+            AL27 = 0x27,
+            [Description("位置檢出器過熱")]
+            AL28 = 0x28,
+            [Description("位置檢出器異常5(溢位)")]
+            AL29 = 0x29,
+            [Description("絕對型編碼器異常1")]
+            AL2A = 0x2A,
+            [Description("絕對型編碼器異常2")]
+            AL2B = 0x2B,
+            [Description("控制迴路異常")]
+            AL2E = 0x2E,
+            [Description("回升能量異常")]
+            AL2F = 0x2F,
+            [Description("脈波輸出檢出器頻率過高")]
+            AL30 = 0x30,
+            [Description("過電流2")]
+            AL31 = 0x31,
+            [Description("控制迴路異常2")]
+            AL32 = 0x32,
+            [Description("記憶體異常2")]
+            AL33 = 0x33,
+            [Description("過負載4")]
+            AL34 = 0x34,
+            [Description("緊急停止")]
+            AL12 = 0x12,
+            [Description("正反轉極限異常")]
+            AL13 = 0x13,
+            [Description("軟體正向極限")]
+            AL14 = 0x14,
+            [Description("軟體負向極限")]
+            AL15 = 0x15,
+            [Description("預先過負載警告")]
+            AL16 = 0x16,
+            [Description("ABS逾時警告")]
+            AL17 = 0x17,
+            [Description("預備")]
+            AL18 = 0x18,
+            [Description("Pr命令異常")]
+            AL19 = 0x19,
+            [Description("分度座標未定義")]
+            AL1A = 0x1A,
+            [Description("位置偏移警告")]
+            AL1B = 0x1B,
+            [Description("來源參數群組超出範圍")]
+            AL61 = 0x61,
+            [Description("預先過負載4")]
+            AL1C = 0x1C,
+            [Description("絕對型編碼器異常3")]
+            AL2C = 0x2C,
+            [Description("編碼器電池低電壓")]
+            AL2D = 0x2D,
+            [Description("來源參數編號超出範圍")]
+            AL62 = 0x62,
+            [Description("PR程序寫入參數超出範圍")]
+            AL63 = 0x63,
+            [Description("PR程序寫入參數錯誤")]
+            AL64 = 0x64,
+            [Description("無異常")]
+            NONE = 0xFF
+        }
+
+        public enum PollingType : byte
+        {
+            CAN_TEST = 0,   // 讀取是否啟動測試     0x0900
+            Alarm = 1,      // 讀取警報　　　　     0x0100
+            IO = 2,         // 讀取ＩＯ　　　　     0x0204 0x0205　
+            Position = 3,   // 讀取位置　　　　     0x0002 0x0024
+        }
         #endregion
 
 
@@ -131,6 +247,14 @@ namespace LockPlate
         }
 
         public int BytesInBuf => _serialPort.BytesToRead;
+
+        /// <summary>
+        /// 馬達是否開啟
+        /// </summary>
+        public bool IsOpen
+        {
+            get => _serialPort?.IsOpen == true;
+        }
 
         public bool ServoReady
         {
@@ -174,6 +298,47 @@ namespace LockPlate
                     _resPos = value;
                     OnPropertyChanged();
                 }
+            }
+        }
+
+        /// <summary>
+        /// 是否可以啟動測試模式
+        /// </summary>
+        public bool CanTest
+        {
+            get => _canTest;
+            set
+            {
+                if (value != _canTest)
+                {
+                    _canTest = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public AlarmCode Alarm
+        {
+            get => _alarmCode;
+            set
+            {
+                if (value != _alarmCode)
+                {
+                    _alarmCode = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(AlarmString));
+                }
+            }
+        }
+
+        public string AlarmString
+        {
+            get
+            {
+                FieldInfo info = _alarmCode.GetType().GetField(_alarmCode.ToString());
+
+                DescriptionAttribute[] attributes = (DescriptionAttribute[])info.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                return attributes.Length > 0 ? $"{_alarmCode}. {attributes[0].Description}" : $"{_alarmCode}";
             }
         }
 
@@ -295,20 +460,25 @@ namespace LockPlate
             byte[] cmd = new byte[] { station, 0x03, 0x02, 0x00, 0x00, 0x02 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-            Write(cmd);
-            Debug.WriteLine($"data: {string.Join(",", cmd)}");
-            Debug.WriteLine($"{_serialPort.BytesToRead}");
-            _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + 2 * 0x02 + 2, 1000);
-            Debug.WriteLine($"{_serialPort.BytesToRead}");
-
-            byte[] response = Read();
-
-            string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-            Debug.WriteLine($"ret: {string.Join(",", retStr)}");
-
-            if (response[0] == 0x01 && response[1] == 0x03 && response[2] == 0x04)
+            if (Write(cmd))
             {
-                Debug.WriteLine($"SERVO: {response[4]}, MODE: {response[6]}");
+                //Debug.WriteLine($"data: {string.Join(",", cmd)}");
+                //Debug.WriteLine($"{_serialPort.BytesToRead}");
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);        // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 2) + CRC(2)
+                //Debug.WriteLine($"{_serialPort.BytesToRead}");
+                byte[] response = Read();
+
+                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"ret: {string.Join(",", retStr)}");
+
+                if (response[0] == 0x01 && response[1] == 0x03 && response[2] == 0x04)
+                {
+                    Debug.WriteLine($"SERVO: {response[4]}, MODE: {response[6]}");
+                }
+            }
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -324,64 +494,65 @@ namespace LockPlate
             byte[] cmd = new byte[] { station, 0x03, 0x02, 0x06, 0x00, 0x08 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-            Write(cmd);
-            Debug.WriteLine($"data: {string.Join(",", cmd)}");
-
-            Debug.WriteLine($"{DateTime.Now:mm:ss.fff} {BytesInBuf}");
-            // 站號、功能碼、長度(3 bytes) + 2 * 讀取長度 + CRC(2 bytes)
-            _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x08) + 2, 1000);
-            Debug.WriteLine($"{DateTime.Now:mm:ss.fff} {BytesInBuf}");
-
-            byte[] response = Read();
-
-            string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-            Debug.WriteLine($"ret: {string.Join(",", retStr)}");
-
-            Debug.WriteLine($"{(response[0] << 8) + (response[1] << 4) + response[2]}");
-            if ((response[0] << 8) + (response[1] << 4) + response[2] == ((station << 8) + 0b01000000))
+            if (Write(cmd))
             {
-                for (int i = 3; i < response.Length - 6; i++)
-                {
-                    //Debug.WriteLine($"{i} {response[i]} {(DIFunctions)response[i]}");
-                    DIs.Add(new IOChannel()
-                    {
-                        Function = ((DIFunctions)response[i]).ToString(),
-                        Number = i - 2,
-                        On = false,
-                        Input = true
-                    });
-                }
+                _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x08) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 8) + CRC(2)
+                byte[] response = Read();
 
-                short[] DO_temp = new short[] {
-                    (short)((response[^6] << 8) + response[^5]),
-                    (short)((response[^4] << 8) + response[^3])
-                };
+                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"ret: {string.Join(",", retStr)}");
 
-                for (int i = 0; i < DO_temp.Length; i++)
+                //Debug.WriteLine($"{(response[0] << 8) + (response[1] << 4) + response[2]}");
+                if ((response[0] << 8) + (response[1] << 4) + response[2] == ((station << 8) + 0b01000000))
                 {
-                    for (int j = 0; j < 3; j++)
+                    for (int i = 3; i < response.Length - 6; i++)
                     {
-                        DOs.Add(new IOChannel()
+                        //Debug.WriteLine($"{i} {response[i]} {(DIFunctions)response[i]}");
+                        DIs.Add(new IOChannel()
                         {
-                            Function = $"{(DOFunctions)((DO_temp[i] >> (5 * j)) & 0b11111)}",
-                            Number = (3 * i) + j + 1,
+                            Function = ((DIFunctions)response[i]).ToString(),
+                            Number = i - 2,
                             On = false,
-                            Input = false
+                            Input = true
                         });
                     }
-                }
 
+                    short[] DO_temp = new short[] {
+                        (short)((response[^6] << 8) + response[^5]),
+                        (short)((response[^4] << 8) + response[^3])
+                    };
 
-                foreach (IOChannel item in DIs)
-                {
-                    Debug.WriteLine($"{item.Name} {item.Function}");
-                }
+                    for (int i = 0; i < DO_temp.Length; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            DOs.Add(new IOChannel()
+                            {
+                                Function = $"{(DOFunctions)((DO_temp[i] >> (5 * j)) & 0b11111)}",
+                                Number = (3 * i) + j + 1,
+                                On = false,
+                                Input = false
+                            });
+                        }
+                    }
 
-                Debug.WriteLine($"-------------------------------");
-                foreach (IOChannel item in DOs)
-                {
-                    Debug.WriteLine($"{item.Name} {item.Function}");
+#if false
+                    foreach (IOChannel item in DIs)
+                    {
+                        Debug.WriteLine($"{item.Name} {item.Function}");
+                    }
+
+                    Debug.WriteLine($"-------------------------------");
+                    foreach (IOChannel item in DOs)
+                    {
+                        Debug.WriteLine($"{item.Name} {item.Function}");
+                    } 
+#endif
                 }
+            }
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -391,15 +562,15 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadIOStatus(byte station)
         {
-            try
-            {
-                byte[] cmd = new byte[] { station, 0x03, 0x02, 0x04, 0x00, 0x02 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
+            byte[] cmd = new byte[] { station, 0x03, 0x02, 0x04, 0x00, 0x02 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            if (Write(cmd))
+            {
                 Debug.WriteLine($"data: {string.Join(",", cmd)}");
 
-                _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x02) + 2, 1000);
+                _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x02) + 2, Timeout);
 
                 byte[] response = Read();
 
@@ -425,9 +596,9 @@ namespace LockPlate
                     }
                 }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -437,14 +608,14 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadPos(byte station)
         {
-            try
-            {
-                // 讀取 馬達迴授脈波數(電子齒輪比前)
-                byte[] cmd = new byte[] { station, 0x03, 0x00, 0x02, 0x00, 0x02 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
+            // 讀取 馬達迴授脈波數(電子齒輪比前)
+            byte[] cmd = new byte[] { station, 0x03, 0x00, 0x02, 0x00, 0x02 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
                 byte[] response = Read();
 
                 if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
@@ -457,7 +628,7 @@ namespace LockPlate
                 cmd = new byte[] { station, 0x03, 0x00, 0x24, 0x00, 0x02 };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
+                _ = Write(cmd);
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
                 response = Read();
 
@@ -467,10 +638,32 @@ namespace LockPlate
                     ResPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
                 }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+
             }
+        }
+
+        [Obsolete("deprecated")]
+        public Task<List<byte>> ListStations()
+        {
+            List<byte> stations = new List<byte>();
+
+            Task.Run(() =>
+            {
+                for (byte i = 0; i < 0x10; i++)
+                {
+                    bool b = CheckStat(i);
+
+                    if (CheckStat(i))
+                    {
+                        stations.Add(i);
+                    }
+                }
+            }).Wait();
+
+            return Task.FromResult(stations);
         }
 
         /// <summary>
@@ -480,22 +673,21 @@ namespace LockPlate
         /// <returns></returns>
         public bool CheckStat(byte station)
         {
-            try
-            {
-                // 讀取 馬達狀態
-                byte[] cmd = new byte[] { station, 0x03, 0x09, 0x00, 0x00, 0x01 };
-                cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+            // 讀取 馬達狀態
+            byte[] cmd = new byte[] { station, 0x03, 0x09, 0x00, 0x00, 0x01 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
-                Write(cmd);
-                Debug.WriteLine($"{DateTime.Now:ss.fff}");
+            if (Write(cmd))
+            {
+                //Debug.WriteLine($"a: {DateTime.Now:ss.fff}");
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);   // 站號(1) + 功能碼(1) + 長度(1) + 資料(2) + CRC(2)
-                Debug.WriteLine($"{DateTime.Now:ss.fff}");
+                                                                          //Debug.WriteLine($"b: {DateTime.Now:ss.fff}");
                 byte[] response = Read();
 
-                string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
+                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
 
-                Debug.WriteLine($"{string.Join(",", cmdStr)}");
+                //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
 
                 if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
@@ -507,15 +699,58 @@ namespace LockPlate
                     return false;
                 }
             }
-            catch (TimeoutException T)
+            else
             {
-                Debug.WriteLine($"stat: {station} {T.Message}");
-                //throw;
-                return false;
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
-            catch (Exception)
+        }
+
+        public void ReadAlarm(byte station)
+        {
+            // 讀取 警報
+            byte[] cmd = new byte[] { station, 0x03, 0x01, 0x00, 0x00, 0x01 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            if (Write(cmd))
             {
-                throw;
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);     // 站號(1) + 功能碼(1) + 長度
+                byte[] response = Read();
+
+                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
+                //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+
+                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
+                {
+                    Alarm = (AlarmCode)((response[3] << 4) + response[4]);
+                }
+            }
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+            }
+        }
+
+        public void ResetAlarm(byte station)
+        {
+
+            // 0x0130 寫入 0x1EA5：清除目前異警
+            byte[] cmd = new byte[] { station, 0x06, 0x01, 0x30, 0x1E, 0xA5 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
+                byte[] response = Read();
+
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"清除目前異警: {string.Join(",", retStr)}");
+
+                // 重新讀取一次
+                ReadAlarm(station);
+            }
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -523,7 +758,7 @@ namespace LockPlate
         /// 啟動 Polling 工作
         /// </summary>
         /// <param name="station">站號</param>
-        public void EnablePollingTask(byte station)
+        public void EnablePollingTask(byte station, PollingType type = PollingType.CAN_TEST)
         {
             try
             {
@@ -540,7 +775,23 @@ namespace LockPlate
                             continue;
                         }
 
-                        _ = CheckStat(station);
+                        switch (type)
+                        {
+                            case PollingType.CAN_TEST:
+                                CanTest = CheckStat(station);
+                                break;
+                            case PollingType.Alarm:
+                                ReadAlarm(station);
+                                break;
+                            case PollingType.IO:
+                                ReadIOStatus(station);
+                                break;
+                            case PollingType.Position:
+                                ReadPos(station);
+                                break;
+                            default:
+                                break;
+                        }
 
                         _ = SpinWait.SpinUntil(() => _pollingAct.Count > 0 || _cancellationTokenSource.IsCancellationRequested, 250);
                     }
@@ -940,9 +1191,9 @@ namespace LockPlate
         /// 寫入命令
         /// </summary>
         /// <param name="data"></param>
-        protected override void Write(byte[] data)
+        protected override bool Write(byte[] data)
         {
-            base.Write(data);
+            return base.Write(data);
         }
 
         /// <summary>
