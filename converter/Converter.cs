@@ -198,7 +198,6 @@ namespace LockPlate.Converter
     }
     #endregion
 
-
     #region 字串 Equal 轉換器
     /// <summary>
     /// 字串 Equal 轉換器
@@ -305,7 +304,6 @@ namespace LockPlate.Converter
         }
     }
     #endregion
-
 
     #region 數學運算轉換器
     /// <summary>
@@ -468,7 +466,40 @@ namespace LockPlate.Converter
     #endregion
 
 
+    #region NotNull 轉換器
+    [ValueConversion(typeof(object), typeof(bool))]
+    public class ObjectNotNullConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null;
+        }
 
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            //Debug.WriteLine($"ConvertBack: {value}");
+            throw new NotImplementedException();
+        }
+    }
+
+
+    /// <summary>
+    /// 字串 Equal 轉 Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(object), typeof(Visibility))]
+    public class ObjectNotNullToVisibility : ObjectNotNullConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetType, parameter, culture);
+        }
+    }
+    #endregion
 
 
     public class BooleanNotNullOrFalseConverter : IValueConverter

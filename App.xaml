@@ -52,6 +52,9 @@
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
+
+            <cvt:ObjectNotNullConverter x:Key="ObjectNotNullConverter"/>
+            <cvt:ObjectNotNullToVisibility x:Key="ObjectNotNullToVisibility"/>
             <!--<cvt:GetIndexConvertor x:Key="GetIndexConvertor"/>-->
             <!--<cvt:GetListElementConvert x:Key="GetListElementConvert"/>-->
             <!--#endregion-->

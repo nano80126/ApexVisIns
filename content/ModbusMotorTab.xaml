@@ -3,6 +3,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"             
+            xmlns:control="clr-namespace:LockPlate.Control"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             xmlns:ctProperty="clr-namespace:LockPlate.CustomProperty"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -575,7 +576,7 @@
             </materialDesign:Card>
             <!--#endregion-->
 
-            <!--#region Move Card -->
+            <!--#region Move Test Card -->
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" Background="WhiteSmoke" 
                                  VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
@@ -738,7 +739,7 @@
 
         <StackPanel Grid.Column="6" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" Background="WhiteSmoke"
-                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch" Visibility="Visible">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                     <DockPanel x:Name="PrModeHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="DotsHexagon" Width="30" Height="26"/>
@@ -802,7 +803,72 @@
                     </Grid>
                 </DockPanel>
             </materialDesign:Card>
-        </StackPanel>
 
+            <!--#region Pr 模式 Card -->
+            <control:TitleCard Title="測試" IconKind="ArrowLeft" Background="WhiteSmoke">
+                <Grid DataContext="{StaticResource ShihlinSDE}">
+                    <Grid.Resources>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="MinWidth" Value="120"/>
+                            <Setter Property="Padding" Value="0 4"/>
+                            <Setter Property="Margin" Value="8 8 0 8"/>
+                        </Style>
+                        <!--//-->
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="0 8"/>
+                            <Setter Property="MinWidth" Value="120"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
+                    <!--//-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <!--//-->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <!--<ColumnDefinition></ColumnDefinition>-->
+                    </Grid.ColumnDefinitions>
+
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="目前 Path"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="原點復歸"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text=""/>
+
+                    <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" IsReadOnly="True" Focusable="False" 
+                                 Text=""/>
+
+                    <Button Grid.Row="1" Grid.Column="1" Padding="0 0" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Height="24"
+                                FontSize="14"
+                                Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <!--Content="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"-->
+                        <TextBlock Text="24" Margin="0" HorizontalAlignment="Center" Background="{StaticResource ColorError}"/>
+                    </Button>
+
+                    <!--<TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
+                                 Text=""/>-->
+
+                    <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
+                                 Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
+                </Grid>
+
+                <!--<control:TitleCard.Footer>
+                    <TextBlock Text="123"/>
+                </control:TitleCard.Footer>-->
+            </control:TitleCard>
+            <!--#endregion-->
+
+
+
+        </StackPanel>
     </Grid>
 </StackPanel>
