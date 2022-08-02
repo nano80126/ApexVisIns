@@ -52,22 +52,32 @@ namespace LockPlate.content
 
         private void SerialPortConnect_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine(MainWindow.ShihlinSDE.IsComOpen);
-            if (!MainWindow.ShihlinSDE.IsComOpen)
+            // Debug.WriteLine(MainWindow.ShihlinSDE.IsComOpen);
+            try
             {
-                string[] protocols = (ProtocolSelector.SelectedItem as string).Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-                Parity parity = protocols[1] == "N" ? Parity.None : protocols[1] == "E" ? Parity.Even : Parity.Odd;
-                int dataBit = Convert.ToInt32(protocols[0], System.Globalization.CultureInfo.CurrentCulture);
-                StopBits stopBits = protocols[2] == "1" ? StopBits.One : protocols[2] == "2" ? StopBits.Two : StopBits.None;
+                if (!MainWindow.ShihlinSDE.IsComOpen)
+                {
+                    string[] protocols = (ProtocolSelector.SelectedItem as string).Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-                MainWindow.ShihlinSDE.ComOpen(ComportSelector.SelectedItem as string, (int)BaudSelector.SelectedItem, parity, dataBit, stopBits);
+                    Parity parity = protocols[1] == "N" ? Parity.None : protocols[1] == "E" ? Parity.Even : Parity.Odd;
+                    int dataBit = Convert.ToInt32(protocols[0], System.Globalization.CultureInfo.CurrentCulture);
+                    StopBits stopBits = protocols[2] == "1" ? StopBits.One : protocols[2] == "2" ? StopBits.Two : StopBits.None;
+
+                    MainWindow.ShihlinSDE.ComOpen(ComportSelector.SelectedItem as string, (int)BaudSelector.SelectedItem, parity, dataBit, stopBits);
+                }
+                else
+                {
+                    MainWindow.ShihlinSDE.ComClose();
+                }
+
             }
-            else
+            catch (Exception ex)
             {
-                MainWindow.ShihlinSDE.ComClose();
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                //throw;
             }
-            Debug.WriteLine(MainWindow.ShihlinSDE.IsComOpen);
+            // Debug.WriteLine(MainWindow.ShihlinSDE.IsComOpen);
         }
 
         private void RefreshStationn_Click(object sender, RoutedEventArgs e)
@@ -87,99 +97,143 @@ namespace LockPlate.content
                 MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadAlarm((byte)StationSelector.SelectedItem);
-                //MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
-                Debug.WriteLine($"------------------------------------------");
+
+                MainWindow.ShihlinSDE.ReadPF82((byte)StationSelector.SelectedItem);
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine($"{ex.Message}");
-                //throw;
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
 
         private void ResetMotorAlarm_Click(object sender, RoutedEventArgs e)
         {
-            //Debug.WriteLine($"-----------------------------------------------");
-            MainWindow.ShihlinSDE.ResetAlarm((byte)StationSelector.SelectedItem);
-            //Debug.WriteLine($"-----------------------------------------------");
+            try
+            {
+                MainWindow.ShihlinSDE.ResetAlarm((byte)StationSelector.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
-
 
         #region JOG
         private void JogPopupBox_Opened(object sender, RoutedEventArgs e)
         {
-            bool b = MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
+            try
+            {
+                bool b = MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
 
-            if (b)
-            {
-                // 啟動 JOG //，寫入轉速、加減速時間
-                MainWindow.ShihlinSDE.JogEnable((byte)StationSelector.SelectedItem);
-                // 啟動 Polling Task
-                MainWindow.ShihlinSDE.EnablePollingTask((byte)StationSelector.SelectedItem);
+                if (b)
+                {
+                    // 啟動 JOG //，寫入轉速、加減速時間
+                    MainWindow.ShihlinSDE.JogEnable((byte)StationSelector.SelectedItem);
+                    // 啟動 Polling Task
+                    MainWindow.ShihlinSDE.EnablePollingTask((byte)StationSelector.SelectedItem);
+                }
+                else
+                {
+                    // 新增 Informer
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "當前馬達狀態不允許此操作");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // 新增 Informer
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "當前馬達狀態不允許此操作");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
 
         private void JogMove_GotMouseCapture(object sender, MouseEventArgs e)
         {
-            int dir = (ushort)(sender as Button).CommandParameter;
-            switch (dir)
+            try
             {
-                case 1:
-                    MainWindow.ShihlinSDE.JogClock((byte)StationSelector.SelectedItem);
-                    break;
-                case 2:
-                    MainWindow.ShihlinSDE.JogCClock((byte)StationSelector.SelectedItem);
-                    break;
-                default:
-                    break;
+                int dir = (ushort)(sender as Button).CommandParameter;
+                switch (dir)
+                {
+                    case 1:
+                        MainWindow.ShihlinSDE.JogClock((byte)StationSelector.SelectedItem);
+                        break;
+                    case 2:
+                        MainWindow.ShihlinSDE.JogCClock((byte)StationSelector.SelectedItem);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
 
         private void JogStop_LostMouseCapture(object sender, MouseEventArgs e)
         {
-            MainWindow.ShihlinSDE.JogStop((byte)StationSelector.SelectedItem);
+            try
+            {
+                MainWindow.ShihlinSDE.JogStop((byte)StationSelector.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
 
         private void JogPopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            // 關閉 Polling Task
-            MainWindow.ShihlinSDE.DisablePollingTask();
-            // 停止 JOG
-            MainWindow.ShihlinSDE.JogDisable((byte)StationSelector.SelectedItem);
+            try
+            {
+                // 關閉 Polling Task
+                MainWindow.ShihlinSDE.DisablePollingTask();
+                // 停止 JOG
+                MainWindow.ShihlinSDE.JogDisable((byte)StationSelector.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
         #endregion
 
         #region 定位移動
         private void PosMovePopupBox_Opened(object sender, RoutedEventArgs e)
         {
-            bool b = MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
+            try
+            {
+                bool b = MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
 
-            if (b)
-            {
-                // 啟動 定位測試 //，寫入轉速、加減速時間、目標脈波
-                MainWindow.ShihlinSDE.PosMoveEnable((byte)StationSelector.SelectedItem);
-                // 啟動 Polling Task
-                MainWindow.ShihlinSDE.EnablePollingTask((byte)StationSelector.SelectedItem);
+                if (b)
+                {
+                    // 啟動 定位測試 //，寫入轉速、加減速時間、目標脈波
+                    MainWindow.ShihlinSDE.PosMoveEnable((byte)StationSelector.SelectedItem);
+                    // 啟動 Polling Task
+                    MainWindow.ShihlinSDE.EnablePollingTask((byte)StationSelector.SelectedItem);
+                }
+                else
+                {
+                    // 新增 Informer
+                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "當前馬達狀態不允許此操作");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // 新增 Informer
-                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.MOTION, "當前馬達狀態不允許此操作");
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
 
         private void PosMovePopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            // 關閉 Polling Task
-            MainWindow.ShihlinSDE.DisablePollingTask();
-            // 停止 定位測試
-            MainWindow.ShihlinSDE.PosMoveDisable((byte)StationSelector.SelectedItem);
+            try
+            {
+                // 關閉 Polling Task
+                MainWindow.ShihlinSDE.DisablePollingTask();
+                // 停止 定位測試
+                MainWindow.ShihlinSDE.PosMoveDisable((byte)StationSelector.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
         }
         #endregion
 
@@ -200,7 +254,5 @@ namespace LockPlate.content
                     break;
             }
         }
-
-   
     }
 }

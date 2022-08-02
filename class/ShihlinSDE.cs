@@ -31,6 +31,10 @@ namespace LockPlate
         private int _posMoveAccDecTime = 1000;
         private int _posMovePulse = 4194304; // 22 位元
 
+        private int _pf82read = 0;
+        private bool _pf82send;
+        private bool _pf82done;
+
         private bool _canTest = false;
         private AlarmCode _alarmCode = AlarmCode.NONE;      // 0xff : 無警報
         #endregion
@@ -247,14 +251,6 @@ namespace LockPlate
         }
 
         public int BytesInBuf => _serialPort.BytesToRead;
-
-        /// <summary>
-        /// 馬達是否開啟
-        /// </summary>
-        public bool IsOpen
-        {
-            get => _serialPort?.IsOpen == true;
-        }
 
         public bool ServoReady
         {
@@ -577,7 +573,7 @@ namespace LockPlate
                 {
                     short temp = (short)((response[3] << 8) + response[4]);
 
-                    Debug.WriteLine($"{temp}");
+                    //Debug.WriteLine($"{temp}");
                     for (int i = 0; i < DIs.Count; i++)
                     {
                         DIs[i].On = ((temp >> i) & 0b01) == 0b01;
@@ -585,7 +581,7 @@ namespace LockPlate
 
                     temp = (short)((response[5] << 8) + response[6]);
 
-                    Debug.WriteLine($"{temp}");
+                    //Debug.WriteLine($"{temp}");
                     for (int i = 0; i < DOs.Count; i++)
                     {
                         DOs[i].On = ((temp >> i) & 0b01) == 0b01;
@@ -604,7 +600,6 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadPos(byte station)
         {
-
             // 讀取 馬達迴授脈波數(電子齒輪比前)
             byte[] cmd = new byte[] { station, 0x03, 0x00, 0x02, 0x00, 0x02 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
@@ -637,7 +632,50 @@ namespace LockPlate
             else
             {
                 throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+            }
+        }
 
+        /// <summary>
+        /// 讀取參數 PF82
+        /// </summary>
+        /// <param name="station"></param>
+        public void ReadPF82(byte station)
+        {
+            // 讀取 PF82 參數
+            byte[] cmd = new byte[] { station, 0x03, 0x08, 0xA2, 0x00, 0x01 };
+            cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+            if (Write(cmd))
+            {
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
+                byte[] response = Read();
+
+                string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                Debug.WriteLine($"{string.Join(",", resStr)}");
+
+                //if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+                //{
+                //    int cmdpl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                //    CmdPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                //}
+
+                //// 讀取 馬達迴授脈波數(電子齒輪比前)
+                //cmd = new byte[] { station, 0x03, 0x00, 0x24, 0x00, 0x02 };
+                //cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+                //_ = Write(cmd);
+                //_ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
+                //response = Read();
+
+                //if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+                //{
+                //    int pospl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                //    ResPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
+                //}
+            }
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
             }
         }
 
@@ -677,12 +715,10 @@ namespace LockPlate
             {
                 //Debug.WriteLine($"a: {DateTime.Now:ss.fff}");
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);   // 站號(1) + 功能碼(1) + 長度(1) + 資料(2) + CRC(2)
-                                                                          //Debug.WriteLine($"b: {DateTime.Now:ss.fff}");
+                                                                          // Debug.WriteLine($"b: {DateTime.Now:ss.fff}");
                 byte[] response = Read();
-
                 //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-
                 //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
 
@@ -728,7 +764,6 @@ namespace LockPlate
 
         public void ResetAlarm(byte station)
         {
-
             // 0x0130 寫入 0x1EA5：清除目前異警
             byte[] cmd = new byte[] { station, 0x06, 0x01, 0x30, 0x1E, 0xA5 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
@@ -738,8 +773,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                //Debug.WriteLine($"清除目前異警: {string.Join(",", retStr)}");
+                // string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"清除目前異警: {string.Join(",", retStr)}");
 
                 // 重新讀取一次
                 ReadAlarm(station);
@@ -757,14 +792,17 @@ namespace LockPlate
         public void EnablePollingTask(byte station, PollingType type = PollingType.CAN_TEST)
         {
             // 這邊測試一下拋出異常
+            // try
+            // {
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            try
+            _pollingTask = Task.Run(() =>
             {
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                _pollingTask = Task.Run(() =>
+                // Error Count 
+                int ErrCnt = 0;
+                while (!_cancellationTokenSource.IsCancellationRequested && ErrCnt < 5)
                 {
-                    while (!_cancellationTokenSource.IsCancellationRequested)
+                    try
                     {
                         if (_pollingAct.Count > 0)
                         {
@@ -790,15 +828,23 @@ namespace LockPlate
                             default:
                                 break;
                         }
-
-                        _ = SpinWait.SpinUntil(() => _pollingAct.Count > 0 || _cancellationTokenSource.IsCancellationRequested, 250);
+                        //throw new Exception("test exception");
                     }
-                }, _cancellationTokenSource.Token);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                    catch (Exception ex)
+                    {
+                        ErrCnt++;
+                        MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+                    }
+                    // Debug.WriteLine($"CanTest: {CanTest}");
+
+                    _ = SpinWait.SpinUntil(() => _pollingAct.Count > 0 || _cancellationTokenSource.IsCancellationRequested || ErrCnt >= 5, 250);
+                }
+            }, _cancellationTokenSource.Token);
+            // }
+            // catch (Exception)
+            // {
+            //     throw;
+            // }
         }
 
         /// <summary>
@@ -806,16 +852,18 @@ namespace LockPlate
         /// </summary>
         public void DisablePollingTask()
         {
-            try
-            {
-                _cancellationTokenSource.Cancel();
-                _pollingTask.Wait();
-                _pollingTask.Dispose();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //try
+            //{
+            _cancellationTokenSource?.Cancel();
+            _pollingTask?.Wait();
+            _pollingTask?.Dispose();
+            _pollingAct.Clear();
+
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         #region JOG

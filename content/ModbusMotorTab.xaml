@@ -192,7 +192,7 @@
                         <!--//-->
                         <TextBlock Text="站號" DockPanel.Dock="Left" VerticalAlignment="Center"/>
 
-                        <ComboBox  DockPanel.Dock="Right" Grid.Row="2" Grid.Column="1" x:Name="StationSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        <ComboBox DockPanel.Dock="Right" Grid.Row="2" Grid.Column="1" x:Name="StationSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding Source={StaticResource Stations}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -217,6 +217,7 @@
                     <Button DockPanel.Dock="Top" Padding="0" Margin="0 4 0 0" Height="{Binding ActualHeight, ElementName=ComportSelector, UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource MaterialDesignOutlinedButton}" 
                             Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
+                            IsEnabled="{Binding IsComOpen, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}"
                             Content="讀取馬達資訊" Click="ReadMotorInfo_Click"/>
                 </DockPanel>
             </materialDesign:Card>
@@ -227,7 +228,6 @@
         <!-- Separator -->
         <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
                    Background="{StaticResource ColorSecondaryTransparent}"/>
-
 
         <!--#region Status Stack -->
         <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
@@ -271,7 +271,7 @@
                             </Style>
                             <!--//-->
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="MinWidth" Value="120"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -283,7 +283,7 @@
                                 <sys:String>3</sys:String>
                             </x:Array>
                         </Grid.Resources>
-
+                        <!--//-->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -300,7 +300,7 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-
+                        <!--//-->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
@@ -416,12 +416,17 @@
                                 Height="{Binding ActualHeight, ElementName=ComportSelector, UpdateSourceTrigger=PropertyChanged}"
                                 Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
+                                IsEnabled="{Binding IsComOpen, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}"
                                 Content="重置錯誤" Click="ResetMotorAlarm_Click" />
                     </Grid>
                 </DockPanel>
             </materialDesign:Card>
         </StackPanel>
         <!--#endregion-->
+
+        <!-- Separator -->
+        <Separator Grid.Column="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
+                   Background="{StaticResource ColorSecondaryTransparent}"/>
 
         <StackPanel Grid.Column="4" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
             <!--#region Jog Card -->
@@ -446,7 +451,7 @@
                             </Style>
                             <!--//-->
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="MinWidth" Value="120"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -485,7 +490,8 @@
                         <materialDesign:PopupBox Grid.Row="3" Grid.ColumnSpan="2" Focusable="False" HorizontalAlignment="Center" StaysOpen="True" Margin="0 3 0 0"
                                                  materialDesign:RippleAssist.IsDisabled="True" UseLayoutRounding="True"
                                                  Padding="0" PlacementMode="BottomAndAlignCentres" 
-                                                 Opened="JogPopupBox_Opened" Closed="JogPopupBox_Closed">
+                                                 Opened="JogPopupBox_Opened" Closed="JogPopupBox_Closed" 
+                                                 IsEnabled="{Binding IsComOpen, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}">
                             <materialDesign:PopupBox.Resources>
                                 <Style TargetType="materialDesign:Card">
                                     <Setter Property="Background" Value="{StaticResource ColorLightGray}"/>
@@ -591,7 +597,7 @@
                             </Style>
                             <!--//-->
                             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="MinWidth" Value="120"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -637,7 +643,8 @@
                         <materialDesign:PopupBox Grid.Row="3" Grid.ColumnSpan="2" Focusable="False" HorizontalAlignment="Center" StaysOpen="True" Margin="0 3 0 0"
                                                  materialDesign:RippleAssist.IsDisabled="True" UseLayoutRounding="True"
                                                  Padding="0" PlacementMode="BottomAndAlignCentres" 
-                                                 Opened="PosMovePopupBox_Opened" Closed="PosMovePopupBox_Closed">
+                                                 Opened="PosMovePopupBox_Opened" Closed="PosMovePopupBox_Closed"
+                                                 IsEnabled="{Binding IsComOpen, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}">
                             <materialDesign:PopupBox.Resources>
                                 <Style TargetType="materialDesign:Card">
                                     <Setter Property="Background" Value="{StaticResource ColorLightGray}"/>
@@ -658,6 +665,7 @@
                                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                         <Setter Property="MinWidth" Value="80"/>
                                         <Setter Property="Height" Value="26"/>
                                         <Setter Property="Padding" Value="12 3"/>
@@ -667,7 +675,7 @@
                                     </Style>
                                 </DockPanel.Resources>
 
-                                <Button DockPanel.Dock="Left"
+                                <Button DockPanel.Dock="Left" HorizontalContentAlignment="Center"
                                         materialDesign:RippleAssist.IsDisabled="True" Focusable="False"
                                         materialDesign:ButtonAssist.CornerRadius="12 2 2 12"
                                         Click="PosMove_Click">
@@ -675,7 +683,8 @@
                                         <sys:UInt16>1</sys:UInt16>
                                     </Button.CommandParameter>
 
-                                    <TextBlock Text="正轉" FontWeight="SemiBold" FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
+                                    <TextBlock Text="正轉" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="SemiBold" 
+                                               FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
                                 </Button>
 
                                 <Button DockPanel.Dock="Right"
@@ -686,7 +695,8 @@
                                         <sys:UInt16>2</sys:UInt16>
                                     </Button.CommandParameter>
 
-                                    <TextBlock Text="逆轉" FontWeight="SemiBold" FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
+                                    <TextBlock Text="逆轉" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="SemiBold" 
+                                               FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
                                 </Button>
 
                                 <Button DockPanel.Dock="Bottom" Width="120"
@@ -698,7 +708,8 @@
                                         <sys:UInt16>0</sys:UInt16>
                                     </Button.CommandParameter>
 
-                                    <TextBlock Text="暫停/停止" FontWeight="SemiBold" FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
+                                    <TextBlock Text="暫停/停止" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="SemiBold" 
+                                               FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
                                 </Button>
                             </DockPanel>
                         </materialDesign:PopupBox>
@@ -721,16 +732,77 @@
             <StackPanel Grid.Row="2" Grid.Column="0" Background="Brown"/>
         </Grid>
 
-
-        <!-- Separator -->
-        <Separator Grid.Column="3" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
-                   Background="{StaticResource ColorSecondaryTransparent}"/>
-
-
         <!-- Separator -->
         <Separator Grid.Column="5" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
                    Background="{StaticResource ColorSecondaryTransparent}"/>
 
+        <StackPanel Grid.Column="6" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
+            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" Background="WhiteSmoke"
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
+                    <DockPanel x:Name="PrModeHeader" DockPanel.Dock="Top">
+                        <materialDesign:PackIcon Kind="DotsHexagon" Width="30" Height="26"/>
+                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="PR模式" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                    </DockPanel>
+                    <!--//-->
+                    <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                    <!--//-->
+                    <Grid DockPanel.Dock="Top" DataContext="{StaticResource ShihlinSDE}">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="MinWidth" Value="120"/>
+                                <Setter Property="Padding" Value="0 4"/>
+                                <Setter Property="Margin" Value="8 8 0 8"/>
+                            </Style>
+                            <!--//-->
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="0 8"/>
+                                <Setter Property="MinWidth" Value="120"/>
+                                <Setter Property="TextAlignment" Value="Center"/>
+                            </Style>
+                        </Grid.Resources>
+                        <!--//-->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <!--//-->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <!--<ColumnDefinition></ColumnDefinition>-->
+                        </Grid.ColumnDefinitions>
+                        <!--//-->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="目前 Path"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="原點復歸"/>
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text=""/>
+
+                        <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" IsReadOnly="True" Focusable="False" 
+                                 Text=""/>
+
+                        <Button Grid.Row="1" Grid.Column="1" Padding="0 0" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Height="24"
+                                FontSize="14"
+                                Style="{StaticResource MaterialDesignOutlinedButton}">
+                            <!--Content="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"-->
+                            <TextBlock Text="24" Margin="0" HorizontalAlignment="Center" Background="{StaticResource ColorError}"/>
+                        </Button>
+
+                        <!--<TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
+                                 Text=""/>-->
+
+                        <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
+                                 Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
+                    </Grid>
+                </DockPanel>
+            </materialDesign:Card>
+        </StackPanel>
 
     </Grid>
 </StackPanel>
