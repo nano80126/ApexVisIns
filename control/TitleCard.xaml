@@ -20,8 +20,8 @@
         </Style>
     </materialDesign:Card.Style>
 
-    <DockPanel Background="Transparent" Margin="2 0">
-        <DockPanel x:Name="Header" DockPanel.Dock="Top">
+    <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
+        <DockPanel x:Name="Header" DockPanel.Dock="Top" Focusable="True">
             <materialDesign:PackIcon Kind="{Binding IconKind}" Width="30" Height="26"/>
             <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="19.2" Text="{Binding Title}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
         </DockPanel>

@@ -197,7 +197,7 @@
                                   Padding="5 4" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"
                                   materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}}"
                                   ItemsSource="{Binding Source={StaticResource Stations}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                  Margin="0 4" SelectedIndex="0" MinWidth="80">
+                                  Margin="0 4" SelectedIndex="0" MinWidth="80" SelectionChanged="StationSelector_SelectionChanged">
                             <ComboBox.Resources>
                                 <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}"/>
                             </ComboBox.Resources>
@@ -276,6 +276,14 @@
                                 <Setter Property="Margin" Value="0 8"/>
                                 <Setter Property="MinWidth" Value="120"/>
                                 <Setter Property="TextAlignment" Value="Center"/>
+
+                                <Style.Triggers>
+                                    <Trigger Property="IsReadOnly" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ColorLightGrayTransparent}"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource ColorSecondary}"/>
+                                        <Setter Property="Cursor" Value="Arrow"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                             <!--//-->
                             <x:Array Type="sys:String" x:Key="strs">
@@ -413,7 +421,7 @@
                             </TextBox.Style>
                         </TextBox>
 
-                        <Button Grid.Row="12" Grid.ColumnSpan="2" Padding="0" Focusable="True"
+                        <Button Grid.Row="12" Grid.ColumnSpan="2" Padding="0" Focusable="True" x:Name="btn1"
                                 Height="{Binding ActualHeight, ElementName=ComportSelector, UpdateSourceTrigger=PropertyChanged}"
                                 Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -475,18 +483,23 @@
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="轉速"/>
 
                         <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
+                                 GotFocus="TextBox_GotFocus"
                                  Text="{Binding JogRPM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
               
                         <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
+                                 GotFocus="TextBox_GotFocus"
                                  Text="{Binding JogAccDecTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         
-                        <!--<Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="開始 JOG" Margin="0 8" 
+                        <!--
+                        <Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="開始 JOG" Margin="0 8" 
                                 Height="26" Width="{Binding ActualWidth, ElementName=JogAction, Mode=OneWay}" Visibility="Collapsed">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                                 </Style>
                             </Button.Style>
-                        </Button>-->
+                        </Button>
+                        -->
+                        
                         <!--//-->
                         <materialDesign:PopupBox Grid.Row="3" Grid.ColumnSpan="2" Focusable="False" HorizontalAlignment="Center" StaysOpen="True" Margin="0 3 0 0"
                                                  materialDesign:RippleAssist.IsDisabled="True" UseLayoutRounding="True"
@@ -553,7 +566,6 @@
                                 </Button>
                             </DockPanel>
                         </materialDesign:PopupBox>
-
                         
                         <!--
                         <StackPanel x:Name="JogAction" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
@@ -588,6 +600,7 @@
                     <Separator DockPanel.Dock="Top" Margin="0 8"/>
                     <!--//-->
                     <Grid DockPanel.Dock="Top" DataContext="{StaticResource ShihlinSDE}">
+                        <!--#region Resources -->
                         <Grid.Resources>
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
                                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -604,7 +617,8 @@
                                 <Setter Property="TextAlignment" Value="Center"/>
                             </Style>
                         </Grid.Resources>
-                        <!--//-->
+                        <!--#endregion-->
+                        <!--#region Layout -->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -616,7 +630,8 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        <!--//-->
+                        <!--#endregion-->
+                        <!--#region Content -->
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="加減速時間"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="轉速"/>
@@ -624,22 +639,16 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="移動脈波數"/>
 
                         <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
+                                 GotFocus="TextBox_GotFocus"
                                  Text="{Binding PosMoveAccDecTime, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                       
-                        <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
-                                 Text="{Binding PosMoveRPM, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                        
-                        <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
-                                 Text="{Binding PosMovePulse, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                        <!--//-->               
-                        <!--<Button Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="開始 JOG" Margin="0 8" 
-                                Height="26">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
 
-                                </Style>
-                            </Button.Style>
-                        </Button>-->
+                        <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
+                                 GotFocus="TextBox_GotFocus"
+                                 Text="{Binding PosMoveRPM, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+
+                        <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True" 
+                                 GotFocus="TextBox_GotFocus"
+                                 Text="{Binding PosMovePulse, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                         <!--//-->
                         <materialDesign:PopupBox Grid.Row="3" Grid.ColumnSpan="2" Focusable="False" HorizontalAlignment="Center" StaysOpen="True" Margin="0 3 0 0"
                                                  materialDesign:RippleAssist.IsDisabled="True" UseLayoutRounding="True"
@@ -708,30 +717,18 @@
                                     <Button.CommandParameter>
                                         <sys:UInt16>0</sys:UInt16>
                                     </Button.CommandParameter>
-
+                                    
                                     <TextBlock Text="暫停/停止" HorizontalAlignment="Center" TextAlignment="Center" FontWeight="SemiBold" 
                                                FontSize="{StaticResource BasicFont-sm}" Margin="0"/>
                                 </Button>
                             </DockPanel>
                         </materialDesign:PopupBox>
-                        
+                        <!--#endregion-->
                     </Grid>
                 </DockPanel>
             </materialDesign:Card>
             <!--#endregion-->
         </StackPanel>
-        
-        <Grid Grid.Column="4" Visibility="Collapsed">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="50*" />
-            </Grid.RowDefinitions>
-
-            <StackPanel Grid.Row="0" Grid.Column="1" Background="Tan"/>
-            <GridSplitter Grid.Row="1"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Black" ShowsPreview="True" Height="3" />
-            <StackPanel Grid.Row="2" Grid.Column="0" Background="Brown"/>
-        </Grid>
 
         <!-- Separator -->
         <Separator Grid.Column="5" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Grid.RowSpan="100" Width="1" Margin="0"
@@ -739,7 +736,7 @@
 
         <StackPanel Grid.Column="6" Grid.Row="0" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" Background="WhiteSmoke"
-                                 VerticalAlignment="Top" HorizontalAlignment="Stretch" Visibility="Visible">
+                                 VerticalAlignment="Top" HorizontalAlignment="Stretch" Visibility="Collapsed">
                 <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
                     <DockPanel x:Name="PrModeHeader" DockPanel.Dock="Top">
                         <materialDesign:PackIcon Kind="DotsHexagon" Width="30" Height="26"/>
@@ -805,8 +802,9 @@
             </materialDesign:Card>
 
             <!--#region Pr 模式 Card -->
-            <control:TitleCard Title="測試" IconKind="ArrowLeft" Background="WhiteSmoke">
+            <control:TitleCard Title="PR模式" IconKind="DotsHexagon" Background="WhiteSmoke">
                 <Grid DataContext="{StaticResource ShihlinSDE}">
+                    <!--#region Resource -->
                     <Grid.Resources>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -821,10 +819,33 @@
                             <Setter Property="Margin" Value="0 8"/>
                             <Setter Property="MinWidth" Value="120"/>
                             <Setter Property="TextAlignment" Value="Center"/>
+
+                            <Style.Triggers>
+                                <Trigger Property="IsReadOnly" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource ColorLightGrayTransparent}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource ColorSecondary}"/>
+                                    <Setter Property="Cursor" Value="Arrow"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <!--//-->
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="Margin" Value="0 8"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Width" Value="120"/>
+                            <Setter Property="Height" Value="24"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource ColorInfo}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
                         </Style>
                     </Grid.Resources>
-                    <!--//-->
+                    <!--#endregion-->
+                    <!--#region Layout -->
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -833,42 +854,91 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
-                        <!--<ColumnDefinition></ColumnDefinition>-->
                     </Grid.ColumnDefinitions>
-
-
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="目前 Path"/>
+                    <!--#endregion-->
+                    <!--#region Content -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="當前 Path"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="原點復歸"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text=""/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="目標 Path"/>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" IsReadOnly="True" Focusable="False" 
-                                 Text=""/>
+                    <Button Grid.Row="0" Grid.Column="1" Margin="-90 8 0 8" Padding="0 3" Width="30" Click="SyncPrPath_Click">
+                        <materialDesign:PackIcon Kind="Sync" RenderTransformOrigin="0.5, 0.5">
+                            <materialDesign:PackIcon.RenderTransform>
+                                <RotateTransform Angle="0"/>
+                            </materialDesign:PackIcon.RenderTransform>
 
-                    <Button Grid.Row="1" Grid.Column="1" Padding="0 0" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                Height="24"
-                                FontSize="14"
-                                Style="{StaticResource MaterialDesignOutlinedButton}">
-                        <!--Content="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"-->
-                        <TextBlock Text="24" Margin="0" HorizontalAlignment="Center" Background="{StaticResource ColorError}"/>
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PF82Polling, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(materialDesign:PackIcon.RenderTransform).(RotateTransform.Angle)" 
+                                                                         To="-360" From="0" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <!--//-->
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="(materialDesign:PackIcon.RenderTransform).(RotateTransform.Angle)" 
+                                                                         To="0" From="0" Duration="0:0:0.1"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
                     </Button>
 
-                    <!--<TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
-                                 Text=""/>-->
+
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="80 8 0 8" Padding="0 3" MinWidth="40" 
+                             IsReadOnly="True" Focusable="False" 
+                             Text="{Binding PF82Read, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PF82Send, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
+                                    </DataTrigger>
+                                    <!--//-->
+                                    <DataTrigger Binding="{Binding PF82Done, Source={StaticResource ShihlinSDE}, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{StaticResource ColorSuccess}"/>
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <Button Grid.Row="1" Grid.Column="1" Click="RunZeroReturn_Click" Content="執行"
+                            BorderBrush="{StaticResource ColorTeal}" Foreground="{StaticResource ColorTeal}"
+                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
-                                 Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
-                </Grid>
+                             Text="{Binding PF82, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
 
+                    <Button Grid.Row="3" Grid.Column="1" Content="執行 Path" Click="RunPrPath_Click"
+                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Button Grid.Row="4" Grid.Column="1" Content="停止 Path" Click="StopPrPath_Click"
+                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
+                    <!--#endregion-->
+                </Grid>
+                <!--#region Footer -->
                 <!--<control:TitleCard.Footer>
                     <TextBlock Text="123"/>
                 </control:TitleCard.Footer>-->
+                <!--#endregion-->
             </control:TitleCard>
             <!--#endregion-->
-
-
-
         </StackPanel>
     </Grid>
 </StackPanel>

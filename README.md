@@ -1,57 +1,29 @@
 ﻿
-# Apex Physical Appearance Inspection 
+# MIM 鎖片外觀 & 尺寸檢驗
 
-Apex 外觀瑕疵檢測 
+MIM 大鎖片 外觀瑕疵檢測 & 尺寸檢驗
 
-### 檢測項目
-
-* 耳朵
-	* 毛邊
-	* 銑銷不良
-
-* 窗戶
-	* 毛邊
-	* 撞傷
-
-* 管件
-	* 亮紋
-	* 坑洞
-	* 黃斑
-	* 劃記
-	* 壓傷
-	* 色差
-	* 車刀紋
-	* 鋁戒位置偏移
-
-### 檢驗標準
-
-* 亮紋 ROI需要分區塊
-	* 覆蓋區域整圈洗淨治具亮紋要抓(先抓超過半圈)
-	* 非覆蓋區域有亮紋就抓
-* 耳朵、窗戶
-	* 平面部分倒角刮傷不抓，但倒角過大則抓
 
 ## 整理資料夾結構
 * 一個產品一個命名空間
 
-## 定位有機率失敗
+## Conveter 類型分割
 
-* Bug fixed
-	* Methods.GetVertialWindowWidth 內分組後使用 4 捨 5 入
+## Card 更換為TitleCard
 
-* 精定位時減少搖擺
-	* 確認相機和馬達先後順序且確保命令不重複
+## Controls properties 順序
 
+HorizontalAlignment, VerticalAlignment
 
-## APEX 檢測要保留項目
-	* 單步測試
-		1. 單相機單特徵
-		2. 單相機連續
-	* 整合測試
-		1. 多相機同步進行
+Margin, Padding
+
+Width, Height
+
+FontWeight, FontSize
+
+else...
 
 ## Tabs
-
 	* Main Tab
 		* Control Region
 		* Image Region
@@ -208,6 +180,8 @@ Apex 外觀瑕疵檢測
 
 * [ ] 確認 Try Catch 層數
 	* 少用 Try catch，用 if 判斷
+
+* [ ] 馬達資訊同步?
 
 ### Config Logic
 

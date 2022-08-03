@@ -31,6 +31,8 @@ namespace LockPlate
         private int _posMoveAccDecTime = 1000;
         private int _posMovePulse = 4194304; // 22 位元
 
+        private int _pf82 = 0;
+        private bool _pf82polling;
         private int _pf82read = 0;
         private bool _pf82send;
         private bool _pf82done;
@@ -228,13 +230,18 @@ namespace LockPlate
 
         public enum PollingType : byte
         {
-            CAN_TEST = 0,   // 讀取是否啟動測試     0x0900
-            Alarm = 1,      // 讀取警報　　　　     0x0100
-            IO = 2,         // 讀取ＩＯ　　　　     0x0204 0x0205　
-            Position = 3,   // 讀取位置　　　　     0x0002 0x0024
+            CAN_TEST =
+                0b00000001,     // 讀取是否啟動測試     0x0900
+            Alarm =
+                0b00000010,     // 讀取警報　　　　     0x0100
+            IO =
+                0b00000100,     // 讀取ＩＯ　　　　     0x0204 0x0205　
+            Position =
+                0b00001000,     // 讀取位置　　　　     0x0002 0x0024
+            PrPath =
+                0b00010000,     // 讀取PF82值          0x08A2
         }
         #endregion
-
 
         #region Properties
         public int MotorNumber
@@ -255,7 +262,7 @@ namespace LockPlate
         public bool ServoReady
         {
             get => _servoReady;
-            set
+            private set
             {
                 if (value != _servoReady)
                 {
@@ -271,7 +278,7 @@ namespace LockPlate
         public int CmdPos
         {
             get => _cmdPos;
-            set
+           private  set
             {
                 if (value != _cmdPos)
                 {
@@ -287,7 +294,7 @@ namespace LockPlate
         public int ResPos
         {
             get => _resPos;
-            set
+            private set
             {
                 if (value != _resPos)
                 {
@@ -303,7 +310,7 @@ namespace LockPlate
         public bool CanTest
         {
             get => _canTest;
-            set
+            private set
             {
                 if (value != _canTest)
                 {
@@ -313,10 +320,13 @@ namespace LockPlate
             }
         }
 
+        /// <summary>
+        /// 警報 Code
+        /// </summary>
         public AlarmCode Alarm
         {
             get => _alarmCode;
-            set
+            private set
             {
                 if (value != _alarmCode)
                 {
@@ -327,6 +337,9 @@ namespace LockPlate
             }
         }
 
+        /// <summary>
+        /// 警報 Code + 字串
+        /// </summary>
         public string AlarmString
         {
             get
@@ -417,6 +430,84 @@ namespace LockPlate
                 }
             }
         }
+
+        /// <summary>
+        /// PF82 目標值
+        /// </summary>
+        public int PF82
+        {
+            get => _pf82;
+            set
+            {
+                if (value != _pf82)
+                {
+                    _pf82 = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool PF82Polling
+        {
+            get => _pf82polling;
+            private set
+            {
+                if (value != _pf82polling)
+                {
+                    _pf82polling = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// PF82 回讀值
+        /// </summary>
+        public int PF82Read
+        {
+            get => _pf82read;
+            private set
+            {
+                if (value != _pf82read)
+                {
+                    _pf82read = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// PF82 命令送出
+        /// </summary>
+        public bool PF82Send
+        {
+            get => _pf82send;
+            private set
+            {
+                if (value != _pf82send)
+                {
+                    _pf82send = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// PF82 命令完成
+        /// </summary>
+        public bool PF82Done
+        {
+            get => _pf82done;
+            private set
+            {
+                if (value != _pf82done)
+                {
+                    _pf82done = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         #endregion
 
         public ShihlinSDE() { }
@@ -436,7 +527,6 @@ namespace LockPlate
         /// </summary>
         public ObservableCollection<IOChannel> DOs { get; set; } = new();
 
-
         #region Public Methods
         public void ChangeTimeout(int ms)
         {
@@ -445,23 +535,40 @@ namespace LockPlate
         }
 
         /// <summary>
+        /// 清空馬達資訊
+        /// </summary>
+        public void ResetInfo()
+        {
+            DIs.Clear();
+            DOs.Clear();
+
+            CmdPos = 0;
+            ResPos = 0;
+
+            Alarm = AlarmCode.NONE;
+
+            PF82 = 0;
+            PF82Read = 0;
+            PF82Send = false;
+            PF82Done = false;
+        }
+
+        /// <summary>
         /// 讀取 SERVO ON/OFF, 控制模式
         /// </summary>
         public void ReadServo(byte station)
         {
+            // 讀取控制模式與狀態
             byte[] cmd = new byte[] { station, 0x03, 0x02, 0x00, 0x00, 0x02 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
             if (Write(cmd))
             {
-                //Debug.WriteLine($"data: {string.Join(",", cmd)}");
-                //Debug.WriteLine($"{_serialPort.BytesToRead}");
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);        // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 2) + CRC(2)
-                //Debug.WriteLine($"{_serialPort.BytesToRead}");
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"ret: {string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"ret: {string.Join(",", retStr)}");
 
                 if (response[0] == 0x01 && response[1] == 0x03 && response[2] == 0x04)
                 {
@@ -488,13 +595,12 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x08) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 8) + CRC(2)
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x08) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 8) + CRC(2)
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"ret: {string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"ret: {string.Join(",", retStr)}");
 
-                //Debug.WriteLine($"{(response[0] << 8) + (response[1] << 4) + response[2]}");
                 if ((response[0] << 8) + (response[1] << 4) + response[2] == ((station << 8) + 0b01000000))
                 {
                     for (int i = 3; i < response.Length - 6; i++)
@@ -560,14 +666,11 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                Debug.WriteLine($"data: {string.Join(",", cmd)}");
-
-                _ = SpinWait.SpinUntil(() => BytesInBuf == 3 + (2 * 0x02) + 2, Timeout);
-
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
                 byte[] response = Read();
 
-                string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"ret: {string.Join(",", resStr)}");
+                //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"ret: {string.Join(",", resStr)}");
 
                 if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
                 {
@@ -606,7 +709,7 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 2) + CRC(2)
                 byte[] response = Read();
 
                 if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
@@ -639,7 +742,7 @@ namespace LockPlate
         /// 讀取參數 PF82
         /// </summary>
         /// <param name="station"></param>
-        public void ReadPF82(byte station)
+        public void ReadPrPath(byte station)
         {
             // 讀取 PF82 參數
             byte[] cmd = new byte[] { station, 0x03, 0x08, 0xA2, 0x00, 0x01 };
@@ -647,31 +750,21 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);     // 站號(1) + 功能碼(1) + 長度(1) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"{string.Join(",", resStr)}");
+                //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"Read Pr Path {string.Join(",", resStr)}");
 
-                //if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
-                //{
-                //    int cmdpl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
-                //    CmdPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
-                //}
+                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
+                {
+                    int pf82 = (response[3] << 8) + response[4];
+                    PF82Read = pf82 % 10000;
+                    PF82Send = pf82 >= 10000;
+                    PF82Done = pf82 >= 20000;
 
-                //// 讀取 馬達迴授脈波數(電子齒輪比前)
-                //cmd = new byte[] { station, 0x03, 0x00, 0x24, 0x00, 0x02 };
-                //cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
-
-                //_ = Write(cmd);
-                //_ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
-                //response = Read();
-
-                //if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
-                //{
-                //    int pospl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
-                //    ResPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
-                //}
+                    Debug.WriteLine($"{pf82} {PF82Read}");
+                }
             }
             else
             {
@@ -701,7 +794,7 @@ namespace LockPlate
         }
 
         /// <summary>
-        /// 確認馬達資訊
+        /// 確認馬達是否可進行測試
         /// </summary>
         /// <param name="station">站號</param>
         /// <returns></returns>
@@ -791,9 +884,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void EnablePollingTask(byte station, PollingType type = PollingType.CAN_TEST)
         {
-            // 這邊測試一下拋出異常
-            // try
-            // {
             _cancellationTokenSource = new CancellationTokenSource();
 
             _pollingTask = Task.Run(() =>
@@ -825,26 +915,24 @@ namespace LockPlate
                             case PollingType.Position:
                                 ReadPos(station);
                                 break;
+                            case PollingType.PrPath:
+                                ReadPrPath(station);
+                                break;
                             default:
                                 break;
                         }
-                        //throw new Exception("test exception");
+                        // throw new Exception("test exception");
+                        // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
                     }
                     catch (Exception ex)
                     {
                         ErrCnt++;
                         MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
                     }
-                    // Debug.WriteLine($"CanTest: {CanTest}");
 
                     _ = SpinWait.SpinUntil(() => _pollingAct.Count > 0 || _cancellationTokenSource.IsCancellationRequested || ErrCnt >= 5, 250);
                 }
             }, _cancellationTokenSource.Token);
-            // }
-            // catch (Exception)
-            // {
-            //     throw;
-            // }
         }
 
         /// <summary>
@@ -852,18 +940,12 @@ namespace LockPlate
         /// </summary>
         public void DisablePollingTask()
         {
-            //try
-            //{
             _cancellationTokenSource?.Cancel();
             _pollingTask?.Wait();
             _pollingTask?.Dispose();
             _pollingAct.Clear();
 
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            PF82Polling = false;
         }
 
         #region JOG
@@ -948,8 +1030,6 @@ namespace LockPlate
         /// </summary>
         public void JogCClock(byte station)
         {
-            //try
-            //{
             _pollingAct.Add(() =>
             {
                 // 0x0904 寫入 0x0000：Jog 逆轉
@@ -963,11 +1043,6 @@ namespace LockPlate
                 //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 //Debug.WriteLine($"{string.Join(",", retStr)}");
             });
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
         }
 
         /// <summary>
@@ -975,8 +1050,6 @@ namespace LockPlate
         /// </summary>
         public void JogStop(byte station)
         {
-            //try
-            //{
             _pollingAct.Add(() =>
             {
                 // 0x0904 寫入 0x0000：停止轉動
@@ -990,11 +1063,6 @@ namespace LockPlate
                 //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 //Debug.WriteLine($"{string.Join(",", retStr)}");
             });
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
         }
 
         /// <summary>
@@ -1003,8 +1071,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void JogDisable(byte station)
         {
-            //try
-            //{
             // 0x0901 寫入 0x0000：停止 Jog
             byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
@@ -1021,11 +1087,10 @@ namespace LockPlate
                 //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
             }
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+            }
         }
         #endregion
 
@@ -1036,8 +1101,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveEnable(byte station)
         {
-            //try
-            //{
             // 0x0901 寫入 0x0004：啟動定位控制
             byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x04 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
@@ -1071,7 +1134,7 @@ namespace LockPlate
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
                 _ = Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
                 retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
@@ -1082,7 +1145,7 @@ namespace LockPlate
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
                 _ = Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
                 retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
@@ -1092,7 +1155,7 @@ namespace LockPlate
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
                 _ = Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 起始位置(2) + 長度(2) + CRC(2)
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
                 string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
@@ -1101,11 +1164,10 @@ namespace LockPlate
                 // Debug.WriteLine($"寫入 {string.Join(",", cmdStr)}");
                 Debug.WriteLine($"寫入脈波數 {string.Join(",", retStr)}");
             }
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+            }
         }
 
         /// <summary>
@@ -1114,8 +1176,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveClock(byte station)
         {
-            //try
-            //{
             _pollingAct.Add(() =>
             {
                 // 0x0904 寫入 0x0001：Jog 正轉
@@ -1129,11 +1189,6 @@ namespace LockPlate
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 Debug.WriteLine($"正轉 {string.Join(",", retStr)}");
             });
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
         }
 
         /// <summary>
@@ -1142,8 +1197,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveCClock(byte station)
         {
-            //try
-            //{
             _pollingAct.Add(() =>
             {
                 // 0x0904 寫入 0x0001：Jog 正轉
@@ -1157,11 +1210,6 @@ namespace LockPlate
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 Debug.WriteLine($"逆轉 {string.Join(",", retStr)}");
             });
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
         }
 
         /// <summary>
@@ -1170,8 +1218,6 @@ namespace LockPlate
         /// <param name="station"></param>
         public void PosMovePause(byte station)
         {
-            //try
-            //{
             _pollingAct.Add(() =>
             {
                 // 0x0904 寫入 0x0001：Jog 正轉
@@ -1185,13 +1231,7 @@ namespace LockPlate
                 string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 Debug.WriteLine($"暫停 {string.Join(",", retStr)}");
             });
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
         }
-
 
         /// <summary>
         /// 定位測試停止
@@ -1199,8 +1239,6 @@ namespace LockPlate
         /// <param name="station">站號</param>
         public void PosMoveDisable(byte station)
         {
-            //try
-            //{
             // 0x0901 寫入 0x0000：停止 Jog
             byte[] cmd = new byte[] { station, 0x06, 0x09, 0x01, 0x00, 0x00 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
@@ -1216,11 +1254,68 @@ namespace LockPlate
                 //Debug.WriteLine($"{string.Join(",", cmdStr)}");
                 Debug.WriteLine($"{string.Join(",", retStr)}");
             }
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            else
+            {
+                throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+            }
+        }
+        #endregion
+
+        #region PR 命令
+        public void SyncPrPath(byte station)
+        {
+            PF82Polling = !PF82Polling;
+
+            if (PF82Polling)
+            {
+                EnablePollingTask(station, PollingType.PrPath);
+            }
+            else
+            {
+                DisablePollingTask();
+            }
+            //Debug.WriteLine($"{_pollingTask.Status}");
+        }
+
+        public void RunPrPath(byte station, int path)
+        {
+            if (path is < 64 or 1000)
+            {
+                void act()
+                {
+                    byte hPath = (byte)((path >> 8) & 0xFF);
+                    byte lPath = (byte)(path & 0xFF);
+
+                    byte[] cmd = new byte[] { station, 0x06, 0x08, 0xA2, hPath, lPath };
+                    cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
+
+                    if (Write(cmd))
+                    {
+                        _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
+                        byte[] response = Read();
+
+                        //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                        //Debug.WriteLine($"ret {string.Join(",", resStr)}");
+                    }
+                    else
+                    {
+                        throw new ShihlinSDEException("通訊 SerialPort 為 null 或未開啟");
+                    }
+                }
+
+                if (_pollingTask?.Status == TaskStatus.Running)
+                {
+                    _pollingAct.Add(act);
+                }
+                else
+                {
+                    act();
+                }
+            }
+            else
+            {
+                throw new ShihlinSDEException("PF82 參數超出允許值");
+            }
         }
         #endregion
 

@@ -68,6 +68,8 @@ namespace LockPlate.content
                 }
                 else
                 {
+                    MainWindow.ShihlinSDE.DisablePollingTask();
+
                     MainWindow.ShihlinSDE.ComClose();
                 }
 
@@ -87,6 +89,14 @@ namespace LockPlate.content
             MainWindow.ShihlinSDE.ChangeTimeout(200);
         }
 
+        private void StationSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // 關閉 Polling Task
+            MainWindow.ShihlinSDE?.DisablePollingTask();
+            // 重置 Info
+            MainWindow.ShihlinSDE?.ResetInfo();
+        }
+
         private void ReadMotorInfo_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -97,8 +107,7 @@ namespace LockPlate.content
                 MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadAlarm((byte)StationSelector.SelectedItem);
-
-                MainWindow.ShihlinSDE.ReadPF82((byte)StationSelector.SelectedItem);
+                // MainWindow.ShihlinSDE.ReadPrPath((byte)StationSelector.SelectedItem);
             }
             catch (Exception ex)
             {
@@ -116,6 +125,11 @@ namespace LockPlate.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
         }
 
         #region JOG
@@ -235,24 +249,89 @@ namespace LockPlate.content
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
-        #endregion
 
         private void PosMove_Click(object sender, RoutedEventArgs e)
         {
-            int dir = (ushort)(sender as Button).CommandParameter;
-
-            switch (dir)
+            try
             {
-                case 1:
-                    MainWindow.ShihlinSDE.PosMoveClock((byte)StationSelector.SelectedItem);
-                    break;
-                case 2:
-                    MainWindow.ShihlinSDE.PosMoveCClock((byte)StationSelector.SelectedItem);
-                    break;
-                case 0:
-                    MainWindow.ShihlinSDE.PosMovePause((byte)StationSelector.SelectedItem);
-                    break;
+                int dir = (ushort)(sender as Button).CommandParameter;
+
+                switch (dir)
+                {
+                    case 1:
+                        MainWindow.ShihlinSDE.PosMoveClock((byte)StationSelector.SelectedItem);
+                        break;
+                    case 2:
+                        MainWindow.ShihlinSDE.PosMoveCClock((byte)StationSelector.SelectedItem);
+                        break;
+                    case 0:
+                        MainWindow.ShihlinSDE.PosMovePause((byte)StationSelector.SelectedItem);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
             }
         }
+        #endregion
+
+        #region PR 模式
+        private void SyncPrPath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MainWindow.ShihlinSDE.SyncPrPath((byte)StationSelector.SelectedItem);
+                // MainWindow.ShihlinSDE.EnablePollingTask((byte)StationSelector.SelectedItem, ShihlinSDE.PollingType.PrPath);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+
+        private void RunZeroReturn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // path = 0, 執行原點復歸
+                MainWindow.ShihlinSDE.RunPrPath((byte)StationSelector.SelectedItem, 0);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void RunPrPath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // 執行指定 Path, 
+                MainWindow.ShihlinSDE.RunPrPath((byte)StationSelector.SelectedItem, MainWindow.ShihlinSDE.PF82);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+
+        private void StopPrPath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // 停止執行
+                MainWindow.ShihlinSDE.RunPrPath((byte)StationSelector.SelectedItem, 1000);
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.MOTION, ex.Message);
+            }
+        }
+        #endregion
+
     }
 }
