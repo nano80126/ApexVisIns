@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +8,7 @@ using System.Windows.Data;
 
 namespace LockPlate.Converter
 {
+#if false
     #region Bool 轉換器
     /// <summary>
     /// 布林 反向 轉換器
@@ -89,7 +89,7 @@ namespace LockPlate.Converter
     /// 布林轉Visibility 反向轉換器
     /// </summary>
     [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class BooleanToVisibilityInverse : BooleanToVisibility
+    public class BooleanToVisibilityInverter : BooleanToVisibility
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -126,7 +126,7 @@ namespace LockPlate.Converter
     /// 布林 AND To Visibility 反向轉換器
     /// </summary>
     [ValueConversion(typeof(bool[]), typeof(Visibility))]
-    public class BooleanAndToVisibilityInverse : BooleanAndGate
+    public class BooleanAndToVisibilityInverter : BooleanAndGate
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -139,6 +139,7 @@ namespace LockPlate.Converter
         }
     }
     #endregion
+#endif
 
     #region 數字 Equal 轉換器
     /// <summary>
@@ -464,7 +465,6 @@ namespace LockPlate.Converter
         }
     }
     #endregion
-
 
     #region NotNull 轉換器
     [ValueConversion(typeof(object), typeof(bool))]

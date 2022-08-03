@@ -939,6 +939,25 @@
                 <!--#endregion-->
             </control:TitleCard>
             <!--#endregion-->
+
+
+            <StackPanel >
+                <TextBlock x:Name="t1" IsEnabled="False"></TextBlock>
+                <TextBlock x:Name="t2" IsEnabled="False"></TextBlock>
+
+                <Button Content="測試">
+                    <Button.Visibility>
+                        <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverter}">
+                            <Binding Path="IsEnabled" ElementName="t1"></Binding>
+                            <Binding Path="IsEnabled" ElementName="t2"></Binding>
+                        </MultiBinding>
+                    </Button.Visibility>
+                </Button>
+
+                <Button Content="測試2" Visibility="{Binding ElementName=t1, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityInverter}}">
+                 
+                </Button>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </StackPanel>

@@ -26,15 +26,15 @@
             <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
             <cvt:BooleanToVisibility x:Key="BooleanToVisibility"/>
-            <cvt:BooleanToVisibilityInverse x:Key="BooleanToVisibilityInverse"/>
+            <cvt:BooleanToVisibilityInverter x:Key="BooleanToVisibilityInverter"/>
             <cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility"/>
-            <cvt:BooleanAndToVisibilityInverse x:Key="BooleanAndToVisibilityInverse"/>
-            
+            <cvt:BooleanAndToVisibilityInverter x:Key="BooleanAndToVisibilityInverter"/>
+            <!--//-->
             <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
             <cvt:MathMinusConverter x:Key="MathMinusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
-            
+            <!--//-->
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
@@ -42,7 +42,7 @@
             <cvt:NumberGreaterConvert x:Key="NumberGreaterConvert"/>
             <cvt:NumberGreaterConvertToVisibility x:Key="NumberGreaterConvertToVisibility"/>
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
-
+            <!--//-->
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringEqualToVisibility x:Key="StringEqualToVisibility"/>
             <cvt:StringEqualToVisibilityInverse x:Key="StringEqualToVisibilityInverse"/>

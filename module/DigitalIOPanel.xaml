@@ -267,7 +267,7 @@
                 materialDesign:ButtonAssist.CornerRadius="15"
                 Style="{StaticResource MaterialDesignOutlinedButton}">
             <Button.Visibility>
-                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverse}" Mode="OneWay">
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverter}" Mode="OneWay">
                     <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                     <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                 </MultiBinding>
@@ -285,7 +285,7 @@
 
         <TextBlock DockPanel.Dock="Top" Background="Red">
             <TextBlock.Text>
-                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverse}" Mode="OneWay" StringFormat="{}{0}">
+                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverter}" Mode="OneWay" StringFormat="{}{0}">
                     <Binding Path="DiCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                     <Binding Path="DoCtrlCreated" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                 </MultiBinding>
