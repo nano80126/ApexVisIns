@@ -173,7 +173,7 @@
                     <!--//-->
                     <DockPanel DockPanel.Dock="Top">
                         <DockPanel.Resources>
-                            <x:Array x:Key="Stations" Type="sys:Byte" x:Name="StationSource">
+                            <x:Array x:Key="Stations" Type="sys:Byte">
                                 <sys:Byte>0x01</sys:Byte>
                                 <sys:Byte>0x02</sys:Byte>
                                 <sys:Byte>0x03</sys:Byte>
@@ -863,7 +863,8 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="目標 Path"/>
 
-                    <Button Grid.Row="0" Grid.Column="1" Margin="-90 8 0 8" Padding="0 3" Width="30" Click="SyncPrPath_Click">
+                    <Button Grid.Row="0" Grid.Column="1" Margin="-90 8 0 8" Padding="0 3" Width="30" Click="SyncPrPath_Click"
+                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}">
                         <materialDesign:PackIcon Kind="Sync" RenderTransformOrigin="0.5, 0.5">
                             <materialDesign:PackIcon.RenderTransform>
                                 <RotateTransform Angle="0"/>
@@ -919,17 +920,36 @@
                     </TextBox>
 
                     <Button Grid.Row="1" Grid.Column="1" Click="RunZeroReturn_Click" Content="執行"
-                            BorderBrush="{StaticResource ColorTeal}" Foreground="{StaticResource ColorTeal}"
-                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
+                            BorderBrush="{StaticResource ColorTeal}" Foreground="{StaticResource ColorTeal}">
+                        <!--IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"-->
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                <Binding Path="IsComOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                <Binding Path="ServoReady" UpdateSourceTrigger="PropertyChanged"/>
+                            </MultiBinding>                            
+                        </Button.IsEnabled>
+                    </Button>
 
                     <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" IsReadOnly="False" Focusable="True"
                              Text="{Binding PF82, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
 
-                    <Button Grid.Row="3" Grid.Column="1" Content="執行 Path" Click="RunPrPath_Click"
-                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Row="3" Grid.Column="1" Content="執行 Path" Click="RunPrPath_Click">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                <Binding Path="IsComOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                <Binding Path="ServoReady" UpdateSourceTrigger="PropertyChanged"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
 
-                    <Button Grid.Row="4" Grid.Column="1" Content="停止 Path" Click="StopPrPath_Click"
-                            IsEnabled="{Binding IsComOpen, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Row="4" Grid.Column="1" Content="停止 Path" Click="StopPrPath_Click">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                <Binding Path="IsComOpen" UpdateSourceTrigger="PropertyChanged"/>
+                                <Binding Path="ServoReady" UpdateSourceTrigger="PropertyChanged"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
                     <!--#endregion-->
                 </Grid>
                 <!--#region Footer -->
@@ -940,24 +960,23 @@
             </control:TitleCard>
             <!--#endregion-->
 
-
+            
+            <!--#region 測試用 -->
             <StackPanel >
-                <TextBlock x:Name="t1" IsEnabled="False"></TextBlock>
-                <TextBlock x:Name="t2" IsEnabled="False"></TextBlock>
-
+                <TextBlock x:Name="t1" IsEnabled="True"></TextBlock>
+                <TextBlock x:Name="t2" IsEnabled="True"></TextBlock>
                 <Button Content="測試">
                     <Button.Visibility>
                         <MultiBinding Converter="{StaticResource BooleanAndToVisibilityInverter}">
-                            <Binding Path="IsEnabled" ElementName="t1"></Binding>
-                            <Binding Path="IsEnabled" ElementName="t2"></Binding>
+                            <Binding Path="IsEnabled" ElementName="t1"/>
+                            <Binding Path="IsEnabled" ElementName="t2"/>
                         </MultiBinding>
                     </Button.Visibility>
                 </Button>
-
-                <Button Content="測試2" Visibility="{Binding ElementName=t1, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityInverter}}">
-                 
-                </Button>
+                <Button Content="測試2" Visibility="{Binding ElementName=t1, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityInverter}}"/>
             </StackPanel>
+            <!--#endregion-->
+            
         </StackPanel>
     </Grid>
 </StackPanel>

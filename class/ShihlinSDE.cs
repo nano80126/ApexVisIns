@@ -41,13 +41,12 @@ namespace LockPlate
         private AlarmCode _alarmCode = AlarmCode.NONE;      // 0xff : 無警報
         #endregion
 
-
         #region private
         private Task _pollingTask;
         private List<Action> _pollingAct = new List<Action>();
         private CancellationTokenSource _cancellationTokenSource;
         
-        private Timer _pollingTimer;
+        //private Timer _pollingTimer;
         #endregion
 
         #region enum
@@ -232,6 +231,8 @@ namespace LockPlate
         {
             CAN_TEST =
                 0b00000001,     // 讀取是否啟動測試     0x0900
+            ServoOn =
+                0b00000010,     // 讀取是否 ServoOn    0x0200 
             Alarm =
                 0b00000010,     // 讀取警報　　　　     0x0100
             IO =
@@ -539,6 +540,8 @@ namespace LockPlate
         /// </summary>
         public void ResetInfo()
         {
+            ServoReady = false;
+
             DIs.Clear();
             DOs.Clear();
 
@@ -556,10 +559,10 @@ namespace LockPlate
         /// <summary>
         /// 讀取 SERVO ON/OFF, 控制模式
         /// </summary>
-        public void ReadServo(byte station)
+        public void ReadServoOn(byte station)
         {
-            // 讀取控制模式與狀態
-            byte[] cmd = new byte[] { station, 0x03, 0x02, 0x00, 0x00, 0x02 };
+            // 讀取Servo ON 狀態
+            byte[] cmd = new byte[] { station, 0x03, 0x02, 0x00, 0x00, 0x01 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
             if (Write(cmd))
@@ -568,11 +571,11 @@ namespace LockPlate
                 byte[] response = Read();
 
                 //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                //Debug.WriteLine($"ret: {string.Join(",", retStr)}");
+                //Debug.WriteLine($"servo on ret: {string.Join(",", retStr)}");
 
-                if (response[0] == 0x01 && response[1] == 0x03 && response[2] == 0x04)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == ((station << 16) + 0x0302))
                 {
-                    Debug.WriteLine($"SERVO: {response[4]}, MODE: {response[6]}");
+                    ServoReady = response[4] == 0x01;
                 }
             }
             else
@@ -598,14 +601,14 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x08) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 8) + CRC(2)
                 byte[] response = Read();
 
-                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                //Debug.WriteLine($"ret: {string.Join(",", retStr)}");
+                // string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"IO ret: {string.Join(",", retStr)}");
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == ((station << 8) + 0b01000000))
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == ((station << 16) + 0x0310))
                 {
                     for (int i = 3; i < response.Length - 6; i++)
                     {
-                        //Debug.WriteLine($"{i} {response[i]} {(DIFunctions)response[i]}");
+                        // Debug.WriteLine($"{i} {response[i]} {(DIFunctions)response[i]}");
                         DIs.Add(new IOChannel()
                         {
                             Function = ((DIFunctions)response[i]).ToString(),
@@ -633,19 +636,6 @@ namespace LockPlate
                             });
                         }
                     }
-
-#if false
-                    foreach (IOChannel item in DIs)
-                    {
-                        Debug.WriteLine($"{item.Name} {item.Function}");
-                    }
-
-                    Debug.WriteLine($"-------------------------------");
-                    foreach (IOChannel item in DOs)
-                    {
-                        Debug.WriteLine($"{item.Name} {item.Function}");
-                    } 
-#endif
                 }
             }
             else
@@ -672,19 +662,16 @@ namespace LockPlate
                 //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
                 //Debug.WriteLine($"ret: {string.Join(",", resStr)}");
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0304)
                 {
                     short temp = (short)((response[3] << 8) + response[4]);
-
-                    //Debug.WriteLine($"{temp}");
+                    
                     for (int i = 0; i < DIs.Count; i++)
                     {
                         DIs[i].On = ((temp >> i) & 0b01) == 0b01;
                     }
 
                     temp = (short)((response[5] << 8) + response[6]);
-
-                    //Debug.WriteLine($"{temp}");
                     for (int i = 0; i < DOs.Count; i++)
                     {
                         DOs[i].On = ((temp >> i) & 0b01) == 0b01;
@@ -703,7 +690,7 @@ namespace LockPlate
         /// <param name="station"></param>
         public void ReadPos(byte station)
         {
-            // 讀取 馬達迴授脈波數(電子齒輪比前)
+            // 讀取 馬達命令脈波數(電子齒輪比前)
             byte[] cmd = new byte[] { station, 0x03, 0x00, 0x02, 0x00, 0x02 };
             cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
@@ -712,7 +699,7 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);    // 站號(1) + 功能碼(1) + 長度(1) + 資料(2 * 2) + CRC(2)
                 byte[] response = Read();
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0304)
                 {
                     int cmdpl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
                     CmdPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
@@ -723,10 +710,10 @@ namespace LockPlate
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
                 _ = Write(cmd);
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, 1000);
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 3 + (2 * 0x02) + 2, Timeout);
                 response = Read();
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110100)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0304)
                 {
                     int pospl = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
                     ResPos = (response[3] << 8) + response[4] + (response[5] << 24) + (response[6] << 16);
@@ -753,17 +740,15 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);     // 站號(1) + 功能碼(1) + 長度(1) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                //Debug.WriteLine($"Read Pr Path {string.Join(",", resStr)}");
+                // string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"Read Pr Path {string.Join(",", resStr)}");
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0302)
                 {
                     int pf82 = (response[3] << 8) + response[4];
                     PF82Read = pf82 % 10000;
                     PF82Send = pf82 >= 10000;
                     PF82Done = pf82 >= 20000;
-
-                    Debug.WriteLine($"{pf82} {PF82Read}");
                 }
             }
             else
@@ -806,16 +791,13 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                //Debug.WriteLine($"a: {DateTime.Now:ss.fff}");
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 7, Timeout);   // 站號(1) + 功能碼(1) + 長度(1) + 資料(2) + CRC(2)
-                                                                          // Debug.WriteLine($"b: {DateTime.Now:ss.fff}");
                 byte[] response = Read();
-                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                //Debug.WriteLine($"{string.Join(",", cmdStr)}");
-                Debug.WriteLine($"{string.Join(",", retStr)}");
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
+
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0302)
                 {
                     return (response[3] << 8) + response[4] == 0x0FF0;
                 }
@@ -844,9 +826,9 @@ namespace LockPlate
                 //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
                 //string[] resStr = Array.ConvertAll(response, (a) => $"{a:X2}");
 
-                if ((response[0] << 8) + (response[1] << 4) + response[2] == (station << 8) + 0b00110010)
+                if ((response[0] << 16) + (response[1] << 8) + response[2] == (station << 16) + 0x0302)
                 {
-                    Alarm = (AlarmCode)((response[3] << 4) + response[4]);
+                    Alarm = (AlarmCode)((response[3] << 8) + response[4]);
                 }
             }
             else
@@ -863,7 +845,7 @@ namespace LockPlate
 
             if (Write(cmd))
             {
-                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, 1000);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
+                _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
                 // string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
@@ -1321,7 +1303,6 @@ namespace LockPlate
 
         #endregion
 
-
         /// <summary>
         /// 寫入命令
         /// </summary>
@@ -1372,7 +1353,8 @@ namespace LockPlate
 
             public string Function { get; set; }
 
-            public bool On {
+            public bool On
+            {
                 get => _on;
                 set
                 {

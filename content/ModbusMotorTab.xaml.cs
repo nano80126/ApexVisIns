@@ -57,9 +57,11 @@ namespace LockPlate.content
                 }
                 else
                 {
-                    MainWindow.ShihlinSDE.DisablePollingTask();
+                    MainWindow.ShihlinSDE?.DisablePollingTask();
 
-                    MainWindow.ShihlinSDE.ComClose();
+                    MainWindow.ShihlinSDE?.ResetInfo();
+
+                    MainWindow.ShihlinSDE?.ComClose();
                 }
 
             }
@@ -92,11 +94,15 @@ namespace LockPlate.content
             {
                 //讀取 IO 資訊
                 //啟動 Task 讀取 IO
+
+                MainWindow.ShihlinSDE.ReadServoOn((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadIO((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadIOStatus((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadPos((byte)StationSelector.SelectedItem);
                 MainWindow.ShihlinSDE.ReadAlarm((byte)StationSelector.SelectedItem);
-                // MainWindow.ShihlinSDE.ReadPrPath((byte)StationSelector.SelectedItem);
+                // // // 
+                //MainWindow.ShihlinSDE.CheckStat((byte)StationSelector.SelectedItem);
+                //MainWindow.ShihlinSDE.ReadPrPath((byte)StationSelector.SelectedItem);
             }
             catch (Exception ex)
             {

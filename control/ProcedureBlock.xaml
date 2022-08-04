@@ -85,7 +85,7 @@
             <materialDesign:PackIcon Kind="SquareRoundedOutline" HorizontalAlignment="Center" VerticalAlignment="Bottom" 
                                      local:PBHelper.Error="{Binding Error}">
                 <local:PBHelper.HighLight>
-                    <MultiBinding Converter="{StaticResource NumberAllEqualConverter}">
+                    <MultiBinding Converter="{StaticResource NumbersAllEqualConverter}">
                         <Binding Path="StepNumber"/>
                         <Binding Path="CurrentStep"/>
                     </MultiBinding>

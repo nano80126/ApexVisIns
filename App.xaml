@@ -35,20 +35,22 @@
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
             <!--//-->
-            <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
-            <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
-            <cvt:NumberGreaterConvert x:Key="NumberGreaterConvert"/>
-            <cvt:NumberGreaterConvertToVisibility x:Key="NumberGreaterConvertToVisibility"/>
+            <cvt:NumbersAllEqualConverter x:Key="NumbersAllEqualConverter"/>
+            <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
+            <cvt:NumberLessToVisibility x:Key="NumberLessToVisibility"/>
+            <cvt:NumberGreaterConverter x:Key="NumberGreaterConverter"/>
+            <cvt:NumberGreaterToVisibility x:Key="NumberGreaterToVisibility"/>
             <!--//-->
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringEqualToVisibility x:Key="StringEqualToVisibility"/>
-            <cvt:StringEqualToVisibilityInverse x:Key="StringEqualToVisibilityInverse"/>
+            <cvt:StringEqualToVisibilityInverter x:Key="StringEqualToVisibilityInverter"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
-            <cvt:StringAllEqualConverter x:Key="StringAllEqualConverter"/>
+            <cvt:StringsAllEqualConverter x:Key="StringsAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <!--//-->
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>

@@ -93,7 +93,7 @@
                 </Style>
 
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
-                    Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"/>
+                    Converter={StaticResource NumberGreaterToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"/>
             </DataGrid.Resources>
 
             

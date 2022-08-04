@@ -28,13 +28,13 @@ namespace LockPlate.Control
         }
 
 
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(TitleCard), new PropertyMetadata(string.Empty));
+        private static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(TitleCard), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty IconKindProperty = DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(TitleCard), new PropertyMetadata(PackIconKind.Abc));
+        private static readonly DependencyProperty IconKindProperty = DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(TitleCard), new PropertyMetadata(PackIconKind.Abc));
 
-        public static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content), typeof(object), typeof(TitleCard), new PropertyMetadata(null));
+        private static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content), typeof(object), typeof(TitleCard), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty FooterProperty = DependencyProperty.RegisterAttached(nameof(Footer), typeof(object), typeof(TitleCard), new PropertyMetadata(null));
+        private static readonly DependencyProperty FooterProperty = DependencyProperty.RegisterAttached(nameof(Footer), typeof(object), typeof(TitleCard), new PropertyMetadata(null));
 
         /// <summary>
         /// Card Header Text

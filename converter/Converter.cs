@@ -139,7 +139,6 @@ namespace LockPlate.Converter
         }
     }
     #endregion
-#endif
 
     #region 數字 Equal 轉換器
     /// <summary>
@@ -183,7 +182,7 @@ namespace LockPlate.Converter
     /// <summary>
     /// 數字陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class NumberAllEqualConverter : IMultiValueConverter
+    public class NumbersAllEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -198,7 +197,8 @@ namespace LockPlate.Converter
         }
     }
     #endregion
-
+#endif
+#if false
     #region 字串 Equal 轉換器
     /// <summary>
     /// 字串 Equal 轉換器
@@ -240,7 +240,7 @@ namespace LockPlate.Converter
     /// 字串 Equal 轉 Visibility 轉換器
     /// </summary>
     [ValueConversion(typeof(string), typeof(Visibility))]
-    public class StringEqualToVisibilityInverse : StringEqualConverter
+    public class StringEqualToVisibilityInverter : StringEqualConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -274,7 +274,7 @@ namespace LockPlate.Converter
     /// <summary>
     /// 字串陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class StringAllEqualConverter : IMultiValueConverter
+    public class StringsAllEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -305,7 +305,8 @@ namespace LockPlate.Converter
         }
     }
     #endregion
-
+#endif
+#if false
     #region 數學運算轉換器
     /// <summary>
     ///  數學加法 轉換器
@@ -415,7 +416,7 @@ namespace LockPlate.Converter
     /// 數字大於比較器轉
     /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
-    public class NumberGreaterConvert : IValueConverter
+    public class NumberGreaterConverter : IValueConverter
     {
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -432,7 +433,7 @@ namespace LockPlate.Converter
     /// 數字大於比較器轉 Visibility
     /// </summary>
     [ValueConversion(typeof(int), typeof(Visibility))]
-    public class NumberGreaterConvertToVisibility : NumberGreaterConvert
+    public class NumberGreaterToVisibility : NumberGreaterConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -448,7 +449,7 @@ namespace LockPlate.Converter
 
 
     #endregion
-
+#endif
     #region DateTime 轉換器
     [ValueConversion(typeof(DateTime), typeof(DateTime))]
     public class DateTimeToLocalConverter : IValueConverter
@@ -456,7 +457,6 @@ namespace LockPlate.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return ((DateTime)value).ToLocalTime();
-            //throw new NotImplementedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
