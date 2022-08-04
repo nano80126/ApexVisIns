@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +9,7 @@ using System.Windows.Data;
 
 namespace MCAJawIns.Converter
 {
+#if false
     #region Bool 轉換器
     /// <summary>
     /// 布林 反向 轉換器
@@ -17,12 +17,12 @@ namespace MCAJawIns.Converter
     [ValueConversion(typeof(bool), typeof(bool))]
     public class BooleanInverter : IValueConverter
     {
-        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return !(bool)value;
         }
 
-        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //Debug.WriteLine($"ConvertBack: {value}");
             return !(bool)value;
@@ -75,10 +75,6 @@ namespace MCAJawIns.Converter
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToVisibility : IValueConverter
     {
-        public Visibility TrueValue { get; set; }
-
-        public Visibility FalseValue { get; set; }
-
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)value ? Visibility.Visible : Visibility.Collapsed;
@@ -94,16 +90,12 @@ namespace MCAJawIns.Converter
     /// 布林轉Visibility 反向轉換器
     /// </summary>
     [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class BooleanToVisibilityInverse : BooleanInverter
+    public class BooleanToVisibilityInverter : BooleanToVisibility
     {
-        public Visibility TrueValue { get; set; }
-
-        public Visibility FalseValue { get; set; }
-
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //return (bool)value ? Visibility.Visible : Visibility.Hidden;
-            return (bool)base.Convert(value, targetType, parameter, culture) ? TrueValue : FalseValue;
+            return (Visibility)base.Convert(value, targetType, parameter, culture) == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -135,7 +127,7 @@ namespace MCAJawIns.Converter
     /// 布林 AND To Visibility 反向轉換器
     /// </summary>
     [ValueConversion(typeof(bool[]), typeof(Visibility))]
-    public class BooleanAndToVisibilityInverse : BooleanAndGate
+    public class BooleanAndToVisibilityInverter : BooleanAndGate
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -191,7 +183,7 @@ namespace MCAJawIns.Converter
     /// <summary>
     /// 數字陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class NumberAllEqualConverter : IMultiValueConverter
+    public class NumbersAllEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -206,7 +198,8 @@ namespace MCAJawIns.Converter
         }
     }
     #endregion
-
+#endif
+#if false
     #region 字串 Equal 轉換器
     /// <summary>
     /// 字串 Equal 轉換器
@@ -248,7 +241,7 @@ namespace MCAJawIns.Converter
     /// 字串 Equal 轉 Visibility 轉換器
     /// </summary>
     [ValueConversion(typeof(string), typeof(Visibility))]
-    public class StringEqualToVisibilityInverse : StringEqualConverter
+    public class StringEqualToVisibilityInverter : StringEqualConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -282,7 +275,7 @@ namespace MCAJawIns.Converter
     /// <summary>
     /// 字串陣列比較器 (每個元素相等則傳回true)
     /// </summary>
-    public class StringAllEqualConverter : IMultiValueConverter
+    public class StringsAllEqualConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -313,7 +306,8 @@ namespace MCAJawIns.Converter
         }
     }
     #endregion
-
+#endif
+#if false
     #region 數學運算轉換器
     /// <summary>
     ///  數學加法 轉換器
@@ -423,7 +417,7 @@ namespace MCAJawIns.Converter
     /// 數字大於比較器轉
     /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
-    public class NumberGreaterConvert : IValueConverter
+    public class NumberGreaterConverter : IValueConverter
     {
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -440,7 +434,7 @@ namespace MCAJawIns.Converter
     /// 數字大於比較器轉 Visibility
     /// </summary>
     [ValueConversion(typeof(int), typeof(Visibility))]
-    public class NumberGreaterConvertToVisibility : NumberGreaterConvert
+    public class NumberGreaterToVisibility : NumberGreaterConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -453,12 +447,11 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
-    #endregion
 
+
+    #endregion
+#endif
     #region DateTime 轉換器
-    /// <summary>
-    /// Datetime 轉 LocalTime
-    /// </summary>
     [ValueConversion(typeof(DateTime), typeof(DateTime))]
     public class DateTimeToLocalConverter : IValueConverter
     {
@@ -474,8 +467,55 @@ namespace MCAJawIns.Converter
     }
     #endregion
 
+    #region NotNull 轉換器
+    [ValueConversion(typeof(object), typeof(bool))]
+    public class ObjectNotNullConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null;
+        }
 
-    #region Enum 轉換器
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            //Debug.WriteLine($"ConvertBack: {value}");
+            throw new NotImplementedException();
+        }
+    }
+
+
+    /// <summary>
+    /// 字串 Equal 轉 Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(object), typeof(Visibility))]
+    public class ObjectNotNullToVisibility : ObjectNotNullConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetType, parameter, culture);
+        }
+    }
+    #endregion
+
+    public class BooleanNotNullOrFalseConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     /// <summary>
     /// Enum 轉 Description
     /// </summary>
@@ -515,11 +555,9 @@ namespace MCAJawIns.Converter
             return string.Empty;
         }
     }
-    #endregion
-
 
     #region Dictionary 轉換器
-    [ValueConversion(typeof(Dictionary<string,double>), typeof(double))]
+    [ValueConversion(typeof(Dictionary<string, double>), typeof(double))]
     public class DictionaryGetValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -541,26 +579,9 @@ namespace MCAJawIns.Converter
     }
     #endregion
 
-
-
-    public class BooleanNotNullOrFalseConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     /// <summary>
     /// Multiple value 轉陣列
     /// </summary>
-    [Obsolete("待更新")]
     public class CombineValueConvert : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

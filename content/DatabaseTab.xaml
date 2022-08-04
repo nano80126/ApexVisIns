@@ -501,7 +501,7 @@
 
                     <!--#region 檢驗紀錄 DataGrid -->
                     <!--<TextBlock x:Name="RecordHeader1" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>-->
-                    <DockPanel Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverse}, 
+                    <DockPanel Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverter}, 
                         ConverterParameter={x:Static sys:String.Empty}, UpdateSourceTrigger=PropertyChanged}">
                         <TextBlock x:Name="RecordHeader" DockPanel.Dock="Left" Margin="0 12 0 0" VerticalAlignment="Bottom" FontSize="16" FontWeight="Bold" 
                                    Text="{Binding SelectedLotNumber, UpdateSourceTrigger=PropertyChanged}"/>

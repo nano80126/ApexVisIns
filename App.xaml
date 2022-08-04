@@ -26,29 +26,30 @@
             <cvt:BooleanOrGate x:Key="BooleanOrGate"/>
             <cvt:BooleanAndGate x:Key="BooleanAndGate"/>
             <cvt:BooleanToVisibility x:Key="BooleanToVisibility" TrueValue="Visible" FalseValue="Collapsed"/>
-            <cvt:BooleanToVisibilityInverse x:Key="BooleanToVisibilityInverse" TrueValue="Collapsed" FalseValue="Visible"/>
+            <cvt:BooleanToVisibilityInverter x:Key="BooleanToVisibilityInverter" TrueValue="Collapsed" FalseValue="Visible"/>
             <cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility"/>
-            <cvt:BooleanAndToVisibilityInverse x:Key="BooleanAndToVisibilityInverse"/>
-            
+            <cvt:BooleanAndToVisibilityInverter x:Key="BooleanAndToVisibilityInverter"/>
+            <!--//-->
             <cvt:MathPlusConverter x:Key="MathPlusConverter"/>
             <cvt:MathMinusConverter x:Key="MathMinusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
-            
+            <!--//-->
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
-            <cvt:NumberAllEqualConverter x:Key="NumberAllEqualConverter"/>
-            <cvt:NumberGreaterConvert x:Key="NumberGreaterConvert"/>
-            <cvt:NumberGreaterConvertToVisibility x:Key="NumberGreaterConvertToVisibility"/>
+            <cvt:NumbersAllEqualConverter x:Key="NumberAllEqualConverter"/>
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
-
+            <cvt:NumberGreaterConverter x:Key="NumberGreaterConvert"/>
+            <cvt:NumberGreaterToVisibility x:Key="NumberGreaterConvertToVisibility"/>
+            <!--//-->
             <cvt:StringEqualConverter x:Key="StringEqualConverter"/>
             <cvt:StringEqualToVisibility x:Key="StringEqualToVisibility"/>
-            <cvt:StringEqualToVisibilityInverse x:Key="StringEqualToVisibilityInverse"/>
+            <cvt:StringEqualToVisibilityInverter x:Key="StringEqualToVisibilityInverter"/>
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
-            <cvt:StringAllEqualConverter x:Key="StringAllEqualConverter"/>
+            <cvt:StringsAllEqualConverter x:Key="StringAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <!--//-->
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
