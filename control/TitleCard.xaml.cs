@@ -36,6 +36,9 @@ namespace LockPlate.Control
 
         private static readonly DependencyProperty FooterProperty = DependencyProperty.RegisterAttached(nameof(Footer), typeof(object), typeof(TitleCard), new PropertyMetadata(null));
 
+        //private static readonly DependencyProperty FooterProperty = DependencyProperty.Register(nameof(Footer), typeof(object), typeof(TitleCard), new FrameworkPropertyMetadata(,));
+
+
         /// <summary>
         /// Card Header Text
         /// </summary>
@@ -75,7 +78,7 @@ namespace LockPlate.Control
         private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
-            _ = Header.Focus();
+            //_ = Header.Focus();
         }
     }
 }

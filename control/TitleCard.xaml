@@ -19,20 +19,26 @@
             <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
         </Style>
     </materialDesign:Card.Style>
-
-    <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-        <DockPanel x:Name="Header" DockPanel.Dock="Top" Focusable="True">
-            <materialDesign:PackIcon Kind="{Binding IconKind}" Width="30" Height="26"/>
-            <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="19.2" Text="{Binding Title}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-        </DockPanel>
-        <!--//-->
-        <Separator DockPanel.Dock="Top" Margin="0 8"/>
-        <!--//-->
-        <ContentControl DockPanel.Dock="Top" Content="{Binding Content}"/>
-        <!--//-->
-        <Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{Binding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"/>
-        <!--//-->
-        <ContentControl DockPanel.Dock="Bottom" Content="{Binding Footer}"/>
-    </DockPanel>
+    <materialDesign:Card.Template>
+        <ControlTemplate>
+            <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
+                <DockPanel x:Name="Header" DockPanel.Dock="Top" Focusable="True">
+                    <materialDesign:PackIcon Kind="{Binding IconKind}" Width="30" Height="26"/>
+                    <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="19.2" Text="{Binding Title}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                </DockPanel>
+                <!--//-->
+                <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                <!--//-->
+                <!--<ContentControl DockPanel.Dock="Top" Content="{Binding Content}" Background="Red"/>-->
+                <ContentPresenter DockPanel.Dock="Top" Content="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Content}"/>
+                <!--//-->
+                <Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{Binding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"/>
+                <!--//-->
+                <ContentControl DockPanel.Dock="Bottom" Content="{Binding Footer}"/>
+            </DockPanel>
+        </ControlTemplate>
+    </materialDesign:Card.Template>
 </materialDesign:Card>
 
+    
+    

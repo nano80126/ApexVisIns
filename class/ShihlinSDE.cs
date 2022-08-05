@@ -529,6 +529,10 @@ namespace LockPlate
         public ObservableCollection<IOChannel> DOs { get; set; } = new();
 
         #region Public Methods
+        /// <summary>
+        /// 變更 Timeout
+        /// </summary>
+        /// <param name="ms">timeout 時間 (ms)</param>
         public void ChangeTimeout(int ms)
         {
             Timeout = ms;
@@ -1092,8 +1096,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);       // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"啟動定位: {string.Join(",", retStr)}");
+                // string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"啟動定位: {string.Join(",", retStr)}");
 
                 // 加減速時間 換算
                 byte hTime = (byte)((PosMoveAccDecTime >> 8) & 0xFF);
@@ -1109,7 +1113,7 @@ namespace LockPlate
                 byte lhPul = (byte)((PosMovePulse >> 8) & 0xFF);
                 byte llPul = (byte)(PosMovePulse & 0xFF);
 
-                Debug.WriteLine($"{hhPul} {hlPul} {lhPul} {llPul}");
+                // Debug.WriteLine($"{hhPul} {hlPul} {lhPul} {llPul}");
 
                 // 0x0902 寫入 加減入時間
                 cmd = new byte[] { station, 0x06, 0x09, 0x02, hTime, lTime };
@@ -1119,8 +1123,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
-                retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"寫入加減速 {string.Join(",", retStr)}");
+                // retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"寫入加減速 {string.Join(",", retStr)}");
 
                 // 0x0903 寫入 RPM 命令
                 cmd = new byte[] { station, 0x06, 0x09, 0x03, hRPM, lRPM };
@@ -1130,9 +1134,10 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
-                retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"寫入轉速 {string.Join(",", retStr)}");
+                // retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"寫入轉速 {string.Join(",", retStr)}");
 
+                // 0x0905 寫入 脈波數 命令
                 cmd = new byte[] { station, 0x10, 0x09, 0x05, 0x00, 0x02, 0x04, lhPul, llPul, hhPul, hlPul };
                 cmd = cmd.Concat(CRC16LH(cmd)).ToArray();
 
@@ -1140,11 +1145,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);     // 站號(1) + 功能碼(1) + 起始位置(2) + 資料(2) + CRC(2)
                 response = Read();
 
-                string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
-                retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-
-                // Debug.WriteLine($"寫入 {string.Join(",", cmdStr)}");
-                Debug.WriteLine($"寫入脈波數 {string.Join(",", retStr)}");
+                // retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                // Debug.WriteLine($"寫入脈波數 {string.Join(",", retStr)}");
             }
             else
             {
@@ -1168,8 +1170,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"正轉 {string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"正轉 {string.Join(",", retStr)}");
             });
         }
 
@@ -1189,8 +1191,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"逆轉 {string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"逆轉 {string.Join(",", retStr)}");
             });
         }
 
@@ -1210,8 +1212,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2)
                 byte[] response = Read();
 
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-                Debug.WriteLine($"暫停 {string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"暫停 {string.Join(",", retStr)}");
             });
         }
 
@@ -1230,11 +1232,8 @@ namespace LockPlate
                 _ = SpinWait.SpinUntil(() => BytesInBuf >= 8, Timeout);    // 站號(1) + 功能碼(1) + 位址(2) + 資料(2) + CRC(2)
                 byte[] response = Read();
 
-                //string[] cmdStr = Array.ConvertAll(cmd, (a) => $"{a:X2}");
-                string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
-
-                //Debug.WriteLine($"{string.Join(",", cmdStr)}");
-                Debug.WriteLine($"{string.Join(",", retStr)}");
+                //string[] retStr = Array.ConvertAll(response, (a) => $"{a:X2}");
+                //Debug.WriteLine($"{string.Join(",", retStr)}");
             }
             else
             {

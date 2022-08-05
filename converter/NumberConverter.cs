@@ -188,7 +188,7 @@ namespace LockPlate.Converter
     }
 
     /// <summary>
-    /// 數字大於比較器轉
+    /// 數字大於比較器轉換器
     /// </summary>
     [ValueConversion(typeof(int), typeof(bool))]
     public class NumberGreaterConverter : IValueConverter
