@@ -6,6 +6,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:app="clr-namespace:MCAJawIns"
             xmlns:local="clr-namespace:MCAJawIns.content"
+            xmlns:ctrl="clr-namespace:MCAJawIns.Control"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
             d:DataContext="{d:DesignInstance Type=local:CameraTab}"
             mc:Ignorable="d"
@@ -60,7 +61,6 @@
                 </Style>
             </StackPanel.Style>-->
 
-            <!--Linen-->
             <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen">
                 <DockPanel Background="Transparent" Margin="2 0">
                     <DockPanel x:Name="CameraSelectHeader" DockPanel.Dock="Top">
@@ -235,9 +235,16 @@
                     </Button>
                 </StackPanel>
             </materialDesign:Card>
+
+            <ctrl:CustomCard Title="{x:Null}" IconKind="Camera" BodyPadding="8 0">
+                <TextBlock Text="123"></TextBlock>
+                <!--<ctrl:CustomCard.Footer>
+                    
+                </ctrl:CustomCard.Footer>-->
+            </ctrl:CustomCard>
         </StackPanel>
         <!--#endregion-->
-
+        
         <!-- Separator -->
         <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" 
                    Background="{StaticResource ColorSecondaryTransparent}"/>

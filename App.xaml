@@ -16,9 +16,8 @@
                 <ResourceDictionary Source="/Style/ColorBrush.xaml"/>
                 <ResourceDictionary Source="/Style/Font.xaml"/>
                 <ResourceDictionary Source="/Style/Appbar.xaml"/>
-                <!--
-                <ResourceDictionary Source="/Style/Scrollbar_old.xaml"/>
-                -->
+
+                <ResourceDictionary Source="/control/xaml/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!--#region Convertor -->

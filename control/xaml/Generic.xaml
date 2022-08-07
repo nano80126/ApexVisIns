@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ctrl="clr-namespace:MCAJawIns.Control">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="CustomCard.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type ctrl:CustomCard}" BasedOn="{StaticResource MaterialDesignCustomCard}"/>
+</ResourceDictionary>

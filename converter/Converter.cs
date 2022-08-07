@@ -468,6 +468,9 @@ namespace MCAJawIns.Converter
     #endregion
 
     #region NotNull 轉換器
+    /// <summary>
+    /// 物件不為 Null 轉換器
+    /// </summary>
     [ValueConversion(typeof(object), typeof(bool))]
     public class ObjectNotNullConverter : IValueConverter
     {
@@ -483,13 +486,16 @@ namespace MCAJawIns.Converter
         }
     }
 
-
     /// <summary>
     /// 字串 Equal 轉 Visibility 轉換器
     /// </summary>
     [ValueConversion(typeof(object), typeof(Visibility))]
     public class ObjectNotNullToVisibility : ObjectNotNullConverter
     {
+        public Visibility TrueValue { get; set; } = Visibility.Visible;
+
+        public Visibility FalseValue { get; set; } = Visibility.Collapsed;
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)base.Convert(value, targetType, parameter, culture) ? Visibility.Visible : Visibility.Collapsed;
@@ -502,23 +508,10 @@ namespace MCAJawIns.Converter
     }
     #endregion
 
-    public class BooleanNotNullOrFalseConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
     /// <summary>
     /// Enum 轉 Description
     /// </summary>
+    [ValueConversion(typeof(Enum), typeof(string))]
     public class EnumDescriptionConverter : IValueConverter
     {
         private static string GetEnumDescription(Enum @enum)
@@ -556,20 +549,15 @@ namespace MCAJawIns.Converter
         }
     }
 
-    #region Dictionary 轉換器
+    /// <summary>
+    /// Dictionary 取值轉換器
+    /// </summary>
     [ValueConversion(typeof(Dictionary<string, double>), typeof(double))]
     public class DictionaryGetValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((value as Dictionary<string, double>).TryGetValue(parameter as string, out double v))
-            {
-                return v;
-            }
-            else
-            {
-                return "--";
-            }
+            return (value as Dictionary<string, double>).TryGetValue(parameter as string, out double v) ? v : "--";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -577,11 +565,11 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
-    #endregion
 
     /// <summary>
     /// Multiple value 轉陣列
     /// </summary>
+    [Obsolete("確認功能中")]
     public class CombineValueConvert : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -594,41 +582,4 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
-
-    //public class GetListElementConvert : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        ushort idx = System.Convert.ToUInt16(parameter);
-    //        ObservableCollection<MotionAxis> coll = value as ObservableCollection<MotionAxis>;
-
-    //        Debug.WriteLine(value);
-    //        Debug.WriteLine(coll.Count);
-
-
-    //        return false;
-    //    }
-
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-
-    //public class GetIndexConvertor : IMultiValueConverter
-    //{
-    //    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        ListCollectionView collection = (ListCollectionView)values[1];
-    //        int itemIndex = collection.IndexOf(values[0]);
-
-    //        return itemIndex;
-    //    }
-
-    //    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
 }
