@@ -82,7 +82,6 @@ namespace LockPlate
         public static MongoAccess MongoAccess { get; set; }
         #endregion
        
-
         #region Resources
         // public Crosshair Crosshair;         // 待刪
         // public AssistRect AssistRect;       // 待刪

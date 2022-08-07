@@ -17,7 +17,7 @@
                 <ResourceDictionary Source="/Style/Font.xaml"/>
                 <ResourceDictionary Source="/Style/Appbar.xaml"/>
 
-                <ResourceDictionary Source="/control/xaml/CustomCard.xaml"/>
+                <ResourceDictionary Source="/control/xaml/Generic.xaml"/>
                 <!--
                 <ResourceDictionary Source="/Style/Scrollbar_old.xaml"/>
                 -->
