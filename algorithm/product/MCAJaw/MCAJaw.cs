@@ -1121,11 +1121,9 @@ namespace MCAJawIns
             #region 尋找轉角點
             // 連接輪廓點
             Point[] pts = contours.SelectMany(pts => pts).ToArray();
-            // > baseX && < center
-
+            // 新增空 point Array
             Point[] filter = Array.Empty<Point>();
-            // 點 1, 2
-            //Point p1;
+
             p2 = new();
             switch (leftRight)
             {
@@ -1181,10 +1179,10 @@ namespace MCAJawIns
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new();
+                    roi = new((int)baseX + 2, basePt.Y - 150, 20, 70);
                     break;
                 case JawPos.Right:
-                    roi = new();
+                    roi = new((int)baseX - 22, basePt.Y - 150, 20, 70);
                     break;
                 default:
                     roi = new();
@@ -1212,12 +1210,16 @@ namespace MCAJawIns
             #region 尋找轉角點
             // 連接輪廓點
             Point[] pts = contours.SelectMany(pts => pts).ToArray();
-            // 
+            // 新增空 point Array
             Point[] filter = Array.Empty<Point>();
 
+            // 尋找點
+            p2 = new Point();
             switch (roiPos)
             {
                 case JawPos.Left:
+
+
 
                     break;
                 case JawPos.Right:
@@ -1228,8 +1230,7 @@ namespace MCAJawIns
             }
             #endregion
 
-            p1 = new();
-            p2 = new();
+            p1 = filter[0];
         }
 
         /// <summary>
