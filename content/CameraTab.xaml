@@ -236,12 +236,11 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <ctrl:CustomCard Title="{x:Null}" IconKind="Camera" BodyPadding="8 0">
+            <!--<ctrl:CustomCard Title="{x:Null}" IconKind="Camera" BodyPadding="8 0">
                 <TextBlock Text="123"></TextBlock>
-                <!--<ctrl:CustomCard.Footer>
-                    
-                </ctrl:CustomCard.Footer>-->
-            </ctrl:CustomCard>
+                --><!--<ctrl:CustomCard.Footer>
+                </ctrl:CustomCard.Footer>--><!--
+            </ctrl:CustomCard>-->
         </StackPanel>
         <!--#endregion-->
         

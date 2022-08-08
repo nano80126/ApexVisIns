@@ -444,7 +444,7 @@
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
                             
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088T].Count}"
+                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.176].Count}"
                                                 HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                                 ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
@@ -613,7 +613,7 @@
 
                             <!--//-->
                             <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" 
-                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088T}"
+                                                Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.176}"
                                                 HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
 
                             <!--//-->

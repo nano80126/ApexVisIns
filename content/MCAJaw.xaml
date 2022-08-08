@@ -537,18 +537,18 @@
 
                                         <!--#region 0.088合 -->
                                         <TextBlock Grid.Row="5" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.088T].Name ,StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                   Text="{Binding LotResults[0.176].Name ,StringFormat={}{0} 不良}" 
+                                                   Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
 
                                         <TextBlock Grid.Row="5" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.088T].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088T].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088T" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.088T].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                   Text="{Binding LotResults[0.176].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                   Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                        <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.176" Content="{materialDesign:PackIcon Kind=Minus}"
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.176].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                 Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                        <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.176" Content="{materialDesign:PackIcon Kind=Plus}"
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
                                         <!--#endregion-->
 
                                         <!--#region 後開 -->
