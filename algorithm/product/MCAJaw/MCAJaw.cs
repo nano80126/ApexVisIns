@@ -602,24 +602,25 @@ namespace MCAJawIns
                 // 取得亞像素點
                 Point2f[] sucCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
 
-                Debug.WriteLine($"取得角點 完成 {(DateTime.Now - t1):ss.fff}");
+                Debug.WriteLine($"取得角點 完成 {DateTime.Now - t1:ss.fff}");
 
 #if DEBUG
                 foreach (Point2f item in sucCornerPts)
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                    Debug.WriteLine($"{item}");
                 }
 #endif
                 #endregion
 
                 #region 計算 024
-                spec = specList?[7];    // 024R
+                spec = specList?[7];    // 024R // 輪廓角點 - 角點
                 if (spec?.Enable == true && results != null)
                 {
 
                 }
 
-                spec = specList?[8];    // 024L
+                spec = specList?[8];    // 024L // 輪廓角點 - 角點
                 if (spec?.Enable == true && results != null)
                 {
 
@@ -1411,7 +1412,6 @@ namespace MCAJawIns
             return limitL <= distance && distance <= limitU;
         }
 
-
         /// <summary>
         /// 計算 0.013 距離 (左右分開呼叫)
         /// </summary>
@@ -1433,10 +1433,10 @@ namespace MCAJawIns
             switch (roiPos)
             {
                 case JawPos.Left:
-
+                    roi = new Rect((int)X, basePoint.Y - 10, 20, 20);
                     break;
                 case JawPos.Right:
-
+                    roi = new Rect((int)X - 20, basePoint.Y - 10, 20, 20);
                     break;
                 default:
                     break;
@@ -1445,6 +1445,7 @@ namespace MCAJawIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
+            Cv2.Rectangle(src, roi, Scalar.White, 1);
             // 這邊要確認 lineH 重複性
 #if DEBUG
             foreach (LineSegmentPoint item in lineH)
@@ -1456,11 +1457,13 @@ namespace MCAJawIns
             // 線段計算總長
             double sumLength = lineH.Sum(line => line.Length());
             // 計算 Bot Y
-            double botY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
+            double botY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
             // 計算 distance
             distance = (Math.Abs(cY - botY) * Cam1Unit) + correction;
             // 銷毀 canny
             canny.Dispose();
+
+            Debug.WriteLine($"{roiPos} 013 botY: {botY}");
 
             return limitL <= distance && distance <= limitU;
         }
