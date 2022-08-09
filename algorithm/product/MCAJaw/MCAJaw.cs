@@ -471,8 +471,9 @@ namespace MCAJawIns
             Point cPt2L = new();
             Point cPt1R = new();
             Point cPt2R = new();
-
+            // 輪廓點
             Point[] contourPts = new Point[] { new Point(), new Point(), new Point(), new Point() };
+            // 角點
             Point[] cornerPts = new Point[] { new Point(), new Point(), new Point(), new Point() };
 
             try
@@ -581,57 +582,68 @@ namespace MCAJawIns
                 spec = specList?[5];    // 013R 
                 if (spec?.Enable == true && results != null)
                 {
-
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subPtsArr[0].Y + subPtsArr[1].Y) / 2, out double d_013R);
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(d_013R);
+                    }
                 }
 
                 spec = specList?[6];    // 013L 
                 if (spec?.Enable == true && results != null)
                 {
-
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subPtsArr[2].Y + subPtsArr[3].Y) / 2, out double d_013L);
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(d_013L);
+                    }
                 }
-
-                Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subPtsArr[0].Y + subPtsArr[1].Y) / 2, out double d_013R);
-                Debug.WriteLine($"013R: {d_013R}");
-                Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subPtsArr[2].Y + subPtsArr[3].Y) / 2, out double d_013L);
-                Debug.WriteLine($"013L: {d_013L}");
                 #endregion
 
                 #region 取得影像上方角點
-                DateTime t1 = DateTime.Now;
-                Debug.WriteLine($"取得角點 開始 {t1:ss.fff}");
-
                 // 取得角點 左 (實際為右)
                 GetCornerPoint(src, baseL, LX, JawPos.Left, out cornerPts[0], out cornerPts[1]);
                 // 取得角點 右 (實際為左)
                 GetCornerPoint(src, baseR, RX, JawPos.Right, out cornerPts[2], out cornerPts[3]);
                 // 取得亞像素點
-                Point2f[] sucCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-
-                Debug.WriteLine($"取得角點 完成 {(DateTime.Now - t1).TotalMilliseconds}");
-
+                Point2f[] subCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
 #if DEBUG
-                foreach (Point2f item in sucCornerPts)
+                foreach (Point2f item in subCornerPts)
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
-                    Debug.WriteLine($"{item}");
                 }
 #endif
                 #endregion
-
-
-                
 
                 #region 計算 024
                 spec = specList?[7];    // 024R // 輪廓角點 - 角點
                 if (spec?.Enable == true && results != null)
                 {
+                    double d_024Rb = (subPtsArr[2].Y + subPtsArr[3].Y) / 2;
+                    double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
+                    double d_024R = (Math.Abs(d_024Rb - d_024Rt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(d_024R);
+                    }
                 }
 
                 spec = specList?[8];    // 024L // 輪廓角點 - 角點
                 if (spec?.Enable == true && results != null)
                 {
+                    double d_024Lb = (subPtsArr[0].Y + subPtsArr[1].Y) / 2;
+                    double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
+                    double d_024L = (Math.Abs(d_024Lb - d_024Lt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
+                    lock (results)
+                    {
+                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
+                        results[spec.Item].Add(d_024L);
+                    }
                 }
                 #endregion
 
