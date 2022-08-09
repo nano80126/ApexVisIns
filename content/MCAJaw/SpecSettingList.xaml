@@ -19,20 +19,20 @@
     <Grid x:Name="Content" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0" UseLayoutRounding="True">
         <Grid.Style>
             <Style TargetType="{x:Type Grid}">
-                <Setter Property="Height" Value="780"/>
+                <Setter Property="Height" Value="780" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                        <Setter Property="Height" Value="960"/>
+                        <Setter Property="Height" Value="960" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Grid.Style>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <!--<StackPanel Grid.Row="0" Orientation="Horizontal">-->
@@ -40,14 +40,13 @@
             <TextBlock FontSize="20" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">規格設定 Specification Setting</TextBlock>
             <TextBlock FontSize="16" DockPanel.Dock="Left" Margin="12 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Text="單位 (inch)"></TextBlock>
 
-            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" Margin="0 0 12 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="200" 
-                    ToolTip="儲存變更" BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="18"
-                    Click="SpecSettingSave_Click" Content="儲存 SAVE">
+            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" Margin="0 0 12 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="200" ToolTip="儲存變更"
+                    BorderThickness="0" materialDesign:ButtonAssist.CornerRadius="18" Click="SpecSettingSave_Click" Content="儲存 SAVE">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                         <Style.Triggers>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -56,107 +55,94 @@
         </DockPanel>
         <!--</StackPanel>-->
 
-        <Separator Grid.Row="1" Margin="0 8 0 0 "/>
+        <Separator Grid.Row="1" Margin="0 8 0 0 " />
 
-        <DataGrid x:Name="SpecDataGrid" Grid.Row="2" Margin="0 0 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                  CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
-                  materialDesign:DataGridAssist.CellPadding="15 10" materialDesign:DataGridAssist.ColumnHeaderPadding="10 15"
-                  AlternationCount="100" Background="Transparent">
+        <DataGrid x:Name="SpecDataGrid" Grid.Row="2" Margin="0 0 0 0" ItemsSource="{Binding SpecList, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" CanUserSortColumns="False"
+                CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="15 10"
+                materialDesign:DataGridAssist.ColumnHeaderPadding="10 15" AlternationCount="100" Background="Transparent">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="FontFamily" Value="微軟正黑體"/>
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="FontFamily" Value="微軟正黑體" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontWeight" Value="Bold" />
                 </Style>
 
                 <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}" x:Key="DataGridAlignRightCheckBox">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="Background" Value="{StaticResource ColorTealTransparent}"/>
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="Background" Value="{StaticResource ColorTealTransparent}" />
                 </Style>
 
                 <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}" x:Key="DataGridAlignRightEditingCheckBox">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="Background" Value="{StaticResource ColorTeal}"/>
-                    <Setter Property="Cursor" Value="Hand"/>
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="Background" Value="{StaticResource ColorTeal}" />
+                    <Setter Property="Cursor" Value="Hand" />
                 </Style>
 
                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="HorizontalAlignment" Value="Right" />
                 </Style>
 
                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" x:Key="TextRightDataGridEditColumn">
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                    <Setter Property="MinWidth" Value="80"/>
-                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                    <Setter Property="MinWidth" Value="80" />
+                    <Setter Property="BorderThickness" Value="0" />
                 </Style>
-
 
                 <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
-                    <Setter Property="Background" Value="{StaticResource ColorPrimaryTransparent}"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}"/>
+                    <Setter Property="Background" Value="{StaticResource ColorPrimaryTransparent}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}" />
                 </Style>
-                
+
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
-                    Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"/>
+                    Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}" />
             </DataGrid.Resources>
 
-            
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding ID}" Header="ID" MinWidth="60" IsReadOnly="True"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                <DataGridTextColumn Binding="{Binding ID}" Header="ID" MinWidth="60" IsReadOnly="True" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                        ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                <DataGridCheckBoxColumn Binding="{Binding Enable}" MinWidth="80"
-                                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                        ElementStyle="{StaticResource DataGridAlignRightCheckBox}"
-                                        EditingElementStyle="{StaticResource DataGridAlignRightEditingCheckBox}">
+                <DataGridCheckBoxColumn Binding="{Binding Enable}" MinWidth="80" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                        ElementStyle="{StaticResource DataGridAlignRightCheckBox}" EditingElementStyle="{StaticResource DataGridAlignRightEditingCheckBox}">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="啟用" HorizontalAlignment="Center" TextAlignment="Center"/>
+                        <TextBlock Text="啟用" HorizontalAlignment="Center" TextAlignment="Center" />
                     </DataGridCheckBoxColumn.Header>
                 </DataGridCheckBoxColumn>
 
-                <DataGridTextColumn Binding="{Binding Item}" Header="項目" MinWidth="100" IsReadOnly="True"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"/>
+                <DataGridTextColumn Binding="{Binding Item}" Header="項目" MinWidth="100" IsReadOnly="True" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
+                        ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                 <!--//-->
-                <DataGridTextColumn Header="規格中心" MinWidth="120" Binding="{Binding CenterSpec}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
+                <DataGridTextColumn Header="規格中心" MinWidth="120" Foreground="{StaticResource ColorInfo}" Binding="{Binding CenterSpec}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                        EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
                 <!--//-->
-                <DataGridTextColumn Header="管制下限" MinWidth="120" Binding="{Binding LowerCtrlLimit}" 
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
+                <DataGridTextColumn Header="管制下限" MinWidth="120" Foreground="{StaticResource ColorInfo}" Binding="{Binding LowerCtrlLimit}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                        EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
                 <!--//-->
-                <DataGridTextColumn Header="管制上限" MinWidth="120" Binding="{Binding UpperCtrlLimit}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
+                <DataGridTextColumn Header="管制上限" MinWidth="120" Foreground="{StaticResource ColorInfo}" Binding="{Binding UpperCtrlLimit}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                        EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
                 <!--//-->
-                <DataGridTextColumn Header="校正值" MinWidth="120" Binding="{Binding Correction}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"/>
-
+                <DataGridTextColumn Header="校正值" MinWidth="120" Foreground="{StaticResource ColorInfo}" Binding="{Binding Correction}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                        EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
                 <!--//-->
-                <DataGridTextColumn Header="校正值(開發)" MinWidth="120" Binding="{Binding CorrectionSecret}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}"
-                                    EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"
-                                    Visibility="{Binding Visibility, Source={StaticResource proxy}}">
+                <DataGridTextColumn Header="校正值(開發)" MinWidth="120" Foreground="{StaticResource ColorInfo}" Binding="{Binding CorrectionSecret}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}"
+                        EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" Visibility="{Binding Visibility, Source={StaticResource proxy}}">
                 </DataGridTextColumn>
 
                 <!--//-->
-                <DataGridTextColumn Header="備註" MinWidth="120" Binding="{Binding Note}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
-                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}">
+                <DataGridTextColumn Header="備註" MinWidth="120" Foreground="{StaticResource ColorSecondary}" Binding="{Binding Note}"
+                        HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}">
                     <!--EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"-->
                     <!--保留當作參考-->
                     <DataGridTextColumn.EditingElementStyle>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextRightDataGridEditColumn}">
-                            <Setter Property="Foreground" Value="{StaticResource ColorSecondary}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
@@ -164,9 +150,9 @@
         </DataGrid>
 
         <StackPanel Grid.Row="3" Margin="12 0 0 12" Orientation="Vertical" HorizontalAlignment="Stretch">
-            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 啟用原先未啟用的規格需要確認已校正完畢" Foreground="{StaticResource ColorError}"/>
-            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 量測開度差需要啟用前開、後開與開度差" Foreground="{StaticResource ColorDeepOrange}"/>
-            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 確保在同一批使用同樣的設定，否則可能造成輸出格式錯誤" Foreground="{StaticResource ColorDeepOrange}"/>
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 啟用原先未啟用的規格需要確認已校正完畢" Foreground="{StaticResource ColorError}" />
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 量測開度差需要啟用前開、後開與開度差" Foreground="{StaticResource ColorDeepOrange}" />
+            <TextBlock HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Text="※ 確保在同一批使用同樣的設定，否則可能造成輸出格式錯誤" Foreground="{StaticResource ColorDeepOrange}" />
 
             <!--<TextBlock Text="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"/>-->
             <!--<TextBox materialDesign:TextFieldAssist.UnderlineBrush="Transparent"/>-->
