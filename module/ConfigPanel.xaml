@@ -6,6 +6,7 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:app="clr-namespace:MCAJawIns"
                      xmlns:local="clr-namespace:MCAJawIns.module"
+                     xmlns:ctrl="clr-namespace:MCAJawIns.Control"
                      xmlns:sys="clr-namespace:System;assembly=mscorlib"
                      d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                      mc:Ignorable="d" 

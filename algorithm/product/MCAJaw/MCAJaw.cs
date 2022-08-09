@@ -1,17 +1,16 @@
-﻿using MCAJawIns.Product;
-using Basler.Pylon;
-using OpenCvSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Media;
+using Basler.Pylon;
+using MCAJawIns.Product;
+using OpenCvSharp;
 
 namespace MCAJawIns
 {
-
     public partial class MainWindow : System.Windows.Window
     {
         #region 單位換算
@@ -473,12 +472,15 @@ namespace MCAJawIns
             Point cPt1R = new();
             Point cPt2R = new();
 
+            Point[] contourPts = new Point[] { new Point(), new Point(), new Point(), new Point() };
+            Point[] cornerPts = new Point[] { new Point(), new Point(), new Point(), new Point() };
+
             try
             {
                 GetCoarsePos(src, out Point baseL, out Point baseR);
                 CenterX = (baseL.X + baseR.X) / 2;
 
-                #region 計算輪廓度 // LCY、RCY 輪廓度基準，後面會用到
+                #region 計算輪廓度 // LCY、RCY 輪廓度基準，後面會用到 (舊方法重複性低下)
                 //spec = specList?[12];
                 //CalContourValue(src, baseL, baseR, out double LCY, out double RCY, out double d_005Max, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 //if (spec != null && spec.Enable && results != null)
@@ -504,16 +506,12 @@ namespace MCAJawIns
                 }
                 #endregion
 
-                #region 計算輪廓度 2 左 (實際上是右) 
+                #region 取得輪廓度點 2 
+                // 取得輪廓度點 2 左 (實際上是右) 
                 GetContourCornerPoint(src, baseL, LX, JawPos.Left, out cPt1L, out cPt2L);
-                #endregion
-
-                #region 計算輪廓度 2 右 (實際上是左)
+                // 取得輪廓度點 2 右 (實際上是左)
                 GetContourCornerPoint(src, baseR, RX, JawPos.Right, out cPt1R, out cPt2R);
-                #endregion
-
-                #region 計算輪廓度 (3 項)
-                // 抓取 亞像素角點
+                // 取得亞像素點
                 Point2f[] subPtsArr = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
 #if DEBUG
                 foreach (Point2f item in subPtsArr)
@@ -521,6 +519,9 @@ namespace MCAJawIns
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
                 }
 #endif
+                #endregion
+
+                #region 計算輪廓度 (3 項)
 
                 #region 輪廓度 (高低差)
                 spec = specList?[12];
@@ -576,6 +577,55 @@ namespace MCAJawIns
 
                 #endregion
 
+                #region 計算 013
+                spec = specList?[5];    // 013R 
+                if (spec?.Enable == true && results != null)
+                {
+
+                }
+
+                spec = specList?[6];    // 013L 
+                if (spec?.Enable == true && results != null)
+                {
+
+                }
+                #endregion
+
+                #region 取得影像上方角點
+                DateTime t1 = DateTime.Now;
+                Debug.WriteLine($"取得角點 開始 {t1:ss.fff}");
+
+                // 取得角點 左 (實際為右)
+                GetCornerPoint(src, baseL, LX, JawPos.Left, out cornerPts[0], out cornerPts[1]);
+                // 取得角點 右 (實際為左)
+                GetCornerPoint(src, baseR, RX, JawPos.Right, out cornerPts[2], out cornerPts[3]);
+                // 取得亞像素點
+                Point2f[] sucCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
+
+                Debug.WriteLine($"取得角點 完成 {(DateTime.Now - t1):ss.fff}");
+
+#if DEBUG
+                foreach (Point2f item in sucCornerPts)
+                {
+                    Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
+                }
+#endif
+                #endregion
+
+                #region 計算 024
+                spec = specList?[7];    // 024R
+                if (spec?.Enable == true && results != null)
+                {
+
+                }
+
+                spec = specList?[8];    // 024L
+                if (spec?.Enable == true && results != null)
+                {
+
+                }
+                #endregion
+
                 #region 計算 0.008 左 (實際上是右)
                 spec = specList?[3];
                 if (spec?.Enable == true && results != null)
@@ -602,7 +652,8 @@ namespace MCAJawIns
                 }
                 #endregion
 
-                #region 計算 0.013 左 (實際上是右)
+#if false
+                #region 計算 0.013 左 (實際上是右) (重寫)
                 spec = specList?[5];
                 Cal013DistanceValue(src, baseL, JawPos.Left, LX, out double LtopY013, out double LbotY013, out double d_013R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec?.Enable == true && results != null)
@@ -615,7 +666,7 @@ namespace MCAJawIns
                 }
                 #endregion
 
-                #region 計算 0.013 右 (實際上是左)
+                #region 計算 0.013 右 (實際上是左) (重寫)
                 spec = specList?[6];
                 Cal013DistanceValue(src, baseR, JawPos.Right, RX, out double RtopY013, out double RbotY013, out double d_013L, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec?.Enable == true && results != null)
@@ -654,7 +705,8 @@ namespace MCAJawIns
                         results[spec.Item].Add(d_024L);
                     }
                 }
-                #endregion
+                #endregion  
+#endif
                 spec = null;
             }
             catch (Exception ex)
@@ -935,18 +987,18 @@ namespace MCAJawIns
         /// <param name="src">來源影像</param>
         /// <param name="basePt">基準點</param>
         /// <param name="baseX">roi 基準 X</param>
-        /// <param name="leftRight">Jaw 左、右</param>
+        /// <param name="roiPos">Jaw 左、右</param>
         /// <param name="p1">(out) 輪廓度基準點</param>
         /// <param name="c_005max">(out) 輪廓度</param>
         /// <param name="correction">校正值</param>
         /// <param name="upperLimit">管制上限 (default: 0.005)</param>
         /// <returns></returns>
         [Obsolete("此方法有機會找不到 HoughLine, 使用 GetContourCornerPoint instead")]
-        public bool CalContourValue2(Mat src, Point basePt, double baseX, JawPos leftRight, out Point p1, out Point p2, out double c_005max, double correction = 0, double upperLimit = 0.005)
+        public bool CalContourValue2(Mat src, Point basePt, double baseX, JawPos roiPos, out Point p1, out Point p2, out double c_005max, double correction = 0, double upperLimit = 0.005)
         {
             Rect roi;
 
-            switch (leftRight)
+            switch (roiPos)
             {
                 case JawPos.Left:
                     roi = new((int)baseX + 2, basePt.Y - 50, 20, 70);
@@ -987,7 +1039,7 @@ namespace MCAJawIns
             // 點 1, 2
             //Point p1;
             p2 = new();
-            switch (leftRight)
+            switch (roiPos)
             {
                 case JawPos.Left:
                     filter = pts.Where(pt => pt.X > baseX && pt.Y < center).Distinct().OrderBy(pt => pt.X).ToArray();
@@ -1082,27 +1134,26 @@ namespace MCAJawIns
         /// <param name="src">來源影像</param>
         /// <param name="basePt">基準點</param>
         /// <param name="baseX">基準 X (從前開取得)</param>
-        /// <param name="leftRight">Jaw 左、右</param>
+        /// <param name="roiPos">Jaw 左、右</param>
         /// <param name="p1">內側角點</param>
         /// <param name="p2">外側角點</param>
-        public void GetContourCornerPoint(Mat src, Point basePt, double baseX, JawPos leftRight, out Point p1, out Point p2)
+        public void GetContourCornerPoint(Mat src, Point basePt, double baseX, JawPos roiPos, out Point p1, out Point p2)
         {
             Rect roi;
 
-            switch (leftRight)
+            switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new((int)baseX + 2, basePt.Y - 50, 20, 70);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 50, 20, 70);
                     break;
                 case JawPos.Right:
-                    roi = new((int)baseX - 22, basePt.Y - 50, 20, 70);
+                    roi = new Rect((int)baseX - 22, basePt.Y - 50, 20, 70);
                     break;
                 default:
-                    roi = new();
+                    roi = new Rect();
                     break;
             }
 
-            LineSegmentPoint[] lineH;
             double min, max, center;
 
             // 取得 Canny
@@ -1111,7 +1162,7 @@ namespace MCAJawIns
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
             #region 計算中心值
-            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out lineH, 2, 2, 5);
+            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
 
             min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
@@ -1124,13 +1175,13 @@ namespace MCAJawIns
             // 新增空 point Array
             Point[] filter = Array.Empty<Point>();
 
-            p2 = new();
-            switch (leftRight)
+            p2 = new Point();
+            switch (roiPos)
             {
                 case JawPos.Left:
                     filter = pts.Where(pt => pt.X > baseX && pt.Y < center).Distinct().OrderBy(pt => pt.X).ToArray();
                     // 尋找點 2
-                    for (int i = 1; i <= filter.Length; i++)
+                    for (int i = 1; i < filter.Length; i++)
                     {
                         if (i == 1) { continue; }
 
@@ -1144,7 +1195,7 @@ namespace MCAJawIns
                 case JawPos.Right:
                     filter = pts.Where(pt => pt.X < baseX && pt.Y < center).Distinct().OrderByDescending(pt => pt.X).ToArray();
                     // 尋找點 2
-                    for (int i = 1; i <= filter.Length; i++)
+                    for (int i = 1; i < filter.Length; i++)
                     {
                         if (i == 1) { continue; }
 
@@ -1172,25 +1223,23 @@ namespace MCAJawIns
         /// <param name="roiPos">ROI 位置</param>
         /// <param name="p1">內側角點</param>
         /// <param name="p2">外側角點</param>
-        public void GetCornetPoint(Mat src, Point basePt, double baseX, JawPos roiPos, out Point p1, out Point p2)
+        public void GetCornerPoint(Mat src, Point basePt, double baseX, JawPos roiPos, out Point p1, out Point p2)
         {
             Rect roi;
 
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new((int)baseX + 2, basePt.Y - 150, 20, 70);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 150, 20, 70);
                     break;
                 case JawPos.Right:
-                    roi = new((int)baseX - 22, basePt.Y - 150, 20, 70);
+                    roi = new Rect((int)baseX - 22, basePt.Y - 150, 20, 70);
                     break;
                 default:
-                    roi = new();
+                    roi = new Rect();
                     break;
             }
 
-
-            LineSegmentPoint[] lineH;
             double min, max, center;
 
             // 取得 Canny
@@ -1199,7 +1248,7 @@ namespace MCAJawIns
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
             #region 計算中心值
-            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out lineH, 2, 2, 5);
+            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
 
             min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
@@ -1218,14 +1267,36 @@ namespace MCAJawIns
             switch (roiPos)
             {
                 case JawPos.Left:
+                    // 確認會不會找到錯誤點
+                    filter = pts.Where(pt => pt.X > baseX && pt.Y > center).Distinct().OrderBy(pt => pt.X).ToArray();
+                    // 尋找點 2
+                    for (int i = 1; i < filter.Length; i++)
+                    {
+                        if (i == 1) { continue; }
 
-
-
+                        if (filter[^i].X < filter[^(i - 1)].X && filter[^i].Y == filter[^(i - 1)].Y)
+                        {
+                            p2 = filter[^(i - 1)];
+                            break;
+                        }
+                    }
                     break;
                 case JawPos.Right:
+                    filter = pts.Where(pt => pt.X > baseX && pt.Y > center).Distinct().OrderByDescending(pt => pt.X).ToArray();
+                    // 尋找點 2
+                    for (int i = 1; i < filter.Length; i++)
+                    {
+                        if (i == 1) { continue; }
 
+                        if (filter[^i].X > filter[^(i - 1)].X && filter[^i].Y == filter[^(i - 1)].Y)
+                        {
+                            p2 = filter[^(i - 1)];
+                            break;
+                        }
+                    }
                     break;
                 default:
+                    //p2 = new Point();
                     break;
             }
             #endregion
@@ -1270,7 +1341,7 @@ namespace MCAJawIns
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
-        /// <param name="leftRight">Jaw 左、右</param>
+        /// <param name="roiPos">Jaw 左、右</param>
         /// <param name="X">ROI X (從前開取得)</param>
         /// <param name="topY">上邊緣</param>
         /// <param name="botY">下邊緣</param>
@@ -1278,19 +1349,19 @@ namespace MCAJawIns
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
-        public bool Cal013DistanceValue(Mat src, Point basePoint, JawPos leftRight, double X, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
+        public bool Cal013DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
-            //Rect roi = new(basePoint.X - 20, basePoint.Y - 70, 40, 90);
-            Rect roi = new();
+            // Rect roi = new(basePoint.X - 20, basePoint.Y - 70, 40, 90);
+            Rect roi = new Rect();
 
-            switch (leftRight)
+            switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new((int)X + 1, basePoint.Y - 50, (int)(basePoint.X - X - 2), 70);
+                    roi = new Rect((int)X + 1, basePoint.Y - 50, (int)(basePoint.X - X - 2), 70);
                     break;
                 case JawPos.Right:
-                    roi = new(basePoint.X + 1, basePoint.Y - 50, (int)(X - basePoint.X - 2), 70);
+                    roi = new Rect(basePoint.X + 1, basePoint.Y - 50, (int)(X - basePoint.X - 2), 70);
                     break;
                 default:
                     break;
@@ -1301,22 +1372,11 @@ namespace MCAJawIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
-            //Cv2.Rectangle(src, roi, Scalar.Black, 2);
-
-            //Cv2.ImShow($"013canny{leftRight}", canny);
-
-            //Debug.WriteLine("-------------------------013-------------------------");
-            //foreach (LineSegmentPoint item in lineH)
-            //{
-            //    Debug.WriteLine($"{item.P1} {item.P2} {item.Length()}");
-            //}
-            //Debug.WriteLine("-----------------------------------------------------");
-
             double min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             double max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
             double center = (min + max) / 2;
 
-            //Cv2.ImShow($"canny{leftRight}", canny);
+            // Cv2.ImShow($"canny{leftRight}", canny);
 
             // 小於中心值
             IEnumerable<LineSegmentPoint> minH = lineH.Where(line => (line.P1.Y + line.P2.Y) / 2 < center);
@@ -1347,11 +1407,60 @@ namespace MCAJawIns
             }
             // 銷毀 canny
             canny.Dispose();
-            //Debug.WriteLine(distance);
 
-            //Debug.WriteLine($"{leftRight} TopY: {topY} BotY: {botY}, distance: {distance}");
-            //Debug.WriteLine($"------------------------------------------------");
-            //Debug.WriteLine($"{leftRight} :013 Value {distance}");
+            return limitL <= distance && distance <= limitU;
+        }
+
+
+        /// <summary>
+        /// 計算 0.013 距離 (左右分開呼叫)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="basePoint">基準點</param>
+        /// <param name="roiPos">Jaw 左 or右 ROI</param>
+        /// <param name="X">ROI X (從前開取得)</param>
+        /// <param name="cY">013 基準 1 (從輪廓度取得)</param>
+        /// <param name="distance">(out) 013 量測距離</param>
+        /// <param name="correction">校正值</param>
+        /// <param name="limitL">管制下限</param>
+        /// <param name="limitU">管制上限</param>
+        /// <returns><strong>是否合格</strong></returns>
+        public bool Cal013DistanceValue2(Mat src, Point basePoint, JawPos roiPos, double X, double cY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
+        {
+            // 計算 roi
+            Rect roi = new Rect();
+
+            switch (roiPos)
+            {
+                case JawPos.Left:
+
+                    break;
+                case JawPos.Right:
+
+                    break;
+                default:
+                    break;
+            }
+
+            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+            Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
+
+            // 這邊要確認 lineH 重複性
+#if DEBUG
+            foreach (LineSegmentPoint item in lineH)
+            {
+                Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
+            }
+#endif
+
+            // 線段計算總長
+            double sumLength = lineH.Sum(line => line.Length());
+            // 計算 Bot Y
+            double botY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
+            // 計算 distance
+            distance = (Math.Abs(cY - botY) * Cam1Unit) + correction;
+            // 銷毀 canny
+            canny.Dispose();
 
             return limitL <= distance && distance <= limitU;
         }
@@ -1361,7 +1470,7 @@ namespace MCAJawIns
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
-        /// <param name="leftRight"></param>
+        /// <param name="roiPos"></param>
         /// <param name="X">ROI X (從前開取得)</param>
         /// <param name="refY">參考 Y (從 013 或輪廓取得)</param>
         /// <param name="botY">上邊緣</param>
@@ -1370,20 +1479,20 @@ namespace MCAJawIns
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU"></param>
         /// <returns></returns>
-        public bool Cal024DistanceValue(Mat src, Point basePoint, JawPos leftRight, double X, double refY, out double botY, out double distance, double correction, double limitL = 0.0225, double limitU = 0.0255)
+        public bool Cal024DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, double refY, out double botY, out double distance, double correction, double limitL = 0.0225, double limitU = 0.0255)
         {
             Rect roi;
 
-            switch (leftRight)
+            switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new((int)X + 1, basePoint.Y - 150, (int)(basePoint.X - X - 2), 70);
+                    roi = new Rect((int)X + 1, basePoint.Y - 150, (int)(basePoint.X - X - 2), 70);
                     break;
                 case JawPos.Right:
-                    roi = new(basePoint.X + 1, basePoint.Y - 150, (int)(X - basePoint.X - 2), 70);
+                    roi = new Rect(basePoint.X + 1, basePoint.Y - 150, (int)(X - basePoint.X - 2), 70);
                     break;
                 default:
-                    roi = new();
+                    roi = new Rect();
                     break;
             }
 

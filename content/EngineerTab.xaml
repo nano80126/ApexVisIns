@@ -5,14 +5,18 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:uc="clr-namespace:MCAJawIns.module"
+            xmlns:panel="clr-namespace:MCAJawIns.Panel"
             xmlns:app="clr-namespace:MCAJawIns"
             xmlns:local="clr-namespace:MCAJawIns.content"
+            xmlns:ctrl="clr-namespace:MCAJawIns.Control"
             mc:Ignorable="d" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded"
             d:DesignHeight="900" d:DesignWidth="1600"
             UseLayoutRounding="True"
             Orientation="Vertical">
+    
+    
     <StackPanel.Resources>
         <!-- Crosshair -->
         <app:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
@@ -442,7 +446,9 @@
                     <!--DataContext 與 Toolbar 同步-->
                     <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />
                     <!--//-->
-                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}"/>
+                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" />
+             
+                    <!--<panel:CameraConfigPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}"/>-->
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
