@@ -589,6 +589,11 @@ namespace MCAJawIns
                 {
 
                 }
+
+                Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subPtsArr[0].Y + subPtsArr[1].Y) / 2, out double d_013R);
+                Debug.WriteLine($"013R: {d_013R}");
+                Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subPtsArr[2].Y + subPtsArr[3].Y) / 2, out double d_013L);
+                Debug.WriteLine($"013L: {d_013L}");
                 #endregion
 
                 #region 取得影像上方角點
@@ -602,7 +607,7 @@ namespace MCAJawIns
                 // 取得亞像素點
                 Point2f[] sucCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
 
-                Debug.WriteLine($"取得角點 完成 {DateTime.Now - t1:ss.fff}");
+                Debug.WriteLine($"取得角點 完成 {(DateTime.Now - t1).TotalMilliseconds}");
 
 #if DEBUG
                 foreach (Point2f item in sucCornerPts)
@@ -612,6 +617,9 @@ namespace MCAJawIns
                 }
 #endif
                 #endregion
+
+
+                
 
                 #region 計算 024
                 spec = specList?[7];    // 024R // 輪廓角點 - 角點
@@ -1231,10 +1239,10 @@ namespace MCAJawIns
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)baseX + 2, basePt.Y - 150, 20, 70);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 130, 20, 50);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)baseX - 22, basePt.Y - 150, 20, 70);
+                    roi = new Rect((int)baseX - 22, basePt.Y - 130, 20, 50);
                     break;
                 default:
                     roi = new Rect();
@@ -1268,7 +1276,6 @@ namespace MCAJawIns
             switch (roiPos)
             {
                 case JawPos.Left:
-                    // 確認會不會找到錯誤點
                     filter = pts.Where(pt => pt.X > baseX && pt.Y > center).Distinct().OrderBy(pt => pt.X).ToArray();
                     // 尋找點 2
                     for (int i = 1; i < filter.Length; i++)
@@ -1283,7 +1290,7 @@ namespace MCAJawIns
                     }
                     break;
                 case JawPos.Right:
-                    filter = pts.Where(pt => pt.X > baseX && pt.Y > center).Distinct().OrderByDescending(pt => pt.X).ToArray();
+                    filter = pts.Where(pt => pt.X < baseX && pt.Y > center).Distinct().OrderByDescending(pt => pt.X).ToArray();
                     // 尋找點 2
                     for (int i = 1; i < filter.Length; i++)
                     {
@@ -1436,7 +1443,7 @@ namespace MCAJawIns
                     roi = new Rect((int)X, basePoint.Y - 10, 20, 20);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)X - 20, basePoint.Y - 10, 20, 20);
+                    roi = new Rect((int)X - 19, basePoint.Y - 10, 20, 20);
                     break;
                 default:
                     break;
@@ -1445,7 +1452,7 @@ namespace MCAJawIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
-            Cv2.Rectangle(src, roi, Scalar.White, 1);
+            Cv2.Rectangle(src, roi, Scalar.Black, 1);
             // 這邊要確認 lineH 重複性
 #if DEBUG
             foreach (LineSegmentPoint item in lineH)
