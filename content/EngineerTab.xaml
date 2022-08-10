@@ -16,7 +16,6 @@
             UseLayoutRounding="True"
             Orientation="Vertical">
     
-    
     <StackPanel.Resources>
         <!-- Crosshair -->
         <app:Crosshair x:Key="Crosshair" Stroke="{StaticResource ColorDeepOrange}" Enable="False"/>
@@ -447,8 +446,10 @@
                     <uc:ConfigPanel x:Name="ConfigPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />
                     <!--//-->
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" />
-             
-                    <!--<panel:CameraConfigPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}"/>-->
+
+                    <panel:CameraConfigPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}">
+                        
+                    </panel:CameraConfigPanel>
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">

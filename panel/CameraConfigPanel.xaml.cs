@@ -93,12 +93,57 @@ namespace MCAJawIns.Panel
 
         private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
         {
+            Cam = DataContext as BaslerCam;
 
+            Initialize_JsonFile();
+
+            // SetBinding();
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// 載入 Config Json File
+        /// </summary>
+        private void Initialize_JsonFile()
+        {
+            if (string.IsNullOrEmpty(Cam?.ModelName)) { return; }
+
+            string path = $@"{ConfigsDirectory}/{Cam.ModelName}";
+
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path, "*.json", SearchOption.TopDirectoryOnly);
+
+                foreach (string file in files)
+                {
+                    if (!Cam.ConfigList.Contains(file))
+                    {
+                        Cam.ConfigList.Add(file);
+                    }
+                }
+            }
+            else
+            {
+                _ = Directory.CreateDirectory(path);
+            }
+        }
+
+        /// <summary>
+        /// 同步 Config 和 Camera
+        /// </summary>
+        /// <param name="config">目標組態</param>
+        /// <param name="camera">來源相機</param>
+        public void SyncConfiguration(BaslerConfig config, BaslerCam camera)
+        {
+            config.Name = camera.ConfigName;
+            config.Width = camera.Width;
+            config.Height = camera.Height;
+            config.FPS = camera.FPS;
+            config.ExposureTime = camera.ExposureTime;
         }
 
         private void ConfigSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)

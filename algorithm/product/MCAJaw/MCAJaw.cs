@@ -605,8 +605,9 @@ namespace MCAJawIns
                 #endregion
 
                 #region 取得影像上方角點 (計算 024 用)
+                /// 
                 /// 先過驗證
-                /// 在中、大 JAW 寫啟用、關閉邏輯
+                /// 在中、大 JAW 重寫啟用、關閉邏輯
                 ///
 
 
@@ -1102,11 +1103,6 @@ namespace MCAJawIns
             }
             // 點 1
             p1 = filter[0];
-
-#if DEBUG
-            //Cv2.Circle(src, p1, 5, Scalar.Gray, 2);
-            //Cv2.Circle(src, p2, 5, Scalar.Gray, 2);
-#endif
             #endregion
 
             c_005max = (Math.Abs(p1.Y - p2.Y) * Cam1Unit) + correction;
