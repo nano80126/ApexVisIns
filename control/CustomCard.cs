@@ -27,6 +27,8 @@ namespace LockPlate.Control
 
         public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
 
+        public static readonly DependencyProperty SubTitleProperty = DependencyProperty.RegisterAttached(nameof(SubTitle), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
+
         public static readonly DependencyProperty IconKindProperty = DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(CustomCard), new PropertyMetadata(PackIconKind.Abc));
 
         //private static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content), typeof(DependencyObject), typeof(CustomCard), new PropertyMetadata(null));
@@ -47,6 +49,15 @@ namespace LockPlate.Control
         {
             get => (string)GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
+        }
+
+        /// <summary>
+        /// Card Header Text Align Right
+        /// </summary>
+        public string SubTitle
+        {
+            get => (string)GetValue(SubTitleProperty);
+            set => SetValue(SubTitleProperty, value);
         }
 
         /// <summary>
