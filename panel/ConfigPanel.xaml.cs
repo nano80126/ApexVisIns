@@ -12,9 +12,9 @@ using MCAJawIns.content;
 namespace MCAJawIns.Panel
 {
     /// <summary>
-    /// CameraConfigPanel.xaml 的互動邏輯
+    /// ConfigPanel.xaml 的互動邏輯
     /// </summary>
-    public partial class CameraConfigPanel : Control.CustomCard
+    public partial class ConfigPanel : Control.CustomCard
     {
 #if false
         /// <summary>
@@ -40,7 +40,7 @@ namespace MCAJawIns.Panel
         /// </summary>
         private string ConfigsDirectory { get; } = @"./configs";
 
-        public CameraConfigPanel()
+        public ConfigPanel()
         {
             InitializeComponent();
         }

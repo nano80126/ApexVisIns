@@ -61,7 +61,6 @@
                     <ToggleButton.Style>
                         <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
                             <Style.Triggers>
-                                <!--="{Binding ElementName=CamSelector, Path=SelectedIndex, UpdateSourceTrigger=PropertyChanged}" Value="-1"-->
                                 <!-- CamSelector SelectedIndex 有機會自己跳掉 -->
                                 <DataTrigger Value="True">
                                     <DataTrigger.Binding>
@@ -72,22 +71,7 @@
                                     </DataTrigger.Binding>
                                     <Setter Property="IsEnabled" Value="False" />
                                 </DataTrigger>
-                                <!--<DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>-->
-                                <!--<MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition>
-                                            <Condition.Binding>
-                                                <MultiBinding>
-                                                    <Binding ElementName="CamSelector" Path="SelectedIndex" Converter="{StaticResource NotEqualConverter}" ConverterParameter="-1"/>
-                                                    <Binding></Binding>
-                                                </MultiBinding>
-                                            </Condition.Binding>
-                                        </Condition>
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </MultiDataTrigger>-->
+
                             </Style.Triggers>
                             <Setter Property="IsEnabled" Value="True" />
                             <!-- Camera 選擇不為 -1, Camera 不為 Grabbing -->
@@ -117,7 +101,6 @@
                 <!--連續擷取-->
                 <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black" ToolTip="(F6) Continuous Shot"
                         Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay" />
@@ -142,11 +125,9 @@
                 <Separator />
                 <Button x:Name="ToggleStreamGrabber" VerticalAlignment="Center" Click="ToggleStreamGrabber_Click" Focusable="False" Foreground="Black"
                         ToolTip="(F7) Toggle Stream Grabber" Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay" />
-                            <!--<Binding Path="" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>-->
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
@@ -166,17 +147,14 @@
                 <!--//-->
                 <Button x:Name="RetrieveImage" VerticalAlignment="Center" Click="RetrieveImage_Click" Focusable="False" Foreground="Black" ToolTip="(F8) Retrieve Image"
                         Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--IsEnabled="{Binding IsOpen, FallbackValue=False}"-->
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay" />
-                            <!--<Binding Path="IsContinuousGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"/>-->
                         </MultiBinding>
                     </Button.IsEnabled>
-
+                    <!--//-->
                     <materialDesign:PackIcon Width="30" Height="26" Kind="ImageOutline" />
                 </Button>
-
                 <!--//-->
                 <Separator />
                 <!--解析度 (Resolution)-->
@@ -245,7 +223,6 @@
                 </Button>
                 <!--//-->
                 <Separator />
-
 
                 <!--#region Region For Test Region For Test Region For Test Region For Test Region For Test -->
                 <!--
@@ -454,10 +431,12 @@
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--DataContext="{StaticResource BaslerCam}"-->
                     <!--DataContext 與 Toolbar 同步-->
-                    <panel:CameraConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
+                    <panel:ConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--<uc:ConfigPanel x:Name="ConfigPanel1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />-->
                     <!--//-->
-                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" />
+                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" Visibility="Collapsed" />
+
+                    <panel:OffsetPanel Background="LightCyan" />
                     <!--//-->
                     <!--<panel:CameraConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />-->
                 </StackPanel>

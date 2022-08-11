@@ -1,4 +1,4 @@
-﻿<ctrl:CustomCard x:Class="MCAJawIns.Panel.CameraConfigPanel" 
+﻿<ctrl:CustomCard x:Class="MCAJawIns.Panel.ConfigPanel" 
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -23,13 +23,7 @@
 
     <DockPanel x:Name="Body" >
         <TextBlock DockPanel.Dock="Left" Padding="0 0" FontSize="16" VerticalAlignment="Center" TextAlignment="Center">
-            <!--<TextBlock.Text >
-                <MultiBinding StringFormat="{}{0,4:D0} X {1,4:D0}, FPS: {2,5:F1}">
-                    <Binding Path="Width" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" />
-                    <Binding Path="Height" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" />
-                    <Binding Path="FPS" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" />
-                </MultiBinding>
-            </TextBlock.Text>-->
+            <!-- Resolution -->
             <Run>
                 <Run.Text>
                     <Binding Path="Width" StringFormat="{}{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
