@@ -1,17 +1,20 @@
-﻿using Basler.Pylon;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using MCAJawIns.content;
-using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
+using Basler.Pylon;
+using MaterialDesignThemes.Wpf;
+using MCAJawIns.content;
+
+// 
+// 此檔案測試完作廢
+// 此檔案測試完作廢
+// 此檔案測試完作廢
+// 
 
 namespace MCAJawIns.module
 {
@@ -105,7 +108,7 @@ namespace MCAJawIns.module
             Initialize_JsonFile();
             // ConfigDelBtn 綁定Config Selector 
             SetBinding();
-            //Debug.WriteLine("Combobox opened");
+            // Debug.WriteLine("Combobox opened");
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
@@ -119,9 +122,8 @@ namespace MCAJawIns.module
             }
             // 重置 Selected Index 
             ConfigSelector.SelectedIndex = -1;
-
-            //Debug.WriteLine($"{Cam?.Camera != null}");
-            //Debug.WriteLine("Combobox closed");
+            // Debug.WriteLine($"{Cam?.Camera != null}");
+            // Debug.WriteLine("Combobox closed");
         }
 
         /// <summary>
@@ -148,6 +150,7 @@ namespace MCAJawIns.module
                     //     BaslerCam.ConfigList.Add(file);
                     // }
                     // if (!MainWindow.BaslerCam.ConfigList.Contains(file))
+
                     if (!Cam.ConfigList.Contains(file))
                     {
                         Cam.ConfigList.Add(file);
@@ -206,8 +209,6 @@ namespace MCAJawIns.module
                 }
                 else
                 {
-                    // 
-                    //Debug.WriteLine("組態檔不存在");
                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "組態檔不存在");
                 }
             }
@@ -215,7 +216,7 @@ namespace MCAJawIns.module
 
         private void ConfigSaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            // 按下儲存 Property才會變更
+            // 按下儲存 Property 才會變更
             // BaslerCam baslerCam = MainWindow.BaslerCam;
             // BaslerCam baslerCam = DataContext as BaslerCam;
 #if false
@@ -242,7 +243,7 @@ namespace MCAJawIns.module
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
         {
-            //if (MainWindow.BaslerCam?.Camera != null)
+            // if (MainWindow.BaslerCam?.Camera != null)
             if (Cam?.Camera != null)
             {
                 // BaslerCam baslerCam = MainWindow.BaslerCam;
@@ -293,8 +294,8 @@ namespace MCAJawIns.module
 
 
                 // 重置 ImageSource，因為 Width & Height 有變更
-                //MainWindow.ImageSource = null;
-                //EngineerTab.Indicator.ImageSource = null;
+                // MainWindow.ImageSource = null;
+                // EngineerTab.Indicator.ImageSource = null;
                 EngineerTab.Indicator.Image = null;
 
                 // Reset ZoomRatio // 這邊需要修正

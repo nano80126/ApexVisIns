@@ -123,14 +123,13 @@
                 </ComboBox>
 
                 <Button Grid.Row="1" Grid.Column="1" x:Name="ConfigDelBtn" Margin="8 0" Content="刪除" Foreground="{StaticResource ColorOrange}"
-                        IsEnabled="{Binding SelectedIndex, ElementName=ConfigSelector, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="ConfigDelBtn_Click" />
                 <!-- // -->
 
                 <!-- Row 2, Width -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="8 0 0 0" Text="Width" />
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="ConfigWidth" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
-                        Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus"  />
+                        Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!-- Text="{Binding Path=Config.Width, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 3, Height -->
                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="8 0 0 0" Text="Height" />
@@ -140,13 +139,13 @@
                 <!-- Row 4, FPS -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="8 0 0 0" Text="FPS" />
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="ConfigFPS" Padding="0 3" Text="{Binding Path=Config.FPS, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
-                        GotFocus="Textbox_GotFocus"/>
+                        GotFocus="Textbox_GotFocus" />
                 <!--    Text="{Binding Path=Config.FPS, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F1}}"-->
                 <!-- Row 5, 曝光時間 -->
                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="8 0 0 0" Text="Exposure Time" />
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="ConfigExposureTime" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
                         materialDesign:TextFieldAssist.TextBoxViewMargin="10 0" Text="{Binding Path=Config.ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
-                        GotFocus="Textbox_GotFocus"/>
+                        GotFocus="Textbox_GotFocus" />
                 <!--    Text="{Binding Path=Config.ExposureTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                 <!-- Row 6, 組態名稱 -->
                 <TextBox Grid.Row="6" Grid.ColumnSpan="2" x:Name="ConfigName" Width="auto" Padding="0 3" materialDesign:HintAssist.Hint="Configuration Name"

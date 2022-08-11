@@ -241,6 +241,8 @@ namespace MCAJawIns
     {
         private Mat _img;
 
+        private Mat _oriImg;
+
         public Mat Image
         {
             get => _img;
@@ -252,6 +254,16 @@ namespace MCAJawIns
                 OnPropertyChanged(nameof(R));
                 OnPropertyChanged(nameof(G));
                 OnPropertyChanged(nameof(B));
+            }
+        }
+
+        public Mat OriImage
+        {
+            get => _oriImg;
+            set
+            {
+                _oriImg = value;
+                OnPropertyChanged();
             }
         }
 
