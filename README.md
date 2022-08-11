@@ -183,6 +183,11 @@ else...
 
 * [ ] 馬達資訊同步?
 
+* [ ] ModbusMotorTab 測試結束，刪除舊程式碼
+	* 定時 polling 馬達資訊
+	* 完善功能 ?
+	* 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

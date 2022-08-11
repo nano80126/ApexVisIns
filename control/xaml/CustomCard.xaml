@@ -6,14 +6,14 @@
     <ResourceDictionary.MergedDictionaries>
 
     </ResourceDictionary.MergedDictionaries>
-
+    <!--//-->
     <Style TargetType="{x:Type TextBlock}" x:Key="HeaderStyle" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
         <Setter Property="FontSize" Value="19.2" />
         <Setter Property="FontFamily" Value="consolas" />
     </Style>
-
+    <!--//-->
     <Style x:Key="MaterialDesignCustomCard" TargetType="{x:Type ctrl:CustomCard}">
         <Setter Property="Margin" Value="2 0 2 8" />
         <Setter Property="Padding" Value="6 8" />
@@ -39,29 +39,22 @@
                                 <TextBlock DockPanel.Dock="Left" Text="{Binding Title, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
                                         Style="{StaticResource HeaderStyle}" />
 
-                                <TextBlock DockPanel.Dock="Right" FontSize="16" Foreground="{StaticResource ColorSecondary}" Text="{TemplateBinding SubTitle}" Style="{StaticResource HeaderStyle}" />
+                                <TextBlock DockPanel.Dock="Right" FontSize="16" Foreground="{StaticResource ColorSecondary}" Text="{TemplateBinding SubTitle}"
+                                        Style="{StaticResource HeaderStyle}" />
                                 <TextBlock Text="{x:Null}" />
                             </DockPanel>
                             <!--//-->
-                            <!--AdornerDecorator CacheMode="">
-                            </AdornerDecorator>-->
                             <Separator DockPanel.Dock="Top" Margin="0 8" />
                             <!--//-->
                             <!--<ContentControl DockPanel.Dock="Top" Content="{Binding Content}" Background="Red"/>-->
-                            <!--<AdornerDecorator DockPanel.Dock="Top">
-                            </AdornerDecorator>-->
                             <AdornerDecorator DockPanel.Dock="Top">
                                 <ContentPresenter Margin="{TemplateBinding BodyPadding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentStringFormat="{TemplateBinding ContentStringFormat}" />
                             </AdornerDecorator>
-                            <!--<ContentPresenter DockPanel.Dock="Top" x:Name="MainContent2" Content="{Binding Path=Content}"/>-->
                             <!--//-->
-                            <!--<Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{Binding Footer, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ObjectNotNullToVisibility}}"/>-->
                             <Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{TemplateBinding Footer, Converter={StaticResource ObjectNotNullToVisibility}}" />
-                            <!--Visibility="{Binding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"-->
                             <!--//-->
                             <AdornerDecorator DockPanel.Dock="Bottom">
-                                <!--<ContentPresenter Content="{Binding Footer, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"/>-->
                                 <ContentPresenter Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}" />
                             </AdornerDecorator>
                         </DockPanel>
