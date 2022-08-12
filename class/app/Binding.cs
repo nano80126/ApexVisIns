@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -378,7 +379,7 @@ namespace MCAJawIns
         }
         // // // // // //
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged([CallerMemberName]string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -417,7 +418,7 @@ namespace MCAJawIns
                 if (value != _enable)
                 {
                     _enable = value;
-                    OnPropertyChanged("Enable");
+                    OnPropertyChanged();
                 }
             }
         }
@@ -442,6 +443,43 @@ namespace MCAJawIns
         }
     }
 
+    public class AssistPoints : INotifyPropertyChanged
+    {
+        private bool _enable;
+
+        public AssistPoints()
+        {
+            Source = new ObservableCollection<AssistPoint>();
+        }
+
+        /// <summary>
+        /// 點集合
+        /// </summary>
+        public ObservableCollection<AssistPoint> Source { get; set; }
+            
+        /// <summary>
+        /// 是否啟用
+        /// </summary>
+        public bool Enable
+        {
+            get => _enable;
+            set
+            {
+                if (value != _enable)
+                {
+                    _enable = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 
     /// <summary>
     /// 輔助用 Point
@@ -452,10 +490,17 @@ namespace MCAJawIns
         private double _x;
         private double _y;
         // //
-        private SolidColorBrush _stroke = new(Colors.Black);
+        private SolidColorBrush _stroke = new SolidColorBrush(Color.FromRgb(255, 0, 0));
         private double _strokeThickness = 1;
-        private bool _enable;
         #endregion
+
+        public AssistPoint(double x, double y, SolidColorBrush stroke, double strokeThickness = 1)
+        {
+            X = x;
+            Y = y;
+            Stroke = stroke;
+            StrokeThickness = strokeThickness;
+        }
 
         /// <summary>
         /// Point X
@@ -490,70 +535,19 @@ namespace MCAJawIns
         /// <summary>
         /// Point 顏色
         /// </summary>
-        public SolidColorBrush Stroke
-        {
-            get => _stroke;
-            set
-            {
-                if (value != _stroke)
-                {
-                    _stroke = value;
-                    OnPropertyChanged(nameof(Stroke));
-                }
-            }
-        }
-
-        public double StrokeThickness
-        {
-            get => _strokeThickness;
-            set
-            {
-                if (value != _strokeThickness)
-                {
-                    _strokeThickness = value;
-                    OnPropertyChanged(nameof(StrokeThickness));
-                }
-            }
-        }
-
-        /// <summary>
-        /// 是否啟用
-        /// </summary>
-        public bool Enable
-        {
-            get => _enable;
-            set
-            {
-                if (value != _enable)
-                {
-                    _enable = value;
-                    OnPropertyChanged(nameof(Enable));
-                }
-            }
-        }
+        public SolidColorBrush Stroke { get; set; }
+        
+        public double StrokeThickness { get; set; }
 
         /// <summary>
         /// 設置 point
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public void AssignPoint(double x, double y)
+        public void SetPoint(double x, double y)
         {
             _x = x;
             _y = y;
-            OnPropertyChanged();
-        }
-
-        /// <summary>
-        /// 設置 Point
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="offset"></param>
-        public void AssignPoint(double x, double y, Point offset)
-        {
-            _x = x + offset.X;
-            _y = y + offset.Y;
             OnPropertyChanged();
         }
 

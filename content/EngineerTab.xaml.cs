@@ -19,6 +19,7 @@ using Basler;
 using System.Threading;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
+using System.Collections.ObjectModel;
 
 namespace MCAJawIns.content
 {
@@ -31,6 +32,9 @@ namespace MCAJawIns.content
         public Crosshair Crosshair { set; get; }
         public AssistRect AssistRect { set; get; }
         public Indicator Indicator { set; get; }
+
+        //public ObservableCollection<AssistPoint> AssistPoints { get; set; }
+        public AssistPoints AssistPoints { get; set; }
         #endregion
 
         #region Varibles
@@ -71,6 +75,7 @@ namespace MCAJawIns.content
             if (Crosshair == null) { Crosshair = TryFindResource(nameof(Crosshair)) as Crosshair; }
             if (AssistRect == null) { AssistRect = TryFindResource(nameof(AssistRect)) as AssistRect; }
             if (Indicator == null) { Indicator = TryFindResource(nameof(Indicator)) as Indicator; }
+            if (AssistPoints == null) { AssistPoints = TryFindResource(nameof(AssistPoints)) as AssistPoints; }
             #endregion
 
             InitializePanelObjects();
@@ -175,7 +180,6 @@ namespace MCAJawIns.content
             {
                 System.Windows.Point pt = e.GetPosition(canvas);
 
-                //CaptureMouse();
                 AssistRect.MouseDown = true;
                 switch (e.ChangedButton)
                 {
@@ -230,15 +234,16 @@ namespace MCAJawIns.content
                     AssistRect.MouseDown = false;
                     AssistRect.ResetTemp();
                 }
-                //else if (MoveImage)
-                //{
-                //    MoveImage = false;
-                //    TempX = TempY = 0;
-                //}
+
                 TempX = TempY = 0;
                 canvas.ReleaseMouseCapture();
             }
             e.Handled = true;
+
+            Point pt = e.GetPosition(canvas);
+
+            AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, Brushes.Red));
+            //AssistPoints[^1].SetPoint(pt.X + 10, pt.Y + 10);
         }
 
         private void ImageCanvas_MouseMove(object sender, MouseEventArgs e)
