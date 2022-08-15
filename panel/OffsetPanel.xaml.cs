@@ -99,7 +99,5 @@ namespace MCAJawIns.Panel
                 }
             }
         }
-
-       
     }
 }

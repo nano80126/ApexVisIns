@@ -245,8 +245,8 @@
         <!--#endregion-->
         
         <!-- Separator -->
-        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" 
-                   Background="{StaticResource ColorSecondaryTransparent}"/>
+        <Separator Grid.Column="1" Grid.RowSpan="100" Margin="0" Width="1" Background="{StaticResource ColorSecondaryTransparent}"
+                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
         <!--#region 2nd Col -->
         <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
@@ -372,7 +372,8 @@
                                 d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                                 IsEnabled="{Binding Path=IsOpen, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}"/>
 
-                        <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <Separator Grid.Column="1" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         <!--#endregion-->
 
                         <!--#region Camera Info -->
@@ -389,7 +390,8 @@
                             <TextBlock Grid.Row="3" Grid.Column="2" Text="S/N" TextAlignment="Right"/>
                             <TextBox Grid.Row="3" Grid.Column="3" Padding="0 3" Text="{Binding SerialNumber}"/>
                         -->
-                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         <!--//-->
                         <TextBlock Grid.Row="0" Grid.Column="5" Text="S/N"/>
                         <TextBox Grid.Row="0" Grid.Column="6" Padding="0 3"
@@ -402,13 +404,14 @@
                         <TextBlock Grid.Row="2" Grid.Column="5" Text="MAC"/>
                         <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Separator Grid.Column="7" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
-
+                        <Separator Grid.Column="7" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
 
                         <!--<TextBlock Grid.Row="3" Grid.Column="5" Text="Firmware Ver."/>
                         <TextBox Grid.Row="3" Grid.Column="6" Padding="0 3" Text="{Binding FirmwareVersion}"/>-->
 
-                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         <!--#endregion-->
                     </Grid>
                     <!--//-->
@@ -682,7 +685,8 @@
                                     <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                               Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>
 
-                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                                     <!--#endregion-->
                                     <!--//===============================================================================================================//-->
                                     <!--#region Acquisition Control-->
@@ -717,7 +721,8 @@
                                     <TextBox Grid.Row="9" Grid.Column="4" Padding="0 3" IsEnabled="{Binding FixedFPS}" GotFocus="TextBox_GotFocus"
                                              Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}"/>
 
-                                    <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                    <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                                     <!--#endregion-->
                                     <!--//===============================================================================================================//-->
                                     <!--#region Analog Control -->
@@ -758,7 +763,8 @@
                                     <!--#endregion-->
                                     <!--//===============================================================================================================//-->
                                     <!--//-->
-                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                                 </Grid>
                             </StackPanel>
                         </TabItem>
@@ -834,14 +840,14 @@
                                 <Separator DockPanel.Dock="Top" Margin="0 8"/>
                                 <!--//-->
                                 <Grid x:Name="LensGrid" Background="{x:Null}" Height="{Binding ActualHeight, ElementName=CameraGrid, UpdateSourceTrigger=PropertyChanged}"
-                                  HorizontalAlignment="Stretch">
+                                        HorizontalAlignment="Stretch">
                                     <Grid.Resources>
                                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="HorizontalAlignment" Value="Left" />
                                             <Setter Property="MinWidth" Value="120" />
-                                            <Setter Property="Padding" Value="0 4"/>
-                                            <Setter Property="Margin" Value="0 8"/>
+                                            <Setter Property="Padding" Value="0 4" />
+                                            <Setter Property="Margin" Value="0 8" />
                                             <!--<Setter Property="Background" Value="Red"/>-->
                                             <!--<Setter Property="TextAlignment" Value="Right"/>-->
                                             <!--<Setter Property="Background" Value="Red"/>-->
@@ -850,69 +856,67 @@
                                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                                             <!--<Setter Property="Padding" Value="0 2"/>-->
                                             <!-- Padding 要寫在行內 -->
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                            <Setter Property="Margin" Value="0 8"/>
-                                            <Setter Property="MinWidth" Value="120"/>
-                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left" />
+                                            <Setter Property="Margin" Value="0 8" />
+                                            <Setter Property="MinWidth" Value="120" />
+                                            <Setter Property="TextAlignment" Value="Center" />
                                         </Style>
                                     </Grid.Resources>
 
                                     <!--#region Layout definition -->
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="auto" />
                                         <!--separetor-->
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="auto" />
                                         <!--separetor-->
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
 
                                     <Grid.RowDefinitions>
                                         <!-- 1~3 -->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                         <!-- 4~6 -->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                         <!-- 7~9 -->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                         <!-- 10~12 -->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                         <!-- 12~14 -->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                     </Grid.RowDefinitions>
                                     <!--#endregion-->
 
-                                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="LENS PARAMETER" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16" FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                                    <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1"/>
+                                    <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="LENS PARAMETER" VerticalAlignment="Center" FontFamily="Consolas" FontSize="16"
+                                            FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
+                                    <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8" Height="1" />
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0 8" Text="Manufacturer"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0 8" Text="Model"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0 8" Text="Focal Length"/>
-                                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 8" Text="Mount"/>
-                                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 8" Text="Magnification"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0 8" Text="Manufacturer" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0 8" Text="Model" />
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0 8" Text="Focal Length" />
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 8" Text="Mount" />
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0 8" Text="Magnification" />
 
-                                    <!--<TextBlock Grid.Row="4" Grid.Column="0" Text="Max Width"/>-->
-                                    <!--<TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Null}"/>-->
-                                    <!--<TextBlock Grid.Row="6" Grid.Column="0" Text="{x:Null}"/>-->
-                                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Null}"/>
+                                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Null}" />
 
-                                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Null}"/>
-                                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Null}"/>
+                                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Null}" />
+                                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Null}" />
 
-                                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Null}"/>
-                                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Null}"/>
+                                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Null}" />
+                                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Null}" />
 
                                     <!--<TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="1" TextAlignment="Center" Text="{Binding SensorHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -934,9 +938,11 @@
                                 <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                   Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}"/>-->
 
-                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondary}"/>
+                                    <Separator Grid.Column="2" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
-                                    <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="Transparent"/>
+                                    <Separator Grid.Column="5" Grid.RowSpan="100" Margin="12 0" Width="1" Background="Transparent"
+                                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                                 </Grid>
                             </StackPanel>
                         </TabItem>

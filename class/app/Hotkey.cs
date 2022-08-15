@@ -213,27 +213,26 @@ namespace MCAJawIns
         private void CrosshairOnCommnad(object sender, ExecutedRoutedEventArgs e)
         {
             EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
-            //switch (OnTabIndex)
-            //{
-            //    case 3: // 工程師Tab
-            //        EngineerTab.Crosshair.Enable = !EngineerTab.Crosshair.Enable;
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
 
-        private void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
+        public void AssisRectOnCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
-            //switch (OnTabIndex)
-            //{
-            //    case 3: // 工程師Tab
-            //        EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
-            //        break;
-            //    default:
-            //        break;
-            //}
+            if (!EngineerTab.AssistRect.IsMouseDown)
+            {
+                EngineerTab.AssistRect.Enable = !EngineerTab.AssistRect.Enable;
+
+                EngineerTab.AssistPoints.Enable = false;
+            }
+        }
+
+        public void AssistPointsOnCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!EngineerTab.AssistPoints.IsMouseDown)
+            {
+                EngineerTab.AssistPoints.Enable = !EngineerTab.AssistPoints.Enable;
+
+                EngineerTab.AssistRect.Enable = false;
+            }
         }
 
         /// <summary>

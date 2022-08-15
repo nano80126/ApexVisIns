@@ -10,10 +10,10 @@
                  d:DesignHeight="450" 
                  d:DesignWidth="800"
                  Title="組態"
-                 d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                  SubTitle="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}"
                  IconKind="FileCogOutline"
                  Style="{StaticResource {x:Type ctrl:CustomCard}}"
+                 d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                  Loaded="CustomCard_Loaded">
     <ctrl:CustomCard.Resources>
         <!--//-->
@@ -21,8 +21,8 @@
         <!--//-->
     </ctrl:CustomCard.Resources>
 
-    <DockPanel x:Name="Body" >
-        <TextBlock DockPanel.Dock="Left" Padding="0 0" FontSize="16" VerticalAlignment="Center" TextAlignment="Center">
+    <DockPanel x:Name="Body">
+        <TextBlock DockPanel.Dock="Left" Padding="0" FontSize="16" VerticalAlignment="Center" TextAlignment="Center">
             <!-- Resolution -->
             <Run>
                 <Run.Text>

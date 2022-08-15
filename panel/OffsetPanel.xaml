@@ -1,18 +1,9 @@
-﻿<ctrl:CustomCard x:Class="MCAJawIns.Panel.OffsetPanel" 
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-                 xmlns:ctrl="clr-namespace:MCAJawIns.Control"
-                 mc:Ignorable="d" 
-                 d:DesignHeight="450" 
-                 d:DesignWidth="800" 
-                 Title="偏移"
-                 IconKind="ArrowAll"
-                 Style="{StaticResource {x:Type ctrl:CustomCard}}"
-                 Loaded="CustomCard_Loaded">
-    <Grid>
+﻿<ctrl:CustomCard x:Class="MCAJawIns.Panel.OffsetPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:app="clr-namespace:MCAJawIns"
+        xmlns:ctrl="clr-namespace:MCAJawIns.Control" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" Title="偏移" IconKind="ArrowAll"
+        Style="{StaticResource {x:Type ctrl:CustomCard}}" d:DataContext="{d:DesignInstance Type=app:BaslerCam}" Loaded="CustomCard_Loaded">
+    <Grid x:Name="Body">
         <!--#region Resources -->
         <Grid.Resources>
             <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -45,20 +36,49 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
+        <!--//-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
         <!--#endregion-->
         <!--#region Content -->
-        <RepeatButton Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=16}"
-                Click="CamLeftMove_Click" />
 
-        <RepeatButton Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Content="{materialDesign:PackIcon Kind=ArrowTopBoldOutline, Size=16}"
-                Click="CamTopMove_Click" />
+        <StackPanel Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">
+            <TextBlock Grid.RowSpan="3" Grid.Column="0" Padding="0" FontSize="16">
+                <Run>
+                    <Run.Text>
+                        <Binding Path="Config.Width" StringFormat="{}X:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
+                    </Run.Text>
+                </Run>
+                <LineBreak />
+                <LineBreak />
+                  <Run>
+                    <Run.Text>
+                        <Binding Path="Config.Height" StringFormat="{}Y:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
+                    </Run.Text>
+                </Run>
+            </TextBlock>
+            <!--<TextBlock Grid.RowSpan="3" Grid.Column="0" Text="{Binding Config.Height, StringFormat={}{0:###}, FallbackValue=0}" />-->
+        </StackPanel>
+        <!--//-->
+        <Separator Grid.RowSpan="100" Grid.Column="1" Width="1" Margin="8 0" Background="{StaticResource ColorSecondaryTransparent}"
+                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+        <!--//-->
+        <RepeatButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="18 2 2 18"
+                Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=16}" Click="CamLeftMove_Click" />
 
-        <RepeatButton Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=16}"
-                Click="CamRightMove_Click" />
+        <RepeatButton Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" materialDesign:ButtonAssist.CornerRadius="18 18 2 2"
+                Content="{materialDesign:PackIcon Kind=ArrowTopBoldOutline, Size=16}" Click="CamTopMove_Click" />
 
-        <RepeatButton Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{materialDesign:PackIcon Kind=ArrowBottomBoldOutline, Size=16}"
-                Click="CamBottomMove_Click" />
+        <RepeatButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="2 18 18 2"
+                Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=16}" Click="CamRightMove_Click" />
 
-        <Button Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=Circle, Size=16}" Click="CamCenterMove_Click" />
+        <RepeatButton Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" materialDesign:ButtonAssist.CornerRadius="2 2 18 18"
+                Content="{materialDesign:PackIcon Kind=ArrowBottomBoldOutline, Size=16}" Click="CamBottomMove_Click" />
+
+        <Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=Circle, Size=16}"
+                Click="CamCenterMove_Click" />
     </Grid>
 </ctrl:CustomCard>

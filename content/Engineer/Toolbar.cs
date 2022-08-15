@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.IO;
+using MCAJawIns;
 
 namespace MCAJawIns.content
 {
@@ -113,7 +114,14 @@ namespace MCAJawIns.content
 
         private void ToggleAssistRect_Click(object sender, RoutedEventArgs e)
         {
-            AssistRect.Enable = !AssistRect.Enable;
+            //AssistRect.Enable = !AssistRect.Enable;
+            MainWindow.AssisRectOnCommand(sender, null);
+        }
+
+        private void ToggleAssisPoints_Click(object sender, RoutedEventArgs e)
+        {
+            //AssistPoints.Enable = !AssistPoints.Enable;
+            MainWindow.AssistPointsOnCommand(sender, null);
         }
 
         /// <summary>
@@ -148,7 +156,7 @@ namespace MCAJawIns.content
                 DateTime t1 = DateTime.Now;
                 Debug.WriteLine($"{t1:mm:ss.fff}");
 
-                Mat mat = Cv2.ImRead(openFileDialog.FileName, ImreadModes.Grayscale);
+                Mat mat = Cv2.ImRead(openFileDialog.FileName, ImreadModes.Unchanged);
 
                 Indicator.Image = mat;
 

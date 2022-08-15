@@ -309,6 +309,24 @@ namespace MCAJawIns
             //OnPropertyChanged();
         }
 
+        public void GetRGB(int x, int y, out byte R, out byte G, out byte B)
+        {
+            int chs = _img.Channels();
+
+            if (chs == 1)
+            {
+                R = _img.At<byte>(y, x);
+                G = _img.At<byte>(y, x);
+                B = _img.At<byte>(y, x);
+            }
+            else
+            {
+                R = _img.At<Vec3b>(y, x)[2];
+                G = _img.At<Vec3b>(y, x)[1];
+                B = _img.At<Vec3b>(y, x)[0];
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -392,6 +410,9 @@ namespace MCAJawIns
     {
         #region Basic Variable
         private bool _enable;
+        private bool _isLeftMouseDown;
+        private bool _isMiddleMouseDown;
+
         //private double _strokeThickness;
 
         //private bool _mouseDown;
@@ -400,15 +421,10 @@ namespace MCAJawIns
         public double TempY { get; set; }    // Temp Pos of Mousedown
         public double OftX { get; set; }     // Offset Pos of Mousedown
         public double OftY { get; set; }     // Offset Pos of Mousedown
-
-        /// <summary>
-        /// Is Mouse Down
-        /// </summary>
-        public bool MouseDown { get; set; }
         #endregion
 
         /// <summary>
-        /// 是否開啟
+        /// 是否啟用
         /// </summary>
         public bool Enable
         {
@@ -419,6 +435,45 @@ namespace MCAJawIns
                 {
                     _enable = value;
                     OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 滑鼠按鍵是否按下
+        /// </summary>
+        public bool IsMouseDown => IsLeftMouseDown || IsMiddleMouseDown;
+
+        /// <summary>
+        /// 滑鼠左鍵是否按下
+        /// </summary>
+        public bool IsLeftMouseDown
+        {
+            get => _isLeftMouseDown;
+            set
+            {
+                if (value != _isLeftMouseDown)
+                {
+                    _isLeftMouseDown = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsMouseDown));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 滑鼠中鍵是否按下
+        /// </summary>
+        public bool IsMiddleMouseDown
+        {
+            get => _isMiddleMouseDown;
+            set
+            {
+                if (value != _isMiddleMouseDown)
+                {
+                    _isMiddleMouseDown = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsMouseDown));
                 }
             }
         }
@@ -441,11 +496,23 @@ namespace MCAJawIns
         {
             TempX = TempY = 0;
         }
+
+        /// <summary>
+        /// 重置滑鼠按鍵
+        /// </summary>
+        public void ResetMouse()
+        {
+            IsLeftMouseDown = false;
+            IsMiddleMouseDown = false;
+        }
     }
 
     public class AssistPoints : INotifyPropertyChanged
     {
+        #region Private
         private bool _enable;
+        private bool _isMouseDown; 
+        #endregion
 
         public AssistPoints()
         {
@@ -473,12 +540,38 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// 滑鼠按鍵是否按下
+        /// </summary>
+        public bool IsMouseDown
+        {
+            get => _isMouseDown;
+            set
+            {
+                if (value != _isMouseDown)
+                {
+                    _isMouseDown = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 重置滑鼠按鍵
+        /// </summary>
+        public void ResetMouse()
+        {
+            IsMouseDown = false;
+        }
+
+        #region Property Change Event
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 
     /// <summary>
@@ -489,9 +582,6 @@ namespace MCAJawIns
         #region Basic Variable
         private double _x;
         private double _y;
-        // //
-        private SolidColorBrush _stroke = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-        private double _strokeThickness = 1;
         #endregion
 
         public AssistPoint(double x, double y, SolidColorBrush stroke, double strokeThickness = 1)
@@ -532,6 +622,7 @@ namespace MCAJawIns
                 }
             }
         }
+
         /// <summary>
         /// Point 顏色
         /// </summary>
