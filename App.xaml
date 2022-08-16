@@ -97,7 +97,7 @@
             <!--Serial Port 列舉-->
             <local:SerialEnumer x:Key="SerialEnumer"/>
             <!--測試用光源控制器-->
-            <local:LightSerial x:Key="LightCtrl" ChannelNumber="4"/>
+            <!--<local:LightSerial x:Key="LightCtrl" ChannelNumber="4"/>-->
             <!--光源控制器陣列-->
             <x:Array x:Key="LightCtrls" Type="local:LightSerial">
                 <local:LightSerial ComPort="COM1" ChannelNumber="4"/>

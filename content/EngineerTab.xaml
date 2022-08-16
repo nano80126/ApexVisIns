@@ -34,7 +34,6 @@
         <!--<coll:ObservableCollection x:Key="AssistPoints">
             <app:AssistPoint X="120" Y="120" />
         </coll:ObservableCollection>-->
-
     </StackPanel.Resources>
 
     <!--#region Toolbar -->
@@ -94,7 +93,6 @@
                                     </DataTrigger.Binding>
                                     <Setter Property="IsEnabled" Value="False" />
                                 </DataTrigger>
-
                             </Style.Triggers>
                             <Setter Property="IsEnabled" Value="True" />
                             <!-- Camera 選擇不為 -1, Camera 不為 Grabbing -->
@@ -112,7 +110,7 @@
                             <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"></Binding>
                         </MultiBinding>
                     </Button.IsEnabled>
-
+                    <!--//-->
                     <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
@@ -544,10 +542,12 @@
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--<uc:DigitalIOPanel x:Name="DigitalIOPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>-->
+
                 </StackPanel>
                 <!--//-->
-                <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
+                <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"/>-->
+                    <panel:LightPanel Background="LightCyan" Margin="2 8 2 0" />
                 </StackPanel>
 
             </Grid>
