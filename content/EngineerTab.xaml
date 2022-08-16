@@ -270,12 +270,12 @@
                 
                 <!--保留測試按鈕-->
                 <!--#region Toolbar Contents  -->
-                <!--<Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="0 0 0 0" Text="測試1" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-
+                <!--
                 <Button VerticalAlignment="Center" Click="Button2_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Margin="0 0 0 0" Text="測試2" VerticalAlignment="Center"/>
@@ -447,9 +447,8 @@
                     <!--//-->
                     <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" />
 
-                    <panel:CameraConfigPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}">
-                        
-                    </panel:CameraConfigPanel>
+                    <!--<panel:CameraConfigPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}">
+                    </panel:CameraConfigPanel>-->
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">

@@ -364,5 +364,12 @@ namespace MCAJawIns.content
             }
         }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenCvSharp.Mat mat = Indicator.Image;
+
+            OpenCvSharp.Cv2.ImWrite($"image/{DateTime.Now:HHmmss}.jpg", temp);
+        }
     }
 }

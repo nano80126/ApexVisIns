@@ -30,7 +30,7 @@
                 </Grid.Resources>
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="col1"/>
+                    <ColumnDefinition SharedSizeGroup="col1" MinWidth="100"/>
                     <ColumnDefinition SharedSizeGroup="col2"/>
                     <ColumnDefinition SharedSizeGroup="col3"/>
                     <ColumnDefinition SharedSizeGroup="col4"/>
@@ -114,7 +114,7 @@
                                 </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="col1" Width="80"/>
+                                    <ColumnDefinition SharedSizeGroup="col1" MinWidth="100"/>
                                     <ColumnDefinition SharedSizeGroup="col2"/>
                                     <ColumnDefinition SharedSizeGroup="col3"/>
                                     <ColumnDefinition SharedSizeGroup="col4"/>

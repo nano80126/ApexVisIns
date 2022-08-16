@@ -16,6 +16,8 @@ namespace MCAJawIns.content
 {
     public partial class EngineerTab : StackPanel
     {
+        Mat temp;
+
         #region Toolbar 元件事件
         /// <summary>
         /// 相機選擇 Selector 變更事件
@@ -340,6 +342,8 @@ namespace MCAJawIns.content
 
                 using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                temp = mat.Clone();
 
                 Dispatcher.Invoke(() =>
                 {
