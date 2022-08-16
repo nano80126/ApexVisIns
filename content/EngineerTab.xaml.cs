@@ -19,6 +19,7 @@ using Basler;
 using System.Threading;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
+using System.Collections.ObjectModel;
 
 namespace MCAJawIns.content
 {
@@ -31,6 +32,9 @@ namespace MCAJawIns.content
         public Crosshair Crosshair { set; get; }
         public AssistRect AssistRect { set; get; }
         public Indicator Indicator { set; get; }
+
+        //public ObservableCollection<AssistPoint> AssistPoints { get; set; }
+        public AssistPoints AssistPoints { get; set; }
         #endregion
 
         #region Varibles
@@ -71,6 +75,7 @@ namespace MCAJawIns.content
             if (Crosshair == null) { Crosshair = TryFindResource(nameof(Crosshair)) as Crosshair; }
             if (AssistRect == null) { AssistRect = TryFindResource(nameof(AssistRect)) as AssistRect; }
             if (Indicator == null) { Indicator = TryFindResource(nameof(Indicator)) as Indicator; }
+            if (AssistPoints == null) { AssistPoints = TryFindResource(nameof(AssistPoints)) as AssistPoints; }
             #endregion
 
             InitializePanelObjects();
@@ -158,11 +163,11 @@ namespace MCAJawIns.content
         private void ImageCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Canvas canvas = sender as Canvas;
+            if (canvas.IsMouseCaptured) { return; }
 
+            // 按下 SPACE
             if (Keyboard.IsKeyDown(Key.Space))
             {
-                //canvas.Cursor = Cursors.Arrow;
-                //MoveImage = true;
                 Point pt2ImageGrid = e.GetPosition(ImageGrid);   // Point to ImageGrid
                 Point transformPoint = ImageGrid.TransformToVisual(ImageViewbox).Transform(pt2ImageGrid);    // Add ImageViewbox offset
 
@@ -173,46 +178,53 @@ namespace MCAJawIns.content
             }
             else if (AssistRect.Enable)
             {
-                System.Windows.Point pt = e.GetPosition(canvas);
+                Point pt = e.GetPosition(canvas);
 
-                //CaptureMouse();
-                AssistRect.MouseDown = true;
+                //AssistRect.MouseDown = true;
                 switch (e.ChangedButton)
                 {
                     case MouseButton.Left:
-                        //_ = canvas.CaptureMouse();
-                        canvas.Cursor = Cursors.Cross;
+                        //canvas.Cursor = Cursors.Cross;
+                        AssistRect.IsLeftMouseDown = true; // for changing cursor
                         // // // // // // // // // // //
                         AssistRect.TempX = AssistRect.X = pt.X;
                         AssistRect.TempY = AssistRect.Y = pt.Y;
                         AssistRect.Width = AssistRect.Height = 0;
                         break;
                     case MouseButton.Middle:
-                        //_ = canvas.CaptureMouse();
-                        canvas.Cursor = Cursors.SizeAll;
+                        //canvas.Cursor = Cursors.SizeAll;
+                        AssistRect.IsMiddleMouseDown = true;    // for changing cursor
                         // // // // // // // // // // //
-                        //RECT.TempX = RECT.X;
                         AssistRect.TempX = AssistRect.X;
-                        //RECT.TempY = RECT.Y;
                         AssistRect.TempY = AssistRect.Y;
-                        //RECT.OftX = pt.X;
                         AssistRect.OftX = pt.X;
-                        //RECT.OftY = pt.Y;
                         AssistRect.OftY = pt.Y;
                         break;
                     case MouseButton.Right:
                         // 重置 RECT
-                        //RECT.X = RECT.Y = RECT.Width = RECT.Height = 0;
                         AssistRect.X = AssistRect.Y = AssistRect.Width = AssistRect.Height = 0;
                         break;
                     case MouseButton.XButton1:
-                        break;
                     case MouseButton.XButton2:
-                        break;
                     default:
                         break;
                 }
                 _ = canvas.CaptureMouse();
+            }
+            else if (AssistPoints.Enable)
+            {
+                switch (e.ChangedButton)
+                {
+                    case MouseButton.Left:
+                        AssistPoints.IsMouseDown = true;
+                        break;
+                    case MouseButton.Middle:
+                    case MouseButton.Right:
+                    case MouseButton.XButton1:
+                    case MouseButton.XButton2:
+                    default:
+                        break;
+                }
             }
             e.Handled = true;
         }
@@ -220,23 +232,54 @@ namespace MCAJawIns.content
         private void ImageCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Canvas canvas = sender as Canvas;
-            canvas.Cursor = Cursors.Arrow;
+            //canvas.Cursor = Cursors.Arrow;
 
             if (canvas.IsMouseCaptured)
             {
-                if (AssistRect.Enable)
+                if (AssistRect.Enable && AssistRect.IsMouseDown)
                 {
                     //ReleaseMouseCapture();
-                    AssistRect.MouseDown = false;
+                    //AssistRect.MouseDown = false;
                     AssistRect.ResetTemp();
+                    AssistRect.ResetMouse();
                 }
-                //else if (MoveImage)
-                //{
-                //    MoveImage = false;
-                //    TempX = TempY = 0;
-                //}
+
                 TempX = TempY = 0;
                 canvas.ReleaseMouseCapture();
+            }
+            else
+            {
+                if (AssistPoints.Enable && AssistPoints.IsMouseDown)
+                {
+                    // 取點 & 顏色
+                    Point pt = e.GetPosition(canvas);
+                    Indicator.GetRGB((int)pt.X, (int)pt.Y, out byte R, out byte G, out byte B);
+
+                    #region 顏色生成
+                    if (R < G && R < B)
+                    {
+                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)255, (byte)(255 - G), (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                    }
+                    else if (G < R && G < B)
+                    {
+                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), 255, (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                    }
+                    else if (B < R && B < G)
+                    {
+                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), 255));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                    }
+                    else
+                    {
+                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                    }
+                    #endregion
+
+                    AssistPoints.ResetMouse();
+                }
             }
             e.Handled = true;
         }
@@ -259,7 +302,7 @@ namespace MCAJawIns.content
                     ImageScroller.ScrollToHorizontalOffset(TempX - pt2.X);
                     ImageScroller.ScrollToVerticalOffset(TempY - pt2.Y);
                 }
-                else if (AssistRect.Enable && AssistRect.MouseDown)
+                else if (AssistRect.Enable && AssistRect.IsMouseDown)
                 {
                     if (e.LeftButton == MouseButtonState.Pressed)
                     {
@@ -285,45 +328,44 @@ namespace MCAJawIns.content
                         AssistRect.Y = pY < 0 ? 0 : pY + AssistRect.Height > canvas.Height ? canvas.Height - AssistRect.Height : pY;
                     }
                 }
-            }
+            } 
 
             // 變更 座標
             //AssistRect.PosX = (int)_x;
             //AssistRect.PosY = (int)_y;
 
-            // 變更 座標
-            //Indicator.X = (int)_x;
-            //Indicator.Y = (int)_y;
-
             Indicator.SetPoint((int)_x, (int)_y);
 
-            //// 變更 RGB
-            //if (Indicator.Image != null) 
-            //{
-            //    Indicator.SetPoint((int)_x, (int)_y);
-            //}
             e.Handled = true;
         }
 
         private void ImageCanvas_MouseLeave(object sender, MouseEventArgs e)
         {
-            Canvas canvas = sender as Canvas;
-            canvas.Cursor = Cursors.Arrow;
+            //Canvas canvas = sender as Canvas;
+            //canvas.Cursor = Cursors.Arrow;
             if (AssistRect.Enable)
             {
                 //ReleaseMouseCapture();
-                AssistRect.MouseDown = false;
+                //AssistRect.MouseDown = false;
                 AssistRect.ResetTemp();
+                AssistRect.ResetMouse();
             }
+            else if (AssistPoints.Enable)
+            {
+                AssistPoints.ResetMouse();
+            }
+#if false
             else if (MoveImage)
             {
                 MoveImage = false;
                 TempX = TempY = 0;
-            }
+            } 
+#endif
         }
 
         #region Properties
         public event PropertyChangedEventHandler PropertyChanged;
+
         private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -364,12 +406,5 @@ namespace MCAJawIns.content
             }
         }
         #endregion
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenCvSharp.Mat mat = Indicator.Image;
-
-            OpenCvSharp.Cv2.ImWrite($"image/{DateTime.Now:HHmmss}.jpg", temp);
-        }
     }
 }

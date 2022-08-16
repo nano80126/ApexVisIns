@@ -11,14 +11,15 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System.IO;
+using MCAJawIns;
 
 namespace MCAJawIns.content
 {
     public partial class EngineerTab : StackPanel
     {
-        Mat temp;
-
-        #region Toolbar 元件事件
+        #region 左 Toolbar 
         /// <summary>
         /// 相機選擇 Selector 變更事件
         /// </summary>
@@ -113,7 +114,14 @@ namespace MCAJawIns.content
 
         private void ToggleAssistRect_Click(object sender, RoutedEventArgs e)
         {
-            AssistRect.Enable = !AssistRect.Enable;
+            //AssistRect.Enable = !AssistRect.Enable;
+            MainWindow.AssisRectOnCommand(sender, null);
+        }
+
+        private void ToggleAssisPoints_Click(object sender, RoutedEventArgs e)
+        {
+            //AssistPoints.Enable = !AssistPoints.Enable;
+            MainWindow.AssistPointsOnCommand(sender, null);
         }
 
         /// <summary>
@@ -128,6 +136,74 @@ namespace MCAJawIns.content
             {
                 ZoomRatio = 100;
             }
+        }
+        #endregion
+
+        #region 右 Toolbar
+        private void ReadImage_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                FileName = string.Empty,
+                Filter = "BMP Image(*.bmp)|*.bmp|JPEP Image (*.jpg)|*.jpg|All Files (*.*)|*.*",
+                FilterIndex = 2,
+                InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}",
+                Title = "讀取 BMP "
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                DateTime t1 = DateTime.Now;
+                Debug.WriteLine($"{t1:mm:ss.fff}");
+
+                Mat mat = Cv2.ImRead(openFileDialog.FileName, ImreadModes.Unchanged);
+
+                Indicator.Image = mat;
+
+                ImageCanvas.Width = mat.Width;
+                ImageCanvas.Height = mat.Height;
+                ZoomRatio = 100;
+
+
+                DateTime t2 = DateTime.Now;
+                Debug.WriteLine($"{t2:mm:ss.fff} {(t2 - t1).TotalMilliseconds}");
+            }
+        }
+
+        private void RestoreImage_Click(object sender, RoutedEventArgs e)
+        {
+            Mat dis = Indicator.Image;
+            dis.Dispose();
+            Indicator.Image = Indicator.OriImage.Clone();
+        }
+
+        private void DealImage_Click(object sender, RoutedEventArgs e)
+        {
+            Mat mat = Indicator.Image;
+            Indicator.OriImage = mat.Clone();
+
+            MainWindow.JawInsSequenceCam1(mat);
+            Indicator.Image = mat;
+        }
+
+        private void SaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            Mat mat = Indicator.OriImage;
+
+            // if (mat != null)
+            // {
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                FileName = string.Empty,
+                Filter = "BMP Image(*.bmp)|*.bmp",
+                InitialDirectory = $@"{Directory.GetCurrentDirectory()}"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Cv2.ImWrite(saveFileDialog.FileName, mat);
+            }
+            // }
         }
         #endregion
 
@@ -343,7 +419,11 @@ namespace MCAJawIns.content
                 using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                temp = mat.Clone();
+
+#if DEBUG
+                // Debug 模式才紀錄
+                Indicator.OriImage = mat.Clone();
+#endif
 
                 Dispatcher.Invoke(() =>
                 {
@@ -417,6 +497,7 @@ namespace MCAJawIns.content
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
         }
+        #endregion
 
         #region Camera 開啟 / 關閉事件
         private void Camera_CameraOpened(object sender, EventArgs e)
@@ -620,8 +701,6 @@ namespace MCAJawIns.content
                 Debug.WriteLine("------------------------------------------------");
             }
         }
-        #endregion
-
         #endregion
     }
 }

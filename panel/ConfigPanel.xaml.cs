@@ -7,26 +7,21 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Basler.Pylon;
-using MaterialDesignThemes.Wpf;
 using MCAJawIns.content;
 
-// 
-// 此檔案測試完作廢
-// 此檔案測試完作廢
-// 此檔案測試完作廢
-// 
-
-namespace MCAJawIns.module
+namespace MCAJawIns.Panel
 {
     /// <summary>
     /// ConfigPanel.xaml 的互動邏輯
     /// </summary>
-    public partial class ConfigPanel : Card
+    public partial class ConfigPanel : Control.CustomCard
     {
+#if false
         /// <summary>
         /// 繼承 主視窗
         /// </summary>
         public MainWindow MainWindow { get; set; }
+#endif
         /// <summary>
         /// 上層視窗 (待確認)
         /// </summary>
@@ -37,7 +32,7 @@ namespace MCAJawIns.module
         public BaslerCam Cam { get; set; }
 
         /// <summary>
-        /// 
+        /// Basler 組態
         /// </summary>
         public BaslerConfig BaslerConfig { get; set; }
         /// <summary>
@@ -50,30 +45,26 @@ namespace MCAJawIns.module
             InitializeComponent();
         }
 
-        private void Card_Loaded(object sender, RoutedEventArgs e)
+        private void CustomCard_Loaded(object sender, RoutedEventArgs e)
         {
             Cam = DataContext as BaslerCam;
 
             if (BaslerConfig == null)
             {
-                // 建立在 ConfigPanel.xaml 裡
                 BaslerConfig = FindResource(nameof(BaslerConfig)) as BaslerConfig;
             }
         }
 
         /// <summary>
-        /// 綁定 Binding
-        /// 因為 Popupbox 一開始不會建立, 需要從後端綁定
-        /// 
+        /// 綁定 EnableProperty
         /// </summary>
-        private void SetBinding()
+        private void ConfigDelBtnSetBinding()
         {
-            Binding binding = new()
+            Binding binding = new Binding()
             {
                 Mode = BindingMode.OneWay,
-                ElementName = "ConfigSelector",
-                Path = new PropertyPath("SelectedIndex"),
-                Converter = new Converter.NumberNotEqualConverter(),
+                ElementName = nameof(ConfigSelector),
+                Path = new PropertyPath(nameof(ConfigSelector.SelectedIndex)),
                 ConverterParameter = -1,
                 FallbackValue = false,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
@@ -83,47 +74,30 @@ namespace MCAJawIns.module
 
         private void Textbox_GotFocus(object sender, RoutedEventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            textBox.SelectAll();
-        }
-
-        private void Textbox_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            TextBox textBox = sender as TextBox;
-            textBox.SelectAll();
+            (sender as TextBox).SelectAll();
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
-            // Focus MainWindow 
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
         private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
         {
             Cam = DataContext as BaslerCam;
-            //SyncConfiguration(Cam.Config, Cam);
-            // 載入 Config files
+
             Initialize_JsonFile();
-            // ConfigDelBtn 綁定Config Selector 
-            SetBinding();
-            // Debug.WriteLine("Combobox opened");
+
+            ConfigDelBtnSetBinding();
         }
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            // // 
-            // if (MainWindow.BaslerCam?.Camera != null)
-            if (Cam?.Camera != null)
-            {
-                // 同步 Config 和 Cam
-                SyncConfiguration(Cam.Config, Cam);
-            }
-            // 重置 Selected Index 
+            if (Cam?.Camera != null) { SyncConfiguration(Cam.Config, Cam); }
+
+            // 重置 Selected Index
             ConfigSelector.SelectedIndex = -1;
-            // Debug.WriteLine($"{Cam?.Camera != null}");
-            // Debug.WriteLine("Combobox closed");
         }
 
         /// <summary>
@@ -131,10 +105,7 @@ namespace MCAJawIns.module
         /// </summary>
         private void Initialize_JsonFile()
         {
-            if (string.IsNullOrEmpty(Cam?.ModelName))
-            {
-                return;
-            }
+            if (string.IsNullOrEmpty(Cam?.ModelName)) { return; }
 
             string path = $@"{ConfigsDirectory}/{Cam.ModelName}";
 
@@ -145,12 +116,6 @@ namespace MCAJawIns.module
 
                 foreach (string file in files)
                 {
-                    // if (!BaslerCam.ConfigList.Contains(file))
-                    // {
-                    //     BaslerCam.ConfigList.Add(file);
-                    // }
-                    // if (!MainWindow.BaslerCam.ConfigList.Contains(file))
-
                     if (!Cam.ConfigList.Contains(file))
                     {
                         Cam.ConfigList.Add(file);
@@ -164,7 +129,7 @@ namespace MCAJawIns.module
         }
 
         /// <summary>
-        /// 同步 config 和 camera
+        /// 同步 Config 和 Camera
         /// </summary>
         /// <param name="config">目標組態</param>
         /// <param name="camera">來源相機</param>
@@ -193,17 +158,11 @@ namespace MCAJawIns.module
                     BaslerConfig config = JsonSerializer.Deserialize<BaslerConfig>(json);
 
                     #region 更新當前 Basler Config
-                    // BaslerCam baslerCam = MainWindow.BaslerCam;
                     Cam.Config.Name = config.Name;
-                    //ConfigName.Text = config.Name;
                     Cam.Config.Width = config.Width;
-                    //ConfigWidth.Text = $"{config.Width}";
                     Cam.Config.Height = config.Height;
-                    //ConfigHeight.Text = $"{config.Height}";
                     Cam.Config.FPS = config.FPS;
-                    //ConfigFPS.Text = $"{config.FPS}";
                     Cam.Config.ExposureTime = config.ExposureTime;
-                    //ConfigExposureTime.Text = $"{config.ExposureTime}";
                     Cam.Config.Save();
                     #endregion
                 }
@@ -216,18 +175,6 @@ namespace MCAJawIns.module
 
         private void ConfigSaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            // 按下儲存 Property 才會變更
-            // BaslerCam baslerCam = MainWindow.BaslerCam;
-            // BaslerCam baslerCam = DataContext as BaslerCam;
-#if false
-            Cam.Config.Width = Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture);
-            Cam.Config.Height = Convert.ToInt32(ConfigHeight.Text, CultureInfo.CurrentCulture);
-            Cam.Config.FPS = Convert.ToDouble(ConfigFPS.Text, CultureInfo.CurrentCulture);
-            Cam.Config.ExposureTime = Convert.ToDouble(ConfigExposureTime.Text, CultureInfo.CurrentCulture);
-            Cam.Config.Name = ConfigName.Text;
-            Cam.Config.Save();
-#endif
-
             string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{Cam.Config.Name}.json";
             bool IsExist = File.Exists(path);
 
@@ -235,7 +182,7 @@ namespace MCAJawIns.module
             File.WriteAllText(path, jsonStr);
             Cam.Config.Save();
 
-            if (!IsExist) // 若原先不存在，則新增
+            if (!IsExist)   // 若原先不存在，則新增
             {
                 Cam.ConfigList.Add(Cam.Config.Name);
             }
@@ -243,7 +190,6 @@ namespace MCAJawIns.module
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
         {
-            // if (MainWindow.BaslerCam?.Camera != null)
             if (Cam?.Camera != null)
             {
                 // BaslerCam baslerCam = MainWindow.BaslerCam;
@@ -256,15 +202,14 @@ namespace MCAJawIns.module
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
-                // 嘗試寫入 Width // 
-                // if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Convert.ToInt32(ConfigWidth.Text, CultureInfo.CurrentCulture)))
+                // 嘗試寫入 Width
                 if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Cam.Config.Width))
                 {
                     camera.Parameters[PLGigECamera.Width].SetToMaximum();
                 }
                 Cam.Config.Width = Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
-                // 嘗試寫入 Height // 
+                // 嘗試寫入 Height
                 if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Cam.Config.Height))
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();
@@ -276,12 +221,12 @@ namespace MCAJawIns.module
                 Cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
 
                 // ROI 置中
-                camera.Parameters[PLGigECamera.CenterX].SetValue(true);     // 會鎖定 Offset
-                camera.Parameters[PLGigECamera.CenterY].SetValue(true);     // 會鎖定 Offset
+                camera.Parameters[PLGigECamera.CenterX].SetValue(true);                 // 會鎖定 Offset
+                camera.Parameters[PLGigECamera.CenterY].SetValue(true);                 // 會鎖定 Offset
                 Cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();  // 取得當前 OffsetX
                 Cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();  // 取得當前 OffsetY
-                camera.Parameters[PLGigECamera.CenterX].SetValue(false);    // 解鎖 Center
-                camera.Parameters[PLGigECamera.CenterY].SetValue(false);    // 解鎖 Center 
+                camera.Parameters[PLGigECamera.CenterX].SetValue(false);                // 解鎖 Center
+                camera.Parameters[PLGigECamera.CenterY].SetValue(false);                // 解鎖 Center 
 
                 // 寫入 FPS
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Cam.Config.FPS);
@@ -292,24 +237,11 @@ namespace MCAJawIns.module
                 Cam.Config.ExposureTime = Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
                 Cam.PropertyChange();
 
-
                 // 重置 ImageSource，因為 Width & Height 有變更
-                // MainWindow.ImageSource = null;
-                // EngineerTab.Indicator.ImageSource = null;
                 EngineerTab.Indicator.Image = null;
 
-                // Reset ZoomRatio // 這邊需要修正
+                // Reset ZoomRatio
                 EngineerTab.ZoomRatio = 100;
-
-                // offset 置中 
-                // CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-                // MainWindow.OffsetPanel.CamCenterMove.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-
-                // MainWindow.Indicator.Image = null;
-                // 重置 Image
-                // MainWindow.ImageSource = null;
-                // 重置縮放率
-                // MainWindow.ZoomRatio = 100;
             }
         }
 
@@ -331,9 +263,7 @@ namespace MCAJawIns.module
                 {
                     File.Delete(path);
 
-                    // _ = MainWindow.BaslerCam.ConfigList.Remove(file);
                     _ = Cam.ConfigList.Remove(file);
-                    // 從 config list 移除
                 }
             }
         }

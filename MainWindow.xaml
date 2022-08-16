@@ -44,6 +44,7 @@
         <RoutedUICommand x:Key="RetrieveImage" Text="Retrieve Image"/>
         <RoutedUICommand x:Key="CrosshairOn" Text="Crosshair On"/>
         <RoutedUICommand x:Key="AssistRectOn" Text="Assist Rect On"/>
+        <RoutedUICommand x:Key="AssistPointsOn" Text="Assist Points On" />
         <!--Tab-->
         <RoutedUICommand x:Key="SwitchTab" Text="Switch Tab"/>
         <RoutedUICommand x:Key="SwitchJawTab" Text="Switch Jaw Tab"/>
@@ -65,6 +66,7 @@
         <KeyBinding Key="F8" Command="{StaticResource RetrieveImage}"/>
         <KeyBinding Key="F1" Command="{StaticResource CrosshairOn}"/>
         <KeyBinding Key="F2" Command="{StaticResource AssistRectOn}"/>
+        <KeyBinding Key="F3" Command="{StaticResource AssistPointsOn}" />
         <!--Tab-->
         <!--D1 means 1 -->
         <KeyBinding Modifiers="Alt" Key="D1" Command="{StaticResource SwitchTab}" CommandParameter="0"/>
@@ -82,7 +84,6 @@
         <KeyBinding Modifiers="Alt" Key="Q" Command="{StaticResource SwitchJawTab}" CommandParameter="0"/>
         <!--Specification Setting -->
         <KeyBinding Modifiers="Alt" Key="W" Command="{StaticResource SwitchJawTab}" CommandParameter="1"/>
-
         <!--Config-->
 
         <!--Global-->
@@ -102,6 +103,7 @@
         <CommandBinding Command="{StaticResource RetrieveImage}" CanExecute="RetrieveImageCanExecute" Executed="RetrieveImageCommand"/>
         <CommandBinding Command="{StaticResource CrosshairOn}" CanExecute="EngineerTabCanExcute" Executed="CrosshairOnCommnad"/>
         <CommandBinding Command="{StaticResource AssistRectOn}" CanExecute="EngineerTabCanExcute" Executed="AssisRectOnCommand"/>
+        <CommandBinding Command="{StaticResource AssistPointsOn}" CanExecute="EngineerTabCanExcute" Executed="AssistPointsOnCommand" />
         <!--Switch Tab-->
         <CommandBinding Command="{StaticResource SwitchTab}" CanExecute="CanExcute" Executed="SwitchTabCommand"/>
         <CommandBinding Command="{StaticResource SwitchJawTab}" CanExecute="MainTabCanExcute" Executed="SwitchJawTabCommand"/>
