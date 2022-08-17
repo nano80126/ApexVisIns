@@ -22,14 +22,13 @@ namespace MCAJawIns
     /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// 
     public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     {
-#if DEBUG
+#if DEBUG || debug
         private readonly bool _debugMode = true;
 #else
         private readonly bool _debugMode = false;
 #endif
 
         #region private
-        private ImageSource _imgSrc;
         private readonly ImageSource[] _imgSrcArray = new ImageSource[4];
         private ImageSource _chartSource;
         private int _onNavIndex;

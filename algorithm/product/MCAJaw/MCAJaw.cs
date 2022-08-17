@@ -517,13 +517,7 @@ namespace MCAJawIns
                 // 取得亞像素點
                 Point2f[] subContourPts = Cv2.CornerSubPix(src, new Point2f[] { contourPts[0], contourPts[1], contourPts[2], contourPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
                 //Point2f[] subContourPts = Cv2.CornerSubPix(src, new Point2f[] { cPt1L, cPt2L, cPt1R, cPt2R }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-#if DEBUG
-                //foreach (Point2f item in contourPts)
-                //{
-                //    Debug.WriteLine($"{item}");
-                //    Cv2.Circle(src, (int)item.X, (int)item.Y, 10, Scalar.LightGray, 2);
-                //}
-
+#if DEBUG || debug
                 foreach (Point2f item in subContourPts)
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
@@ -635,7 +629,7 @@ namespace MCAJawIns
                 GetCornerPoint(src, baseR, RX, JawPos.Right, out cornerPts[2], out cornerPts[3]);
                 // 取得亞像素點
                 Point2f[] subCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-#if DEBUG
+#if DEBUG || debug
                 foreach (Point2f item in subCornerPts)
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
@@ -1514,7 +1508,7 @@ namespace MCAJawIns
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
-#if DEBUG
+#if DEBUG || debug
             Cv2.Rectangle(src, roi, Scalar.Black, 1);
             // 這邊要確認 lineH 重複性
             foreach (LineSegmentPoint item in lineH)
@@ -1749,6 +1743,7 @@ namespace MCAJawIns
         /// 計算平直度
         /// </summary>
         /// <returns></returns>
+        [Obsolete("deprecated")]
         public bool Cal007FlatnessValue(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -1819,7 +1814,7 @@ namespace MCAJawIns
                         minLineY.Add(y);
                     }
 
-#if DEBUG
+#if DEBUG || debug
                     foreach (LineSegmentPoint line in lineH)
                     {
                         Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
@@ -1847,6 +1842,7 @@ namespace MCAJawIns
         /// 計算平直度
         /// </summary>
         /// <returns></returns>
+        [Obsolete("deprecated")]
         public bool Cal007FlatnessValue2(Mat src, double baseDatumY, out double[] arrayY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
             DateTime t1 = DateTime.Now;
@@ -2164,7 +2160,7 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平直度 (指標法)
+        /// 計算平直度 (指標法), 由左往右尋找
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="baseDatumY">基準 Y</param>
@@ -2245,7 +2241,7 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 計算平直度 (指標法)
+        /// 計算平直度 (指標法), 由中往兩端尋找
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="baseDatumY">基準 Y</param>
@@ -2309,7 +2305,8 @@ namespace MCAJawIns
                     {
                         listY.Add(tmpY);
 
-#if DEBUG
+#if DEBUG || debug
+                        // 著色
                         b[srcWidth * tmpY + i] = 0;
                         b[srcWidth * (tmpY + 1) + i] = 0;
                         b[srcWidth * (tmpY + 2) + i] = 0;
@@ -2349,8 +2346,8 @@ namespace MCAJawIns
                     {
                         listY.Insert(0, tmpY);
 
-#if DEBUG
-
+#if DEBUG || debug
+                        // 著色
                         b[srcWidth * tmpY + i2] = 50;
                         b[srcWidth * (tmpY + 1) + i2] = 50;
                         b[srcWidth * (tmpY + 2) + i2] = 50;

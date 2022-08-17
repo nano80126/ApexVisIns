@@ -78,7 +78,7 @@ namespace MCAJawIns
 
         private void QuitWidow_Command(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!BaslerCam.IsConnected && BaslerCams.All(item => !item.IsConnected))
+            if (BaslerCam?.IsConnected != true && BaslerCams.All(item => item.IsConnected != true))
             {
                 Close();
             }

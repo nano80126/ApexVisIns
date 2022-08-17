@@ -194,7 +194,15 @@ namespace MCAJawIns
             }
         }
 
-        public static void GetContoursX(Mat src, Rect roi, out double avg,out int minX, out int maxX)
+        /// <summary>
+        /// 取得輪廓點 X 座標
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="roi">ROI</param>
+        /// <param name="avg">平均 X</param>
+        /// <param name="minX">最小 X</param>
+        /// <param name="maxX">最大 X</param>
+        public static void GetContoursX(Mat src, Rect roi, out double avg, out int minX, out int maxX)
         {
             try
             {
@@ -209,17 +217,10 @@ namespace MCAJawIns
                     Debug.WriteLine($"cons{i}: {cons[i].Length}");
                     //Cv2.DrawContours(src, cons, i, Scalar.Red, 2);
                 }
-                //Cv2.ImShow($"clone{cons[0][0].X}", src.Resize(Size.Zero, 0.5, 0.5));
-                //Cv2.ImShow($"clone{cons[0][0].X}", );
+
                 avg = concatCon.Average(pt => pt.X);
                 minX = concatCon.Min(pt => pt.X);
                 maxX = concatCon.Max(pt => pt.X);
-
-                //foreach (IGrouping<int, Point> g in concatCon.GroupBy(pt => pt.X))
-                //{
-                //    Debug.WriteLine($"g: {g.Key} {g.Count()}");
-                //}
-                //Debug.WriteLine($"avg: {avg} min: {minX} max: {maxX}");
             }
             catch (Exception)
             {
@@ -366,7 +367,7 @@ namespace MCAJawIns
         /// <param name="centerValue">中心值</param>
         /// <param name="compesation">中心補償值</param>
         /// <param name="filter">(out) 濾波影像</param>
-        public static void GetHorizonalFilter2D(Mat src, double centerValue, double compesation,out Mat filter)
+        public static void GetHorizonalFilter2D(Mat src, double centerValue, double compesation, out Mat filter)
         {
             try
             {
@@ -903,7 +904,6 @@ namespace MCAJawIns
             }
         }
 
-
         /// <summary>
         /// 計算垂直Hough Lines
         /// </summary>
@@ -1313,23 +1313,22 @@ namespace MCAJawIns
             }
         }
 
-
         #region MCA JAW 專用 Methods 
         /// <summary>
         /// 從 Canny 計算水平 Hough Lines (MCA Jaw 專用)
         /// </summary>
-        /// <param name="src">來源 Canny 影像</param>
+        /// <param name="canny">來源影像 (canny)</param>
         /// <param name="lineSegH">水平 Hough Line</param>
         /// <param name="houghThreashold">HoughLinesP 方法內的 Threashold</param>
         /// <param name="houghMinLineLength">HoughLinesP 方法內的 MinLineLength</param>
         /// <param name="Ygap">同一線段 Y 座標變化</param>
-        public static void GetHoughLinesHFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
+        public static void GetHoughLinesHFromCanny(Mat canny, Point offset, out LineSegmentPoint[] lineSegH, int houghThreashold = 25, double houghMinLineLength = 10, int Ygap = 3)
         {
             lineSegH = Array.Empty<LineSegmentPoint>();
 
             try
             {
-                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(canny, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
                 // Debug.WriteLine($"lineSeg.Length: {lineSeg.Length}");
 
                 // 1. 保留 Ygap < 3 的線 2. 確認 X 偏移大於 Y 偏移 3. 平移 roi.X, roi.Y
@@ -1354,19 +1353,19 @@ namespace MCAJawIns
         /// <summary>
         /// 從 Canny 計算垂直 Hough Lines (MCA Jaw 專用)
         /// </summary>
-        /// <param name="src">來源 Canny 影像</param>
+        /// <param name="canny">來源影像 (canny)</param>
         /// <param name="offset">位移</param>
         /// <param name="lineSegV">垂直 Hough Line</param>
         /// <param name="houghThreashold">HoughLinesP 方法內的 Threashold</param>
         /// <param name="houghMinLineLength">HoughLinesP 方法內的 MinLineLength</param>
         /// <param name="Xgap">同一線段 X 座雕變化</param>
-        public static void GetHoughLinesVFromCanny(Mat src, Point offset, out LineSegmentPoint[] lineSegV, int houghThreashold = 25, double houghMinLineLength = 10, int Xgap = 3)
+        public static void GetHoughLinesVFromCanny(Mat canny, Point offset, out LineSegmentPoint[] lineSegV, int houghThreashold = 25, double houghMinLineLength = 10, int Xgap = 3)
         {
             lineSegV = Array.Empty<LineSegmentPoint>();
 
             try
             {
-                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(src, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
+                LineSegmentPoint[] lineSeg = Cv2.HoughLinesP(canny, 1, Cv2.PI / 180, houghThreashold, houghMinLineLength, 3);
 
                 // 1. 保留 Xgap < 3 的線 2. 確認 Y 偏移大於 X 偏移 3. 平移 roi.X, roi.Y
                 lineSegV = lineSeg.Where(line =>
@@ -1384,6 +1383,137 @@ namespace MCAJawIns
             catch (OpenCvSharpException)
             {
                 throw;
+            }
+        }
+
+
+        /// <summary>
+        /// 計算水平方向平直度
+        /// </summary>
+        /// <param name="roiMat">ROI 影像</param>
+        /// <param name="width">原圖 width</param>
+        /// <param name="listY">Y 座標列表</param>
+        /// <param name="listY2">Y 座標列表 2</param>
+        [Obsolete("wait for testing and then start using")]
+        public static unsafe void GetHorizontablFlatness(Mat roiMat, int width, out List<double> listY, out List<double> listY2)
+        {
+            byte* b = roiMat.DataPointer;
+
+            listY = new List<double>();
+            listY2 = new List<double>();
+
+            double[] grayArr;
+            double tmpGrayAbs = 0;
+            int tmpY = 0;
+
+            for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
+            {
+                // 向右，且避開 pin
+                if (i is < 590 or >= 650 && (i < roiMat.Width))
+                {
+                    grayArr = new double[roiMat.Height];
+                    tmpGrayAbs = 0; // 紀錄差值 (斜率)
+                    tmpY = 0;
+
+                    for (int j = 0; j < roiMat.Height; j++)
+                    {
+                        // 計算鄰近三點灰階值平均
+                        double avg = (b[(width * j) + i] + b[(width * j) + i + 1] + b[(width * j) + i + 2]) / 3;
+                        grayArr[j] = avg;
+
+                        int k = j - 1;
+                        if (j == 0) { continue; }
+
+                        if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                        {
+                            tmpY = j;   // 紀錄 Y 座標，此為斜率最大點
+                            tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]); // 計算差值，下個迴圈使用
+                        }
+
+                        // 若灰階值突然增加，代表進入反光區，不為工件表面
+                        if (grayArr[j] - grayArr[k] > 10) { break; }
+                    }
+
+                    // 判斷鄰近 Y 座標間差距小於3，否則代表 Y 座標抓取錯誤
+                    if (listY.Count == 0 || Math.Abs(tmpY - listY[^1]) < 3)
+                    {
+                        listY.Add(tmpY);
+
+#if DEBUG || debug
+                        // 標記黑色 pin
+                        b[(width * tmpY) + i] = 0;
+                        b[(width * (tmpY + 1)) + i] = 0;
+                        b[(width * (tmpY + 2)) + i] = 0;
+                        b[(width * (tmpY - 1)) + i] = 0;
+                        b[(width * (tmpY - 2)) + i] = 0;
+#endif
+                    }
+                    else
+                    {
+                        // 若差距過大，插入前一筆 Y 座標
+                        listY.Add(listY[^1]);
+                    }
+
+                    if (listY.Count > 4)
+                    {
+                        // 平滑化曲線
+                        double avg = (listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5;
+                        listY2.Add(avg);
+                    }
+                }
+
+                // 向左
+                if (i2 > 0)
+                {
+                    grayArr = new double[roiMat.Height];
+                    tmpGrayAbs = 0;
+                    tmpY = 0;
+
+                    for (int j = 0; j < roiMat.Height; j++)
+                    {
+                        // 計算鄰近三點灰階值平均
+                        double avg = (b[(width * j) + i2] + b[(width * j) + i2 + 1] + b[(width * j) + i2 + 2]) / 3;
+                        grayArr[j] = avg;
+                        int k = j - 1;
+
+                        if (j == 0) { continue; }
+
+                        if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                        {
+                            tmpY = j;   // 紀錄 Y 座標，此為斜率最大點
+                            tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]); // 計算差值，下個迴圈使用
+                        }
+
+                        // 若灰階值突然增加，代表進入反光區，不為工件表面
+                        if (grayArr[j] - grayArr[k] > 10) { break; }
+                    }
+
+
+                    // 判斷鄰近 Y 座標間差距小於3，否則代表 Y 座標抓取錯誤
+                    if (Math.Abs(tmpY - listY[0]) < 3)
+                    {
+                        listY.Insert(0, tmpY);
+
+#if DEBUG || debug 
+                        b[(width * tmpY) + i2] = 50;
+                        b[(width * (tmpY + 1)) + i2] = 50;
+                        b[(width * (tmpY + 2)) + i2] = 50;
+                        b[(width * (tmpY - 1)) + i2] = 50;
+                        b[(width * (tmpY - 2)) + i2] = 50;
+#endif
+                    }
+                    else
+                    {
+                        listY.Insert(0, listY[0]);
+                    }
+
+
+                    if (listY.Count > 4)
+                    {
+                        double avg = (listY[0] + listY[1] + listY[2] + listY[3] + listY[4]) / 5;
+                        listY2.Insert(0, avg);
+                    }
+                }
             }
         }
         #endregion

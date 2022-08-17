@@ -142,7 +142,7 @@ namespace MCAJawIns
             CameraEnumer = TryFindResource(nameof(CameraEnumer)) as CameraEnumer;
             CameraEnumer?.WorkerStart();
 
-#if DEBUG
+#if DEBUG || debug
             BaslerCam = FindResource(nameof(BaslerCam)) as BaslerCam;
 #endif
             BaslerCams = FindResource(nameof(BaslerCams)) as BaslerCam[];
@@ -154,20 +154,13 @@ namespace MCAJawIns
             #endregion
 
             #region Light Controller
-            //LightEnumer = TryFindResource(nameof(LightEnumer)) as LightEnumer;
-            //LightEnumer?.WorkerStart();
-
-#if DEBUG
-            //LightController = FindResource(nameof(LightController)) as LightController;
-#endif
-            // LightCtrls_old = FindResource(nameof(LightCtrls_old)) as LightController[]; // depricated
             LightCtrls = FindResource(nameof(LightCtrls)) as LightSerial[];
             #endregion
 
             #region EtherCAT Motion
             // MCA Jaw 用不到
-            //ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
-            //ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
+            // ServoMotion = FindResource(nameof(ServoMotion)) as ServoMotion;
+            // ServoMotion.EnableCollectionBinding();  // 啟用 Collection Binding，避免跨執行緒錯誤
             #endregion
 
             #region IO Controller
@@ -177,7 +170,6 @@ namespace MCAJawIns
 
             #region MongoDB Access
             MongoAccess = FindResource(nameof(MongoAccess)) as MongoAccess;
-            //MongoAccess.Connect("mcajaw", "intaiUser", "mcajaw");
             #endregion
 
             // 載入後, focus 視窗
