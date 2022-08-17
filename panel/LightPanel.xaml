@@ -92,45 +92,51 @@
                         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 4">
                             <!--#region Resources -->
                             <DockPanel.Resources>
+                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="FontSize" Value="16" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Style>
+                                <!--//-->
                                 <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                                     <Setter Property="BorderThickness" Value="0" />
                                     <Setter Property="IsReadOnly" Value="True" />
                                     <Setter Property="Foreground" Value="{StaticResource ColorGray}" />
                                     <Setter Property="BorderBrush" Value="{StaticResource ColorGray}" />
                                     <Setter Property="MinWidth" Value="60" />
-
+                                    <Setter Property="Margin" Value="8 0" />
+                                    <!--//-->
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="BorderThickness" Value="1" />
                                         </Trigger>
-
+                                        <!--//-->
                                         <Trigger Property="IsEnabled" Value="True">
                                             <Setter Property="Foreground" Value="{StaticResource ColorPrimary}" />
                                             <Setter Property="BorderBrush" Value="{StaticResource ColorPrimary}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-
+                                <!--//-->
                                 <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MaterialDesignSlider}">
                                     <Setter Property="Cursor" Value="Hand" />
-                                    <Setter Property="Foreground" Value="{StaticResource ColorInfo}" />
-                                    
-                                    
+                                    <Setter Property="Foreground" Value="{StaticResource ColorPurple}" />
                                 </Style>
                             </DockPanel.Resources>
                             <!--#endregion-->
 
-                            <TextBlock DockPanel.Dock="Left" Margin="0 0 12 0" VerticalAlignment="Center" Text="{Binding Channel}" FontSize="16" FontWeight="Bold"
-                                    Style="{StaticResource MaterialDesignBody1TextBlock}" />
+                            <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="0 0 12 0" Text="{Binding Channel}" />
 
-                            <TextBox DockPanel.Dock="Right" Grid.Column="1" Padding="0 3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12 8 0 8"
-                                    TextAlignment="Center" Cursor="Arrow" Focusable="False" Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox DockPanel.Dock="Right" Grid.Column="1" Padding="0 3" HorizontalAlignment="Right" VerticalAlignment="Center" TextAlignment="Center"
+                                    Cursor="Arrow" Focusable="False" Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                     IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <!--IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
 
-                            <Slider Grid.Column="0" Minimum="0" Maximum="1023" Margin="0 8 " VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False"
-                                    materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True" DockPanel.Dock="Right" IsSnapToTickEnabled="True"
-                                    TickPlacement="BottomRight" TickFrequency="32" Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            </Slider>
+                            <Slider DockPanel.Dock="Right" Minimum="0" Maximum="1023" Margin="0 8 " VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False"
+                                    materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="32"
+                                    Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                             <!--IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                         </DockPanel>
                     </DataTemplate>
