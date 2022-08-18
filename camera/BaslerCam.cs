@@ -117,6 +117,8 @@ namespace MCAJawIns
         private bool _isGrabberOpened;
         private bool _isContinuousGrabbing;
         private bool _isTriggerMode;
+        private int _offsetX;
+        private int _offsetY;
 
         /// <summary>
         /// 相機建構子
@@ -231,11 +233,33 @@ namespace MCAJawIns
         /// <summary>
         /// X 偏移
         /// </summary>
-        public int OffsetX { get; set; }
+        public int OffsetX
+        {
+            get => _offsetX;
+            set
+            {
+                if (value != _offsetX)
+                {
+                    _offsetX = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         /// <summary>
         /// Y 偏移
         /// </summary>
-        public int OffsetY { get; set; }
+        public int OffsetY
+        {
+            get => _offsetY;
+            set
+            {
+                if (value != _offsetY)
+                {
+                    _offsetY = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// 當前套用之組態

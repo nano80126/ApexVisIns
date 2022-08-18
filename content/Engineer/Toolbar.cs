@@ -337,12 +337,11 @@ namespace MCAJawIns.content
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
                     // 啟動 StreamGrabber，拍攝一張
-                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                    //cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                     // cam.Camera.ExecuteSoftwareTrigger();
-                    _ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
-
-                    // Cv2.DestroyAllWindows();
+                    //_ = cam.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.ThrowException);
                 }
             }
             catch (TimeoutException T)
@@ -359,10 +358,10 @@ namespace MCAJawIns.content
             }
             finally
             {
-                if (cam.Camera.StreamGrabber.IsGrabbing)
-                {
-                    cam.Camera.StreamGrabber.Stop();
-                }
+                //if (cam.Camera.StreamGrabber.IsGrabbing)
+                //{
+                //    cam.Camera.StreamGrabber.Stop();
+                //}
             }
         }
 
@@ -666,14 +665,12 @@ namespace MCAJawIns.content
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
                 MainWindow.BaslerCam.Frames = (int)grabResult.ImageNumber;
 
-                Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
+                //Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
                 #region Assist Rect && AssistRect.Area > 0
-                if (AssistRect.Enable)
+                if (AssistRect.Enable && AssistRect.Area > 0)
                 {
-                    //Cv2.DestroyAllWindows();
                     #region Coding custom ROI Method here
-
 
                     #region UI Thread here
                     Dispatcher.Invoke(() =>
@@ -690,15 +687,13 @@ namespace MCAJawIns.content
 
                 MainWindow.Dispatcher.Invoke(() =>
                 {
-                    //MainWindow.ImageSource = mat.ToImageSource();
-                    //Indicator.ImageSource = mat.ToImageSource();
                     Indicator.Image = mat;
-                    //Debug.WriteLine($"width: {width} maxWindowWidth: {maxWindowWidth}");
-                    //Debug.WriteLine($"1st {step1done}, 2nd {step2done} 3rd {step3done} 4th {step4done}");
+                    // Debug.WriteLine($"width: {width} maxWindowWidth: {maxWindowWidth}");
+                    // Debug.WriteLine($"1st {step1done}, 2nd {step2done} 3rd {step3done} 4th {step4done}");
 
                 });
                 Debug.WriteLine($"End: {DateTime.Now:ss.fff}");
-                Debug.WriteLine("------------------------------------------------");
+                //Debug.WriteLine("------------------------------------------------");
             }
         }
         #endregion

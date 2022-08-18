@@ -38,7 +38,7 @@ namespace MCAJawIns.content
         #endregion
 
         #region Varibles
-        private static bool MoveImage;
+        //private static bool MoveImage;
         private static double TempX;
         private static double TempY;
         private ImageSource _imgSrc;
@@ -111,7 +111,7 @@ namespace MCAJawIns.content
         {
             ConfigPanel.EngineerTab = this;
             LightPanel.EngineerTab = this;
-            //DigitalIOPanel.EngineerTab = this;
+            // DigitalIOPanel.EngineerTab = this;
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace MCAJawIns.content
                         AssistRect.Y = pY < 0 ? 0 : pY + AssistRect.Height > canvas.Height ? canvas.Height - AssistRect.Height : pY;
                     }
                 }
-            } 
+            }
 
             // 變更 座標
             //AssistRect.PosX = (int)_x;

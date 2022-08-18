@@ -113,16 +113,5 @@ namespace MCAJawIns.module
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.LIGHT, "未與光源控制器連線或已斷線");
             }
         }
-
-
-        //private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        //{
-        //    Debug.WriteLine($"{e.OldValue} {e.NewValue}");
-
-        //     foreach (LightChannel channel in MainWindow.LightController.Channels)
-        //    {
-        //        Debug.WriteLine($"{channel.Channel} {channel.Value}");
-        //    }
-        //}
     }
 }

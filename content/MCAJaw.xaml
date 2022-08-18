@@ -26,18 +26,44 @@
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region Toolbar 1 -->
         <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
-            <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False" Style="{StaticResource MaterialDesignToolBar}">
+            <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
+                    Style="{StaticResource MaterialDesignToolBar}">
                 <ToolBar.Resources>
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
-                <TextBlock Margin="12 0 0 4" Text="小 Jaw 檢測系統" FontSize="{StaticResource Title}" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
-                        Foreground="{StaticResource ColorInfo}" />
-
-                <TextBlock Margin="12 0 0 4" Text="Ver. 1.0.0" FontSize="{StaticResource Title-sm}" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
-                        Foreground="{StaticResource ColorPrimaryTransparent}" />
-
+                <!--#region Title -->
+                <TextBlock Margin="12 0 0 4" Text="小 Jaw 檢測系統" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorInfo}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="{StaticResource Title-sm}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                        Value="Maximized">
+                                    <Setter Property="FontSize" Value="{StaticResource Title}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <!--//-->
+                <TextBlock Margin="12 0 0 4" Text="Ver. 1.0.0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
+                        Foreground="{StaticResource ColorPrimaryTransparent}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="{StaticResource Title-xs}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                        Value="Maximized">
+                                    <Setter Property="FontSize" Value="{StaticResource Title-sm}"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <!--//-->
                 <Separator Margin="12 6" />
+                <!--#endregion-->
 
                 <ListBox x:Name="TabSelector" Background="Transparent" materialDesign:ListBoxAssist.IsToggle="False"
                         SelectedIndex="{Binding JawTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}}">
@@ -254,19 +280,20 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <!--//-->
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="4*"/>
-                        <ColumnDefinition Width="4*"/>
-                        <!--<ColumnDefinition Width="4*"/>-->
-                    </Grid.ColumnDefinitions>
-                    <!--//-->
+                    <!--#region Layout -->
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="13*"/>
-                        <RowDefinition Height="8*"/>
+                        <RowDefinition Height="13*" />
+                        <RowDefinition Height="8*" />
                         <!--<RowDefinition Height="2*"></RowDefinition>-->
                     </Grid.RowDefinitions>
+                    <!--//-->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="4*" />
+                        <!--<ColumnDefinition Width="4*"/>-->
+                    </Grid.ColumnDefinitions>
+                    <!--#endregion-->
 
                     <!--#region Control Panel -->
                     <Border Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Background="{x:Null}" DataContext="{StaticResource JawInspection}">
@@ -284,23 +311,25 @@
                                 <Separator DockPanel.Dock="Top" Margin="0 8"/>
                                 <!--Panel Body-->
                                 <Grid x:Name="Body" DockPanel.Dock="Top">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <!--//-->
+                                    <!--#region Layout -->
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="1*"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="1*" />
                                         <!--<RowDefinition Height="1*"/>-->
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
                                     </Grid.RowDefinitions>
+                                    <!--//-->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--#endregion-->
 
                                     <!--#region 1st row  -->
                                     <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
@@ -375,72 +404,67 @@
                                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0">
                                         <Grid.Resources>
                                             <Style TargetType="TextBlock" x:Key="Header">
-                                                <Setter Property="FontSize" Value="20"/>
-                                                <Setter Property="FontWeight" Value="Bold"/>
-                                                <Setter Property="Foreground" Value="{StaticResource ColorGray}"/>
+                                                <Setter Property="FontSize" Value="{StaticResource Header}" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                                <Setter Property="Foreground" Value="{StaticResource ColorGray}" />
                                                 <!--//-->
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                                        <Setter Property="FontSize" Value="24"/>
+                                                    <DataTrigger
+                                                            Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                                                            Value="Maximized">
+                                                        <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-
+                                            <!--//-->
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource Header}" x:Key="ItemText">
-                                                <!--<Setter Property="Margin" Value="80 0 0 0"/>-->
-                                                <Setter Property="FontSize" Value="16"/>
-                                                <Setter Property="FontWeight" Value="Bold"/>
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="HorizontalAlignment" Value="Right" />
                                                 <!--//-->
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                                        <Setter Property="FontSize" Value="20"/>
+                                                    <DataTrigger
+                                                            Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                                                            Value="Maximized">
+                                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-
+                                            <!--//-->
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource ItemText}" x:Key="ItemNoteText">
-                                                <Setter Property="FontSize" Value="16"/>
-                                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                                <Setter Property="Margin" Value="0 2 0 0"/>
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                                <Setter Property="Margin" Value="0 2 0 0" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="HorizontalAlignment" Value="Center" />
                                                 <!--//-->
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                                        <Setter Property="FontSize" Value="20"/>
+                                                    <DataTrigger
+                                                            Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                                                            Value="Maximized">
+                                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-
-
-                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" >
-                                                <Setter Property="Padding" Value="0"/>
-                                                <Setter Property="Width" Value="26"/>
-                                                <Setter Property="Height" Value="27"/>
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}"/>
+                                            <!--//-->
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                                <Setter Property="Padding" Value="0" />
+                                                <Setter Property="Width" Value="26" />
+                                                <Setter Property="Height" Value="27" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}" />
                                             </Style>
-
-                                            <!--<Style x:Key="PlusButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MinusButton}">
-                                            </Style>-->
-
+                                            <!--//-->
                                             <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                                <Setter Property="Margin" Value="1 4"/>
-                                                <Setter Property="FontSize" Value="20"/>
-                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="TextAlignment" Value="Center"/>
-                                                <Setter Property="IsReadOnly" Value="True"/>
-                                                <Setter Property="Cursor" Value="Arrow"/>
-                                                <!--<Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="BorderThickness" Value="1"/>
-                                                    </Trigger>
-                                                </Style.Triggers>-->
+                                                <Setter Property="Margin" Value="1 4" />
+                                                <Setter Property="FontSize" Value="20" />
+                                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="TextAlignment" Value="Center" />
+                                                <Setter Property="IsReadOnly" Value="True" />
+                                                <Setter Property="Cursor" Value="Arrow" />
                                             </Style>
-
                                         </Grid.Resources>
                                         <!--//-->
                                         <Grid.RowDefinitions>
@@ -449,7 +473,6 @@
                                             <RowDefinition Height="auto" Tag="FrontHeader"/>
                                             <!--separator-->
                                             <RowDefinition Height="auto" Tag="FrontSeparator"/>
-
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
@@ -462,7 +485,6 @@
                                             <RowDefinition Height="auto" Tag="BackHeader"/>
                                             <!--separator-->
                                             <RowDefinition Height="auto" Tag="BackSeparator"/>
-
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>
                                             <RowDefinition Height="auto"/>

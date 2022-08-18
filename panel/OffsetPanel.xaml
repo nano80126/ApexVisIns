@@ -26,8 +26,8 @@
                 <Setter Property="BorderBrush" Value="{StaticResource ColorPink}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <!--<Setter Property="Background" Value="{StaticResource ColorYellow}" />-->
-                <Setter Property="Delay" Value="500" />
-                <Setter Property="Interval" Value="150" />
+                <Setter Property="Delay" Value="250" />
+                <Setter Property="Interval" Value="50" />
             </Style>
             <!--//-->
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -60,14 +60,14 @@
             <TextBlock Grid.RowSpan="3" Grid.Column="0" Padding="0" FontSize="16">
                 <Run>
                     <Run.Text>
-                        <Binding Path="Config.Width" StringFormat="{}X:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
+                        <Binding Path="OffsetX" StringFormat="{}Oft X:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
                     </Run.Text>
                 </Run>
                 <LineBreak />
                 <LineBreak />
                   <Run>
                     <Run.Text>
-                        <Binding Path="Config.Height" StringFormat="{}Y:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
+                        <Binding Path="OffsetY" StringFormat="{}Oft Y:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
                     </Run.Text>
                 </Run>
             </TextBlock>

@@ -68,12 +68,10 @@
                         IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                         ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                         SelectionChanged="CamSelector_SelectionChanged" MouseRightButtonUp="CamSelector_MouseRightButtonUp" MinWidth="135" Margin="0 0 12 0">
-                    <!--  -->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <!--<StackPanel Orientation="Horizontal">-->
+                            <!--// 這邊新增 Converter 縮短字串長度-->
                             <TextBlock TextAlignment="Center" Text="{Binding Model, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-                            <!--</StackPanel>-->
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
@@ -537,7 +535,8 @@
                 <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--光源控制 Panel-->
-                    <uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>
+                    <!--<uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>-->
+                    <panel:LightPanel x:Name="LightPanel" Background="LightCyan" Margin="2 8 2 0" />
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
@@ -547,7 +546,6 @@
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"/>-->
-                    <panel:LightPanel Background="LightCyan" Margin="2 8 2 0" />
                 </StackPanel>
 
             </Grid>

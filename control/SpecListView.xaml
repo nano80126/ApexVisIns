@@ -22,10 +22,15 @@
                 <Grid.Resources>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
                         <Setter Property="Padding" Value="6 3"/>
-                        <!--<Setter Property="FontSize" Value="24"/>-->
-                        <Setter Property="FontSize" Value="{StaticResource Header-lg}"/>
+                        <Setter Property="FontSize" Value="{StaticResource Header}"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="Foreground" Value="{StaticResource ColorInfo}"/>
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}" Value="Maximized">
+                                <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Resources>
 
