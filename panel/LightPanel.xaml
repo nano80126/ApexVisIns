@@ -72,21 +72,18 @@
         <!--#endregion-->
 
         <!--#region Row2 -->
-        
-        
-        
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Vertical">
             <ItemsControl ItemsSource="{Binding Channels,Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch"></StackPanel>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
+                
                 <!--<ItemsControl.ItemContainerStyle>
                     <Style TargetType="ContentControl" />
                 </ItemsControl.ItemContainerStyle>-->
-
+                
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 4">

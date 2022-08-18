@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using Basler.Pylon;
 
 namespace MCAJawIns.Panel
@@ -28,6 +29,12 @@ namespace MCAJawIns.Panel
         private void CustomCard_Loaded(object sender, RoutedEventArgs e)
         {
             Cam = DataContext as BaslerCam;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Keyboard.ClearFocus();
+            _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
 
         private void CamLeftMove_Click(object sender, RoutedEventArgs e)

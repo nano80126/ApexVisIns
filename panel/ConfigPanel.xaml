@@ -18,7 +18,6 @@
     <ctrl:CustomCard.Resources>
         <!--//-->
         <app:BaslerConfig x:Key="BaslerConfig" Name="Default" />
-        <!--//-->
     </ctrl:CustomCard.Resources>
 
     <DockPanel x:Name="Body">
@@ -46,12 +45,12 @@
         <materialDesign:PopupBox x:Name="ConfigPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" Padding="0" StaysOpen="True" PlacementMode="BottomAndAlignLeftEdges"
                 materialDesign:RippleAssist.IsDisabled="True" materialDesign:ShadowAssist.ShadowDepth="Depth2" Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed">
             <!--IsEnabled="True"-->
-            <materialDesign:PopupBox.IsEnabled>
+            <!--<materialDesign:PopupBox.IsEnabled>
                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
                     <Binding Path="IsOpen" FallbackValue="False" />
                     <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" />
                 </MultiBinding>
-            </materialDesign:PopupBox.IsEnabled>
+            </materialDesign:PopupBox.IsEnabled>-->
 
             <materialDesign:PopupBox.ToggleContent>
                 <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}">

@@ -37,7 +37,7 @@
     </StackPanel.Resources>
 
     <!--#region Toolbar -->
-    <DockPanel x:Name="ToolbarPanel"  HorizontalAlignment="Stretch" Background="#22969696">
+    <DockPanel x:Name="ToolbarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region MainToolbar-->
         <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
             <!-- DataContext 動態變更, CamSelectort SelectedIndex Changed 觸發 -->

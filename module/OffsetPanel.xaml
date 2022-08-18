@@ -25,6 +25,5 @@
                       Click="CamBottomMove_Click"/>
 
         <Button x:Name="CamCenterMove" HorizontalAlignment="Center" VerticalAlignment="Center"  Content="{materialDesign:PackIcon Kind=Circle, Size=14}" Click="CamCenterMove_Click"/>
-    
     </Grid>
 </materialDesign:Card>
