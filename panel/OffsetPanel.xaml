@@ -10,61 +10,12 @@
                  d:DesignHeight="450" 
                  d:DesignWidth="800" 
                  Title="偏移" 
+                 SubTitle="{x:Null}"
                  IconKind="ArrowAll"
                  Style="{StaticResource {x:Type ctrl:CustomCard}}" 
                  d:DataContext="{d:DesignInstance Type=app:BaslerCam}" 
                  Loaded="CustomCard_Loaded">
-        <!--<ctrl:CustomCard.SubTitle>
-            <MultiBinding StringFormat="{}({0}, {1})" >
-                <Binding Path="OffsetX" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
-                <Binding Path="OffsetY" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
-            </MultiBinding>
-        </ctrl:CustomCard.SubTitle>-->
-
     <DockPanel x:Name="Body">
-        <!--#region Resources -->
-        <DockPanel.Resources>
-            <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                <Setter Property="Margin" Value="0 4" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Width" Value="36" />
-                <Setter Property="Height" Value="36" />
-                <Setter Property="Foreground" Value="{StaticResource ColorPurple}" />
-                <Setter Property="BorderBrush" Value="{StaticResource ColorPink}" />
-                <Setter Property="BorderThickness" Value="1" />
-                <!--<Setter Property="Background" Value="{StaticResource ColorYellow}" />-->
-                <Setter Property="Delay" Value="250" />
-                <Setter Property="Interval" Value="50" />
-            </Style>
-            <!--//-->
-            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                <Setter Property="Margin" Value="0 4" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Width" Value="36" />
-                <Setter Property="Height" Value="36" />
-                <Setter Property="Foreground" Value="{StaticResource ColorPurple}" />
-                <Setter Property="BorderBrush" Value="{StaticResource ColorPink}" />
-                <Setter Property="BorderThickness" Value="1" />
-            </Style>
-        </DockPanel.Resources>
-        <!--#endregion-->
-        
-        <!--#region Layout -->
-        <!--<Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        -->
-        <!--//-->
-        <!--
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="5*" />
-        </Grid.ColumnDefinitions>-->
-        <!--#endregion-->
-        
         <!--<StackPanel Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">-->
         <TextBlock DockPanel.Dock="Left" Padding="0" FontSize="16">
             <TextBlock.Text>
@@ -73,29 +24,18 @@
                     <Binding Path="OffsetY" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
                 </MultiBinding>
             </TextBlock.Text>
-            
-            <!--
-            <Run>
-                <Run.Text>
-                    <Binding Path="OffsetX" StringFormat="{}X:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
-                </Run.Text>
-            </Run>
-            <Run>
-                <Run.Text>
-                    <Binding Path="OffsetY" StringFormat="{}Y:{0,4:D0}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
-                </Run.Text>
-            </Run>
-            -->
         </TextBlock>
         <!--</StackPanel>-->
 
         <!--#region Popupbox -->
         <materialDesign:PopupBox x:Name="OffsetPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" Padding="0" StaysOpen="True" PlacementMode="BottomAndAlignLeftEdges"
-                materialDesign:RippleAssist.IsDisabled="True" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                <!--IsEnabled="{Binding IsOpen, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}"-->
+                materialDesign:RippleAssist.IsDisabled="True" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                IsEnabled="{Binding IsOpen, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}">
+            <!--#region Toggle Content -->
             <materialDesign:PopupBox.ToggleContent>
                 <materialDesign:PackIcon Kind="ArrowAll" Foreground="{StaticResource ColorInfo}" Style="{StaticResource GeneralPackIcon}" />
             </materialDesign:PopupBox.ToggleContent>
+            <!--#endregion-->
 
             <Grid x:Name="OffsetGrid" HorizontalAlignment="Center" VerticalAlignment="Center"  Background="#eee" MouseDown="Grid_MouseDown">
                 <!--#region Resources -->
@@ -124,7 +64,6 @@
                     </Style>
                 </Grid.Resources>
                 <!--#endregion-->
-                
                 <!--#region Layout -->
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -138,7 +77,6 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <!--#endregion-->
-                
                 <!--#region Content -->
                 <RepeatButton Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="18 2 2 18"
                         Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=16}" Click="CamLeftMove_Click" />
@@ -159,10 +97,6 @@
         </materialDesign:PopupBox>
         <!--#endregion-->
 
-        <!-- // -->
-        <!--<Separator Grid.RowSpan="100" Grid.Column="1" Width="1" Margin="8 0" Background="{StaticResource ColorSecondaryTransparent}" 
-        Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />-->
-
         <Grid Visibility="Collapsed">
             <RepeatButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="18 2 2 18"
                     Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=16}" Click="CamLeftMove_Click" />
@@ -179,5 +113,6 @@
             <Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=Circle, Size=16}"
                     Click="CamCenterMove_Click" />
         </Grid>
+        
     </DockPanel>
 </ctrl:CustomCard>

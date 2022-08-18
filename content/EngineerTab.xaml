@@ -282,31 +282,33 @@
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
                     FlowDirection="LeftToRight">
 
+                <Button VerticalAlignment="Center" Click="Test_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <TextBlock Text="測試" VerticalAlignment="Center" />
+                </Button>
+
                 <!--#region Toolbar Contents 保留測試按鈕 -->
                 <Button VerticalAlignment="Center" Click="ReadImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0" Text="讀取" VerticalAlignment="Center" />
-                    </StackPanel>  
+                    <!--<StackPanel Orientation="Horizontal" Background="Blue">-->
+                    <TextBlock Margin="0" Text="讀取" VerticalAlignment="Center" />
+                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="RestoreImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0" Text="回復" VerticalAlignment="Center" />
-                    </StackPanel>
+                    <!--<StackPanel Orientation="Horizontal">-->
+                    <TextBlock Margin="0" Text="回復" VerticalAlignment="Center" />
+                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="DealImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0" Text="處理" VerticalAlignment="Center" />
-                    </StackPanel>
+                    <!--<StackPanel Orientation="Horizontal">-->
+                    <TextBlock Margin="0" Text="處理" VerticalAlignment="Center" />
+                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="SaveImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <StackPanel Orientation="Horizontal">
+                    <!--<StackPanel Orientation="Horizontal">-->
                         <TextBlock Margin="0" Text="儲存" VerticalAlignment="Center" />
-                    </StackPanel>
+                    <!--</StackPanel>-->
                 </Button>
                 <!--#endregion-->
 

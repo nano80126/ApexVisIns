@@ -350,7 +350,6 @@ namespace MCAJawIns
     }
 
 
-
     /// <summary>
     /// Basler 組態,
     /// ConfigPanel 使用 (EngineerTab 內)

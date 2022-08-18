@@ -140,6 +140,21 @@ namespace MCAJawIns.content
         #endregion
 
         #region 右 Toolbar
+        int ttt = 0;
+        private void Test_Click(object sender, RoutedEventArgs e)
+        {
+            if (ttt++ % 2 == 0)
+            {
+                LightPanel.LightSerial.SetAllChannelValue(96, 64);
+            }
+            else
+            {
+                LightPanel.LightSerial.SetAllChannelValue(0, 0);
+            }
+            Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
+            // Cv2.ImShow();
+        }
+
         private void ReadImage_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()

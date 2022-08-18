@@ -355,8 +355,13 @@ namespace MCAJawIns
                 string cmd = $"1,{ch1},2,{ch2},3,{ch3},4,{ch4}\r\n";
                 try
                 {
+                    Debug.WriteLine($"Write {DateTime.Now:ss.fff}");
                     Write(cmd);
-                    _ = ReadLine();
+                    //_ = ReadLine();
+                    Debug.WriteLine($"Wrtire done {DateTime.Now:ss.fff}");
+                    string read = ReadLine();
+                    Debug.WriteLine($"Read {read} {DateTime.Now:ss.fff}");
+                    
                     if (ChannelNumber > 0) { Channels[0].Value = ch1; }
                     if (ChannelNumber > 1) { Channels[1].Value = ch2; }
                     if (ChannelNumber > 2) { Channels[2].Value = ch3; }
