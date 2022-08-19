@@ -27,7 +27,7 @@ namespace MCAJawIns
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //AutoModeRadio.IsChecked = true;
+
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -35,24 +35,17 @@ namespace MCAJawIns
 
         }
 
-        //private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    MainWindow.InitModes mode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), (sender as RadioButton).CommandParameter.ToString());
-        //    (Owner as MainWindow).InitMode = mode;
-        //}
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    DialogResult = true;
-        //    Close();
-        //}
-
         #region Command
         private void CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
 
+        private void ChangeTypeCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            // (Owner as MainWindow).InitMode = 
+        }
+        
         private void ChangeModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
             (Owner as MainWindow).InitMode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), e.Parameter.ToString());

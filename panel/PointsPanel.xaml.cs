@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data;
+using System.Drawing;
+using System.IO;
 using MCAJawIns.content;
 
 namespace MCAJawIns.Panel
@@ -21,14 +24,25 @@ namespace MCAJawIns.Panel
     /// </summary>
     public partial class PointsPanel : Control.CustomCard
     {
+        public EngineerTab EngineerTab { get; set; }
+
+
+        public AssistPoints AssistPoints { get; set; }
+
         public PointsPanel()
         {
             InitializeComponent();
+
         }
 
         private void CustomCard_Loaded(object sender, RoutedEventArgs e)
         {
+            AssistPoints = DataContext as AssistPoints;
+        }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            AssistPoints.Source.Clear();
         }
     }
 }

@@ -258,23 +258,23 @@ namespace MCAJawIns.content
                     #region 顏色生成
                     if (R < G && R < B)
                     {
-                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)255, (byte)(255 - G), (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)255, (byte)(255 - G), (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, 255, (byte)(255 - G), (byte)(255 - B)));
                     }
                     else if (G < R && G < B)
                     {
-                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), 255, (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), 255, (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), 255, (byte)(255 - B)));
                     }
                     else if (B < R && B < G)
                     {
-                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), 255));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), 255));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), 255));
                     }
                     else
                     {
-                        SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, brush));
+                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
+                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
                     }
                     #endregion
 

@@ -22,94 +22,151 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         Topmost="False"
-        Title="ModeWindow" Height="100" Width="300"
+        Title="ModeWindow" 
+        Width="300"
+        Height="130"
         Loaded="Window_Loaded"
         Unloaded="Window_Unloaded">
     <Window.Resources>
-        <RoutedCommand x:Key="ChangeModeAction"/>
+        <RoutedCommand x:Key="ChangeTypeAction" />
+        <RoutedCommand x:Key="ChangeModeAction" />
     </Window.Resources>
-
+    <!--//-->
     <Window.InputBindings>
         <KeyBinding Key="F1" Command="{StaticResource ChangeModeAction}" CommandParameter="1" CommandTarget="{Binding ElementName=AutoModeRadio}"/>
         <KeyBinding Key="F2" Command="{StaticResource ChangeModeAction}" CommandParameter="2" CommandTarget="{Binding ElementName=EditModeRadio}"/>
     </Window.InputBindings>
-
+    <!--//-->
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource ChangeModeAction}" CanExecute="CanExecute" Executed="ChangeModeCommand"/>
     </Window.CommandBindings>
-    
+    <!--//-->
     <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="WhiteSmoke" Style="{StaticResource MainWindowBorder}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!--#region Layout -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="1*"/>
-                <!--<RowDefinition Height="1*"/>-->
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-
+            <!--#endregion-->
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3">
-                <!--
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                -->
                 <Image Grid.Column="0" UseLayoutRounding="True" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
             </Grid>
             <!--//-->
             <Separator Grid.Row="1" />
-            <!--//-->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+            
+            <!--#region Type Select -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!--#region Resources -->
                 <StackPanel.Resources>
-                    <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">
-                        <Setter Property="Margin" Value="8 0"/>
-                        <Setter Property="FontWeight" Value="Bold"/>
+                    <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipRadioButton}">
+                        <Setter Property="Margin" Value="8 0" />
+                        <Setter Property="Background" Value="{StaticResource ColorInfo}" />
                     </Style>
-                    <Style TargetType="materialDesign:PackIcon" x:Key="ModeChoice">
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="Width" Value="30"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Kind" Value="CheckboxBlankOutline"/>
+                    <Style TargetType="materialDesign:PackIcon" x:Key="TypeChoice">
+                        <Setter Property="Margin" Value="0 0 4 0" />
+                        <!--<Setter Property="Width" Value="30" />-->
+                        <Setter Property="Height" Value="16" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Kind" Value="CheckboxBlankOutline" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
-                                <Setter Property="Kind" Value="CheckboxOutline"/>
+                                <Setter Property="Kind" Value="CheckboxOutline" />
                             </DataTrigger>
 
-                            <DataTrigger Binding="{Binding IsMouseCaptured, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
-                                <Setter Property="Kind" Value="CheckboxOutline"/>
+                            <DataTrigger Binding="{Binding IsMouseCaptured, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}"
+                                    Value="True">
+                                <Setter Property="Kind" Value="CheckboxOutline" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Resources>
+                <!--#endregion-->
 
-                <RadioButton x:Name="AutoModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}"
-                             Foreground="{StaticResource ColorTeal}" 
-                             Command="{StaticResource ChangeModeAction}" CommandParameter="1">
+                <!--#region Content -->
+                <RadioButton GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}" VerticalAlignment="Center"/>
-                            <TextBlock VerticalAlignment="Center" Text="自動模式" FontSize="18"/>
+                            <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
+                            <TextBlock VerticalAlignment="Center" Text="小" FontSize="{StaticResource BasicFont}" />
                         </StackPanel>
                     </RadioButton.Content>
                 </RadioButton>
 
-                <RadioButton x:Name="EditModeRadio" GroupName="ModeGroup" Background="{StaticResource ColorSecondary}" 
-                             Foreground="{StaticResource ColorDeepPurple}" 
-                             Command="{StaticResource ChangeModeAction}" CommandParameter="2">
+                <RadioButton GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Style="{StaticResource ModeChoice}" VerticalAlignment="Center"/>
-                            <TextBlock VerticalAlignment="Center" Text="編輯模式" FontSize="18"/>
+                            <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
+                            <TextBlock VerticalAlignment="Center" Text="中" FontSize="{StaticResource BasicFont}" />
                         </StackPanel>
                     </RadioButton.Content>
                 </RadioButton>
+
+                <RadioButton GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
+                            <TextBlock VerticalAlignment="Center" Text="大" FontSize="{StaticResource BasicFont}" />
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+                <!--#endregion-->
             </StackPanel>
+            <!--#endregion-->
 
-            <!--<Button Grid.Row="3" Margin="6 0" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                    Height="26" Content="確定" Focusable="False"
-                    Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
-                    Click="Button_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
+            <!--#region Mode Select -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!--#region Resources -->
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">
+                        <Setter Property="Margin" Value="8 0" />
+                        <Setter Property="Background" Value="{StaticResource ColorSecondary}" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </Style>
+                    <Style TargetType="materialDesign:PackIcon" x:Key="ModeChoice">
+                        <Setter Property="Margin" Value="0 0 4 0" />
+                        <!--<Setter Property="Width" Value="30" />-->
+                        <Setter Property="Height" Value="26" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Kind" Value="CheckboxBlankOutline" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}" Value="True">
+                                <Setter Property="Kind" Value="CheckboxOutline" />
+                            </DataTrigger>
 
+                            <DataTrigger Binding="{Binding IsMouseCaptured, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=RadioButton, AncestorLevel=1}}"
+                                    Value="True">
+                                <Setter Property="Kind" Value="CheckboxOutline" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+                <!--#endregion-->
+
+                <!--#region Content -->
+                <RadioButton x:Name="AutoModeRadio" GroupName="ModeGroup" Foreground="{StaticResource ColorTeal}" Command="{StaticResource ChangeModeAction}" CommandParameter="1">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource ModeChoice}" />
+                            <TextBlock VerticalAlignment="Center" Text="自動模式" FontSize="{StaticResource BasicFont-lg}" />
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton x:Name="EditModeRadio" GroupName="ModeGroup" Foreground="{StaticResource ColorDeepPurple}" Command="{StaticResource ChangeModeAction}"
+                        CommandParameter="2">
+                    <RadioButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource ModeChoice}" />
+                            <TextBlock VerticalAlignment="Center" Text="編輯模式" FontSize="{StaticResource BasicFont-lg}" />
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+                <!--#endregion-->
+            </StackPanel>
+            <!--#endregion-->
         </Grid>
     </Border>
 </Window>

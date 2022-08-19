@@ -26,7 +26,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:CustomCard}">
                     <ControlTemplate.Resources>
+                        <cvt:ObjectNotNullConverter x:Key="ObjectNotNullConverter" />
                         <cvt:ObjectNotNullToVisibility x:Key="ObjectNotNullToVisibility" />
+                        <!--<cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility" />-->
+                        <cvt:BooleanOrToVisibility x:Key="BooleanOrToVisibility" />
                     </ControlTemplate.Resources>
 
                     <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
@@ -57,7 +60,16 @@
                             <!--<ContentPresenter DockPanel.Dock="Top" x:Name="MainContent2" Content="{Binding Path=Content}"/>-->
                             <!--//-->
                             <!--<Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{Binding Footer, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ObjectNotNullToVisibility}}"/>-->
-                            <Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{TemplateBinding Footer, Converter={StaticResource ObjectNotNullToVisibility}}" />
+                            <Separator DockPanel.Dock="Top" Margin="0 8" >
+                                <!--Visibility="{TemplateBinding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"-->
+                                <Separator.Visibility>
+                                    <MultiBinding Converter="{StaticResource BooleanOrToVisibility}">
+                                        <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Footer" Converter="{StaticResource ObjectNotNullConverter}" />
+                                        <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="FooterTemplate" Converter="{StaticResource ObjectNotNullConverter}" />
+                                    </MultiBinding>
+                                </Separator.Visibility>
+                            </Separator>
+                                       
                             <!--Visibility="{Binding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"-->
                             <!--//-->
                             <AdornerDecorator DockPanel.Dock="Bottom">

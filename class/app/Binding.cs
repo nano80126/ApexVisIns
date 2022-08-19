@@ -583,11 +583,15 @@ namespace MCAJawIns
         private double _y;
         #endregion
 
-        public AssistPoint(double x, double y, SolidColorBrush stroke, double strokeThickness = 1)
+        public AssistPoint(double x, double y, byte r, byte g, byte b, double strokeThickness = 1)
         {
             X = x;
             Y = y;
-            Stroke = stroke;
+            // Stroke = stroke;
+            R = r;
+            G = g;
+            B = b;
+
             StrokeThickness = strokeThickness;
         }
 
@@ -623,9 +627,24 @@ namespace MCAJawIns
         }
 
         /// <summary>
+        /// R channel
+        /// </summary>
+        public byte R { get; set; }
+
+        /// <summary>
+        /// G channel
+        /// </summary>
+        public byte G { get; set; }
+
+        /// <summary>
+        /// B channel
+        /// </summary>
+        public byte B { get; set; }
+
+        /// <summary>
         /// Point 顏色
         /// </summary>
-        public SolidColorBrush Stroke { get; set; }
+        public SolidColorBrush Stroke => new SolidColorBrush(Color.FromRgb(R, G, B));
         
         public double StrokeThickness { get; set; }
 

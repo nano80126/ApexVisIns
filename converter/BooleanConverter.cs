@@ -31,7 +31,7 @@ namespace MCAJawIns.Converter
     [ValueConversion(typeof(bool[]), typeof(bool))]
     public class BooleanOrGate : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             return values.Any(value =>
             {
@@ -39,7 +39,7 @@ namespace MCAJawIns.Converter
             });
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public virtual object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +59,7 @@ namespace MCAJawIns.Converter
             });
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public virtual object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -122,9 +122,31 @@ namespace MCAJawIns.Converter
             return (bool)base.Convert(values, targetType, parameter, culture) ? TrueValue : FalseValue;
         }
 
-        public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return base.ConvertBack(value, targetTypes, parameter, culture);
+            //throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 布林 OR To Visibility 轉換器
+    /// </summary>
+    [ValueConversion(typeof(bool[]), typeof(Visibility))]
+    public class BooleanOrToVisibility : BooleanOrGate
+    {
+        public Visibility TrueValue { get; set; } = Visibility.Visible;
+
+        public Visibility FalseValue { get; set; } = Visibility.Collapsed;
+
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(values, targetType, parameter, culture) ? TrueValue : FalseValue;
+        }
+
+        public override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetTypes, parameter, culture);
         }
     }
 
@@ -143,9 +165,30 @@ namespace MCAJawIns.Converter
             return (bool)base.Convert(values, targetType, parameter, culture) ? TrueValue : FalseValue;
         }
 
-        public new object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return base.ConvertBack(value, targetTypes, parameter, culture);
+        }
+    }
+
+    /// <summary>
+    /// 布林 OR To Visibility 反向轉換器
+    /// </summary>
+    [ValueConversion(typeof(bool[]), typeof(Visibility))]
+    public class BooleanOrToVisibilityInverter : BooleanOrGate
+    {
+        public Visibility TrueValue { get; set; } = Visibility.Collapsed;
+
+        public Visibility FalseValue { get; set; } = Visibility.Visible;
+
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)base.Convert(values, targetType, parameter, culture) ? TrueValue : FalseValue;
+        }
+
+        public override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return base.ConvertBack(value, targetTypes, parameter, culture);
         }
     }
     #endregion

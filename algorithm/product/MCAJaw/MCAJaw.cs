@@ -656,7 +656,7 @@ namespace MCAJawIns
                 {
                     double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
                     double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
-                    double d_024R = (Math.Abs(d_024Rb - d_024Rt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
+                    double d_024R = Math.Abs(d_024Rb - d_024Rt) * Cam1Unit;
 
                     Debug.WriteLine($"024R: {d_024R:F5}");
                 }
@@ -678,7 +678,7 @@ namespace MCAJawIns
                 {
                     double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
                     double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
-                    double d_024L = (Math.Abs(d_024Lb - d_024Lt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
+                    double d_024L = Math.Abs(d_024Lb - d_024Lt) * Cam1Unit;
 
                     Debug.WriteLine($"024L: {d_024L:F5}");
                 }

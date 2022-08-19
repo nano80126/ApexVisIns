@@ -188,7 +188,7 @@ namespace MCAJawIns.content
         private void RestoreImage_Click(object sender, RoutedEventArgs e)
         {
             Mat dis = Indicator.Image;
-            dis.Dispose();
+            dis?.Dispose();
             Indicator.Image = Indicator.OriImage.Clone();
         }
 

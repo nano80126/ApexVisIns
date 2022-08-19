@@ -222,6 +222,14 @@ Apex 外觀瑕疵檢測
 
 * [ ] 測試 Methods.GetHorizontalFlatness
 
+* [ ] 增加系統啟動、關閉紀錄
+	* 每次啟動自動模式且初始化完成時插入一筆資料，紀錄啟動時間點，啟動計時
+	* 若為自動模式，關閉前插入一筆資料，關閉計時
+	* 閒置超過3分鐘，進入閒置狀態 (背景)，暫停計時
+	* 一旦有操作，進入運作狀態，繼續計時
+
+* [ ] 切換大、中、小 JAW
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

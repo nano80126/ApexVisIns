@@ -25,7 +25,6 @@ namespace MCAJawIns
         {
         }
 
-
         /// <summary>
         /// 建構子
         /// </summary>
@@ -140,7 +139,6 @@ namespace MCAJawIns
         //{
         //    base.ComClose();
         //}
-
 
         protected override void Write(string str)
         {
@@ -320,7 +318,7 @@ namespace MCAJawIns
                 if (ChannelNumber > 2) { cmd += $"3,{Channels[2].Value},"; }
                 if (ChannelNumber > 3) { cmd += $"4,{Channels[3].Value},"; }
                 cmd = $"{cmd.TrimEnd(',')}\r\n";
-              
+
                 try
                 {
                     Write(cmd);
@@ -361,7 +359,7 @@ namespace MCAJawIns
                     Debug.WriteLine($"Wrtire done {DateTime.Now:ss.fff}");
                     string read = ReadLine();
                     Debug.WriteLine($"Read {read} {DateTime.Now:ss.fff}");
-                    
+
                     if (ChannelNumber > 0) { Channels[0].Value = ch1; }
                     if (ChannelNumber > 1) { Channels[1].Value = ch2; }
                     if (ChannelNumber > 2) { Channels[2].Value = ch3; }

@@ -276,39 +276,32 @@
         <!--#endregion-->
         
         <!--#region SubToolbar -->
-
         <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0"
                 FlowDirection="RightToLeft">
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
                     FlowDirection="LeftToRight">
 
+                <!--
                 <Button VerticalAlignment="Center" Click="Test_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <TextBlock Text="測試" VerticalAlignment="Center" />
                 </Button>
+                -->
 
                 <!--#region Toolbar Contents 保留測試按鈕 -->
                 <Button VerticalAlignment="Center" Click="ReadImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--<StackPanel Orientation="Horizontal" Background="Blue">-->
                     <TextBlock Margin="0" Text="讀取" VerticalAlignment="Center" />
-                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="RestoreImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--<StackPanel Orientation="Horizontal">-->
                     <TextBlock Margin="0" Text="回復" VerticalAlignment="Center" />
-                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="DealImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--<StackPanel Orientation="Horizontal">-->
                     <TextBlock Margin="0" Text="處理" VerticalAlignment="Center" />
-                    <!--</StackPanel>-->
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="SaveImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <!--<StackPanel Orientation="Horizontal">-->
-                        <TextBlock Margin="0" Text="儲存" VerticalAlignment="Center" />
-                    <!--</StackPanel>-->
+                    <TextBlock Margin="0" Text="儲存" VerticalAlignment="Center" />
                 </Button>
                 <!--#endregion-->
 
@@ -323,29 +316,32 @@
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="0" UseLayoutRounding="True">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <!--#region Image Panel -->
-                <Border x:Name="ImageBorder" Grid.Column="1" Grid.RowSpan="2" BorderThickness="1 0" BorderBrush="{StaticResource ColorOrange}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Border x:Name="ImageBorder" Grid.Column="1" Grid.RowSpan="2" BorderThickness="1 0" BorderBrush="{StaticResource ColorOrange}" VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical">
                         <Grid x:Name="ImageGrid">
                             <ScrollViewer x:Name="ImageScroller" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Background="{x:Null}"
-                                          PreviewMouseWheel="ImageScroller_PreviewMouseWheel">
+                                    PreviewMouseWheel="ImageScroller_PreviewMouseWheel">
                                 <ScrollViewer.Style>
                                     <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource ScrollViewerPrimary}">
-                                        <Setter Property="Height" Value="720"/>
+                                        <Setter Property="Height" Value="720" />
 
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                <Setter Property="Height" Value="900"/>
+                                            <DataTrigger
+                                                    Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}"
+                                                    Value="Maximized">
+                                                <Setter Property="Height" Value="900" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -387,8 +383,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Canvas.Style>
-                                        
-                                        
+
                                         <!--MinWidth="100" MinHeight="100"-->
 
                                         <Image x:Name="WpfImage" Canvas.Left="0" Canvas.Top="0" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -453,67 +448,69 @@
 
                         <!--#region ImageFooter -->
                         <DockPanel x:Name="AssistFooter" HorizontalAlignment="Stretch" Margin="0" Height="20" MinWidth="20" Background="{x:Null}">
-                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource Indicator}">
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    DataContext="{StaticResource Indicator}">
                                 <TextBlock VerticalAlignment="Center" TextAlignment="Center" MinWidth="120" FontSize="16" FontFamily="consolas">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0,4:D} , {1,4:D}">
-                                            <Binding Path="X" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
-                                            <Binding Path="Y" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
+                                            <Binding Path="X" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" />
+                                            <Binding Path="Y" FallbackValue="0" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
                             </StackPanel>
                             <!--//-->
-                            <Separator DockPanel.Dock="Left" Width="1" Height="12" Margin="12 0" Background="Gray" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                            <Separator DockPanel.Dock="Left" Width="1" Height="12" Margin="12 0" Background="Gray" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                             <!--//-->
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Right" DataContext="{StaticResource Indicator}">
                                 <StackPanel.Resources>
                                     <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="Margin" Value="0 0 15 0"/>
-                                        <Setter Property="TextAlignment" Value="Center"/>
-                                        <Setter Property="MinWidth" Value="65"/>
-                                        <Setter Property="FontSize" Value="16"/>
-                                        <Setter Property="FontFamily" Value="consolas"/>
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="0 0 15 0" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="MinWidth" Value="65" />
+                                        <Setter Property="FontSize" Value="16" />
+                                        <Setter Property="FontFamily" Value="consolas" />
                                     </Style>
                                 </StackPanel.Resources>
                                 <!--Text="{Binding R, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=R: {0:0}, FallbackValue=0}"-->
                                 <TextBlock Foreground="Red">
                                     <TextBlock.Text>
-                                        <Binding Path="R" UpdateSourceTrigger="PropertyChanged" StringFormat="R: {0,3:D}" FallbackValue="0"/>
+                                        <Binding Path="R" UpdateSourceTrigger="PropertyChanged" StringFormat="R: {0,3:D}" FallbackValue="0" />
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <!--Text="{Binding G, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=G: {0:0}, FallbackValue=0}"-->
                                 <TextBlock Foreground="Green">
                                     <TextBlock.Text>
-                                        <Binding Path="G" UpdateSourceTrigger="PropertyChanged" StringFormat="G: {0,3:D}" FallbackValue="0"/>
+                                        <Binding Path="G" UpdateSourceTrigger="PropertyChanged" StringFormat="G: {0,3:D}" FallbackValue="0" />
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <!--Text="{Binding B, Source={StaticResource Indicator}, UpdateSourceTrigger=PropertyChanged, StringFormat=B: {0:0}, FallbackValue=0}"-->
                                 <TextBlock Foreground="Blue">
                                     <TextBlock.Text>
-                                        <Binding Path="B" UpdateSourceTrigger="PropertyChanged" StringFormat="B: {0,3:D}" FallbackValue="0"/>
+                                        <Binding Path="B" UpdateSourceTrigger="PropertyChanged" StringFormat="B: {0,3:D}" FallbackValue="0" />
                                     </TextBlock.Text>
                                 </TextBlock>
                             </StackPanel>
 
                             <!--// 輔助 Rect 使用 (靠右)-->
-                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" DataContext="{StaticResource AssistRect}">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    DataContext="{StaticResource AssistRect}">
                                 <StackPanel.Resources>
                                     <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="Margin" Value="0 0 15 0"/>
-                                        <Setter Property="TextAlignment" Value="Center"/>
-                                        <Setter Property="MinWidth" Value="65"/>
-                                        <Setter Property="FontSize" Value="16"/>
-                                        <Setter Property="FontFamily" Value="consolas"/>
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="0 0 15 0" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="MinWidth" Value="65" />
+                                        <Setter Property="FontSize" Value="16" />
+                                        <Setter Property="FontFamily" Value="consolas" />
                                     </Style>
                                 </StackPanel.Resources>
 
-                                <TextBlock Text="{Binding X, UpdateSourceTrigger=PropertyChanged, StringFormat=X: {0:0}, FallbackValue=0}"/>
-                                <TextBlock Text="{Binding Y, UpdateSourceTrigger=PropertyChanged, StringFormat=Y: {0:0}, FallbackValue=0}"/>
-                                <TextBlock Text="{Binding Width, UpdateSourceTrigger=PropertyChanged, StringFormat=W: {0:0}, FallbackValue=0}"/>
-                                <TextBlock Text="{Binding Height, UpdateSourceTrigger=PropertyChanged, StringFormat=H: {0:0}, FallbackValue=0}"/>
+                                <TextBlock Text="{Binding X, UpdateSourceTrigger=PropertyChanged, StringFormat=X: {0:0}, FallbackValue=0}" />
+                                <TextBlock Text="{Binding Y, UpdateSourceTrigger=PropertyChanged, StringFormat=Y: {0:0}, FallbackValue=0}" />
+                                <TextBlock Text="{Binding Width, UpdateSourceTrigger=PropertyChanged, StringFormat=W: {0:0}, FallbackValue=0}" />
+                                <TextBlock Text="{Binding Height, UpdateSourceTrigger=PropertyChanged, StringFormat=H: {0:0}, FallbackValue=0}" />
                             </StackPanel>
                         </DockPanel>
                         <!--#endregion-->
@@ -527,9 +524,8 @@
                     <!--DataContext 與 Toolbar 同步-->
                     <panel:ConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--<uc:ConfigPanel x:Name="ConfigPanel1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />-->
-                    <!--//-->
-                    <uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" Visibility="Collapsed" />
 
+                    <!--<uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" Visibility="Collapsed" />-->
                     <panel:OffsetPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--//-->
                     <!--<panel:CameraConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />-->
@@ -543,7 +539,8 @@
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--<uc:DigitalIOPanel x:Name="DigitalIOPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>-->
-
+                    <panel:PointsPanel x:Name="PointsPanel" Background="LightCyan" DataContext="{StaticResource AssistPoints}"
+                            Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
