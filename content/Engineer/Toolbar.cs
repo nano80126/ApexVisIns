@@ -1,19 +1,21 @@
-﻿using Basler.Pylon;
-using OpenCvSharp;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using MCAJawIns.Algorithm;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
-using System.Collections.Generic;
+using Basler.Pylon;
 using Microsoft.Win32;
-using System.IO;
-using MCAJawIns;
+using OpenCvSharp;
+using netDxf;
+using netDxf.Blocks;
+using netDxf.Collections;
+using netDxf.Entities;
+using netDxf.Header;
+using netDxf.Objects;
+using netDxf.Units;
+
 
 namespace MCAJawIns.content
 {
@@ -140,10 +142,10 @@ namespace MCAJawIns.content
         #endregion
 
         #region 右 Toolbar
-        int ttt = 0;
+        private int count;
         private void Test_Click(object sender, RoutedEventArgs e)
         {
-            if (ttt++ % 2 == 0)
+            if (count++ % 2 == 0)
             {
                 LightPanel.LightSerial.SetAllChannelValue(96, 64);
             }
@@ -159,11 +161,11 @@ namespace MCAJawIns.content
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
+                Title = "讀取圖片檔",
                 FileName = string.Empty,
                 Filter = "BMP Image(*.bmp)|*.bmp|JPEP Image (*.jpg)|*.jpg|All Files (*.*)|*.*",
                 FilterIndex = 2,
                 InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}",
-                Title = "讀取 BMP "
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -711,6 +713,31 @@ namespace MCAJawIns.content
                 //Debug.WriteLine("------------------------------------------------");
             }
         }
+        #endregion
+
+        #region DXF 處理
+
+        private void ReadDXF()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "讀取 DXF",
+                FileName = string.Empty,
+                Filter = "DXF File(*.dxf)|*.dxf",
+                FilterIndex = 1,
+                InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}",
+            };
+
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+
+                //this.Import
+                DxfDocument dxf = DxfDocument.Load(filePath);
+            }
+        }
+
         #endregion
     }
 }

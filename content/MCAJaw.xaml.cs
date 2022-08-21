@@ -170,34 +170,30 @@ namespace MCAJawIns.content
             if (!JawSpecGroup.SyncBinding) { JawSpecGroup.EnableCollectionBinding(); }
             #endregion
 
-
             switch (MainWindow.InitMode)
             {
-                case MainWindow.InitModes.AUTO:
+                case InitModes.AUTO:
                     // 硬體初始化
                     if (!initialzing)
                     {
                         InitHardware();
                     }
                     break;
-                case MainWindow.InitModes.EDIT:
+                case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    ////InitMongoDB(_cancellationTokenSource.Token).Wait();
+                    //InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
                     // 保留
                     break;
             }
 
-            #region 初始化
-            //InitLightCtrl(_cancellationTokenSource.Token).Wait();
-            //InitIOCtrl(_cancellationTokenSource.Token).Wait();
 
-            //byte[] data = new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 };
-            //byte[] crc = SerialPortBase.CRC16LH(new byte[] { 0x01, 0x03, 0x20, 0x00, 0x00, 0x01 });
-            //Debug.WriteLine($"{string.Join(" , ", crc)}");
-            //Debug.WriteLine($"{string.Join(" , ", data.Concat(crc))}");
+            
+            #region 初始化
+
+
             #endregion
 
             if (!loaded)
@@ -208,11 +204,6 @@ namespace MCAJawIns.content
 
                 loaded = true;
             }
-        }
-
-        private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
-        {
-
         }
 
         #region 初始化

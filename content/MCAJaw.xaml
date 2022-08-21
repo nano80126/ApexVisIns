@@ -11,7 +11,6 @@
             d:DataContext="{d:DesignInstance Type=local:MCAJaw}" 
             mc:Ignorable="d"
             Loaded="StackPanel_Loaded" 
-            Unloaded="StackPanel_Unloaded" 
             d:DesignHeight="900" d:DesignWidth="1600" 
             UseLayoutRounding="True" Orientation="Vertical">
     <StackPanel.Resources>
@@ -33,7 +32,9 @@
                 </ToolBar.Resources>
 
                 <!--#region Title -->
-                <TextBlock Margin="12 0 0 4" Text="小 Jaw 檢測系統" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorInfo}">
+                <TextBlock Margin="12 0 0 4" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorInfo}"
+                        Text="{Binding JawType, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged ,
+                    Converter={StaticResource EnumDescriptionConverter}, StringFormat={}{0} 檢驗系統}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="FontSize" Value="{StaticResource Title-sm}" />

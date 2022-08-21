@@ -1,8 +1,4 @@
-﻿using MCAJawIns.content;
-using MCAJawIns.Product;
-using MaterialDesignThemes.Wpf;
-using OpenCvSharp;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -19,9 +15,41 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using MaterialDesignThemes.Wpf;
+using MCAJawIns.content;
+using OpenCvSharp;
 
 namespace MCAJawIns
 {
+    #region Enumerator
+
+    public enum JawTypes
+    {
+        [Description("小 Jaw")]
+        S = 1,
+        [Description("中 Jaw")]
+        M = 2,
+        [Description("大 Jaw")]
+        L = 3
+    }
+
+    /// <summary>
+    /// 啟用模式
+    /// </summary>
+    public enum InitModes
+    {
+        /// <summary>
+        /// 自動
+        /// </summary>
+        AUTO = 1,
+        /// <summary>
+        /// 編輯
+        /// </summary>
+        EDIT = 2,
+    }
+    #endregion
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -88,11 +116,47 @@ namespace MCAJawIns
         #endregion
 
         #region Varibles
-        public enum InitModes
-        {
-            AUTO = 1,
-            EDIT = 2,
-            // WARM = 3,
+        /// <summary>
+        /// MCA Jaw 種類
+        /// </summary>
+        //public enum JawTypes
+        //{
+        //    S = 1,
+        //    M = 2,
+        //    L = 3
+        //}
+
+        /// <summary>
+        /// 啟用模式
+        /// </summary>
+        //public enum InitModes
+        //{
+        //    AUTO = 1,
+        //    EDIT = 2,
+        //    // WARM = 3,
+        //}
+
+
+#if JawS
+        private JawTypes _jawTypes = JawTypes.S;
+#elif JawM
+        private JawTypes _jawTypes = JawTypes.M;
+#elif JawL
+        private JawTypes _jawTypes = JawTypes.L;
+#endif
+        /// <summary>
+        /// 選擇 Jaw Type
+        /// </summary>
+        public JawTypes JawType {
+            get => _jawTypes;
+            set
+            {
+                if (value != _jawTypes)
+                {
+                    _jawTypes = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         /// <summary>

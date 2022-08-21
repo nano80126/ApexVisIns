@@ -238,8 +238,8 @@ namespace MCAJawIns.content
             {
                 if (AssistRect.Enable && AssistRect.IsMouseDown)
                 {
-                    //ReleaseMouseCapture();
-                    //AssistRect.MouseDown = false;
+                    // ReleaseMouseCapture();
+                    // AssistRect.MouseDown = false;
                     AssistRect.ResetTemp();
                     AssistRect.ResetMouse();
                 }
@@ -255,27 +255,31 @@ namespace MCAJawIns.content
                     Point pt = e.GetPosition(canvas);
                     Indicator.GetRGB((int)pt.X, (int)pt.Y, out byte R, out byte G, out byte B);
 
-                    #region 顏色生成
-                    if (R < G && R < B)
-                    {
-                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)255, (byte)(255 - G), (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, 255, (byte)(255 - G), (byte)(255 - B)));
-                    }
-                    else if (G < R && G < B)
-                    {
-                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), 255, (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), 255, (byte)(255 - B)));
-                    }
-                    else if (B < R && B < G)
-                    {
-                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), 255));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), 255));
-                    }
-                    else
-                    {
-                        //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
-                        AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
-                    }
+                    Debug.WriteLine($"{R} {G} {B}");
+
+                    AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, R, G, B));
+
+                    #region 顏色生成 (待刪除)
+                    //if (R < G && R < B)
+                    //{
+                    //    //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)255, (byte)(255 - G), (byte)(255 - B)));
+                    //    AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, 255, (byte)(255 - G), (byte)(255 - B)));
+                    //}
+                    //else if (G < R && G < B)
+                    //{
+                    //    //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), 255, (byte)(255 - B)));
+                    //    AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), 255, (byte)(255 - B)));
+                    //}
+                    //else if (B < R && B < G)
+                    //{
+                    //    //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), 255));
+                    //    AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), 255));
+                    //}
+                    //else
+                    //{
+                    //    //SolidColorBrush brush = new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
+                    //    AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, (byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
+                    //}
                     #endregion
 
                     AssistPoints.ResetMouse();

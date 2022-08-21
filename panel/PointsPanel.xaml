@@ -6,10 +6,11 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                  xmlns:app="clr-namespace:MCAJawIns"
                  xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
+                 
                  mc:Ignorable="d" 
-                 d:DesignHeight="450"
-                 d:DesignWidth="800" 
-                 Title="參考點" 
+                 d:DesignHeight="500"
+                 d:DesignWidth="300" 
+                 Title="參考標記" 
                  SubTitle="{x:Null}"
                  IconKind="DotsHexagon"
                  d:DataContext="{d:DesignInstance Type=app:AssistPoints}"
@@ -40,56 +41,60 @@
     <!-- 要新增 ScrollViewer -->
     <!-- 要新增 ScrollViewer -->
     <!-- 要新增 ScrollViewer -->
-    
-    <StackPanel Orientation="Vertical">
-        <ItemsControl ItemsSource="{Binding Source}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" MaxHeight="250"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter" />
-            </ItemsControl.ItemContainerStyle>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel Margin="0 4">
-                        <!-- <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding X, StringFormat={}{0:F0}}" Background="Red" /> -->
-                        <Border VerticalAlignment="Center" BorderThickness="1" CornerRadius="12" Background="{StaticResource ColorGrayTransparent}">
-                            <materialDesign:PackIcon VerticalAlignment="Center" Height="24" Width="24" Kind="Plus" Foreground="{Binding Stroke}" />
-                        </Border>
-                        <!--//-->
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" >
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}({0:F0}, {1:F0})">
-                                    <Binding Path="X" UpdateSourceTrigger="PropertyChanged" />
-                                    <Binding Path="Y" UpdateSourceTrigger="PropertyChanged" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <!--//-->
-                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}" >
+            <ItemsControl ItemsSource="{Binding Source}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Margin="0 0 8 0"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter" />
+                </ItemsControl.ItemContainerStyle>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="0 4">
+                            <!-- 
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding X, StringFormat={}{0:F0}}" Background="Red" /> 
+                        -->
+                            <Border VerticalAlignment="Center" BorderThickness="1" CornerRadius="12" Background="{StaticResource ColorLightGrayTransparent}">
+                                <materialDesign:PackIcon VerticalAlignment="Center" Height="24" Width="24" Kind="Plus" Foreground="{Binding Stroke}" />
+                            </Border>
+                            <!--//-->
+                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{} ({0:F0}, {1:F0})">
+                                        <Binding Path="X" UpdateSourceTrigger="PropertyChanged" />
+                                        <Binding Path="Y" UpdateSourceTrigger="PropertyChanged" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <!--//-->
+                            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Run Foreground="Red">
-                                <Run.Text>
-                                    <Binding Path="R" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
-                                </Run.Text>
-                            </Run>
-                            <Run Foreground="Blue">
                                 <Run.Text>
                                     <Binding Path="R" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
                                 </Run.Text>
                             </Run>
                             <Run Foreground="Green">
                                 <Run.Text>
-                                    <Binding Path="R" StringFormat="{}{0,3:F0}" UpdateSourceTrigger="PropertyChanged" />
+                                    <Binding Path="G" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
                                 </Run.Text>
                             </Run>
-                        </TextBlock>
-                    </DockPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                            <Run Foreground="Blue">
+                                <Run.Text>
+                                    <Binding Path="B" StringFormat="{}{0,3:F0}" UpdateSourceTrigger="PropertyChanged" />
+                                </Run.Text>
+                            </Run>
+                            </TextBlock>
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </StackPanel>
 </ctrl:CustomCard>

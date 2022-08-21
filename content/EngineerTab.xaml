@@ -4,19 +4,17 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-            xmlns:uc="clr-namespace:MCAJawIns.module"
+            xmlns:app="clr-namespace:MCAJawIns"
             xmlns:panel="clr-namespace:MCAJawIns.Panel" 
-            xmlns:app="clr-namespace:MCAJawIns" 
-            xmlns:local="clr-namespace:MCAJawIns.content" 
-            xmlns:ctrl="clr-namespace:MCAJawIns.Control"
+            
             mc:Ignorable="d" 
-            Loaded="StackPanel_Loaded" 
-            Unloaded="StackPanel_Unloaded" 
             d:DesignHeight="900" 
             d:DesignWidth="1600" 
             UseLayoutRounding="True" 
-            Orientation="Vertical">
-
+            Orientation="Vertical"
+            d:DataContext="{d:DesignInstance Type={x:Null}}"
+            Loaded="StackPanel_Loaded" 
+            Unloaded="StackPanel_Unloaded">
     <StackPanel.Resources>
         <!-- Crosshair -->
         <app:Crosshair x:Key="Crosshair" Enable="False" Stroke="{StaticResource ColorDeepOrange}" />
@@ -26,14 +24,6 @@
         <app:AssistPoints x:Key="AssistPoints"/>
         <!-- 輔助標示器 -->
         <app:Indicator x:Key="Indicator" />
-
-        <!--<x:Array x:Key="AssistPoints" Type="{x:Type app:AssistPoint}">
-            <app:AssistPoint X="120" Y="120"></app:AssistPoint>
-        </x:Array>-->
-
-        <!--<coll:ObservableCollection x:Key="AssistPoints">
-            <app:AssistPoint X="120" Y="120" />
-        </coll:ObservableCollection>-->
     </StackPanel.Resources>
 
     <!--#region Toolbar -->
@@ -522,13 +512,11 @@
                 <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
                     <!--DataContext="{StaticResource BaslerCam}"-->
                     <!--DataContext 與 Toolbar 同步-->
-                    <panel:ConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--<uc:ConfigPanel x:Name="ConfigPanel1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />-->
-
+                    <panel:ConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--<uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" Visibility="Collapsed" />-->
                     <panel:OffsetPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                     <!--//-->
-                    <!--<panel:CameraConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />-->
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
@@ -546,7 +534,6 @@
                 <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
                     <!--<TextBlock Text="123"/>-->
                 </StackPanel>
-
             </Grid>
         </StackPanel>
     </Border>

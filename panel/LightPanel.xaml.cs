@@ -21,7 +21,7 @@ namespace MCAJawIns.Panel
     /// </summary>
     public partial class LightPanel : Control.CustomCard
     {
-        /// <summary>
+        /// <summary>，
         /// MainWindow
         /// </summary>
         public MainWindow MainWindow { get; set; }

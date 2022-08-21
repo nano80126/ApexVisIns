@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MCAJawIns
 {
@@ -27,12 +18,20 @@ namespace MCAJawIns
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
-        {
-
+            switch ((Owner as MainWindow).JawType)
+            {
+                case JawTypes.S:
+                    TypeSRadio.IsChecked = true;
+                    break;
+                case JawTypes.M:
+                    TypeMRadio.IsChecked = true;
+                    break;
+                case JawTypes.L:
+                    TypeLRadio.IsChecked = true;
+                    break;
+                default:
+                    break;
+            }
         }
 
         #region Command
@@ -43,13 +42,15 @@ namespace MCAJawIns
 
         private void ChangeTypeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            // (Owner as MainWindow).InitMode = 
+            // JawTypes type = (JawTypes)e.Parameter;
+            (Owner as MainWindow).JawType = (JawTypes)e.Parameter;
         }
         
         private void ChangeModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            (Owner as MainWindow).InitMode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), e.Parameter.ToString());
-            (e.Source as RadioButton).IsChecked = true;
+            // (Owner as MainWindow).InitMode = (MainWindow.InitModes)Enum.Parse(typeof(MainWindow.InitModes), e.Parameter.ToString());
+            (Owner as MainWindow).InitMode = (InitModes)e.Parameter;
+            // (e.Source as RadioButton).IsChecked = true;
             DialogResult = true;
         }
         #endregion

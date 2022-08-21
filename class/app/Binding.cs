@@ -644,7 +644,7 @@ namespace MCAJawIns
         /// <summary>
         /// Point 顏色
         /// </summary>
-        public SolidColorBrush Stroke => new SolidColorBrush(Color.FromRgb(R, G, B));
+        public SolidColorBrush Stroke => new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
         
         public double StrokeThickness { get; set; }
 
