@@ -331,6 +331,11 @@ namespace MCAJawIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void PropertyChange()
+        {
+
+        }
     }
 
     /// <summary>
@@ -644,8 +649,19 @@ namespace MCAJawIns
         /// <summary>
         /// Point 顏色
         /// </summary>
-        public SolidColorBrush Stroke => new SolidColorBrush(Color.FromRgb((byte)(255 - R), (byte)(255 - G), (byte)(255 - B)));
-        
+        public SolidColorBrush Stroke
+        {
+            get
+            {
+                byte r = Math.Abs(127 - R) < 51 ? (byte)(R < 127 ? 255 : 0) : (byte)(255 - R);
+                byte g = Math.Abs(127 - G) < 51 ? (byte)(G < 127 ? 255 : 0) : (byte)(255 - G);
+                byte b = Math.Abs(127 - B) < 51 ? (byte)(B < 127 ? 255 : 0) : (byte)(255 - B);
+
+                return new SolidColorBrush(Color.FromRgb(r, g, b));
+            }
+        }
+
+
         public double StrokeThickness { get; set; }
 
         /// <summary>

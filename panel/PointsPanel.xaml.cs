@@ -16,6 +16,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using MCAJawIns.content;
+using System.Diagnostics;
 
 namespace MCAJawIns.Panel
 {
@@ -43,6 +44,37 @@ namespace MCAJawIns.Panel
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AssistPoints.Source.Clear();
+        }
+
+        //private void a_TextInput(object sender, TextCompositionEventArgs e)
+        //{
+        //    Debug.WriteLine($"{int.Parse(a.Text) > int.Parse(b.Text)}");
+
+        //    if (int.Parse(a.Text) > int.Parse(b.Text))
+        //    {
+        //        light.Background = System.Windows.Media.Brushes.Green;
+        //    }
+        //    else
+        //    {
+        //        light.Background = System.Windows.Media.Brushes.Red;
+        //    }
+        //}
+
+        private void b_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //Debug.WriteLine($"{int.Parse(aaa.Text) > int.Parse(bbb.Text)}");
+
+            if (int.TryParse(aaa?.Text, out int aValue) && int.TryParse(bbb?.Text, out int bValue) && light != null)
+            {
+                if (aValue > bValue)
+                {
+                    light.Background = System.Windows.Media.Brushes.Green;
+                }
+                else
+                {
+                    light.Background = System.Windows.Media.Brushes.Red;
+                }
+            }
         }
     }
 }

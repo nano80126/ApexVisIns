@@ -43,11 +43,11 @@
     <!-- 要新增 ScrollViewer -->
 
     <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}" >
+        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}">
             <ItemsControl ItemsSource="{Binding Source}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" Margin="0 0 8 0"/>
+                        <StackPanel Orientation="Vertical" Margin="0 0 8 0" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -96,5 +96,15 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <StackPanel Orientation="Horizontal" Visibility="Collapsed">
+            <TextBox x:Name="aaa" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 3" MinWidth="80" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    TextChanged="b_TextChanged" Text="0"/>
+            <materialDesign:PackIcon Kind="GreaterThan" VerticalAlignment="Center" />
+            <TextBox x:Name="bbb" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 3" MinWidth="80" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    TextChanged="b_TextChanged" Text="0"/>
+
+            <TextBlock x:Name="light" Margin="12 0 0 0" Width="20" Height="20" Background="Red" />
+        </StackPanel>
     </StackPanel>
 </ctrl:CustomCard>

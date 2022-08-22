@@ -255,8 +255,6 @@ namespace MCAJawIns.content
                     Point pt = e.GetPosition(canvas);
                     Indicator.GetRGB((int)pt.X, (int)pt.Y, out byte R, out byte G, out byte B);
 
-                    Debug.WriteLine($"{R} {G} {B}");
-
                     AssistPoints.Source.Add(new AssistPoint(pt.X, pt.Y, R, G, B));
 
                     #region 顏色生成 (待刪除)

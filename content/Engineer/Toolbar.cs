@@ -15,7 +15,8 @@ using netDxf.Entities;
 using netDxf.Header;
 using netDxf.Objects;
 using netDxf.Units;
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MCAJawIns.content
 {
@@ -154,7 +155,6 @@ namespace MCAJawIns.content
                 LightPanel.LightSerial.SetAllChannelValue(0, 0);
             }
             Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
-            // Cv2.ImShow();
         }
 
         private void ReadImage_Click(object sender, RoutedEventArgs e)
@@ -191,16 +191,149 @@ namespace MCAJawIns.content
         {
             Mat dis = Indicator.Image;
             dis?.Dispose();
-            Indicator.Image = Indicator.OriImage.Clone();
+            Indicator.Image = Indicator.OriImage?.Clone();
         }
 
         private void DealImage_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+
             Mat mat = Indicator.Image;
             Indicator.OriImage = mat.Clone();
 
-            MainWindow.JawInsSequenceCam1(mat);
-            Indicator.Image = mat;
+
+            if (AssistRect.Enable)
+            {
+                OpenCvSharp.Rect roi = new OpenCvSharp.Rect((int)AssistRect.X, (int)AssistRect.Y, (int)AssistRect.Width, (int)AssistRect.Height);
+
+                Methods.GetRoiOtsu(mat, roi, 0, 255, out Mat otsu, out byte threshold);
+
+                Mat labels = new Mat();
+                Mat stat = new Mat();
+                Mat centroid = new Mat();
+                int num = Cv2.ConnectedComponentsWithStats(otsu, labels, stat, centroid, PixelConnectivity.Connectivity4);
+
+                List<OpenCvSharp.Rect> rects = new List<OpenCvSharp.Rect>();
+                List<int> area = new List<int>();
+
+                List<Point2d> cPt = new List<Point2d>();
+
+                for (int i = 1; i < num; i++)
+                {
+                    int x = stat.At<int>(i, 0);
+                    int y = stat.At<int>(i, 1);
+                    int w = stat.At<int>(i, 2);
+                    int h = stat.At<int>(i, 3);
+                    int a = stat.At<int>(i, 4);
+
+                    if (a > 10000)
+                    {
+                        double cX = centroid.At<double>(i, 0);
+                        double cY = centroid.At<double>(i, 1);
+                        Debug.WriteLine($"Area: {a} {cX} {cY}");
+
+                        cPt.Add(new Point2d(cX, cY));
+                        rects.Add(new OpenCvSharp.Rect(x, y, w, h));
+                        area.Add(a);
+                    }
+                }
+
+                // 尋找最大面積
+                int idx = area.IndexOf(area.Max());
+
+                //Debug.WriteLine($"{rects.Count}");
+                Debug.WriteLine($"Max {rects[idx]} {area[idx]} {cPt[idx]}");
+
+                for (int i = 0; i < rects.Count; i++)
+                {
+                    Cv2.Rectangle(otsu, rects[i], Scalar.White, 2);
+                    Cv2.Circle(otsu, (int)cPt[i].X, (int)cPt[i].Y, 5, Scalar.Gray, 2);
+                    Debug.WriteLine($"{i} {Math.Pow(rects[i].Width / 2, 2) * Math.PI} {rects[i].Width * rects[i].Height}");
+                }
+
+                // Debug.WriteLine($"{mat.Width} {mat.Height} {threshold}");
+
+                // 形心
+                OpenCvSharp.Point pt = (OpenCvSharp.Point)cPt[idx];
+                OpenCvSharp.Point center = (OpenCvSharp.Point)cPt[idx].Add(new Point2d(AssistRect.X, AssistRect.Y));
+                //Cv2.Circle(mat, center.X, center.Y, 5, Scalar.Black, 2);
+
+                // origin image width
+                int width = mat.Width;
+                Debug.WriteLine($"{center}");
+                Mat roiMat = new Mat(mat, roi);
+
+                unsafe
+                {
+                    byte* b = roiMat.DataPointer;
+
+                    // 指標圓中心 idx
+                    int c = (pt.Y * width) + pt.X;
+                    for (int angle = 0; angle < 360; angle += 5)
+                    {
+                        // if (angle == 0 || angle == 30)
+                        // {
+                        // r step = 0.5
+                        Mat chart = new Mat(new OpenCvSharp.Size(roiMat.Width / 2, 280), MatType.CV_8UC3, Scalar.Black);
+                        byte gray = 0;
+                        //byte lastGray = 0;
+
+
+                        for (int r = 0; r <= roiMat.Width / 2; r++)
+                        {
+                            int x = (int)(r * Math.Cos(Math.PI * angle / 180));
+                            int y = (int)(r * Math.Sin(Math.PI * angle / 180));
+
+                            #region 畫圖
+                            gray = b[c + (y * width) + x];
+
+                            if (angle == 0 || angle == 90)
+                            {
+                                //Debug.WriteLine($"{(r} {chart.Height - gray} {gray}");
+
+                                //if (gray != 255)
+                                //{
+                                    Cv2.Line(chart, r, chart.Height, r, chart.Height - gray, Scalar.White, 1);
+                                //}
+                            }
+                            #endregion
+
+
+                            if (angle == 0 || angle == 90)
+                            {
+                                // 中心點 + y + x
+                                //b[c + (y * width) + x] = 255;
+                            }
+                            else
+                            {
+                                // 中心點 + y + x
+                                //b[c + (y * width) + x] = 0;
+                            }
+                        }
+
+                        if (angle == 0 || angle == 90)
+                        {
+                            Cv2.ImShow($"Chart {angle}", chart);
+                        }
+                    }
+                }
+
+                //Cv2.ImShow("Otsu", otsu);
+
+                labels.Dispose();
+                stat.Dispose();
+                centroid.Dispose();
+
+                Cv2.Circle(mat, center.X, center.Y, 5, Scalar.Black, 2);
+
+                Indicator.Image = mat;
+            }
+
+            // MainWindow.JawInsSequenceCam1(mat);
+            // Indicator.Image = mat;
+
+            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         private void SaveImage_Click(object sender, RoutedEventArgs e)
