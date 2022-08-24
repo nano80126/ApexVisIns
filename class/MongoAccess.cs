@@ -27,8 +27,6 @@ namespace MCAJawIns
         private MongoClient client;
         private bool _disposed;
         private bool _connected;
-
-
         #endregion
 
         #region Public
@@ -144,6 +142,20 @@ namespace MCAJawIns
             catch (MongoException)
             {
                 throw;
+            }
+        }
+
+
+        public string GetVersion()
+        {
+            if (client != null)
+            {
+                BsonDocument info = client.GetDatabase(Database).RunCommand<BsonDocument>(new BsonDocument() { { "buildInfo", 1 } });
+                return (string)info.GetValue("version");
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
             }
         }
 

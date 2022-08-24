@@ -600,7 +600,7 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {
@@ -612,7 +612,9 @@ namespace MCAJawIns.content
                         MongoAccess.CreateCollection("Measurements");
                         // 建立權限集合
                         MongoAccess.CreateCollection("Auth");
-
+                        // 取得 Mongo 版本
+                        MongoAccess.GetVersion();
+                        //Debug.WriteLine($"version {MongoAccess.GetVersion()}");
 #if false
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {

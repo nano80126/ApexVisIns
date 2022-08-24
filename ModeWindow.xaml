@@ -32,8 +32,8 @@
     </Window.Resources>
     <!--//-->
     <Window.InputBindings>
-        <KeyBinding Key="F1" Command="{StaticResource ChangeModeAction}" CommandParameter="1" CommandTarget="{Binding ElementName=AutoModeRadio}" />
-        <KeyBinding Key="F2" Command="{StaticResource ChangeModeAction}" CommandParameter="2" CommandTarget="{Binding ElementName=EditModeRadio}" />
+        <KeyBinding Key="F1" Command="{StaticResource ChangeModeAction}" CommandParameter="{x:Static local:InitModes.AUTO}" CommandTarget="{Binding ElementName=AutoModeRadio}" />
+        <KeyBinding Key="F2" Command="{StaticResource ChangeModeAction}" CommandParameter="{x:Static local:InitModes.EDIT}" CommandTarget="{Binding ElementName=EditModeRadio}" />
     </Window.InputBindings>
     <!--//-->
     <Window.CommandBindings>

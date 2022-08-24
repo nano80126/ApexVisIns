@@ -35,29 +35,12 @@ namespace MCAJawIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
-
-        // First
-        public string OS { get; set; }
-        public int PID { get; set; }
-        public string Plateform => _x64 ? "64位元" : "32位元";
-        public string DotNetVer { get; set; }
-        public string MongoVer { get; set; }
-        public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
-
-        // Second
-        public string SoftVer { get; set; } = "1.0.0";
-        public bool AutoStatus { get; set; } = false;
-        public string AutoTime { get; set; }
-        public string TotalAutoTime { get; set; }
-        public string TotalParts { get; set; }
-
         #endregion
 
         public SystemInfoTab()
         {
             InitializeComponent();
         }
-
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;

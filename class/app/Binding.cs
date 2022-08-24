@@ -198,6 +198,56 @@ namespace MCAJawIns
     }
 
 
+    public class SystemInfo : INotifyPropertyChanged
+    {
+        #region Private
+        private bool _x64;
+        #endregion
+
+
+        // First
+        public string OS { get; set; }
+        public int PID { get; set; }
+        public string Plateform => _x64 ? "64位元" : "32位元";
+        public string DotNetVer { get; set; }
+        public string MongoVer { get; set; }
+        public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
+
+        // Second
+        public string SoftVer { get; set; } = "1.0.0";
+        public bool AutoStatus { get; set; } = false;
+        public string AutoTime { get; set; }
+        public string TotalAutoTime { get; set; }
+        public string TotalParts { get; set; }
+
+
+        public void EnableTimer()
+        {
+
+        }
+
+        public void DisableTimer()
+        {
+
+        }
+
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void PropertyChange(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        } 
+        #endregion
+    }
+
+
     /// <summary>
     /// Crosshair
     /// </summary>
