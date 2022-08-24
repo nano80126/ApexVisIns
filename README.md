@@ -230,6 +230,21 @@ Apex 外觀瑕疵檢測
 
 * [ ] 切換大、中、小 JAW
 
+* [ ] 新增系統資訊頁面
+	* 作業系統 (win10 xx 版)
+	* 程序 ID (PID)
+	* 平台 32位元 or 64位元
+	* .NET 版本
+	* 資料庫
+
+	* 系統時間
+
+	* 版本
+	* 當前狀態 (XX模式運行中)
+	* 自動模式運作時間 (單次)
+	* 自動模式運作時間 (累計)
+	* 已檢測數量
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

@@ -217,11 +217,11 @@ namespace MCAJawIns
         /// <summary>
         /// 最大寬度
         /// </summary>
-        public int WidthMax { get; set; }
+        public virtual int WidthMax { get; set; }
         /// <summary>
         /// 最大高度
         /// </summary>
-        public int HeightMax { get; set; }
+        public virtual int HeightMax { get; set; }
         /// <summary>
         /// 最大 X 偏移
         /// </summary>

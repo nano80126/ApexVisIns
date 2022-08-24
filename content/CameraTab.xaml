@@ -8,43 +8,43 @@
             xmlns:local="clr-namespace:MCAJawIns.content"
             xmlns:ctrl="clr-namespace:MCAJawIns.Control"
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+
             d:DataContext="{d:DesignInstance Type=local:CameraTab}"
             mc:Ignorable="d"
-            Loaded="StackPanel_Loaded" 
-            Unloaded="StackPanel_Unloaded"
-            d:DesignHeight="900" d:DesignWidth="1600"
+            d:DesignHeight="900" 
+            d:DesignWidth="1600"
             UseLayoutRounding="True"
-            Orientation="Vertical">
-    <StackPanel.Resources>
-        
-    </StackPanel.Resources>
+            Orientation="Vertical" 
+            Loaded="StackPanel_Loaded" 
+            Unloaded="StackPanel_Unloaded">
+    <!--#region StackPanel Resources -->
+    <!--<StackPanel.Resources></StackPanel.Resources>-->
+    <!--#endregion-->
 
-    <!--<StackPanel.CommandBindings>
-        <CommandBinding Command="{StaticResource }" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed"></CommandBinding>
-    </StackPanel.CommandBindings>-->
-    
-    <Grid>
-        <Grid.Style>
+    <Grid Style="{StaticResource TabGrid}">
+        <!--<Grid.Style>
             <Style TargetType="{x:Type Grid}">
-                <!--900 - 120-->
+                --><!--900 - 120--><!--
                 <Setter Property="Height" Value="780"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                        <!--1080 - 120-->
+                        --><!--1080 - 120--><!--
                         <Setter Property="Height" Value="960"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Grid.Style>
+        </Grid.Style>-->
 
+        <!--#region Layout -->
         <Grid.ColumnDefinitions>
             <!--1st-->
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
             <!--Separator-->
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
             <!--2nd-->
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
+        <!--#endregion-->
 
         <!--#region 1st Col -->
         <StackPanel Grid.Column="0" Width="300" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">

@@ -277,17 +277,23 @@
                 </Button>
                 -->
 
+                <!--#region DXF 測試區塊 -->
+                <Button VerticalAlignment="Center" Click="ReadDXF_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <TextBlock Margin="0" Text="DXF" VerticalAlignment="Center" />
+                </Button>
+                <!--#endregion-->
+
                 <!--#region Toolbar Contents 保留測試按鈕 -->
                 <Button VerticalAlignment="Center" Click="ReadImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <TextBlock Margin="0" Text="讀取" VerticalAlignment="Center" />
                 </Button>
 
-                <Button VerticalAlignment="Center" Click="RestoreImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
-                    <TextBlock Margin="0" Text="回復" VerticalAlignment="Center" />
-                </Button>
-
                 <Button VerticalAlignment="Center" Click="DealImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
                     <TextBlock Margin="0" Text="處理" VerticalAlignment="Center" />
+                </Button>
+
+                <Button VerticalAlignment="Center" Click="RestoreImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
+                    <TextBlock Margin="0" Text="回復" VerticalAlignment="Center" />
                 </Button>
 
                 <Button VerticalAlignment="Center" Click="SaveImage_Click" Style="{StaticResource MaterialDesignFlatButton}">
@@ -529,6 +535,14 @@
                     <!--<uc:DigitalIOPanel x:Name="DigitalIOPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>-->
                     <panel:PointsPanel x:Name="PointsPanel" Background="LightCyan" DataContext="{StaticResource AssistPoints}"
                             Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 12 0 0">
+                        <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" Text="角度範圍" FontSize="16" FontWeight="Bold" />
+
+                        <TextBox x:Name="FromText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <materialDesign:PackIcon Kind="Tilde" Margin="8 0" VerticalAlignment="Center" Width="30" Height="26" />
+                        <TextBox x:Name="ToText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="90" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    </StackPanel>
                 </StackPanel>
                 <!--//-->
                 <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">

@@ -19,36 +19,38 @@
             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
             Loaded="StackPanel_Loaded" 
             Unloaded="StackPanel_Unloaded">
-    <Grid>
-        <Grid.Style>
+    <Grid Style="{StaticResource TabGrid}">
+        <!--<Grid.Style>
             <Style TargetType="{x:Type Grid}">
-                <!--900 - 120-->
+                --><!--900 - 120--><!--
                 <Setter Property="Height" Value="780"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                        <!--1080 - 120-->
+                        --><!--1080 - 120--><!--
                         <Setter Property="Height" Value="960"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Grid.Style>
+        </Grid.Style>-->
 
+        <!--#region Layout -->
         <Grid.RowDefinitions>
             <!--1st-->
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*" />
             <!--2nd-->
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-
+        <!--//-->
         <Grid.ColumnDefinitions>
             <!--1st-->
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
             <!--Separator-->
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
             <!--2nd-->
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
-        
+        <!--#endregion-->
+
         <!--#region Column 1 -->
         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Width="300" VerticalAlignment="Top" Background="{x:Null}">
             <StackPanel.Resources>
@@ -406,7 +408,8 @@
         <!--#endregion-->
 
         <!--#region Column 2, Separator -->
-        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{StaticResource ColorSecondaryTransparent}"/>
+        <Separator Grid.Column="1" Grid.RowSpan="100" Width="1" Margin="0" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                Background="{StaticResource ColorSecondaryTransparent}" />
         <!--#endregion-->
 
         <!--#region Column 3 -->

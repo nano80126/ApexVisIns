@@ -157,6 +157,11 @@ namespace MCAJawIns.content
             Basler_StreamGrabber_RetrieveImage(MainWindow.BaslerCam);
         }
 
+        private void ReadDXF_Click(object sneder, RoutedEventArgs e)
+        {
+            ReadDXF();
+        }
+
         private void ReadImage_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -164,31 +169,35 @@ namespace MCAJawIns.content
                 Title = "讀取圖片檔",
                 FileName = string.Empty,
                 Filter = "BMP Image(*.bmp)|*.bmp|JPEP Image (*.jpg)|*.jpg|All Files (*.*)|*.*",
-                FilterIndex = 2,
+                FilterIndex = 1,
                 InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}",
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                DateTime t1 = DateTime.Now;
-                Debug.WriteLine($"{t1:mm:ss.fff}");
+                //DateTime t1 = DateTime.Now;
+                //Debug.WriteLine($"{t1:mm:ss.fff}");
 
                 Mat mat = Cv2.ImRead(openFileDialog.FileName, ImreadModes.Unchanged);
 
                 Indicator.Image = mat;
 
-                ImageCanvas.Width = mat.Width;
-                ImageCanvas.Height = mat.Height;
+                //ImageCanvas.Width = mat.Width;
+                //ImageCanvas.Height = mat.Height;
+                MainWindow.BaslerCam.Width = mat.Width;
+                MainWindow.BaslerCam.Height = mat.Height;
+                MainWindow.BaslerCam.PropertyChange();
                 ZoomRatio = 100;
 
-
-                DateTime t2 = DateTime.Now;
-                Debug.WriteLine($"{t2:mm:ss.fff} {(t2 - t1).TotalMilliseconds}");
+                //DateTime t2 = DateTime.Now;
+                //Debug.WriteLine($"{t2:mm:ss.fff} {(t2 - t1).TotalMilliseconds}");
             }
         }
 
         private void RestoreImage_Click(object sender, RoutedEventArgs e)
         {
+            Cv2.DestroyAllWindows();
+
             Mat dis = Indicator.Image;
             dis?.Dispose();
             Indicator.Image = Indicator.OriImage?.Clone();
@@ -197,13 +206,13 @@ namespace MCAJawIns.content
         private void DealImage_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-
+            Cv2.DestroyAllWindows();
 
             Mat mat = Indicator.Image;
+            if (mat == null) { return; }
             Indicator.OriImage = mat.Clone();
 
-
-            if (AssistRect.Enable)
+            if (AssistRect.Enable && AssistRect.Area > 0)
             {
                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect((int)AssistRect.X, (int)AssistRect.Y, (int)AssistRect.Width, (int)AssistRect.Height);
 
@@ -241,9 +250,8 @@ namespace MCAJawIns.content
 
                 // 尋找最大面積
                 int idx = area.IndexOf(area.Max());
-
-                //Debug.WriteLine($"{rects.Count}");
-                Debug.WriteLine($"Max {rects[idx]} {area[idx]} {cPt[idx]}");
+                // Debug.WriteLine($"{rects.Count}");
+                // Debug.WriteLine($"Max {rects[idx]} {area[idx]} {cPt[idx]}");
 
                 for (int i = 0; i < rects.Count; i++)
                 {
@@ -257,75 +265,117 @@ namespace MCAJawIns.content
                 // 形心
                 OpenCvSharp.Point pt = (OpenCvSharp.Point)cPt[idx];
                 OpenCvSharp.Point center = (OpenCvSharp.Point)cPt[idx].Add(new Point2d(AssistRect.X, AssistRect.Y));
-                //Cv2.Circle(mat, center.X, center.Y, 5, Scalar.Black, 2);
+                // Cv2.Circle(mat, center.X, center.Y, 5, Scalar.Black, 2);
 
                 // origin image width
                 int width = mat.Width;
                 Debug.WriteLine($"{center}");
                 Mat roiMat = new Mat(mat, roi);
 
-                unsafe
+
+                #region 範圍設定
+                bool b1 = int.TryParse(FromText.Text, out int fromAngle);
+                bool b2 = int.TryParse(ToText.Text, out int toAngle);
+
+                FromText.Text = fromAngle.ToString();
+                ToText.Text = toAngle.ToString();
+                #endregion
+
+                if (b1 && b2)
                 {
-                    byte* b = roiMat.DataPointer;
-
-                    // 指標圓中心 idx
-                    int c = (pt.Y * width) + pt.X;
-                    for (int angle = 0; angle < 360; angle += 5)
+                    unsafe
                     {
-                        // if (angle == 0 || angle == 30)
-                        // {
-                        // r step = 0.5
-                        Mat chart = new Mat(new OpenCvSharp.Size(roiMat.Width / 2, 280), MatType.CV_8UC3, Scalar.Black);
-                        byte gray = 0;
-                        //byte lastGray = 0;
+                        byte* b = roiMat.DataPointer;
 
-
-                        for (int r = 0; r <= roiMat.Width / 2; r++)
+                        // 指標圓中心 idx
+                        int c = (pt.Y * width) + pt.X;
+                        for (int angle = fromAngle; angle <= toAngle; angle += 5)
                         {
-                            int x = (int)(r * Math.Cos(Math.PI * angle / 180));
-                            int y = (int)(r * Math.Sin(Math.PI * angle / 180));
+                            Debug.WriteLine($"{angle}");
 
-                            #region 畫圖
-                            gray = b[c + (y * width) + x];
+                            // if (angle == 0 || angle == 30)
+                            // {
+                            // r step = 0.5
 
-                            if (angle == 0 || angle == 90)
+                            Mat chart = new Mat(new OpenCvSharp.Size(roiMat.Width / 2 + 50, 280 + 50), MatType.CV_8UC3, Scalar.White);
+                            byte gray = 0;
+                            byte grayLast = 0;
+
+                            // byte grayArr[] = new byte[roiMat.Width / 2];
+                            // byte lastGray = 0;
+
+                            for (int r = 0; r <= roiMat.Width / 2; r++)
                             {
-                                //Debug.WriteLine($"{(r} {chart.Height - gray} {gray}");
+                                int x = (int)(r * Math.Cos(-Math.PI * angle / 180));
+                                int y = (int)(r * Math.Sin(-Math.PI * angle / 180));
 
-                                //if (gray != 255)
-                                //{
-                                    Cv2.Line(chart, r, chart.Height, r, chart.Height - gray, Scalar.White, 1);
-                                //}
+                                #region 畫圖
+                                gray = b[c + (y * width) + x];
+                                if (r == 0) { grayLast = gray; }
+
+                                //if (angle % 90 == 0)
+                                if (fromAngle < angle && angle < toAngle)
+                                {
+                                    Cv2.Line(chart, r + 25, chart.Height - grayLast - 25, r + 25, chart.Height - gray - 25, Scalar.Red, 1);
+                                }
+                                #endregion
+
+                                // 畫標記線
+                                if (angle == fromAngle || angle == toAngle)
+                                //if (angle % 90 == 0)
+                                {
+                                    if (r > 10)
+                                    {
+                                        // 中心點 + y + x
+                                        b[c + (y * width) + x] = 0;
+                                    }
+                                }
+
+                                // roiMat.At<byte>(pt.Y, pt.X) = 0;
+                                // b[c] = 0;
+
+                                grayLast = gray;
                             }
-                            #endregion
 
+                            if (fromAngle < angle && angle < toAngle)
+                            // if (angle % 90 == 0)
+                            {
+                                #region Draw Axis
+                                Cv2.Line(chart, 0 + 25, chart.Height, 0 + 25, 0, Scalar.Black, 1);
 
-                            if (angle == 0 || angle == 90)
-                            {
-                                // 中心點 + y + x
-                                //b[c + (y * width) + x] = 255;
-                            }
-                            else
-                            {
-                                // 中心點 + y + x
-                                //b[c + (y * width) + x] = 0;
+                                for (int x = 25; x < chart.Width; x += 10)
+                                {
+                                    Cv2.Line(chart, x, chart.Height - 25 - 3, x, chart.Height - 25 + 3, Scalar.Black, 1);
+                                }
+
+                                Cv2.Line(chart, 0, chart.Height - 25, chart.Width, chart.Height - 25, Scalar.Black, 1);
+                                for (int y = chart.Height - 25; y > 0; y -= 10)
+                                {
+                                    Cv2.Line(chart, 0 + 25 - 3, y, 0 + 25 + 3, y, Scalar.Black, 1);
+                                }
+
+                                Cv2.PutText(chart, "R", new OpenCvSharp.Point(chart.Width - 25, chart.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                                Cv2.PutText(chart, "gray", new OpenCvSharp.Point(30, 25), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                                #endregion
+
+                                Cv2.ImShow($"Chart {angle}", chart);
+                                Cv2.MoveWindow($"Chart {angle}", 50 + angle, angle + 40);
                             }
                         }
 
-                        if (angle == 0 || angle == 90)
-                        {
-                            Cv2.ImShow($"Chart {angle}", chart);
-                        }
+                        // 中心上黑點
+                        b[c] = 0;
                     }
                 }
 
-                //Cv2.ImShow("Otsu", otsu);
+                // Cv2.ImShow("Otsu", otsu);
 
                 labels.Dispose();
                 stat.Dispose();
                 centroid.Dispose();
 
-                Cv2.Circle(mat, center.X, center.Y, 5, Scalar.Black, 2);
+                Cv2.Circle(mat, center.X, center.Y, 1, Scalar.White, 1);
+                Cv2.Circle(mat, center.X, center.Y, 7, Scalar.White, 1);
 
                 Indicator.Image = mat;
             }
@@ -849,7 +899,6 @@ namespace MCAJawIns.content
         #endregion
 
         #region DXF 處理
-
         private void ReadDXF()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -870,7 +919,6 @@ namespace MCAJawIns.content
                 DxfDocument dxf = DxfDocument.Load(filePath);
             }
         }
-
         #endregion
     }
 }

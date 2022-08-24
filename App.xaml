@@ -119,29 +119,39 @@
             
             <!--#endregion-->
             
+            <!--#region Styles -->
             <!-- Material Design Card -->
             <Style x:Key="GeneralCard" TargetType="materialDesign:Card">
-                <Setter Property="Margin" Value="4"/>
-                <Setter Property="Padding" Value="8 8 8 8"/>
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="FontFamily" Value="consolas"/>
-                <Setter Property="Background" Value="LightCyan"/>
-                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
+                <Setter Property="Margin" Value="4" />
+                <Setter Property="Padding" Value="8 8 8 8" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="FontFamily" Value="consolas" />
+                <Setter Property="Background" Value="LightCyan" />
+                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0" />
             </Style>
             <!-- // -->
             <Style x:Key="PanelTopCard" TargetType="materialDesign:Card">
-                <Setter Property="Margin" Value="2 0 2 8"/>
-                <Setter Property="Padding" Value="6 8"/>
-                <Setter Property="Foreground" Value="Black"/>
-                <Setter Property="FontFamily" Value="consolas"/>
-                <Setter Property="Background" Value="LightCyan"/>
-                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0"/>
+                <Setter Property="Margin" Value="2 0 2 8" />
+                <Setter Property="Padding" Value="6 8" />
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="FontFamily" Value="consolas" />
+                <Setter Property="Background" Value="LightCyan" />
+                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth0" />
             </Style>
             <!-- // -->
             <Style x:Key="PanelBottomCard" TargetType="materialDesign:Card" BasedOn="{StaticResource PanelTopCard}">
-                <Setter Property="Margin" Value="2 8 2 0"/>
+                <Setter Property="Margin" Value="2 8 2 0" />
             </Style>
-            <!--//-->
+            <!-- Tab Grid Style -->
+            <Style x:Key="TabGrid" TargetType="{x:Type Grid}">
+                <Setter Property="Height" Value="780" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                        <Setter Property="Height" Value="960" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <!--#endregion-->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

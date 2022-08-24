@@ -600,7 +600,7 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
+                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {
@@ -981,7 +981,7 @@ namespace MCAJawIns.content
 #endif
     }
 
-    #region MyRegion
+    #region MCA Jaw Config Definition
     public class MCAJawConfig
     {
         public MCAJawConfig()
@@ -999,7 +999,6 @@ namespace MCAJawIns.content
         public DateTime DateTime { get; set; }
     }
     #endregion
-
 
     #region Converter
     /// <summary>

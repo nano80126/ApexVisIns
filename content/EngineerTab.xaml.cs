@@ -1,25 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Basler.Pylon;
-using Basler;
-using System.Threading;
-using System.Windows.Threading;
-using System.Runtime.InteropServices;
-using System.Collections.ObjectModel;
 
 namespace MCAJawIns.content
 {
@@ -32,13 +17,12 @@ namespace MCAJawIns.content
         public Crosshair Crosshair { set; get; }
         public AssistRect AssistRect { set; get; }
         public Indicator Indicator { set; get; }
-
-        //public ObservableCollection<AssistPoint> AssistPoints { get; set; }
+        // public ObservableCollection<AssistPoint> AssistPoints { get; set; }
         public AssistPoints AssistPoints { get; set; }
         #endregion
 
         #region Varibles
-        //private static bool MoveImage;
+        // private static bool MoveImage;
         private static double TempX;
         private static double TempY;
         private ImageSource _imgSrc;
@@ -50,9 +34,43 @@ namespace MCAJawIns.content
         /// </summary>
         public MainWindow MainWindow { get; set; }
         /// <summary>
-        /// Informer 物件
+        /// Image Zoom Ratio
         /// </summary>
-        //public MsgInformer MsgInformer { get; set; }
+        public double ZoomRatio
+        {
+            get => ImageViewbox == null ? 0 : ImageViewbox.Width / ImageCanvas.Width * 100;
+            set
+            {
+                int v = (int)Math.Floor(value);
+
+                if (20 > v)
+                {
+                    ImageViewbox.Width = 0.2 * ImageCanvas.Width;
+                }
+                else if (v > 300)
+                {
+                    ImageViewbox.Width = 3 * ImageCanvas.Width;
+                }
+                else
+                {
+                    double ratio = value / 100;
+                    ImageViewbox.Width = ratio * ImageCanvas.Width;
+                }
+                OnPropertyChanged(nameof(ZoomRatio));
+            }
+        }
+        /// <summary>
+        /// Image Source
+        /// </summary>
+        public ImageSource ImageSource
+        {
+            get => _imgSrc;
+            set
+            {
+                _imgSrc = value;
+                OnPropertyChanged(nameof(ImageSource));
+            }
+        }
         #endregion
 
         #region Flags
@@ -365,47 +383,12 @@ namespace MCAJawIns.content
 #endif
         }
 
-        #region Properties
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public double ZoomRatio
-        {
-            get => ImageViewbox == null ? 0 : ImageViewbox.Width / ImageCanvas.Width * 100;
-            set
-            {
-                int v = (int)Math.Floor(value);
-
-                if (20 > v)
-                {
-                    ImageViewbox.Width = 0.2 * ImageCanvas.Width;
-                }
-                else if (v > 300)
-                {
-                    ImageViewbox.Width = 3 * ImageCanvas.Width;
-                }
-                else
-                {
-                    double ratio = value / 100;
-                    ImageViewbox.Width = ratio * ImageCanvas.Width;
-                }
-                OnPropertyChanged(nameof(ZoomRatio));
-
-            }
-        }
-
-        public ImageSource ImageSource
-        {
-            get => _imgSrc;
-            set
-            {
-                _imgSrc = value;
-                OnPropertyChanged(nameof(ImageSource));
-            }
         }
         #endregion
     }

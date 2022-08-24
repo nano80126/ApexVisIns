@@ -8,6 +8,7 @@
     <AssemblyName>MCAJawIns</AssemblyName>
     <RootNamespace>MCAJawIns</RootNamespace>
     <Configurations>Debug;Release;Debug Jaw S</Configurations>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
