@@ -27,7 +27,6 @@ namespace MCAJawIns.content
         #region Private
         private bool _x64;
 
-
         #endregion
 
         #region Properties

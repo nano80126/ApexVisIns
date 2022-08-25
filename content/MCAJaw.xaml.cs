@@ -655,6 +655,7 @@ namespace MCAJawIns.content
                         }
 
 
+#if  false
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)
                         {
@@ -670,7 +671,8 @@ namespace MCAJawIns.content
                             {
                                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"量測紀錄舊資料已刪除, 刪除數量: {result.DeletedCount}");
                             }
-                        }
+                        } 
+#endif
 
                         //MainWindow.MsgInformer.TargetProgressValue += 17;
                         MainWindow.MsgInformer.AdvanceProgressValue(17);
@@ -983,7 +985,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-#if true
+#if false
         [Obsolete("測試用")]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
