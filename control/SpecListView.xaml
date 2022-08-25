@@ -7,7 +7,9 @@
             xmlns:local="clr-namespace:MCAJawIns.Control"
             xmlns:pd="clr-namespace:MCAJawIns.Product"
             mc:Ignorable="d" 
-            d:DesignHeight="450" d:DesignWidth="800">
+            d:DesignHeight="450" 
+            d:DesignWidth="800"
+            UseLayoutRounding="False">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}}"
                 d:DataContext="{d:DesignInstance Type={x:Type local:SpecListView}}">
         <Grid x:Name="Table" VerticalAlignment="Top" Grid.IsSharedSizeScope="True">
@@ -35,12 +37,12 @@
                 </Grid.Resources>
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="col1" MinWidth="100"/>
-                    <ColumnDefinition SharedSizeGroup="col2"/>
-                    <ColumnDefinition SharedSizeGroup="col3"/>
-                    <ColumnDefinition SharedSizeGroup="col4"/>
-                    <ColumnDefinition SharedSizeGroup="col5"/>
-                    <ColumnDefinition SharedSizeGroup="col6"/>
+                    <ColumnDefinition SharedSizeGroup="col1" Width="2*"/>
+                    <ColumnDefinition SharedSizeGroup="col2" Width="auto"/>
+                    <ColumnDefinition SharedSizeGroup="col3" Width="auto"/>
+                    <ColumnDefinition SharedSizeGroup="col4" Width="auto"/>
+                    <ColumnDefinition SharedSizeGroup="col5" Width="auto"/>
+                    <ColumnDefinition SharedSizeGroup="col6" Width="3*"/>
                     <!--<ColumnDefinition SharedSizeGroup="col7"/>-->
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
@@ -79,61 +81,83 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
+                                <!--#region Resources -->
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="FontSize" Value="{StaticResource Header-lg}"/>
-                                    </Style>
-                                    
-                                    <Style TargetType="Rectangle">
-                                        <Setter Property="Fill" Value="Transparent"/>
+                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                                        <!--//-->
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource NumberIsOddConverter}}" Value="True">
-                                                <Setter Property="Fill" Value="{StaticResource ColorInfoTransparent}"/>
-                                                <Setter Property="Opacity" Value="0.3"/>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                                    Value="Maximized">
+                                                <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                    <!--//-->
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Fill" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource NumberIsOddConverter}}"
+                                                    Value="True">
+                                                <Setter Property="Fill" Value="{StaticResource ColorInfoTransparent}" />
+                                                <Setter Property="Opacity" Value="0.3" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                     <!--//-->
                                     <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                        <Setter Property="FontSize" Value="20"/>
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}"/>
-                                        <Setter Property="Background" Value="{StaticResource ColorError}"/>
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
+                                        <Setter Property="Background" Value="{StaticResource ColorError}" />
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                                    Value="Maximized">
+                                                <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
+                                            </DataTrigger>
+                                            <!--//-->
                                             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                <Setter Property="Background" Value="LimeGreen"/>
+                                                <Setter Property="Background" Value="LimeGreen" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                     <!--//-->
                                     <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                        <Setter Property="Width" Value="18"/>
-                                        <Setter Property="Height" Value="18"/>
-                                        <Setter Property="VerticalAlignment" Value="Center"/>
-                                        <Setter Property="Kind" Value="Close"/>
+                                        <Setter Property="Width" Value="18" />
+                                        <Setter Property="Height" Value="18" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Kind" Value="Close" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}" Value="True">
-                                                <Setter Property="Kind" Value="Check"/>
+                                            <DataTrigger
+                                                    Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}"
+                                                    Value="True">
+                                                <Setter Property="Kind" Value="Check" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Resources>
+                                <!--#endregion-->
 
+                                <!--#region Layout -->
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="col1" MinWidth="100"/>
-                                    <ColumnDefinition SharedSizeGroup="col2"/>
-                                    <ColumnDefinition SharedSizeGroup="col3"/>
-                                    <ColumnDefinition SharedSizeGroup="col4"/>
-                                    <ColumnDefinition SharedSizeGroup="col5"/>
-                                    <ColumnDefinition SharedSizeGroup="col6"/>
+                                    <ColumnDefinition SharedSizeGroup="col1"/>
+                                    <ColumnDefinition SharedSizeGroup="col2" />
+                                    <ColumnDefinition SharedSizeGroup="col3" />
+                                    <ColumnDefinition SharedSizeGroup="col4" />
+                                    <ColumnDefinition SharedSizeGroup="col5" />
+                                    <ColumnDefinition SharedSizeGroup="col6" />
                                     <!--<ColumnDefinition SharedSizeGroup="col7"/>-->
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
+                                <!--#endregion-->
 
                                 <!-- Backgroud -->
                                 <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 
-                                <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
-                                <TextBlock Grid.Column="0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Item}"/>
+                                <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" 
+                                Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
+                                <TextBlock Grid.Column="0" Margin="0 0 12 0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                           Text="{Binding Item, StringFormat={}{0:D4}}"/> 
                                 <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}"/>
                                 <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
                                 <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
@@ -142,7 +166,7 @@
                                 <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
                                                  IsEnabled="False" Grid.Column="5" Margin="12 3">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontSize="24">
+                                        <TextBlock VerticalAlignment="Bottom">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Text" Value="不良"/>

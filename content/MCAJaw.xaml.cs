@@ -35,9 +35,12 @@ namespace MCAJawIns.content
         /// </summary>
         public JawInspection JawInspection { get; set; }
         /// <summary>
-        /// Jaw 規格設定 (包含檢驗結果)
+        /// Jaw 規格設定 (包含檢驗結果) (這邊物件再細分 => results collection group 拆出來)
         /// </summary>
         public JawSpecGroup JawSpecGroup { get; set; }
+
+        /// JawResultsGroup // 量測結果顯示
+        /// JawSpecSetting  // 尺寸啟用與否設定
         #endregion
 
         #region Variables
@@ -54,8 +57,8 @@ namespace MCAJawIns.content
         /// <summary>
         /// NG 音效
         /// </summary>
-        private readonly SoundPlayer SoundNG = new SoundPlayer(@".\sound\NG.wav");
-
+        private readonly SoundPlayer SoundNG = new SoundPlayer(@".\sound\NG.wav");          // 3 短音
+        //private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
 
         public enum INS_STATUS
         {
@@ -182,7 +185,7 @@ namespace MCAJawIns.content
                 case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    //InitMongoDB(_cancellationTokenSource.Token).Wait();
+                    // InitMongoDB(_cancellationTokenSource.Token).Wait();
                     break;
                 default:
                     // 保留
@@ -284,6 +287,23 @@ namespace MCAJawIns.content
                                 // 開啟 Trigger Mode 失敗
                                 return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
                             }
+
+                            #region 確認相機鏡頭蓋取下
+                            foreach (BaslerCam cam in MainWindow.BaslerCams)
+                            {
+                                OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
+                                OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
+                                Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out byte threshold);
+
+                                mat.Dispose();
+                                otsu.Dispose();
+
+                                if (50 < threshold)
+                                {
+                                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機鏡頭蓋未取下或有遮蔽物");
+                                }
+                            }
+                            #endregion
                         }
                         else
                         {
@@ -299,14 +319,13 @@ namespace MCAJawIns.content
                         }
                         else
                         {
-                            MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                            _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                         }
                         initialzing = false;
                     }, token);
             }
             catch (OperationCanceledException cancell)
             {
-
                 // 新增 Message
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程被終止: {cancell.Message}");
             }
@@ -600,7 +619,7 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
+                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {
@@ -614,7 +633,7 @@ namespace MCAJawIns.content
                         MongoAccess.CreateCollection("Auth");
                         // 取得 Mongo 版本
                         MongoAccess.GetVersion();
-                        //Debug.WriteLine($"version {MongoAccess.GetVersion()}");
+                        // Debug.WriteLine($"version {MongoAccess.GetVersion()}");
 #if false
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {
@@ -888,16 +907,12 @@ namespace MCAJawIns.content
 
                 Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
-
-                if (!data.OK)
-                {
-                    SoundNG.Play();
-                }
+                if (!data.OK) { SoundNG.Play(); }
 
                 return data.OK;
             });
 
-            //if (!b) break;
+            // if (!b) break;
 
 #if false
                     Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -968,8 +983,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-
-#if false
+#if true
         [Obsolete("測試用")]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -978,8 +992,10 @@ namespace MCAJawIns.content
             JawSpecGroup.Collection3.Add(new JawSpec("測試3", 0, 0, 0.007, 0.005));
 
             SoundNG.Play();
+            //SoundAlarm.Play();
+
             //soundAlarm.Play();
-        } 
+        }
 #endif
     }
 

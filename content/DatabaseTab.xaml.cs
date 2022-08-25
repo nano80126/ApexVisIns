@@ -120,16 +120,6 @@ namespace MCAJawIns.content
         }
 
         /// <summary>
-        /// 履歷 Tab 卸載
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        /// <summary>
         /// DatePicker & TimePicker 初始化
         /// </summary>
         [Obsolete("Deprecated")]
@@ -265,7 +255,6 @@ namespace MCAJawIns.content
                 foreach (JawInspection item in data)
                 {
                     JawInspections.Add(item);
-                    // Debug.WriteLine($"{item.LotNumber} {item.DateTime.ToLocalTime()}");
                 }
             }
             catch (Exception ex)
@@ -317,6 +306,7 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private async void ExportCSV_Click(object sender, RoutedEventArgs e)
         {
+            // 儲存路徑
             SaveFileDialog saveFileDialog = new()
             {
                 FileName = string.Empty,
@@ -336,70 +326,87 @@ namespace MCAJawIns.content
                         string path = saveFileDialog.FileName;
                         string lotNumber = _selectedLotNumber;
 
-                        JawInspection header = JawInspections.First(e => e.LotNumber == lotNumber);
+                        JawInspection lotObject = JawInspections.First(e => e.LotNumber == lotNumber);
 
 
-                        string time =
+                        string outputTime =
                                 $"輸出日期,{DateTime.Now:yyyy/MM/dd}{Environment.NewLine}" +
                                 $"輸出時間,{DateTime.Now.ToLocalTime():HH:mm:ss}{Environment.NewLine}{Environment.NewLine}";
 
-                        string a = $"批號,{lotNumber}{Environment.NewLine}";
-                        string b =
-                                $"資料日期,{header.DateTime:yyyy/MM/dd}{Environment.NewLine}" +
-                                $"資料時間,{header.DateTime.ToLocalTime():HH:mm:ss}{Environment.NewLine}";
+                        /// 批號
+                        string lotNb = $"批號,{lotNumber}{Environment.NewLine}";
+                        // 批號資料輸入時間
+                        string lotTime =
+                                $"資料日期,{lotObject.DateTime:yyyy/MM/dd}{Environment.NewLine}" +
+                                $"資料時間,{lotObject.DateTime.ToLocalTime():HH:mm:ss}{Environment.NewLine}";
 
-                        string c = $"項目";
-                        string d = $"數量";
+                        // 批號OK、NG項目
+                        string lotItem = $"項目";
+                        // 批號OK、NG數量
+                        string lotCount = $"數量";
 
-                        foreach (string k in header.LotResults.Keys)
+                        foreach (string k in lotObject.LotResults.Keys)
                         {
-                            Debug.WriteLine($"{header.LotResults[k].Name} {header.LotResults[k].Enable}");
-
-                            //if (header.LotResults[k].Enable)
-                            //{
-                            c += $",{header.LotResults[k].Name}";
-                            d += $",{header.LotResults[k].Count}";
-                            //}
+                            // Debug.WriteLine($"{lotObject.LotResults[k].Name} {lotObject.LotResults[k].Enable}");
+                            lotItem += $",{lotObject.LotResults[k].Name}";
+                            lotCount += $",{lotObject.LotResults[k].Count}";
                         }
 
-                        c += Environment.NewLine;
-                        d += Environment.NewLine + Environment.NewLine;
-                        // string e = Environment.NewLine;
+                        lotItem += Environment.NewLine;
+                        lotCount += Environment.NewLine + Environment.NewLine;
+                        // 以上批次量測計數 // 以上批次量測計數 // 以上批次量測計數 // 以上批次量測計數 // 以上批次量測計數 
 
+                        // 以下量測結果輸出 // 以下量測結果輸出 // 以下量測結果輸出 // 以下量測結果輸出 // 以下量測結果輸出
+#if false
                         string o = $"時間";
-                        string p = string.Empty;
+#endif
+                        // 量測結果
+                        string resultRows = string.Empty;
 
-                        bool ResultHeaderAppended = false;
+                        // 啟用之規格
+                        JawSpecSetting[] enables = MainWindow.MCAJaw.JawSpecGroup.SpecList.Where(item => item.Enable).ToArray();
+                        // 啟用規格之key
+                        string[] keys = enables.Select(item => item.Key).ToArray();
+                        // 量測結果 header
+                        string resultHeaders = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果";
+
+
+                        //bool ResultHeaderAppended = false;
                         foreach (JawMeasurements item in JawFullSpecInsCol)
                         {
-                            // 先轉 localtime
-                            p += $"{item.DateTime.ToLocalTime():HH:mm:ss}";
+#if false
+                            // 先轉 LocalTime
+                            p += $"{item.DateTime.ToLocalTime():HH:mm:ss}"; 
+#endif
 
-                            // foreach (string key in item.Results.Keys)
-                            foreach (string key in header.LotResults.Keys)
+                            string localTime = $"{item.DateTime.ToLocalTime():HH:mm:ss}";
+                            string values = keys.Aggregate(localTime, (str, next) => item.Results.ContainsKey(next) ? $",{item.Results[next]:f5}" : ",");
+                            string result = (item.OK ? ",良品" : ",不良") + Environment.NewLine;
+
+#if false
+                            foreach (string key in lotObject.LotResults.Keys)
                             {
+                                // Results 內沒資料
                                 if (!item.Results.ContainsKey(key)) { continue; }
                                 // if (key == "good") { continue; }
 
-                                // 生成 Header
-                                if (!ResultHeaderAppended) { o += $",{header.LotResults[key].Name}"; }
+                                // 生成 Header，先判斷 flag
+                                //if (!ResultHeaderAppended) { o += $",{lotObject.LotResults[key].Name}"; }
                                 p += $",{item.Results[key]:f5}";
                             }
 
-#if false
-                            #region 待刪除
-                            if (!ResultHeaderAppended) { o += $",平直度2"; }
-                            p += $",{item.Results["flatness2"]:f5}";
-                            #endregion  
+                            //ResultHeaderAppended = true;
+
+                            p += (item.OK ? ",良品" : ",不良") + Environment.NewLine; 
 #endif
 
-                            ResultHeaderAppended = true;
-
-                            p += (item.OK ? ",良品" : ",不良") + Environment.NewLine;
+                            resultRows += values + result;
                         }
+#if false
                         o += $",結果{Environment.NewLine}";
+#endif
 
-                        File.WriteAllText(path, time + a + b + c + d + o + p);
+                        File.WriteAllText(path, outputTime + lotNb + lotTime + lotItem + lotCount + resultHeaders + resultRows);
                     }
                     catch (Exception ex)
                     {
@@ -437,7 +444,11 @@ namespace MCAJawIns.content
             //}
         }
 
-
+        /// <summary>
+        /// 儲存資料庫回收設定 (資料庫目前不清除舊資料)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveDatabaseRecycle_Click(object sender, RoutedEventArgs e)
         {
             if (DataReserveSelector.SelectedIndex != -1)
@@ -456,6 +467,25 @@ namespace MCAJawIns.content
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
                 }
             }
+        }
+
+        private void Test_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime t1 = DateTime.Now;
+            JawSpecGroup jaws = MainWindow.MCAJaw.JawSpecGroup;
+         
+            JawSpecSetting[] enables = MainWindow.MCAJaw.JawSpecGroup.SpecList.Where(item => item.Enable).ToArray();
+          
+            // result headers
+            string concat = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果";
+            string[] keys = enables.Select(item => item.Key).ToArray();
+            // string concat2 = enables.Aggregate(string.Empty, (str, next) => str == string.Empty ? $"{next.Item}" : $"{str},{next.Item}");
+
+            Debug.WriteLine($"{concat}");
+            Debug.WriteLine($"{string.Join(",", keys)}");
+            // Debug.WriteLine($"{concat2}");
+
+            Debug.WriteLine($"============================================================= {(DateTime.Now - t1).TotalMilliseconds}");
         }
 
         /// <summary>
@@ -515,7 +545,7 @@ namespace MCAJawIns.content
             }
         }
 
-
+        
         #region PropertyChanged 
         public event PropertyChangedEventHandler PropertyChanged;
 

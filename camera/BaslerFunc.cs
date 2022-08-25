@@ -348,7 +348,6 @@ namespace MCAJawIns
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
-
         /// <summary>
         /// 相機連線
         /// </summary>
@@ -432,7 +431,6 @@ namespace MCAJawIns
             return false;
         }
 
-
         /// <summary>
         /// 啟動 Grabber
         /// </summary>
@@ -506,6 +504,31 @@ namespace MCAJawIns
             {
                 MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, E.Message);
             }
+        }
+
+        /// <summary>
+        /// Grabber retrieve a mat
+        /// </summary>
+        /// <param name="cam">BaslerCam 物件</param>
+        public Mat Basler_RetrieveResult(BaslerCam cam)
+        {
+            Mat mat = null;
+            for (int i = 0; i < 3; i++)
+            {
+                bool ready = cam.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                if (ready)
+                {
+                    cam.Camera.ExecuteSoftwareTrigger();
+                    IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+
+                    if (grabResult?.GrabSucceeded == true)
+                    {
+                        mat = BaslerFunc.GrabResultToMatMono(grabResult);
+                        break;
+                    }
+                }
+            }
+            return mat;
         }
 
         /// <summary>

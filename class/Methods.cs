@@ -149,15 +149,15 @@ namespace MCAJawIns
         /// <param name="th">閾值</param>
         /// <param name="max">最大值</param>
         /// <param name="otsu">Otsu 影像</param>
-        /// <param name="threshHold">Otsu 閾值</param>
-        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat otsu, out byte threshHold)
+        /// <param name="threshold">Otsu 閾值</param>
+        public static void GetRoiOtsu(Mat src, Rect roi, byte th, byte max, out Mat otsu, out byte threshold)
         {
             try
             {
                 otsu = new Mat();
                 using Mat clone = new(src, roi);
 
-                threshHold = (byte)Cv2.Threshold(clone, otsu, th, max, ThresholdTypes.Otsu);
+                threshold = (byte)Cv2.Threshold(clone, otsu, th, max, ThresholdTypes.Otsu);
             }
             catch (OpenCVException)
             {

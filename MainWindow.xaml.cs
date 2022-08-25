@@ -49,7 +49,6 @@ namespace MCAJawIns
     }
     #endregion
 
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -105,10 +104,6 @@ namespace MCAJawIns
         #endregion
 
         #region Resources
-        // public Crosshair Crosshair;         // 待刪
-        // public AssistRect AssistRect;       // 待刪
-        // public AssistPoint[] AssistPoints;  // 待刪
-        // public Indicator Indicator;         // 待刪
         /// <summary>
         /// 訊息通知器
         /// </summary>
@@ -166,7 +161,10 @@ namespace MCAJawIns
         #endregion
 
         #region Tabs
-        private MCAJaw MCAJaw { get; set; }
+        /// <summary>
+        /// MCA Jaw 主頁面 (設為 public，因為 DatabaseTab 需要取用)
+        /// </summary>
+        public MCAJaw MCAJaw { get; set; }
         private CameraTab CameraTab { get; set; }
         //private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }

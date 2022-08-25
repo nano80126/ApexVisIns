@@ -12,7 +12,7 @@
             mc:Ignorable="d"
             Loaded="StackPanel_Loaded" 
             d:DesignHeight="900" d:DesignWidth="1600" 
-            UseLayoutRounding="True" Orientation="Vertical">
+            UseLayoutRounding="False" Orientation="Vertical">
     <StackPanel.Resources>
         <!--檢驗物件，綁定批號-->
         <pd:JawInspection x:Key="JawInspection" />
@@ -108,7 +108,7 @@
 
                 <Separator Margin="12 6" />
 
-                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
+                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>
                 <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
 
@@ -335,38 +335,41 @@
                                     <!--#region 1st row  -->
                                     <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                                     <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0">
-                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center"  TextAlignment="Center" FontSize="{StaticResource Title-xl}" FontWeight="SemiBold" 
-                                                   Text="{Binding Status, RelativeSource={RelativeSource AncestorType=local:MCAJaw, Mode=FindAncestor, AncestorLevel=1}, Converter={StaticResource EnumDescriptionConverter}}"
-                                                   Foreground="{Binding Status,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:MCAJaw,AncestorLevel=1}, Converter={StaticResource MCAJawStatusColorConverter}}"/>
+                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                                                FontSize="{StaticResource Title-xl}" FontWeight="SemiBold"
+                                                Text="{Binding Status, RelativeSource={RelativeSource AncestorType=local:MCAJaw, Mode=FindAncestor, AncestorLevel=1}, Converter={StaticResource EnumDescriptionConverter}}"
+                                                Foreground="{Binding Status,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:MCAJaw,AncestorLevel=1}, Converter={StaticResource MCAJawStatusColorConverter}}" />
                                     </Border>
 
                                     <!--Control Panel, 1st row, 2nd row-->
                                     <Grid Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="8 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="1*"/>
-                                            <RowDefinition Height="1*"/>
+                                            <RowDefinition Height="1*" />
+                                            <RowDefinition Height="1*" />
                                         </Grid.RowDefinitions>
 
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
                                         <!--//-->
-                                        <TextBox Grid.Row="0" Grid.Column="0" Margin="0 0 0 0" Padding="8 3" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
-                                                 materialDesign:TextFieldAssist.PrefixText="Lot" FontSize="18"
-                                                 materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
-                                                 Text="{Binding Path=LotNumber, Source={StaticResource JawInspection}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                                        <TextBox Grid.Row="0" Grid.Column="0" Margin="0 0 0 0" Padding="8 3" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                                materialDesign:TextFieldAssist.PrefixText="Lot" FontSize="18" materialDesign:HintAssist.Hint="Lot"
+                                                materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
+                                                Text="{Binding Path=LotNumber, Source={StaticResource JawInspection}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
                                         <!--//-->
                                         <Button Grid.Row="0" Grid.Column="1" Padding="3 2" Margin="8 0 0 0" Height="29" Focusable="False" Click="LotNumberCheckButton_Click">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-                                                    <Setter Property="Foreground" Value="{StaticResource ColorOrange}"/>
-                                                    <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}" />
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding LotNumberChecked, Source={StaticResource JawInspection}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                                            <Setter Property="BorderBrush" Value="{StaticResource ColorSuccess}"/>
+                                                        <DataTrigger
+                                                                Binding="{Binding LotNumberChecked, Source={StaticResource JawInspection}, UpdateSourceTrigger=PropertyChanged}"
+                                                                Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
+                                                            <Setter Property="BorderBrush" Value="{StaticResource ColorSuccess}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -377,10 +380,12 @@
                                                 <materialDesign:PackIcon VerticalAlignment="Center">
                                                     <materialDesign:PackIcon.Style>
                                                         <Style TargetType="materialDesign:PackIcon">
-                                                            <Setter Property="Kind" Value="ExclamationBold"/>
+                                                            <Setter Property="Kind" Value="ExclamationBold" />
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding LotNumberChecked, Source={StaticResource JawInspection}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                    <Setter Property="Kind" Value="CheckBold"/>
+                                                                <DataTrigger
+                                                                        Binding="{Binding LotNumberChecked, Source={StaticResource JawInspection}, UpdateSourceTrigger=PropertyChanged}"
+                                                                        Value="True">
+                                                                    <Setter Property="Kind" Value="CheckBold" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -389,13 +394,11 @@
                                             </StackPanel>
                                         </Button>
 
-                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" VerticalContentAlignment="Center" 
-                                                Margin="0 12 0 0" Padding="0 0" 
-                                                Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
-                                                Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
-                                                Click="ResetCount_Click"
-                                                Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}"/>  
-                                        
+                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Margin="0 12 0 0"
+                                                Padding="0 0" Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量" Click="ResetCount_Click"
+                                                Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}" />
+
                                     </Grid>
                                     <!--#endregion-->
 
@@ -403,6 +406,7 @@
 
                                     <!--#region 2nd row -->
                                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0">
+                                        <!--#region Resources -->
                                         <Grid.Resources>
                                             <Style TargetType="TextBlock" x:Key="Header">
                                                 <Setter Property="FontSize" Value="{StaticResource Header}" />
@@ -467,361 +471,345 @@
                                                 <Setter Property="Cursor" Value="Arrow" />
                                             </Style>
                                         </Grid.Resources>
-                                        <!--//-->
+                                        <!--#endregion-->
+                                        <!--#region Layout -->
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto" Tag="Row1"/>
+                                            <RowDefinition Height="auto" Tag="Row1" />
                                             <!--header -->
-                                            <RowDefinition Height="auto" Tag="FrontHeader"/>
+                                            <RowDefinition Height="auto" Tag="FrontHeader" />
                                             <!--separator-->
-                                            <RowDefinition Height="auto" Tag="FrontSeparator"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto" Tag="FrontSeparator" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
                                             <!--header   -->
-                                            <RowDefinition Height="auto" Tag="BackHeader"/>
+                                            <RowDefinition Height="auto" Tag="BackHeader" />
                                             <!--separator-->
-                                            <RowDefinition Height="auto" Tag="BackSeparator"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto" Tag="BackSeparator" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
                                             <!--header-->
-                                            <RowDefinition Height="auto" Tag="SideHeader"/>
+                                            <RowDefinition Height="auto" Tag="SideHeader" />
                                             <!--separator-->
-                                            <RowDefinition Height="auto" Tag="SideSeparator"/>
-                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto" Tag="SideSeparator" />
+                                            <RowDefinition Height="auto" />
                                         </Grid.RowDefinitions>
                                         <!--//-->
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3*"/>
-                                            <ColumnDefinition Width="4*"/>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="4*" />
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
-                                        <!--//-->
-
-                                        <!--#region 良品 -->
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource ItemText}" 
-                                                   Text="{Binding LotResults[good].Name, UpdateSourceTrigger=PropertyChanged}" 
-                                                   Visibility="{Binding LotResults[good].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}" 
-                                                   Text="{Binding LotResults[good].Note, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[good].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}"/>
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="1" Margin="8 -2 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
-                                        <Separator Grid.Row="2" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
+                                        <!--#region 良品 -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource ItemText}"
+                                                Text="{Binding LotResults[good].Name, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[good].Enable, Converter={StaticResource BooleanToVisibility}}" />
+
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
+                                                Text="{Binding LotResults[good].Note, UpdateSourceTrigger=PropertyChanged}" />
+                                        <Button Grid.Row="0" Grid.Column="2" Click="MinusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Minus}" />
+                                        <TextBox Grid.Row="0" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[good].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                        <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}" />
+                                        <!--#endregion-->
+
+                                        <TextBlock Grid.Row="1" Margin="8 -2 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <Separator Grid.Row="2" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
                                         <!--#region 0.088R -->
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}" 
-                                                   Text="{Binding LotResults[0.088R].Name,StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                Text="{Binding LotResults[0.088R].Name,StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="3" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.088R].Note, UpdateSourceTrigger=PropertyChanged}" 
-                                                   Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.088R].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="3" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="3" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.088R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="3" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088R" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.088R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.088L -->
                                         <TextBlock Grid.Row="4" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.088L].Name ,StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.088L].Name ,StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="4" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.088L].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.088L].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="4" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.088L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="4" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.088L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="4" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.088L" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.088L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.088合 -->
                                         <TextBlock Grid.Row="5" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.176].Name ,StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.176].Name ,StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="5" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.176].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.176].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="5" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.176" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.176].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="5" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.176].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="5" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.176" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.176].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 後開 -->
                                         <TextBlock Grid.Row="6" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[back].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[back].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="6" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[back].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[back].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="6" Grid.Column="2" Click="MinusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[back].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="back" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        <!--#region NewRegion -->
-                                        <!--<TextBlock Grid.Row="6" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding ,StringFormat={}{0} 不良}" />
-                                        <Button Grid.Row="6" Grid.Column="2" Click="MinusButton_Click" CommandParameter="-" Content="{materialDesign:PackIcon Kind=Minus}"/>
-                                        <TextBox Grid.Row="6" Grid.Column="3" Padding="0 4" Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"/>
-                                        <Button Grid.Row="6" Grid.Column="4" Click="PlusButton_Click" CommandParameter="+" Content="{materialDesign:PackIcon Kind=Plus}"/>-->
-                                        <!--#endregion-->
-
-                                        <TextBlock Grid.Row="7" Margin="8 -2 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
-                                        <Separator Grid.Row="8" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
+                                        <TextBlock Grid.Row="7" Margin="8 -2 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <Separator Grid.Row="8" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
                                         <!--#region 0.008R -->
                                         <TextBlock Grid.Row="9" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.008R].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.008R].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="9" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.008R].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.008R].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="9" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.008R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="9" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.008R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="9" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008R" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.008R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.008L -->
                                         <TextBlock Grid.Row="10" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.008L].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.008L].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="10" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.008L].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.008L].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="10" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.008L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="10" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.008L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="10" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.008L" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.008L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.013R -->
                                         <TextBlock Grid.Row="11" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.013R].Name, StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.013R].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}" />
 
                                         <TextBlock Grid.Row="11" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.013R].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.013R].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="11" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.013R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="11" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.013R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="11" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013R" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.013R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.013L -->
                                         <TextBlock Grid.Row="12" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.013L].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        
+                                                Text="{Binding LotResults[0.013L].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}" />
+
                                         <TextBlock Grid.Row="12" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.013L].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.013L].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="12" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.013L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="12" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.013L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="12" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.013L" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.013L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
                                         <!--#region 0.024R -->
                                         <TextBlock Grid.Row="13" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.024R].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        
+                                                Text="{Binding LotResults[0.024R].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}" />
+
                                         <TextBlock Grid.Row="13" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.024R].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.024R].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="13" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.024R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="13" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.024R].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="13" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024R" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.024R].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        
                                         <!--#region 0.024L -->
                                         <TextBlock Grid.Row="14" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[0.024L].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.024L].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="14" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[0.024L].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[0.024L].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="14" Grid.Column="2" Click="MinusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[0.024L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <TextBox Grid.Row="14" Grid.Column="3" Padding="0 1"
+                                                Text="{Binding LotResults[0.024L].Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="14" Grid.Column="4" Click="PlusButton_Click" CommandParameter="0.024L" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[0.024L].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        
                                         <!--#region 開度差 -->
                                         <TextBlock Grid.Row="15" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding LotResults[bfDiff].Name, StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[bfDiff].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="15" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[bfDiff].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
-                                        <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Minus}"/>
+                                                Text="{Binding LotResults[bfDiff].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}" />
+                                        <Button Grid.Row="15" Grid.Column="2" Click="MinusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Minus}" />
                                         <TextBox Grid.Row="15" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[bfDiff].Count, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="15" Grid.Column="4" Click="PlusButton_Click" CommandParameter="bfDiff" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[bfDiff].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
-
 
                                         <!--#region 輪廓度 (平面度) -->
                                         <TextBlock Grid.Row="16" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding  LotResults[contour].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding  LotResults[contour].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="16" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[contour].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[contour].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="16" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBox Grid.Row="16" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contour].Count, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="16" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contour" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contour].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        
                                         <!--#region 0.005MAX 輪廓度 R -->
                                         <TextBlock Grid.Row="17" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding  LotResults[contourR].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding  LotResults[contourR].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="17" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[contourR].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[contourR].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="17" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBox Grid.Row="17" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contourR].Count, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="17" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourR" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourR].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        
                                         <!--#region 0.005MAX 輪廓度 L-->
                                         <TextBlock Grid.Row="18" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
-                                                   Text="{Binding  LotResults[contourL].Name, StringFormat={}{0} 不良}"
-                                                   Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding  LotResults[contourL].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="18" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[contourL].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[contourL].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="18" Grid.Column="2" Click="MinusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBox Grid.Row="18" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[contourL].Count, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="18" Grid.Column="4" Click="PlusButton_Click" CommandParameter="contourL" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        
-                                        <TextBlock Grid.Row="19" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}"/>
-                                        <Separator Grid.Row="20" Grid.ColumnSpan="100" Margin="8 4 0 4"/>
+                                        <TextBlock Grid.Row="19" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <Separator Grid.Row="20" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
-                                        
                                         <!--#region 平直度 -->
-                                        <TextBlock Grid.Row="21" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}" 
-                                                    Text="{Binding LotResults[flatness].Name, StringFormat={}{0} 不良}" 
-                                                   Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                        <TextBlock Grid.Row="21" Grid.Column="0" Foreground="{StaticResource ColorError}" Style="{StaticResource ItemText}"
+                                                Text="{Binding LotResults[flatness].Name, StringFormat={}{0} 不良}"
+                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBlock Grid.Row="21" Grid.Column="1" Foreground="{StaticResource ColorGrayTransparent}" Style="{StaticResource ItemNoteText}"
-                                                   Text="{Binding LotResults[flatness].Note, UpdateSourceTrigger=PropertyChanged}"
-                                                   Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Text="{Binding LotResults[flatness].Note, UpdateSourceTrigger=PropertyChanged}"
+                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="21" Grid.Column="2" Click="MinusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Minus}"
-                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <TextBox Grid.Row="21" Grid.Column="3" Padding="0 1" Text="{Binding LotResults[flatness].Count, Mode=OneWay}"
-                                                 Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <Button Grid.Row="21" Grid.Column="4" Click="PlusButton_Click" CommandParameter="flatness" Content="{materialDesign:PackIcon Kind=Plus}"
-                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}"/>
+                                                Visibility="{Binding LotResults[flatness].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
                                     </Grid>
-
                                     <!--#endregion-->
 
                                     <!--#region 3rd row -->
-                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
-                                            HorizontalAlignment="Center" VerticalContentAlignment="Center" Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
-                                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                                            Click="TriggerInspection_Click">
-                                            <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
+                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalContentAlignment="Center"
+                                            Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="TriggerInspection_Click">
+                                        <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, 
+                                        Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                                                <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}" Converter="{StaticResource NumberEqualConverter}" ConverterParameter="1"/>
-                                                <Binding Path="LotNumberChecked" Source="{StaticResource JawInspection}" UpdateSourceTrigger="PropertyChanged"/>
+                                                <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"
+                                                        Converter="{StaticResource NumberEqualConverter}" ConverterParameter="1" />
+                                                <Binding Path="LotNumberChecked" Source="{StaticResource JawInspection}" UpdateSourceTrigger="PropertyChanged" />
                                             </MultiBinding>
                                         </Button.IsEnabled>
 
-                                        <!--{Binding JawTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}}-->
-                                        
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="開始檢測" Margin="0 0 8 0"/>
-                                            <materialDesign:PackIcon Kind="FootPrint" VerticalAlignment="Center" Height="20"/>
+                                            <TextBlock Text="開始檢測" Margin="0 0 8 0" />
+                                            <materialDesign:PackIcon Kind="FootPrint" VerticalAlignment="Center" Height="20" />
                                         </StackPanel>
                                     </Button>
 
-
-                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2"
-                                            HorizontalAlignment="Right" VerticalAlignment="Center" Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
+                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30"
+                                            FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}"
-                                            IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}"
-                                            Foreground="{StaticResource ColorInfo}" BorderBrush="{StaticResource ColorInfo}"
-                                            Click="FinishLot_Click">
+                                            IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
+                                            BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="結批" Margin="0 0 8 0"/>
-                                            <materialDesign:PackIcon Kind="DatabaseImport" VerticalAlignment="Center" Height="20"/>
+                                            <TextBlock Text="結批" Margin="0 0 8 0" />
+                                            <materialDesign:PackIcon Kind="DatabaseImport" VerticalAlignment="Center" Height="20" />
                                         </StackPanel>
                                     </Button>
-
-                                    <!--<Button Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="1" Content="連線" Click="TcpConnect_Click"
-                                        VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
-
-                                    <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Content="斷線" Click="TcpDisconnect_Click"
-                                        VerticalContentAlignment="Center" Height="26" FontSize="16" materialDesign:ButtonAssist.CornerRadius="5"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"/>-->
-
                                     <!--#endregion-->
                                 </Grid>
                             </DockPanel>
@@ -830,26 +818,24 @@
                     <!--#endregion-->
 
                     <!--#region Camera 1 -->
-                    <GroupBox x:Name="ImageGroupBox1" Header="前部攝影機"  Grid.Row="0" Grid.RowSpan="100" Grid.Column="2"
-                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                              materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
-                              materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" 
-                              materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5"
-                              Background="Transparent">
+                    <GroupBox Header="前部攝影機" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="8 5"
+                            BorderThickness="1 1 0 0" FontSize="{StaticResource Header}" FontWeight="SemiBold" materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="{StaticResource ColorInfo}" materialDesign:ColorZoneAssist.Foreground="WhiteSmoke" Background="Transparent">
                         <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <!--Image 1-->
                             <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
-                                        <Setter Property="Height" Value="240"/>
+                                        <Setter Property="Height" Value="240" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                <Setter Property="Height" Value="300"/>
+                                            <DataTrigger
+                                                    Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}"
+                                                    Value="Maximized">
+                                                <Setter Property="Height" Value="300" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -857,15 +843,16 @@
                                 <!--//-->
                                 <Viewbox x:Name="Image1Viewbox">
                                     <Image x:Name="Image1" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                            Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                 </Viewbox>
                             </Border>
-                            <!--ScrollViewerHeight="{Binding ActualHeight, ElementName=ImageGroupBox1, Converter={StaticResource MathMinusConverter}, ConverterParameter=390}"-->
-                            <!--規格列表 1-->
+                            
+                            <!--量測結果列表 1-->
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
-                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
-                                          ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
-                                <!--<control:SpecListView.Style>
+                                    ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
+                                    ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
+                                <!--
+                                <control:SpecListView.Style>
                                         <Style TargetType="control:SpecListView">
                                             <Setter Property="ScrollViewerHeight" Value="120"/> 
                                             <Style.Triggers>
@@ -874,32 +861,32 @@
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                </control:SpecListView.Style>-->
+                                </control:SpecListView.Style>
+                                -->
                             </control:SpecListView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
 
                     <!--#region Camera 2 -->
-                    <GroupBox Header="下部攝影機" Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
-                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                              materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" 
-                              materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5" 
-                              Background="Transparent">
+                    <GroupBox Header="下部攝影機" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="8 5" BorderThickness="1 1 0 0"
+                            FontSize="{StaticResource Header}" FontWeight="SemiBold" materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="{StaticResource ColorIndigo}" materialDesign:ColorZoneAssist.Foreground="WhiteSmoke" Background="Transparent">
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="1*" />
                             </Grid.RowDefinitions>
                             <!--Image 2-->
                             <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
-                                        <Setter Property="Height" Value="240"/>
+                                        <Setter Property="Height" Value="240" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                <Setter Property="Height" Value="300"/>
+                                            <DataTrigger
+                                                    Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}"
+                                                    Value="Maximized">
+                                                <Setter Property="Height" Value="300" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -907,26 +894,16 @@
                                 <!--//-->
                                 <Viewbox x:Name="Image2Viewbox">
                                     <Image x:Name="Image2" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                            Source="{Binding ImageSource2, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                 </Viewbox>
                             </Border>
 
-                            <!--標示視窗尺寸用，待刪除
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}Camera 2, {0} x {1}">
-                                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>-->
-
-                            <!--height = 120 + 137 -->
-                            <!--規格列表 2-->
+                            <!-- 量測結果列表 2-->
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
-                                          ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
-                                          ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
-                                <!--<control:SpecListView.Style>
+                                    ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
+                                    ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
+                                <!--
+                                <control:SpecListView.Style>
                                     <Style TargetType="control:SpecListView">
                                         <Setter Property="ScrollViewerHeight" Value="120"/>
                                         <Style.Triggers>
@@ -935,33 +912,34 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </control:SpecListView.Style>-->
+                                </control:SpecListView.Style>
+                                -->
                             </control:SpecListView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
 
                     <!--#region Camera 3 -->
-                    <GroupBox Header="側面攝影機"  Grid.Row="1" Grid.Column="1" materialDesign:ColorZoneAssist.Mode="Custom" BorderThickness="1 1 0 0"
-                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                              materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" 
-                              materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
-                              FontSize="{StaticResource Header}" FontWeight="SemiBold" Padding="8 5"
-                              Background="Transparent">
+                    <GroupBox Header="側面攝影機" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="8 5" BorderThickness="1 1 0 0"
+                            FontSize="{StaticResource Header}" FontWeight="SemiBold" materialDesign:ColorZoneAssist.Mode="Custom"
+                            materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
+                            Background="Transparent">
                         <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="1*" />
                             </Grid.RowDefinitions>
-                            <!--Image 3-->    
+                            <!--Image 3-->
                             <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
-                                        <Setter Property="Height" Value="160"/>
+                                        <Setter Property="Height" Value="160" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                <Setter Property="Height" Value="200"/>
+                                            <DataTrigger
+                                                    Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}"
+                                                    Value="Maximized">
+                                                <Setter Property="Height" Value="200" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -969,24 +947,16 @@
                                 <!--//-->
                                 <Viewbox x:Name="Image3Viewbox">
                                     <Image x:Name="Image3" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                            Source="{Binding ImageSource3, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                 </Viewbox>
                             </Border>
 
-                            <!--標示視窗尺寸用，待刪除
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}Camera 3, {0} x {1}">
-                                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=GroupBox}" Mode="OneWay"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>-->
-
+                            <!--量測結果列表 3-->
                             <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
-                                                  ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
-                                                  ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
-                                <!--<control:SpecListView.Style>
+                                    ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
+                                    ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
+                                <!--
+                                <control:SpecListView.Style>
                                     <Style TargetType="control:SpecListView">
                                         <Setter Property="ScrollViewerHeight" Value="120"/>
                                         <Style.Triggers>
@@ -995,7 +965,8 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </control:SpecListView.Style>-->
+                                </control:SpecListView.Style>
+                                -->
                             </control:SpecListView>
                         </Grid>
                         <!--</StackPanel>-->

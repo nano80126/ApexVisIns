@@ -33,7 +33,7 @@ namespace MCAJawIns
         /// <summary>
         /// 警告音效
         /// </summary>
-        private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");
+        private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
         #endregion
 
         #region 演算法使用
@@ -52,6 +52,8 @@ namespace MCAJawIns
         private readonly Dictionary<string, Rect> JawROIs = new()
         {
             { "有料檢知", new Rect(185, 345, 710, 30) },
+            { "有料檢知2", new Rect(185, 345, 710, 30) },
+            { "有料檢知3", new Rect(185, 345, 710, 30) },
             { "粗定位左", new Rect(310, 260, 230, 300) },
             { "粗定位右", new Rect(540, 260, 230, 300) },
             { "治具定位", new Rect(460, 900, 160, 100) },
@@ -142,19 +144,19 @@ namespace MCAJawIns
 
                             using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                            if (grabResult != null && grabResult.GrabSucceeded)
+                            //if (grabResult != null && grabResult.GrabSucceeded)
+                            if (grabResult?.GrabSucceeded == true)
                             {
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
+                                // 第一張確認有工件
                                 if (i + j == 0)
                                 {
-                                    if (CheckPart(mat)) { partExist = true; }
+                                    //if (CheckPartCam1(mat)) { partExist = true; }
+                                    partExist = CheckPartCam1(mat);
                                 }
 
-                                if (partExist)
-                                {
-                                    task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results)));
-                                }
+                                if (partExist) { task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results))); }
                                 else { j += 999; }  // 跳出迴圈
 
                                 ImageSource1 = mat.ToImageSource();
@@ -199,13 +201,19 @@ namespace MCAJawIns
                             cam2.Camera.ExecuteSoftwareTrigger();
                             using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                            if (grabResult != null && grabResult.GrabSucceeded)
+                            //if (grabResult != null && grabResult.GrabSucceeded)
+                            if (grabResult?.GrabSucceeded== true)
                             {
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
+                                // 補上有料檢知 // 補上有料檢知 // 補上有料檢知 // 補上有料檢知 // 補上有料檢知 // 補上有料檢知
+                                if (i + j == 0 && partExist)
+                                {
+                                    partExist = CheckPartCam2(mat);
+                                }
+
                                 if (partExist) { task2.Add(Task.Run(() => JawInsSequenceCam2(mat, specList, cam2results))); }
                                 else { j += 999; }  // 跳出迴圈
-                                                    // JawInsSequenceCam2(mat, specList, cam2results);
 
                                 ImageSource2 = mat.ToImageSource();
                             }
@@ -242,44 +250,36 @@ namespace MCAJawIns
                         cam3.Camera.ExecuteSoftwareTrigger();
                         IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                        if (grabResult != null && grabResult.GrabSucceeded)
+                        //if (grabResult != null && grabResult.GrabSucceeded)
+                        if (grabResult?.GrabSucceeded == true)
                         {
                             Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
+                            if (j == 0 && partExist)
+                            {
+                                partExist = CheckPartCam3(mat);
+                            }
+
                             if (partExist) { task3.Add(Task.Run(() => JawInsSequenceCam3(mat, specList, cam3results))); }
                             else { j += 999; }
-                            // JawInsSequenceCam3(mat, specList, cam3results);
 
                             ImageSource3 = mat.ToImageSource();
-                            // count++;
                         }
-                        else
-                        {
-                            j--;
-                        }
+                        else { j--; }
                     }
                 });
 
                 #endregion
 
                 LightCtrls[1].SetAllChannelValue(0, 0);
+
                 if (!partExist)
                 {
                     SoundAlarm.Play();
                     throw new MCAJawException("未檢測到料件");
                 }
 
-                // 等待所有 計算完成
-                //try
-                //{
                 Task.WhenAll(task1.Concat(task2).Concat(task3)).Wait();
-                //}
-                //catch (Exception ex)
-                //{
-                //    Dispatcher.Invoke(() => MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, ex.Message));
-                //    return;
-                //}
-                //Task.WhenAll(task1.Concat(task2).Concat(task3)).Wait();
 
                 // DateTime stTime = DateTime.Now;
 
@@ -919,17 +919,17 @@ namespace MCAJawIns
 
         #region 前面相機
         /// <summary>
-        /// 確認是否有工件
+        /// 確認是否有工件 (Cam1)
         /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
-        public bool CheckPart(Mat src)
+        /// <param name="src">來源影像</param>
+        /// <returns>是否有料件</returns>
+        public bool CheckPartCam1(Mat src)
         {
             // ROI
             Rect roi = JawROIs["有料檢知"];
 
-            Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshHold);
-            return threshHold is > 30 and < 200;
+            Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            return threshold is > 30 and < 200;
         }
 
         /// <summary>
@@ -1586,10 +1586,24 @@ namespace MCAJawIns
             canny.Dispose();
 
             return limitL <= distance && distance <= limitU;
-        } 
+        }
         #endregion
 
         #region 下面相機
+        /// <summary>
+        /// 確認是否有工件 (Cam2)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <returns>是否有料件</returns>
+        public bool CheckPartCam2(Mat src)
+        {
+            // ROI
+            Rect roi = JawROIs["有料檢知2"];
+
+            Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            return threshold is > 30 and < 200;
+        }
+
         /// <summary>
         /// Camera 2 取得治具基準線
         /// </summary>
@@ -1723,6 +1737,20 @@ namespace MCAJawIns
         #endregion
 
         #region 側面相機
+        /// <summary>
+        /// 確認是否有工件 (Cam3)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <returns>是否有料件</returns>
+        public bool CheckPartCam3(Mat src)
+        {
+            // ROI 
+            Rect roi = JawROIs["有料檢知3"];
+
+            Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            return threshold is > 30 and < 200;
+        }
+
         /// <summary>
         /// Camera 3 取得 POM 基準
         /// </summary>
