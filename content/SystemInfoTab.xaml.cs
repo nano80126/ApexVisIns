@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using MaterialDesignThemes.Wpf;
 
 
 namespace MCAJawIns.content
@@ -25,7 +26,7 @@ namespace MCAJawIns.content
     public partial class SystemInfoTab : StackPanel, INotifyPropertyChanged
     {
         #region Private
-        private bool _x64;
+
 
         #endregion
 
@@ -34,6 +35,8 @@ namespace MCAJawIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
+
+        public SystemInfo SystemInfo { get; set; } = new SystemInfo();
         #endregion
 
         public SystemInfoTab()
@@ -41,14 +44,6 @@ namespace MCAJawIns.content
             InitializeComponent();
         }
 
-        #region Property Changed Event
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
@@ -69,6 +64,8 @@ namespace MCAJawIns.content
             Debug.WriteLine($"x64 {Environment.MachineName}");
             Debug.WriteLine($".NET {Environment.Version}");
             Debug.WriteLine($"-------------------------------------------------");
+
+            GetSystemInfomation();
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
@@ -76,5 +73,26 @@ namespace MCAJawIns.content
 
 
         }
+
+        private void GetSystemInfomation()
+        {
+            SystemInfo.OS = $"{Environment.OSVersion.Version}";
+            SystemInfo.SetPlateform(Environment.Is64BitProcess);
+            // SystemInfo. = Environment.Is64BitProcess;
+            SystemInfo.PID = Environment.ProcessId;
+            SystemInfo.DotNetVer = $"{Environment.Version}";
+
+            //SystemInfo.SetMongoVersion($"{MainWindow.MongoAccess.GetVersion()}");
+
+            SystemInfo.PropertyChange();
+        }
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

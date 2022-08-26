@@ -4,7 +4,6 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
                     xmlns:cvt="clr-namespace:MCAJawIns.Converter">
     <ResourceDictionary.MergedDictionaries>
-
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type TextBlock}" x:Key="HeaderStyle" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
@@ -34,7 +33,7 @@
 
                     <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
                             materialDesign:ShadowAssist.ShadowDepth="{TemplateBinding materialDesign:ShadowAssist.ShadowDepth}" Foreground="{TemplateBinding Foreground}"
-                            Background="{TemplateBinding Background}">
+                            Background="{TemplateBinding Background}" UniformCornerRadius="{TemplateBinding UniformCornerRadius}">
                         <DockPanel Background="Transparent" Margin="2 0" x:Name="Panel">
                             <DockPanel x:Name="Header" DockPanel.Dock="Top" Focusable="True">
                                 <!--<materialDesign:PackIcon Kind="{Binding IconKind, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Width="30" Height="26"/>-->
@@ -46,13 +45,11 @@
                                 <TextBlock Text="{x:Null}" />
                             </DockPanel>
                             <!--//-->
-                            <!--AdornerDecorator CacheMode="">
-                            </AdornerDecorator>-->
+                            <!--AdornerDecorator CacheMode=""></AdornerDecorator>-->
                             <Separator DockPanel.Dock="Top" Margin="0 8" />
                             <!--//-->
                             <!--<ContentControl DockPanel.Dock="Top" Content="{Binding Content}" Background="Red"/>-->
-                            <!--<AdornerDecorator DockPanel.Dock="Top">
-                            </AdornerDecorator>-->
+                            <!--<AdornerDecorator DockPanel.Dock="Top"></AdornerDecorator>-->
                             <AdornerDecorator DockPanel.Dock="Top">
                                 <ContentPresenter Margin="{TemplateBinding BodyPadding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentStringFormat="{TemplateBinding ContentStringFormat}" />

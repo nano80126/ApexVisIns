@@ -198,39 +198,80 @@ namespace MCAJawIns
     }
 
 
-    public class SystemInfo : INotifyPropertyChanged
+    public class SystemInfo : INotifyPropertyChanged, IDisposable
     {
         #region Private
+        private System.Timers.Timer _timer;
+        private bool _disposed;
+
         private bool _x64;
+        private bool _auto;
+        private string _mongoVer = null;
         #endregion
 
-
-        // First
+        // // First Column
         public string OS { get; set; }
-        public int PID { get; set; }
         public string Plateform => _x64 ? "64位元" : "32位元";
+        public int PID { get; set; }
         public string DotNetVer { get; set; }
-        public string MongoVer { get; set; }
+        public string MongoVer => _mongoVer ?? "未連線";
         public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
 
-        // Second
+        // // Second Column
         public string SoftVer { get; set; } = "1.0.0";
-        public bool AutoStatus { get; set; } = false;
+        public string Mode => _auto ? "自動模式" : "編輯模式";
         public string AutoTime { get; set; }
         public string TotalAutoTime { get; set; }
         public string TotalParts { get; set; }
 
+        /// <summary>
+        /// 設定 32/64 位元
+        /// </summary>
+        /// <param name="is64bit">是否為 64 bits</param>
+        public void SetPlateform(bool is64bit)
+        {
+            _x64 = is64bit;
+        }
+        /// <summary>
+        /// 設定 自動/編輯 模式
+        /// </summary>
+        public void SetMode(bool auto)
+        {
+            _auto = auto;
+        }
+
+        /// <summary>
+        /// 設定 Mongo 版本
+        /// </summary>
+        /// <param name="version">版本</param>
+        public void SetMongoVersion(string version = null)
+        {
+            _mongoVer = version;
+        }
 
         public void EnableTimer()
         {
+            if (_timer == null)
+            {
+                _timer = new System.Timers.Timer()
+                {
 
+
+                };
+            }
+            else if (!_timer.Enabled)
+            {
+
+            }
         }
 
         public void DisableTimer()
         {
-
+            if (_timer?.Enabled == true)
+            {
+                _timer.Stop();
+            }
         }
-
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
@@ -240,10 +281,33 @@ namespace MCAJawIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void PropertyChange(string propertyName)
+        public void PropertyChange(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
+        #endregion
+
+        #region Dispose
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _timer.Stop();
+                _timer.Dispose();
+            }
+            _disposed = true;
+        }
         #endregion
     }
 

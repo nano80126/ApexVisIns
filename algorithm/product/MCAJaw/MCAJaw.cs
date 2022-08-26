@@ -202,7 +202,7 @@ namespace MCAJawIns
                             using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
                             //if (grabResult != null && grabResult.GrabSucceeded)
-                            if (grabResult?.GrabSucceeded== true)
+                            if (grabResult?.GrabSucceeded == true)
                             {
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
@@ -1230,7 +1230,7 @@ namespace MCAJawIns
             //{
             //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
             //}
-            
+
             Debug.WriteLine($"center: {center} {min} {max} {roiPos}");
 
             #region 尋找轉角點
@@ -2404,7 +2404,7 @@ namespace MCAJawIns
             Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 
             return false;
-        } 
+        }
         #endregion
     }
 }

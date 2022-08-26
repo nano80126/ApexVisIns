@@ -1,15 +1,11 @@
-﻿using Basler.Pylon;
-using MCAJawIns.Product;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
@@ -20,7 +16,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Media;
+using Basler.Pylon;
+using MCAJawIns.Product;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
 namespace MCAJawIns.content
 {
@@ -181,11 +181,12 @@ namespace MCAJawIns.content
                     {
                         InitHardware();
                     }
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
                     break;
                 case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    // InitMongoDB(_cancellationTokenSource.Token).Wait();
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                     break;
                 default:
                     // 保留
@@ -632,8 +633,9 @@ namespace MCAJawIns.content
                         // 建立權限集合
                         MongoAccess.CreateCollection("Auth");
                         // 取得 Mongo 版本
-                        MongoAccess.GetVersion();
-                        // Debug.WriteLine($"version {MongoAccess.GetVersion()}");
+                        string version = MongoAccess.GetVersion();
+                        // 設定 Mongo 版本
+                        MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
 #if false
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {
@@ -653,7 +655,6 @@ namespace MCAJawIns.content
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
-
 
 #if  false
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);

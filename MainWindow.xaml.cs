@@ -169,6 +169,10 @@ namespace MCAJawIns
         //private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }
         private EngineerTab EngineerTab { get; set; }
+        /// <summary>
+        /// 系統資訊頁面 (設為 public)
+        /// </summary>
+        public SystemInfoTab SystemInfoTab { get; set; }
         #endregion
 
         public MainWindow()
@@ -309,7 +313,7 @@ namespace MCAJawIns
                     case 1:
                         CameraTab = new CameraTab()
                         {
-                            Name = "DeviceTab",
+                            Name = nameof(CameraTab),
                             Focusable = true,
                             FocusVisualStyle = null
                         };
@@ -321,7 +325,7 @@ namespace MCAJawIns
                     case 3:
                         DatabaseTab = new DatabaseTab()
                         {
-                            Name = "DatabaseTab",
+                            Name = nameof(DatabaseTab),
                             Focusable = true,
                             FocusVisualStyle = null
                         };
@@ -332,12 +336,21 @@ namespace MCAJawIns
                         {
                             EngineerTab = new EngineerTab()
                             {
-                                Name = "EngineerTab",
+                                Name = nameof(EngineerTab),
                                 Focusable = true,
                                 FocusVisualStyle = null
                             };
                             tabItem.Content = EngineerTab;
                         }
+                        break;
+                    case 5:
+                        SystemInfoTab = new SystemInfoTab()
+                        {
+                            Name = nameof(SystemInfoTab),
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = SystemInfoTab;
                         break;
                     default:
                         break;
