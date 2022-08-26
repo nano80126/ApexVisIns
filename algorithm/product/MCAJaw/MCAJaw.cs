@@ -1600,7 +1600,9 @@ namespace MCAJawIns
             // ROI
             Rect roi = JawROIs["有料檢知2"];
 
+            Cv2.Rectangle(src, roi, Scalar.Black, 1);
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            Debug.WriteLine($"threhold: {threshold}");
             return threshold is > 30 and < 200;
         }
 
@@ -1747,7 +1749,9 @@ namespace MCAJawIns
             // ROI 
             Rect roi = JawROIs["有料檢知3"];
 
+            Cv2.Rectangle(src, roi, Scalar.Black, 1);
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            Debug.WriteLine($"threhold: {threshold}");
             return threshold is > 30 and < 200;
         }
 

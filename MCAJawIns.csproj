@@ -84,7 +84,6 @@
     <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.15.0" />
-    <PackageReference Include="netDXF" Version="2.2.0.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.5.3.20211207" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.5.3.20211207" />
     <PackageReference Include="System.IO.Ports" Version="6.0.0" />

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,15 +10,6 @@ using System.Windows.Input;
 using Basler.Pylon;
 using Microsoft.Win32;
 using OpenCvSharp;
-using netDxf;
-using netDxf.Blocks;
-using netDxf.Collections;
-using netDxf.Entities;
-using netDxf.Header;
-using netDxf.Objects;
-using netDxf.Units;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MCAJawIns.content
 {
@@ -159,7 +152,7 @@ namespace MCAJawIns.content
 
         private void ReadDXF_Click(object sneder, RoutedEventArgs e)
         {
-            ReadDXF();
+            //ReadDXF();
         }
 
         private void ReadImage_Click(object sender, RoutedEventArgs e)
@@ -664,13 +657,16 @@ namespace MCAJawIns.content
                         switch (sn)
                         {
                             case "24214356":    // 前相機
-                                MainWindow.JawInsSequenceCam1(mat);
+                                MainWindow.CheckPartCam1(mat);
+                                //MainWindow.JawInsSequenceCam1(mat);
                                 break;
                             case "24214384":    // 下相機
-                                MainWindow.JawInsSequenceCam2(mat);
+                                MainWindow.CheckPartCam2(mat);
+                                //MainWindow.JawInsSequenceCam2(mat);
                                 break;
                             case "24115540":    // 側相機
-                                MainWindow.JawInsSequenceCam3(mat);
+                                MainWindow.CheckPartCam3(mat);
+                                //MainWindow.JawInsSequenceCam3(mat);
                                 break;
                             default:
                                 break;
@@ -899,6 +895,7 @@ namespace MCAJawIns.content
         #endregion
 
         #region DXF 處理
+#if false
         private void ReadDXF()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -918,7 +915,8 @@ namespace MCAJawIns.content
                 //this.Import
                 DxfDocument dxf = DxfDocument.Load(filePath);
             }
-        }
+        } 
+#endif
         #endregion
     }
 }
