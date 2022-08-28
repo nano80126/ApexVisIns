@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -207,8 +208,18 @@ namespace MCAJawIns
         private bool _x64;
         private bool _auto;
         private string _mongoVer = null;
+        private DateTime _startTime;
+        /// <summary>
+        /// 總自動模式時間，每次啟動自動模式時從資料庫讀取
+        /// </summary>
+        private int _totalAutoTime;
+        /// <summary>
+        /// 閒置時間計時器
+        /// </summary>
+        private Stopwatch _stopwatch;
         #endregion
 
+        #region Properties
         // // First Column
         public string OS { get; set; }
         public string Plateform => _x64 ? "64位元" : "32位元";
@@ -220,9 +231,37 @@ namespace MCAJawIns
         // // Second Column
         public string SoftVer { get; set; } = "1.0.0";
         public string Mode => _auto ? "自動模式" : "編輯模式";
-        public string AutoTime { get; set; }
-        public string TotalAutoTime { get; set; }
+        /// <summary>
+        /// 自動運行時間
+        /// </summary>
+        public string AutoTime
+        {
+            get
+            {
+                if (_auto)
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds);
+                    return $"{timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+                }
+                else
+                {
+                    return "00:00:00";
+                }
+            }
+        }
+        /// <summary>
+        /// 自動運行時間 (累計)
+        /// </summary>
+        public string TotalAutoTime => $"{_totalAutoTime + (DateTime.Now - _startTime).TotalSeconds:HH:mm:ss}";
+        /// <summary>
+        /// 總計檢驗數量
+        /// </summary>
         public string TotalParts { get; set; }
+        /// <summary>
+        /// 時間時候 (seconds)
+        /// </summary>
+        public int IdleTime => (int)(_stopwatch.ElapsedMilliseconds / 1000);
+        #endregion
 
         /// <summary>
         /// 設定 32/64 位元
@@ -239,7 +278,6 @@ namespace MCAJawIns
         {
             _auto = auto;
         }
-
         /// <summary>
         /// 設定 Mongo 版本
         /// </summary>
@@ -248,30 +286,95 @@ namespace MCAJawIns
         {
             _mongoVer = version;
         }
+        /// <summary>
+        /// 設定啟動時間
+        /// </summary>
+        /// <param name="dateTime">啟動時間</param>
+        public void SetStartTime()
+        {
+            _startTime = DateTime.Now;
+        }
 
+        /// <summary>
+        /// 開始計算閒置時間
+        /// </summary>
+        public void StartIdleWatch()
+        {
+            if (_stopwatch == null)
+            {
+                _stopwatch = new Stopwatch();
+                _stopwatch.Start();
+            }
+            else if (!_stopwatch.IsRunning)
+            {
+                _stopwatch.Start();
+            }
+        }
+        
+        /// <summary>
+        /// 停止計算閒置時間
+        /// </summary>
+        public void StopIdleWatch()
+        {
+            if (_stopwatch.IsRunning)
+            {
+                _stopwatch.Stop();
+            }
+        }
+
+        #region 定時執行 timer
+        /// <summary>
+        /// 啟動 Timer (刷新UI用)
+        /// </summary>
         public void EnableTimer()
         {
             if (_timer == null)
             {
                 _timer = new System.Timers.Timer()
                 {
-
-
+                    Interval = 1000,
+                    AutoReset = true,
                 };
+
+                _timer.Elapsed += Timer_Elapsed;
+                _timer.Start();
             }
             else if (!_timer.Enabled)
             {
-
+                _timer.Start();
             }
         }
 
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            OnPropertyChanged(nameof(SystemTime));
+            if (_auto)
+            {
+                OnPropertyChanged(nameof(AutoTime));
+                OnPropertyChanged(nameof(TotalAutoTime));
+            }
+
+
+            if (_stopwatch != null)
+            {
+                Debug.WriteLine($"{_stopwatch.IsRunning}");
+
+                Debug.WriteLine($"{_stopwatch.Elapsed} {_stopwatch.ElapsedMilliseconds} {_stopwatch.ElapsedTicks}");
+                Debug.WriteLine($"{_stopwatch.Elapsed.TotalSeconds:00}");
+            }
+        }
+
+        /// <summary>
+        /// 停止 Timer (刷新UI用)
+        /// </summary>
         public void DisableTimer()
         {
             if (_timer?.Enabled == true)
             {
                 _timer.Stop();
             }
-        }
+        } 
+        #endregion
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
