@@ -1,5 +1,5 @@
-﻿using MCAJawIns.Driver;
-using System;
+﻿using System;
+using MCAJawIns.Driver;
 
 namespace MCAJawIns
 {
@@ -64,8 +64,8 @@ namespace MCAJawIns
 
                 if (data[bytes - 1] != Value)
                 {
+                    OnIOChanged(data[bytes - 1], Value);
                     Value = data[bytes - 1];
-                    OnIOChanged(Value);
                 }
             }
             else
@@ -80,21 +80,87 @@ namespace MCAJawIns
 
         public class IOChangedEventArgs : EventArgs
         {
-            public bool DI0 => (Value & 0b01) == 0b01;
-            public bool DI1 => ((Value >> 1) & 0b01) == 0b01;
-            public bool DI2 => ((Value >> 2) & 0b01) == 0b01;
-            public bool DI3 => ((Value >> 3) & 0b01) == 0b01;
+           private readonly byte _changedDI;
 
-            public byte Value { get; }
-            public IOChangedEventArgs(byte value)
+#if false
+            #region MyRegion
+            /// <summary>
+            /// DI0 狀態
+            /// </summary>
+            public bool DI0 => (NewValue & 0b01) == 0b01;
+            /// <summary>
+            /// DI 狀態變更
+            /// </summary>
+            public bool DI0Changed => (_changedDI & 0b01) == 0b01;
+            /// <summary>
+            /// DI1 狀態
+            /// </summary>
+            public bool DI1 => ((NewValue >> 1) & 0b01) == 0b01;
+            public bool DI1Changed => ((_changedDI >> 1) & 0b01) == 0b01;
+            /// <summary>
+            /// DI2 狀態
+            /// </summary>
+            public bool DI2 => ((NewValue >> 2) & 0b01) == 0b01;
+            public bool DI2Changed => ((_changedDI >> 2) & 0b01) == 0b01;
+            /// <summary>
+            /// DI3 狀態
+            /// </summary>
+            public bool DI3 => ((NewValue >> 3) & 0b01) == 0b01;
+            public bool DI3Changed => ((_changedDI >> 3) & 0b01) == 0b01;
+            #endregion  
+#endif
+
+            #region Raise & Fall
+            /// <summary>
+            /// DI0 上升
+            /// </summary>
+            public bool DI0Raising => (NewValue & 0b01) == 0b01 && (_changedDI & 0b01) == 0b01;
+            /// <summary>
+            /// DI0 下降
+            /// </summary>
+            public bool DI0Falling => (NewValue & 0b01) == 0b00 && (_changedDI & 0b01) == 0b01;
+            /// <summary>
+            /// DI1 上升
+            /// </summary>
+            public bool DI1Raising => ((NewValue >> 1) & 0b01) == 0b01 && ((_changedDI >> 1) & 0b01) == 0b01;
+            /// <summary>
+            /// DI1 下降
+            /// </summary>
+            public bool DI1Falling => ((NewValue >> 1) & 0b01) == 0b00 && ((_changedDI >> 1) & 0b01) == 0b01;
+            /// <summary>
+            /// DI2 上升
+            /// </summary>
+            public bool DI2Raising => ((NewValue >> 2) & 0b01) == 0b01 && ((_changedDI >> 2) & 0b01) == 0b01;
+            /// <summary>
+            /// DI2 下降
+            /// </summary>
+            public bool DI2Falling => ((NewValue >> 2) & 0b01) == 0b00 && ((_changedDI >> 2) & 0b01) == 0b01;
+            /// <summary>
+            /// DI3 上升
+            /// </summary>
+            public bool DI3Raising => ((NewValue >> 3) & 0b01) == 0b01 && ((_changedDI >> 3) & 0b01) == 0b01;
+            /// <summary>
+            /// DI3 下降
+            /// </summary>
+            public bool DI3Falling => ((NewValue >> 3) & 0b01) == 0b00 && ((_changedDI >> 3) & 0b01) == 0b01;
+            #endregion
+
+
+            public byte NewValue { get; }
+
+            public byte OldValue { get; }
+
+            public IOChangedEventArgs(byte newValue, byte oldValue)
             {
-                Value = value;
+                _changedDI = (byte)(newValue ^ oldValue);
+                NewValue = newValue;
+                OldValue = oldValue;
             }
         }
 
-        protected void OnIOChanged(byte value)
+        protected void OnIOChanged(byte nValue, byte oValue)
         {
-            IOChanged?.Invoke(this, new IOChangedEventArgs(value));
+            IOChanged?.Invoke(this, new IOChangedEventArgs(nValue, oValue));
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -247,6 +248,20 @@ namespace MCAJawIns
             // SpinWait.SpinUntil(() => false, 1000);
 
             // CreateIOWindow();
+
+            ObservableCollection<int> observablaCollection = new ObservableCollection<int>();
+            for (int i = 0; i < 10; i++)
+            {
+                observablaCollection.Add(i);
+            }
+
+
+            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
+            observablaCollection.Move(0, observablaCollection.Count() - 1);
+            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
+
+            observablaCollection.LastIndex();
+
 
             // AppTabControl.Items[]
 
@@ -570,6 +585,7 @@ namespace MCAJawIns
         #endregion
     }
 
+#if false // 待刪除
     /// <summary>
     /// ImageSource 轉換器
     /// </summary>
@@ -657,6 +673,9 @@ namespace MCAJawIns
         }
         #endregion
     }
+
+#endif
+
 
     public static class ProgressBarExtension
     {

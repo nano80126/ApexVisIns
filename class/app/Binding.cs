@@ -254,13 +254,17 @@ namespace MCAJawIns
         /// </summary>
         public string TotalAutoTime => $"{_totalAutoTime + (DateTime.Now - _startTime).TotalSeconds:HH:mm:ss}";
         /// <summary>
+        /// 自動運行時間 (小時)，(TotalAutoTime 超過 9999時，由這邊紀錄)
+        /// </summary>
+        public int TotalHours => 0;
+        /// <summary>
         /// 總計檢驗數量
         /// </summary>
         public string TotalParts { get; set; }
         /// <summary>
-        /// 時間時候 (seconds)
+        /// 閒置時間(seconds)
         /// </summary>
-        public int IdleTime => (int)(_stopwatch.ElapsedMilliseconds / 1000);
+        public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000) : 0;
         #endregion
 
         /// <summary>
@@ -353,7 +357,7 @@ namespace MCAJawIns
                 OnPropertyChanged(nameof(AutoTime));
                 OnPropertyChanged(nameof(TotalAutoTime));
             }
-
+            OnPropertyChanged(nameof(IdleTime));
 
             if (_stopwatch != null)
             {

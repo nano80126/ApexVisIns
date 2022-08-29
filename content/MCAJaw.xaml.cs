@@ -187,11 +187,12 @@ namespace MCAJawIns.content
                         InitHardware();
                     }
                     MainWindow.SystemInfoTab.SystemInfo.SetMode(true);  // 設定為自動模式
-                    //MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
+                    // MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
                     break;
                 case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
+                    _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token));
                     MainWindow.SystemInfoTab.SystemInfo.SetMode(false); // 設定為編輯模式
                     // MainWindow.SystemInfoTab.SystemInfo.SetStartTime();
                     break;
@@ -592,13 +593,11 @@ namespace MCAJawIns.content
 
         private void ModbusTCPIO_IOChanged(object sender, WISE4050.IOChangedEventArgs e)
         {
-
-            if (e.DI0)
+            if (e.DI0Raising)
             {
-                // 從閒置狀態恢復
-
+                
             }
-            else if (!e.DI0)
+            else if (e.DI0Falling)
             {
                 // 觸發檢驗
                 // 要做防彈跳
@@ -611,7 +610,9 @@ namespace MCAJawIns.content
                     }
                 });
             }
-            //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
+            //Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
+            Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
+            Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
         }
 
         /// <summary>
