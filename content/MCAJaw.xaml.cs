@@ -1,15 +1,11 @@
-﻿using Basler.Pylon;
-using MCAJawIns.Product;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
@@ -20,7 +16,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Media;
+using Basler.Pylon;
+using MCAJawIns.Product;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
 namespace MCAJawIns.content
 {
@@ -53,6 +53,11 @@ namespace MCAJawIns.content
         /// Main & Spec Setting
         /// </summary>
         private int _jawTab;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private System.Timers.Timer _idleTimer;
 
         /// <summary>
         /// NG 音效
@@ -181,22 +186,24 @@ namespace MCAJawIns.content
                     {
                         InitHardware();
                     }
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(true);  // 設定為自動模式
+                    // MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
                     break;
                 case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    // InitMongoDB(_cancellationTokenSource.Token).Wait();
+                    _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token));
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(false); // 設定為編輯模式
+                    // MainWindow.SystemInfoTab.SystemInfo.SetStartTime();
                     break;
                 default:
                     // 保留
                     break;
             }
 
-
-            
             #region 初始化
-
-
+            MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
+            SetIdleTimer(180);
             #endregion
 
             if (!loaded)
@@ -238,7 +245,7 @@ namespace MCAJawIns.content
                         if (token.IsCancellationRequested)
                         {
                             //StatusLabel.Text = "閒置";
-                            Status = INS_STATUS.IDLE;
+                            Status = INS_STATUS.UNKNOWN;
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -259,7 +266,7 @@ namespace MCAJawIns.content
                         if (token.IsCancellationRequested)
                         {
                             //StatusLabel.Text = "閒置";
-                            Status = INS_STATUS.IDLE;
+                            Status = INS_STATUS.UNKNOWN;
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -586,7 +593,11 @@ namespace MCAJawIns.content
 
         private void ModbusTCPIO_IOChanged(object sender, WISE4050.IOChangedEventArgs e)
         {
-            if (e.DI0 == false)
+            if (e.DI0Raising)
+            {
+                
+            }
+            else if (e.DI0Falling)
             {
                 // 觸發檢驗
                 // 要做防彈跳
@@ -599,7 +610,9 @@ namespace MCAJawIns.content
                     }
                 });
             }
-            //Debug.WriteLine($"{e.Value} {e.DI0} {e.DI1} {e.DI2} {e.DI3}");
+            //Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
+            Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
+            Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
         }
 
         /// <summary>
@@ -632,8 +645,9 @@ namespace MCAJawIns.content
                         // 建立權限集合
                         MongoAccess.CreateCollection("Auth");
                         // 取得 Mongo 版本
-                        MongoAccess.GetVersion();
-                        // Debug.WriteLine($"version {MongoAccess.GetVersion()}");
+                        string version = MongoAccess.GetVersion();
+                        // 設定 Mongo 版本
+                        MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
 #if false
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {
@@ -653,7 +667,6 @@ namespace MCAJawIns.content
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
-
 
 #if  false
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
@@ -847,7 +860,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-        #region 觸發檢測
+        #region 觸發檢測、結批、重置 Timer
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
 #if false
@@ -945,35 +958,41 @@ namespace MCAJawIns.content
                 // 標記這批已插入資料庫
                 JawInspection.SetLotInserted(true);
             }
+        }
 
-            //TestDic testDic = new TestDic
-            //{
-            //    _id = new MongoDB.Bson.ObjectId(),
-            //    Value = {
-            //        { "123", 456 },
-            //        { "456", 456 },
-            //        { "789", 789 },
-            //    }
-            //};
+        /// <summary>
+        /// 設定 閒置監聽 
+        /// </summary>
+        /// <param name="seconds">閒置幾秒後切換狀態</param>
+        private void SetIdleTimer(int seconds)
+        {
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            if (_idleTimer == null)
+            {
+                _idleTimer = new System.Timers.Timer()
+                {
+                    Interval = seconds * 1000,  // 1分鐘
+                    AutoReset = false,
+                };
 
-            //MongoAccess.InsertOne("Lots", testDic);
+                _idleTimer.Elapsed += (sender, e) =>
+                {
+                    //
+                    Status = INS_STATUS.IDLE;
+                    // 開始計時 Idle
+                    MainWindow.SystemInfoTab.SystemInfo.StartIdleWatch();
+                };
+                _idleTimer.Start();
+            }
+        }
 
-            //MongoAccess.FindAll("Lots", Builders<TestDic>.Filter.Empty, out List<TestDic> data);
-
-            //foreach (var item in data)
-            //{
-            //    Debug.WriteLine($"{string.Join(",", item.Value.Keys)}");
-
-            //    Debug.WriteLine($"{item.Value.Keys} {item.Value.Count}");
-            //}
-
-            //Debug.WriteLine($"{JawInspection.LotResults["good"].Name} {JawInspection.LotResults["good"].Note} {JawInspection.LotResults["good"].Count}");
-            //JawInspection.LotResults["good"] = new JawInspection.ResultElement("123", "456", 10);
-            //Debug.WriteLine($"{JawInspection.LotResults["good"].Name} {JawInspection.LotResults["good"].Note} {JawInspection.LotResults["good"].Count}" );
-
-            //// string json = JsonSerializer.Serialize(JawInspection, new JsonSerializerOptions { WriteIndented = true });
-            //// Debug.WriteLine(json);
-            //// _ = 
+        private void ResetIdleTimer()
+        {
+            // 停止計時 Idle
+            MainWindow.SystemInfoTab.SystemInfo.StopIdleWatch();
+            // Reset Idle Timer
+            _idleTimer.Stop();
+            _idleTimer.Start();
         }
         #endregion
 
@@ -984,21 +1003,6 @@ namespace MCAJawIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-
-#if false
-        [Obsolete("測試用")]
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            JawSpecGroup.Collection1.Add(new JawSpec("測試1", 0, 0, 0.007, 0.005));
-            JawSpecGroup.Collection2.Add(new JawSpec("測試2", 0, 0, 0.007, 0.008));
-            JawSpecGroup.Collection3.Add(new JawSpec("測試3", 0, 0, 0.007, 0.005));
-
-            SoundNG.Play();
-            //SoundAlarm.Play();
-
-            //soundAlarm.Play();
-        }
-#endif
     }
 
     #region MCA Jaw Config Definition
@@ -1029,7 +1033,7 @@ namespace MCAJawIns.content
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is MCAJaw.INS_STATUS))
+            if (value is not MCAJaw.INS_STATUS)
             {
                 throw new ArgumentException("Value is invalid");
             }

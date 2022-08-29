@@ -19,28 +19,35 @@ namespace MCAJawIns.Control
         //     InitializeComponent();
         // }
 
-
         static CustomCard()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomCard), new FrameworkPropertyMetadata(typeof(CustomCard)));
         }
 
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty TitleProperty = 
+            DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty SubTitleProperty = DependencyProperty.RegisterAttached(nameof(SubTitle), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty SubTitleProperty = 
+            DependencyProperty.RegisterAttached(nameof(SubTitle), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty IconKindProperty = DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(CustomCard), new PropertyMetadata(PackIconKind.Abc));
+        public static readonly DependencyProperty IconKindProperty = 
+            DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(CustomCard), new PropertyMetadata(PackIconKind.Abc));
 
-        //private static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content), typeof(DependencyObject), typeof(CustomCard), new PropertyMetadata(null));
+        public static readonly DependencyProperty UniformCornerRadiusProperty = 
+            DependencyProperty.RegisterAttached(nameof(UniformCornerRadius), typeof(double), typeof(CustomCard), new PropertyMetadata(2.0));
+
+        // private static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content),
+        // typeof(DependencyObject), typeof(CustomCard), new PropertyMetadata(null));
 
         public static readonly DependencyProperty BodyPaddingProperty =
-            DependencyProperty.RegisterAttached(nameof(BodyPadding), typeof(Thickness), typeof(CustomCard), 
+            DependencyProperty.RegisterAttached(nameof(BodyPadding), typeof(Thickness), typeof(CustomCard),
                 new FrameworkPropertyMetadata(new Thickness(0), FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-        public static readonly DependencyProperty FooterProperty = DependencyProperty.Register(nameof(Footer), typeof(object), typeof(CustomCard), new PropertyMetadata(null));
+        public static readonly DependencyProperty FooterProperty = 
+            DependencyProperty.Register(nameof(Footer), typeof(object), typeof(CustomCard), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty FooterTemplateProperty = DependencyProperty.Register(nameof(FooterTemplate), typeof(DataTemplate), typeof(CustomCard), new PropertyMetadata(null));
-
+        public static readonly DependencyProperty FooterTemplateProperty = 
+            DependencyProperty.Register(nameof(FooterTemplate), typeof(DataTemplate), typeof(CustomCard), new PropertyMetadata(null));
 
         /// <summary>
         /// Card Header Text
@@ -63,6 +70,7 @@ namespace MCAJawIns.Control
         /// <summary>
         /// Card Headr ICON
         /// </summary>
+
         public PackIconKind IconKind
         {
             get => (PackIconKind)GetValue(IconKindProperty);
@@ -70,13 +78,13 @@ namespace MCAJawIns.Control
         }
 
         /// <summary>
-        /// Card Content
+        /// Uniform Corner (因繼承 Card, 須重啟或變更其他 Property 才會觸發變更)
         /// </summary>
-        //public new DependencyObject Content
-        //{
-        //    get => (DependencyObject)GetValue(ContentProperty);
-        //    set => SetValue(ContentProperty, value);
-        //}
+        public double UniformCornerRadius
+        {
+            get => (double)GetValue(UniformCornerRadiusProperty);
+            set => SetValue(UniformCornerRadiusProperty, value);
+        }
 
         public Thickness BodyPadding
         {

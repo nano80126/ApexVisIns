@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -169,6 +170,10 @@ namespace MCAJawIns
         //private MotionTab MotionTab { get; set; }
         private DatabaseTab DatabaseTab { get; set; }
         private EngineerTab EngineerTab { get; set; }
+        /// <summary>
+        /// 系統資訊頁面 (設為 public)
+        /// </summary>
+        public SystemInfoTab SystemInfoTab { get; set; }
         #endregion
 
         public MainWindow()
@@ -244,6 +249,20 @@ namespace MCAJawIns
 
             // CreateIOWindow();
 
+            ObservableCollection<int> observablaCollection = new ObservableCollection<int>();
+            for (int i = 0; i < 10; i++)
+            {
+                observablaCollection.Add(i);
+            }
+
+
+            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
+            observablaCollection.Move(0, observablaCollection.Count() - 1);
+            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
+
+            observablaCollection.LastIndex();
+
+
             // AppTabControl.Items[]
 
             #region 開啟 Mode Dialog
@@ -309,7 +328,7 @@ namespace MCAJawIns
                     case 1:
                         CameraTab = new CameraTab()
                         {
-                            Name = "DeviceTab",
+                            Name = nameof(CameraTab),
                             Focusable = true,
                             FocusVisualStyle = null
                         };
@@ -321,7 +340,7 @@ namespace MCAJawIns
                     case 3:
                         DatabaseTab = new DatabaseTab()
                         {
-                            Name = "DatabaseTab",
+                            Name = nameof(DatabaseTab),
                             Focusable = true,
                             FocusVisualStyle = null
                         };
@@ -332,12 +351,21 @@ namespace MCAJawIns
                         {
                             EngineerTab = new EngineerTab()
                             {
-                                Name = "EngineerTab",
+                                Name = nameof(EngineerTab),
                                 Focusable = true,
                                 FocusVisualStyle = null
                             };
                             tabItem.Content = EngineerTab;
                         }
+                        break;
+                    case 5:
+                        SystemInfoTab = new SystemInfoTab()
+                        {
+                            Name = nameof(SystemInfoTab),
+                            Focusable = true,
+                            FocusVisualStyle = null
+                        };
+                        tabItem.Content = SystemInfoTab;
                         break;
                     default:
                         break;
@@ -557,6 +585,7 @@ namespace MCAJawIns
         #endregion
     }
 
+#if false // 待刪除
     /// <summary>
     /// ImageSource 轉換器
     /// </summary>
@@ -644,6 +673,9 @@ namespace MCAJawIns
         }
         #endregion
     }
+
+#endif
+
 
     public static class ProgressBarExtension
     {

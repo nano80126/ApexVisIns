@@ -58,6 +58,8 @@
     <None Remove="dll\Automation.BDaq4.dll" />
     <None Remove="dll\Basler.Pylon.dll" />
     <None Remove="dll\Basler.Pylon.xml" />
+    <None Remove="dll\netDxf.dll" />
+    <None Remove="dll\netDxf.xml" />
     <None Remove="intai.png" />
   </ItemGroup>
 
@@ -73,6 +75,8 @@
     <Content Include="dll\Automation.BDaq4.dll" />
     <Content Include="dll\Basler.Pylon.dll" />
     <Content Include="dll\Basler.Pylon.xml" />
+    <Content Include="dll\netDxf.dll" />
+    <Content Include="dll\netDxf.xml" />
     <Content Include="intai.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -98,6 +102,9 @@
     </Reference>
     <Reference Include="Basler.Pylon">
       <HintPath>dll\Basler.Pylon.dll</HintPath>
+    </Reference>
+    <Reference Include="netDxf">
+      <HintPath>C:\Users\nano80126\.nuget\packages\netdxf\2.2.0.1\lib\net45\netDxf.dll</HintPath>
     </Reference>
   </ItemGroup>
 

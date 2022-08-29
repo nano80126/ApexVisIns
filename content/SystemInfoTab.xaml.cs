@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using MaterialDesignThemes.Wpf;
 
 
 namespace MCAJawIns.content
@@ -25,8 +26,9 @@ namespace MCAJawIns.content
     public partial class SystemInfoTab : StackPanel, INotifyPropertyChanged
     {
         #region Private
-        private bool _x64;
 
+        [Obsolete("測試用")]
+        System.Timers.Timer tmr;
         #endregion
 
         #region Properties
@@ -34,6 +36,16 @@ namespace MCAJawIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
+
+        public SystemInfo SystemInfo { get; set; } = new SystemInfo();
+        #endregion
+
+
+        #region Flags
+        /// <summary>
+        /// 已載入旗標
+        /// </summary>
+        private bool loaded;
         #endregion
 
         public SystemInfoTab()
@@ -41,17 +53,10 @@ namespace MCAJawIns.content
             InitializeComponent();
         }
 
-        #region Property Changed Event
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
+#if false
             Debug.WriteLine($"Plateform {Environment.OSVersion.Platform}");
             Debug.WriteLine($"Version {Environment.OSVersion.Version}");
 
@@ -61,20 +66,86 @@ namespace MCAJawIns.content
             Debug.WriteLine($"Version {Environment.OSVersion.Version.Revision}");
 
             Debug.WriteLine($"{Environment.OSVersion.VersionString}");
-            // Debug.WriteLine($"{Environment.OSVersion.ServicePack}");
 
             Debug.WriteLine($"PID {Environment.ProcessId}");
             Debug.WriteLine($"x64 {Environment.Is64BitProcess}");
 
             Debug.WriteLine($"x64 {Environment.MachineName}");
             Debug.WriteLine($".NET {Environment.Version}");
-            Debug.WriteLine($"-------------------------------------------------");
+            Debug.WriteLine($"-------------------------------------------------"); 
+#endif
+            GetSystemInfomation();
+
+            if (!loaded)
+            {
+                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "系統資訊頁面已載入");
+                loaded = true;
+            }
         }
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
+            SystemInfo.DisableTimer();
+            //SystemInfo.StopIdleTimer();
+        }
+
+        private void GetSystemInfomation()
+        {
+            SystemInfo.OS = $"{Environment.OSVersion.Version}";
+            SystemInfo.SetPlateform(Environment.Is64BitProcess);
+            // SystemInfo. = Environment.Is64BitProcess;
+            SystemInfo.PID = Environment.ProcessId;
+            SystemInfo.DotNetVer = $"{Environment.Version}";
+
+            //SystemInfo.SetMongoVersion($"{MainWindow.MongoAccess.GetVersion()}");
+            SystemInfo.PropertyChange();
+
+            if (IsFocused) { SystemInfo.EnableTimer(); }
+            //SystemInfo.StartIdleTimer();
+        }
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        private void StartIdleTimer_Click(object sender, RoutedEventArgs e)
+        {
+            SystemInfo.StartIdleWatch();
+
+            //if (tmr == null)
+            //{
+            //    tmr = new System.Timers.Timer
+            //    {
+            //        Interval = 5 * 1000,
+            //        AutoReset = false
+            //    };
 
 
+            //    Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //    tmr.Elapsed += (sender, e) =>
+            //    {
+            //        Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //    };
+            //    tmr.Start();
+            //    //tmr.
+            //}
+            //else
+            //{
+            //    Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //    tmr.Stop();
+            //    tmr.Start();
+            //}
+        }
+        
+
+        private void StopIdleTimer_Click(object sender, RoutedEventArgs e)
+        {
+            SystemInfo.StopIdleWatch();
+            //tmr.Stop();
         }
     }
 }

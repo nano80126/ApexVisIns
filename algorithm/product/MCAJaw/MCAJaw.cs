@@ -82,6 +82,7 @@ namespace MCAJawIns
         /// <param name="jawFullSpecIns">檢驗結果物件</param>
         public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
         {
+            // 0. 各項物件、變數初始化
             // 1. 擷取影像 
             // 2. 取得 Canny
             // 3. 取得基準點
@@ -104,18 +105,19 @@ namespace MCAJawIns
                 // 後開
                 double d_back = 0;
 
-                // 開設張數
-                // int count = 0;
-
+                #region 平行處理 Task 初始化
                 List<Task> task1 = new();
                 List<Task> task2 = new();
-                List<Task> task3 = new();
+                List<Task> task3 = new(); 
+                #endregion
 
-                #region results
+                #region results 記錄用物件初始化
                 Dictionary<string, List<double>> cam1results = new();
                 Dictionary<string, List<double>> cam2results = new();
                 Dictionary<string, List<double>> cam3results = new();
                 #endregion
+
+                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 以下觸發拍照且計算各項量測值
 
                 for (int i = 0; i < 2; i++)
                 {
@@ -202,7 +204,7 @@ namespace MCAJawIns
                             using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
                             //if (grabResult != null && grabResult.GrabSucceeded)
-                            if (grabResult?.GrabSucceeded== true)
+                            if (grabResult?.GrabSucceeded == true)
                             {
                                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
@@ -281,10 +283,9 @@ namespace MCAJawIns
 
                 Task.WhenAll(task1.Concat(task2).Concat(task3)).Wait();
 
-                // DateTime stTime = DateTime.Now;
-
                 #region 計算不良數量
-                // Camera 1 結果 (前開)
+
+                #region Camera 1 結果 (前開)
                 foreach (string key in cam1results.Keys)
                 {
                     //Debug.WriteLine($"{key} {cam1results[key].Count}");
@@ -320,11 +321,8 @@ namespace MCAJawIns
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
                     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
-                    //MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
-                    //MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
-                    // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;   // 保留
 
-                    // 先判斷是否已為 NG
+                    // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 ok
@@ -340,8 +338,9 @@ namespace MCAJawIns
 
                     if (key == "前開") { d_front = avg; }
                 }
+                #endregion
 
-                // Camera 2 結果 (後開)
+                #region Camera 2 結果 (後開)
                 foreach (string key in cam2results.Keys)
                 {
                     //Debug.WriteLine($"{key} {cam2results[key].Count}");
@@ -349,9 +348,8 @@ namespace MCAJawIns
                     double avg = cam2results[key].Min();
                     spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
                     MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-                    // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection2[^1].OK ? 0 : 1;   // 保留
 
-                    // 先判斷是否已為 NG
+                    // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 OK
@@ -367,6 +365,7 @@ namespace MCAJawIns
 
                     if (key == "後開") { d_back = avg; }
                 }
+                #endregion
 
                 #region 開度差 (先確認是否啟用)
                 spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == "開度差");
@@ -392,9 +391,10 @@ namespace MCAJawIns
 
                 MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
                 MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
+
                 #endregion
 
-                // Camera 3 結果
+                #region Camera 3 結果
                 // 若平直度未檢測到，播放警告
                 if (cam3results.Keys.Count == 0) { SoundAlarm.Play(); }
                 foreach (string item in cam3results.Keys)
@@ -424,7 +424,7 @@ namespace MCAJawIns
                     MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 
-                    // 先判斷是否已為 NG
+                    // 先判斷是否已為 NG，若已計為NG則數量不再+1
                     if (!isNG)
                     {
                         // 判斷是否 OK
@@ -438,11 +438,11 @@ namespace MCAJawIns
                     // 資料庫物件新增  key, value
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add($"{spec.Key}", avg); }
                 }
+                #endregion
+
                 // 判斷是否為良品
                 MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawSpecGroup.Col1Result && MCAJaw.JawSpecGroup.Col2Result && MCAJaw.JawSpecGroup.Col3Result ? 1 : 0;
                 #endregion
-
-                //Debug.WriteLine($"Total takes {(DateTime.Now - stTime).TotalMilliseconds} ms");
             }
             catch (OpenCVException ex)
             {
@@ -1236,7 +1236,7 @@ namespace MCAJawIns
             //{
             //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
             //}
-            
+
             Debug.WriteLine($"center: {center} {min} {max} {roiPos}");
 
             #region 尋找轉角點
@@ -2410,7 +2410,7 @@ namespace MCAJawIns
             Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 
             return false;
-        } 
+        }
         #endregion
     }
 }

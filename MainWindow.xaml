@@ -287,24 +287,25 @@
                 </TabItem>
                 <!--#endregion-->
 
-                <!--#region MCA Jaw Tab  -->
+                <!--#region System Information Tab  -->
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" Visibility="Collapsed">
+                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" Visibility="Visible">
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
                     </TabItem.Header>
                     <!-- // -->
                     <!--<content:SystemInfoTab x:Name="SystemInfoTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
                 </TabItem>
-                
                 <!--#endregion-->
 
                 <!--#region For Test -->
-                    <!--<Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
+                    <!--
+                    <Button Width="48" Height="48" Margin="0 0 0 0" materialDesign:RippleAssist.IsDisabled="True"
                             Padding="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
                             Content="123" Style="{StaticResource MaterialDesignToolButton}"
                             Background="Red">
-                    </Button>-->
+                    </Button>
+                -->
                 <!--#endregion-->
                 
                 <!--//-->
