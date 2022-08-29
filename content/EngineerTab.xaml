@@ -435,6 +435,15 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
                                         <!--#endregion-->
+
+                                        <Path Stroke="Red" StrokeThickness="1" Canvas.Left="100" Canvas.Top="100" Data="M99,100 H 90 M101,100 H110 M100,99 V90 M100,101 V110" />
+
+                                        <Path Stroke="Black" StrokeThickness="1" Canvas.Left="250" Canvas.Top="250">
+                                            <Path.Data>
+                                                <PathGeometry Figures="M99,100 H 90 M101,100 H110 M100,99 V90 M100,101 V110"></PathGeometry>
+                                            </Path.Data>
+                                        </Path>
+
                                         <!--<Path Stroke="Red" StrokeThickness="1"
                                               Canvas.Left="100" Canvas.Top="100" Data="M99,100 H 90 M101,100 H110 M100,99 V90 M100,101 V110" />-->
                                     </Canvas>

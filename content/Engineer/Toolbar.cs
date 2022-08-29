@@ -10,6 +10,16 @@ using System.Windows.Input;
 using Basler.Pylon;
 using Microsoft.Win32;
 using OpenCvSharp;
+using netDxf;
+using netDxf.Blocks;
+using netDxf.Collections;
+using netDxf.Entities;
+using netDxf.Header;
+using netDxf.IO;
+using netDxf.Objects;
+using netDxf.Tables;
+using netDxf.Units;
+using System.Windows.Media;
 
 namespace MCAJawIns.content
 {
@@ -152,7 +162,7 @@ namespace MCAJawIns.content
 
         private void ReadDXF_Click(object sneder, RoutedEventArgs e)
         {
-            //ReadDXF();
+            ReadDXF();
         }
 
         private void ReadImage_Click(object sender, RoutedEventArgs e)
@@ -895,7 +905,7 @@ namespace MCAJawIns.content
         #endregion
 
         #region DXF 處理
-#if false
+#if true
         private void ReadDXF()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
@@ -914,6 +924,66 @@ namespace MCAJawIns.content
 
                 //this.Import
                 DxfDocument dxf = DxfDocument.Load(filePath);
+
+
+                Mat img = new Mat(new OpenCvSharp.Size(1280, 720), MatType.CV_8UC1, Scalar.White);
+                int offsetX = 500;
+                int offsetY = 500;
+
+                int oftX = -1 * (int)dxf.Lines.Min(line => Math.Min(line.StartPoint.X, line.EndPoint.X));
+                int oftY = -1 * (int)dxf.Lines.Min(line => Math.Min(line.StartPoint.Y, line.EndPoint.Y));
+
+                System.Windows.Shapes.Path path = new System.Windows.Shapes.Path
+                {
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 1,
+                    //Data = new GeometryGroup()
+                };
+
+                GeometryGroup geometryGroup = new GeometryGroup();
+
+                foreach (Line item in dxf.Lines)
+                {
+                    int x1 = (int)(item.StartPoint.X) + oftX;
+                    int y1 = (int)(item.StartPoint.Y) + oftY;
+                    int x2 = (int)(item.EndPoint.X) + oftX; ;
+                    int y2 = (int)(item.EndPoint.Y) + oftY;
+                    
+                    Cv2.Line(img, x1 + 20, y1 + 20, x2 + 20, y2 + 20, Scalar.Black, 1);
+
+
+                    #region Add lines
+                    LineGeometry lineGeometry = new LineGeometry(new System.Windows.Point(x1, y1), new System.Windows.Point(x2, y2));
+                    //lineGeometry.StartPoint = new System.Windows.Point(x1, y1);
+                    //lineGeometry.EndPoint = new System.Windows.Point(x2, y2);
+                    geometryGroup.Children.Add(lineGeometry); 
+                    #endregion
+                }
+
+
+                // // // // //
+                foreach (Circle item in dxf.Circles)
+                {
+                    int x1 = (int)item.Center.X + oftX;
+                    int y1 = (int)item.Center.Y + oftY;
+                    int rad = (int)(item.Radius);
+
+                    Cv2.Circle(img, x1 + 20, y1 + 20, rad, Scalar.Black, 1);
+
+                    #region Add circles
+                    EllipseGeometry ellipseGeometry = new EllipseGeometry(new System.Windows.Point(x1, y1), rad, rad);
+                    geometryGroup.Children.Add(ellipseGeometry);
+                    #endregion
+                }
+
+
+                path.Data = geometryGroup;
+                ImageCanvas.Children.Add(path);
+
+
+                Debug.WriteLine($"{ImageCanvas.Children.Count}");
+                Cv2.Flip(img, img, FlipMode.X);
+                Cv2.ImShow($"mat", img);
             }
         } 
 #endif
