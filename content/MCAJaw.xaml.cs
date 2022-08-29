@@ -619,7 +619,7 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {

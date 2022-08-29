@@ -368,7 +368,7 @@ namespace MCAJawIns.content
                         // 啟用規格之key
                         string[] keys = enables.Select(item => item.Key).ToArray();
                         // 量測結果 header
-                        string resultHeaders = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果";
+                        string resultHeaders = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果" + Environment.NewLine;
 
 
                         //bool ResultHeaderAppended = false;
@@ -380,7 +380,7 @@ namespace MCAJawIns.content
 #endif
 
                             string localTime = $"{item.DateTime.ToLocalTime():HH:mm:ss}";
-                            string values = keys.Aggregate(localTime, (str, next) => item.Results.ContainsKey(next) ? $",{item.Results[next]:f5}" : ",");
+                            string values = keys.Aggregate(localTime, (str, next) => item.Results.ContainsKey(next) ? $"{str},{item.Results[next]:f5}" : $"{str},");
                             string result = (item.OK ? ",良品" : ",不良") + Environment.NewLine;
 
 #if false
