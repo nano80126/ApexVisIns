@@ -1,8 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
-using OpenCvSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -14,6 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
+using OpenCvSharp;
 
 
 namespace MCAJawIns
@@ -186,7 +186,7 @@ namespace MCAJawIns
     /// <summary>
     /// 權限等級
     /// </summary>
-    public class AuthLevel
+    public class AuthLevel1
     {
         [BsonId]
         public ObjectId ObjID { get; set; }
@@ -217,6 +217,10 @@ namespace MCAJawIns
         /// 閒置時間計時器
         /// </summary>
         private Stopwatch _stopwatch;
+        /// <summary>
+        /// 量測總次數
+        /// </summary>
+        private int _totalParts = 0;
         #endregion
 
         #region Properties
@@ -229,7 +233,7 @@ namespace MCAJawIns
         public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
 
         // // Second Column
-        public string SoftVer { get; set; } = "1.0.0";
+        public string SoftVer { get; set; } = "2.0.0";
         public string Mode => _auto ? "自動模式" : "編輯模式";
         /// <summary>
         /// 自動運行時間
@@ -241,7 +245,7 @@ namespace MCAJawIns
                 if (_auto)
                 {
                     TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds);
-                    return $"{timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+                    return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
                 }
                 else
                 {
@@ -252,19 +256,59 @@ namespace MCAJawIns
         /// <summary>
         /// 自動運行時間 (累計)
         /// </summary>
-        public string TotalAutoTime => $"{_totalAutoTime + (DateTime.Now - _startTime).TotalSeconds:HH:mm:ss}";
+        public string TotalAutoTime
+        {
+            get
+            {
+                if (_auto)
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds + _totalAutoTime);
+                    return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+                }
+                else
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(_totalAutoTime);
+                    return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
+                }
+            }
+        }
         /// <summary>
         /// 自動運行時間 (小時)，(TotalAutoTime 超過 9999時，由這邊紀錄)
         /// </summary>
-        public int TotalHours => 0;
+        public int TotalHours
+        {
+            get
+            {
+                if (_auto)
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds + _totalAutoTime);
+                    return (int)timeSpan.TotalHours;
+                }
+                else
+                {
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(_totalAutoTime);
+                    return (int)timeSpan.TotalHours;
+                }
+            }
+        }
         /// <summary>
         /// 總計檢驗數量
         /// </summary>
-        public string TotalParts { get; set; }
+        public int TotalParts {
+            get => _totalParts;
+            set
+            {
+                if (value != _totalParts)
+                {
+                    _totalParts = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         /// <summary>
-        /// 閒置時間(seconds)
+        /// 閒置時間 (seconds) (無條件捨棄)
         /// </summary>
-        public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000) : 0;
+        public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000.0) : 0;
         #endregion
 
         /// <summary>
@@ -298,7 +342,13 @@ namespace MCAJawIns
         {
             _startTime = DateTime.Now;
         }
-
+        /// <summary>
+        /// 設定 Total Auto Time
+        /// </summary>
+        public void SetTotalAutoTime(int seconds)
+        {
+            _totalAutoTime = seconds;
+        }
         /// <summary>
         /// 開始計算閒置時間
         /// </summary>
@@ -314,7 +364,6 @@ namespace MCAJawIns
                 _stopwatch.Start();
             }
         }
-        
         /// <summary>
         /// 停止計算閒置時間
         /// </summary>
@@ -323,6 +372,37 @@ namespace MCAJawIns
             if (_stopwatch.IsRunning)
             {
                 _stopwatch.Stop();
+            }
+        }
+        /// <summary>
+        /// 取得 自動運行時間 (秒)
+        /// </summary>
+        /// <returns></returns>
+        public int GetAutoTimeInSeconds()
+        {
+            if (_auto)
+            {
+                return (int)((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 取得 累計自動運行時間 (秒)
+        /// </summary>
+        /// <returns></returns>
+        public int GetTotalAutoTimeTnSeconds()
+        {
+            if (_auto)
+            {
+                return (int)((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds + _totalAutoTime);
+            }
+            else
+            {
+                return _totalAutoTime;
             }
         }
 
@@ -357,15 +437,17 @@ namespace MCAJawIns
                 OnPropertyChanged(nameof(AutoTime));
                 OnPropertyChanged(nameof(TotalAutoTime));
             }
-            OnPropertyChanged(nameof(IdleTime));
 
-            if (_stopwatch != null)
-            {
-                Debug.WriteLine($"{_stopwatch.IsRunning}");
+            OnPropertyChanged(nameof(IdleTime)); // 之後需移除
 
-                Debug.WriteLine($"{_stopwatch.Elapsed} {_stopwatch.ElapsedMilliseconds} {_stopwatch.ElapsedTicks}");
-                Debug.WriteLine($"{_stopwatch.Elapsed.TotalSeconds:00}");
-            }
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+
+            // if (_stopwatch != null)
+            // {
+            //     Debug.WriteLine($"{_stopwatch.IsRunning}");
+            //     Debug.WriteLine($"{_stopwatch.Elapsed} {_stopwatch.ElapsedMilliseconds} {_stopwatch.ElapsedTicks}");
+            //     Debug.WriteLine($"{_stopwatch.Elapsed.TotalSeconds:00}");
+            // }
         }
 
         /// <summary>
@@ -417,7 +499,6 @@ namespace MCAJawIns
         }
         #endregion
     }
-
 
     /// <summary>
     /// Crosshair

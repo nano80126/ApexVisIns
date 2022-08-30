@@ -78,7 +78,9 @@
         <!--D5 means 5-->
         <KeyBinding Modifiers="Alt" Key="D5" Command="{StaticResource SwitchTab}" CommandParameter="4" />
         <!--D6 means 6-->
-        <KeyBinding Modifiers="Alt" Key="D6" Command="{StaticResource SwitchTab}" CommandParameter="5" />
+        <!--<KeyBinding Modifiers="Alt" Key="D6" Command="{StaticResource SwitchTab}" CommandParameter="5" />-->
+        <!--D0 means 0, 255 routes system info tab-->
+        <KeyBinding Modifiers="Alt" Key="D0" Command="{StaticResource SwitchTab}" CommandParameter="255" />
         <!--Main Image  -->
         <KeyBinding Modifiers="Alt" Key="Q" Command="{StaticResource SwitchJawTab}" CommandParameter="0" />
         <!--Specification Setting -->
@@ -116,14 +118,16 @@
     <!--//-->
     <Border x:Name="MainBorder" HorizontalAlignment="Stretch" Style="{StaticResource MainWindowBorder}">
         <Grid>
+            <!--#region Layout -->
             <Grid.RowDefinitions>
                 <!-- Appbar -->
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
                 <!-- Content -->
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*" />
                 <!-- Footer -->
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
+            <!--#endregion-->
 
             <!--#region Appbar, Set focusale because needing to blur other control -->
             <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3" Background="Transparent" MouseLeftButtonDown="TitleGrid_MouseLeftButtonDown" Focusable="True">
@@ -287,11 +291,11 @@
                 </TabItem>
                 <!--#endregion-->
 
-                <!--#region System Information Tab  -->
-                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True"
-                         Style="{StaticResource MaterialDesignNavigationRailTabItem}" Visibility="Visible">
+                <!--#region System Information Tab, always at the last  -->
+                <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True" Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                        Visibility="Hidden">
                     <TabItem.Header>
-                        <materialDesign:PackIcon Kind="AngleAcute" Width="30" Height="26" Foreground="White"/>
+                        <materialDesign:PackIcon Kind="InformationCircleOutline" Width="30" Height="26" Foreground="White" />
                     </TabItem.Header>
                     <!-- // -->
                     <!--<content:SystemInfoTab x:Name="SystemInfoTab" Focusable="True" FocusVisualStyle="{x:Null}" />-->
@@ -391,10 +395,28 @@
                             </materialDesign:PopupBox.ToggleContent>
                             <!--//-->
                             <StackPanel Orientation="Vertical" MinWidth="180">
-                                <Button FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
-                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
-                                        Click="Logout_Click" 
-                                        Visibility="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibility}}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="Foreground" Value="{StaticResource ColorBrown}" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                
+                                <Button Command="{StaticResource SwitchTab}" CommandParameter="255">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <materialDesign:PackIcon Width="24" Height="18" Kind="InformationCircleOutline" VerticalAlignment="Center" />
+                                            <TextBlock MinWidth="80" Margin="8 0 0 0" Text="系統資訊" VerticalAlignment="Center" TextAlignment="Right" />
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                                
+                                <Button Visibility="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window, AncestorLevel=1}, 
+                                    UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibility}}" Click="Logout_Click">
                                     <!--已登入才顯示-->
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -404,9 +426,7 @@
                                     </Button.Content>
                                 </Button>
 
-                                <Button x:Name="AppFullClose" FontWeight="Bold" Margin="0" Cursor="Hand" Style="{StaticResource MaterialDesignFlatButton}"
-                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Foreground="{StaticResource ColorBrown}"
-                                        Click="AppFullClose_Click">
+                                <Button Click="AppFullClose_Click">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center"/>

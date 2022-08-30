@@ -145,7 +145,10 @@ namespace MCAJawIns
             }
         }
 
-
+        /// <summary>
+        /// 取得 Mongo 版本
+        /// </summary>
+        /// <returns></returns>
         public string GetVersion()
         {
             if (client != null)

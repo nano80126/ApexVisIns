@@ -389,8 +389,9 @@ namespace MCAJawIns
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, bfDiff); }
                 }
 
-                MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
-                MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
+                //MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
+                //MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
+                MCAJaw.JawSpecGroup.Collection1.Move(0, MCAJaw.JawSpecGroup.Collection1.LastIndex());
 
                 #endregion
 

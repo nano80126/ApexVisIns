@@ -186,15 +186,17 @@ namespace MCAJawIns.content
                     {
                         InitHardware();
                     }
-                    MainWindow.SystemInfoTab.SystemInfo.SetMode(true);  // 設定為自動模式
-                    // MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
+                    // 設定為自動模式
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
+                    // 設定閒置計時
+                    SetIdleTimer(60);
                     break;
                 case InitModes.EDIT:
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token));
-                    MainWindow.SystemInfoTab.SystemInfo.SetMode(false); // 設定為編輯模式
-                    // MainWindow.SystemInfoTab.SystemInfo.SetStartTime();
+                    //_ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // 這邊要刪掉
+                    // 設定為編輯模式
+                    MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                     break;
                 default:
                     // 保留
@@ -202,8 +204,8 @@ namespace MCAJawIns.content
             }
 
             #region 初始化
-            MainWindow.SystemInfoTab.SystemInfo.SetStartTime(); // 設定啟動時間
-            SetIdleTimer(180);
+            // 設定啟動時間
+            MainWindow.SystemInfoTab.SystemInfo.SetStartTime();
             #endregion
 
             if (!loaded)
@@ -572,7 +574,6 @@ namespace MCAJawIns.content
 
                     if (ModbusTCPIO.Conneected)
                     {
-                        //MainWindow.MsgInformer.TargetProgressValue += 17;
                         MainWindow.MsgInformer.AdvanceProgressValue(17);
 
                         IOCtrlInitialized = true;
@@ -591,11 +592,16 @@ namespace MCAJawIns.content
             }, ct);
         }
 
+        /// <summary>
+        /// IO Changed Event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ModbusTCPIO_IOChanged(object sender, WISE4050.IOChangedEventArgs e)
         {
             if (e.DI0Raising)
             {
-                
+                ResetIdleTimer();
             }
             else if (e.DI0Falling)
             {
@@ -610,9 +616,9 @@ namespace MCAJawIns.content
                     }
                 });
             }
-            //Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
-            Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
-            Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
+            // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
+            // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
+            // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
         }
 
         /// <summary>
@@ -632,23 +638,28 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJaw", "intaiUser", "mcajaw", 1500);
+                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {
-                        // 建立組態集合 (目前只有資料庫保存時間設定)
-                        MongoAccess.CreateCollection("Configs");
-                        // 建立批次結果集合
-                        MongoAccess.CreateCollection("Lots");
-                        // 建立量測結果集合
-                        MongoAccess.CreateCollection("Measurements");
                         // 建立權限集合
-                        MongoAccess.CreateCollection("Auth");
+                        MongoAccess.CreateCollection(nameof(JawCollection.Auth));
+                        // 建立組態集合 (目前只有資料庫保存時間設定)
+                        MongoAccess.CreateCollection(nameof(JawCollection.Configs));
+                        // 建立資訊集合
+                        MongoAccess.CreateCollection(nameof(JawCollection.Info));
+                        // 建立批次結果集合
+                        MongoAccess.CreateCollection(nameof(JawCollection.Lots));
+                        // 建立量測結果集合
+                        MongoAccess.CreateCollection(nameof(JawCollection.Measurements));
+                      
                         // 取得 Mongo 版本
                         string version = MongoAccess.GetVersion();
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
-#if false
+                        
+
+#if false               // 新增使用者、組態
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {
                             DataReserveMonths = 6,
@@ -662,13 +673,15 @@ namespace MCAJawIns.content
                         MongoAccess.InsertMany("Auth", authLevels);
 #endif
 
+
                         MongoAccess.FindAll("Auth", Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
 
-#if  false
+
+#if  false  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)
                         {
@@ -687,7 +700,7 @@ namespace MCAJawIns.content
                         } 
 #endif
 
-                        //MainWindow.MsgInformer.TargetProgressValue += 17;
+                        // MainWindow.MsgInformer.TargetProgressValue += 17;
                         MainWindow.MsgInformer.AdvanceProgressValue(17);
 
                         DatabaseInitialized = true;
@@ -966,7 +979,7 @@ namespace MCAJawIns.content
         /// <param name="seconds">閒置幾秒後切換狀態</param>
         private void SetIdleTimer(int seconds)
         {
-            Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
+            //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
             if (_idleTimer == null)
             {
                 _idleTimer = new System.Timers.Timer()
@@ -977,7 +990,7 @@ namespace MCAJawIns.content
 
                 _idleTimer.Elapsed += (sender, e) =>
                 {
-                    //
+                    // 變更狀態為 Idle
                     Status = INS_STATUS.IDLE;
                     // 開始計時 Idle
                     MainWindow.SystemInfoTab.SystemInfo.StartIdleWatch();
@@ -988,6 +1001,8 @@ namespace MCAJawIns.content
 
         private void ResetIdleTimer()
         {
+            // 變更狀態為 Ready
+            Status = INS_STATUS.READY;
             // 停止計時 Idle
             MainWindow.SystemInfoTab.SystemInfo.StopIdleWatch();
             // Reset Idle Timer

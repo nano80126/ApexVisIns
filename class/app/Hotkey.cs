@@ -243,6 +243,9 @@ namespace MCAJawIns
         private void SwitchTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
             byte idx = byte.Parse(e.Parameter as string, CultureInfo.CurrentCulture);
+
+            idx = (byte)(idx == 255 ? AppTabControl.Items.Count - 1 : idx); 
+
             // 確保 idx 不會超過 TabItems 數目 // 確保 Enable // 確保 Content 不為 null
             OnNavIndex =
                 idx < AppTabControl.Items.Count &&

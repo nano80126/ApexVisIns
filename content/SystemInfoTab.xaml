@@ -62,9 +62,7 @@
                 </Grid.ColumnDefinitions>
                 <!--#endregion-->
 
-                <!--
-                    <Grid Grid.Column="0" Background="{StaticResource ColorAccentTransparent}"></Grid>
-                -->
+                <!--<Grid Grid.Column="0" Background="{StaticResource ColorAccentTransparent}"></Grid>-->
 
                 <!--#region System info -->
                 <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
@@ -98,46 +96,50 @@
                 <Separator Grid.Column="1" Grid.Row="100" Margin="8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
 
-                <!--#region NewRegion -->
+                <!--#region Auto Mode Info -->
                 <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
 
                     <TextBlock Text="設備版本" />
                     <TextBox Padding="0 3" Text="{Binding SoftVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="當前狀態" />
+                    <TextBlock Text="當前模式" />
                     <TextBox Padding="0 3" Text="{Binding Mode, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="自動模式運行時間 (本次)" />
+                    <TextBlock Text="自動模式運行時間（本次）" />
                     <TextBox Padding="0 3" Text="{Binding AutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="自動模式運行時間 (累計)" />
+                    <TextBlock Text="自動模式運行時間（累計）" />
                     <TextBox Padding="0 3" Text="{Binding TotalAutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="量測工件數 (累計)" />
+                    <TextBlock Text="自動模式運行時數（累計）" />
+                    <TextBox Padding="0 3" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+
+                    <TextBlock Text="量測工件數（累計）" />
                     <TextBox Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock />
-                    <!--<TextBlock />-->
+                    <TextBlock Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}"/>
                     <TextBox Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
                     <TextBlock Text="" />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
                         AncestorType=UniformGrid}, Mode=OneWay}" />
 
-                    <Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
-                    <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>
-
+                    
+                    <!--<Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
+                    <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>-->
+                    
                 </UniformGrid>
                 <!--#endregion-->
-
-                <!-- Separator -->
-
-                <!--<Separator Grid.Column="3" Grid.Row="100" Margin="8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
-                        Background="{StaticResource ColorGrayTransparent}" />
-                
-                    <Grid Grid.Column="4" Background="{StaticResource ColorSuccessTransparent}"></Grid>
-                -->
             </Grid>
+
+            <ctrl:CustomCard.Footer>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Margin="12 0" Padding="8 3" Content="START" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click" />
+                    <Button Margin="12 0 0 0" Padding="8 3" Content="STOP" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
+                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click" />
+                </StackPanel>
+            </ctrl:CustomCard.Footer>
         </ctrl:CustomCard>
 
         <materialDesign:Card Padding="8" Width="200" Height="200" UniformCornerRadius="10" Background="{StaticResource ColorInfo}" Visibility="Collapsed">

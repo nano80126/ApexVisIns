@@ -143,7 +143,8 @@ namespace MCAJawIns
         /// <summary>
         /// 選擇 Jaw Type
         /// </summary>
-        public JawTypes JawType {
+        public JawTypes JawType
+        {
             get => _jawTypes;
             set
             {
@@ -246,22 +247,20 @@ namespace MCAJawIns
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
             // SpinWait.SpinUntil(() => false, 1000);
-
             // CreateIOWindow();
-
+#if false
             ObservableCollection<int> observablaCollection = new ObservableCollection<int>();
             for (int i = 0; i < 10; i++)
             {
                 observablaCollection.Add(i);
             }
-
-
             Debug.WriteLine($"{string.Join(",", observablaCollection)}");
             observablaCollection.Move(0, observablaCollection.Count() - 1);
             Debug.WriteLine($"{string.Join(",", observablaCollection)}");
 
-            observablaCollection.LastIndex();
-
+            int idx = observablaCollection.LastIndex();
+            Debug.WriteLine($"{idx}"); 
+#endif
 
             // AppTabControl.Items[]
 
@@ -371,67 +370,6 @@ namespace MCAJawIns
                         break;
                 }
             }
-        }
-
-        /// <summary>
-        /// 程式完整關閉 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AppFullClose_Click(object sender, RoutedEventArgs e)
-        {
-            // 關閉所有相機
-            if (BaslerCams != null)
-            {
-                foreach (BaslerCam cam in BaslerCams)
-                {
-                    if (cam.IsOpen)
-                    {
-                        // 若 Grabber 開啟中，關閉 Grabber
-                        if (cam.IsGrabbing)
-                        {
-                            Basler_StopStreamGrabber(cam);
-                        }
-                        cam.Close();
-                    }
-                }
-            }
-
-            if (BaslerCam != null)
-            {
-                if (BaslerCam.IsOpen)
-                {
-                    if (BaslerCam.IsGrabbing)
-                    {
-                        Basler_StopStreamGrabber(BaslerCam);
-                    }
-                    BaslerCam.Close();
-                }
-            }
-
-            // 重製 & 關閉所有光源
-            if (LightCtrls != null)
-            {
-                foreach (LightSerial ctrl in LightCtrls)
-                {
-                    if (ctrl.IsComOpen)
-                    {
-                        _ = ctrl.TryResetAllChannel(out _);
-                        ctrl.ComClose();
-                    }
-                }
-            }
-
-            // 與資料庫斷線
-            if (MongoAccess != null && MongoAccess.Connected)
-            {
-                MongoAccess.Disconnect();
-            }
-
-            _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
-            _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
-
-            Close();
         }
 
         #region Footer Progress & Message
@@ -583,6 +521,67 @@ namespace MCAJawIns
             OnNavIndex = 0;
         }
         #endregion
+
+        /// <summary>
+        /// 程式完整關閉 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppFullClose_Click(object sender, RoutedEventArgs e)
+        {
+            // 關閉所有相機
+            if (BaslerCams != null)
+            {
+                foreach (BaslerCam cam in BaslerCams)
+                {
+                    if (cam.IsOpen)
+                    {
+                        // 若 Grabber 開啟中，關閉 Grabber
+                        if (cam.IsGrabbing)
+                        {
+                            Basler_StopStreamGrabber(cam);
+                        }
+                        cam.Close();
+                    }
+                }
+            }
+
+            if (BaslerCam != null)
+            {
+                if (BaslerCam.IsOpen)
+                {
+                    if (BaslerCam.IsGrabbing)
+                    {
+                        Basler_StopStreamGrabber(BaslerCam);
+                    }
+                    BaslerCam.Close();
+                }
+            }
+
+            // 重製 & 關閉所有光源
+            if (LightCtrls != null)
+            {
+                foreach (LightSerial ctrl in LightCtrls)
+                {
+                    if (ctrl.IsComOpen)
+                    {
+                        _ = ctrl.TryResetAllChannel(out _);
+                        ctrl.ComClose();
+                    }
+                }
+            }
+
+            // 與資料庫斷線
+            if (MongoAccess != null && MongoAccess.Connected)
+            {
+                MongoAccess.Disconnect();
+            }
+
+            _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
+            _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
+
+            Close();
+        }
     }
 
 #if false // 待刪除

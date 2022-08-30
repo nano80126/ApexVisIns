@@ -174,7 +174,7 @@ namespace MCAJawIns.Product
             }
         }
 
-
+        [Description("校正值(開發)")]
         public double CorrectionSecret
         {
             get => _correctionSecret;
