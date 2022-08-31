@@ -24,16 +24,19 @@ namespace MCAJawIns.Control
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomCard), new FrameworkPropertyMetadata(typeof(CustomCard)));
         }
 
-        public static readonly DependencyProperty TitleProperty = 
+        public static readonly DependencyProperty TitleProperty =
             DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty SubTitleProperty = 
+        public static readonly DependencyProperty SubTitleProperty =
             DependencyProperty.RegisterAttached(nameof(SubTitle), typeof(string), typeof(CustomCard), new PropertyMetadata(string.Empty));
 
-        public static readonly DependencyProperty IconKindProperty = 
+        public static readonly DependencyProperty ShowHeaderProperty =
+            DependencyProperty.RegisterAttached(nameof(ShowHeader), typeof(bool), typeof(CustomCard), new PropertyMetadata(true));
+
+        public static readonly DependencyProperty IconKindProperty =
             DependencyProperty.RegisterAttached(nameof(IconKind), typeof(PackIconKind), typeof(CustomCard), new PropertyMetadata(PackIconKind.Abc));
 
-        public static readonly DependencyProperty UniformCornerRadiusProperty = 
+        public static readonly DependencyProperty UniformCornerRadiusProperty =
             DependencyProperty.RegisterAttached(nameof(UniformCornerRadius), typeof(double), typeof(CustomCard), new PropertyMetadata(2.0));
 
         // private static new readonly DependencyProperty ContentProperty = DependencyProperty.RegisterAttached(nameof(Content),
@@ -68,9 +71,17 @@ namespace MCAJawIns.Control
         }
 
         /// <summary>
+        /// 是否顯示 ICON
+        /// </summary>
+        public bool ShowHeader
+        {
+            get => (bool)GetValue(ShowHeaderProperty);
+            set => SetValue(ShowHeaderProperty, value);
+        }
+
+        /// <summary>
         /// Card Headr ICON
         /// </summary>
-
         public PackIconKind IconKind
         {
             get => (PackIconKind)GetValue(IconKindProperty);

@@ -263,10 +263,11 @@
                         </StackPanel>
                     </Button>
 
-                    <!--<TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
+                    <!--// // // // // // // //-->
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
                     <TextBlock Margin="0 12 0 0"
                             Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Mode=OneWay}" />
-                    <TextBlock Margin="0 24 0 0" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Mode=OneWay}" />-->
+                    <TextBlock Margin="0 24 0 0" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Mode=OneWay}" />
                     <!--#endregion-->
                 </Grid>
             </ctrl:CustomCard>
@@ -311,9 +312,10 @@
                         </StackPanel>
                     </Button>
 
-                    <!--<TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
+                    <!--// // // // // // // //-->
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />-->
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
 
                     <Button Margin="0 8 0 0" Content="測試" Click="Test_Click" Height="24" />
                 </StackPanel>
@@ -431,11 +433,10 @@
                         </Button>
                     </StackPanel>-->
 
-                    <!--
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
-                    -->
+                    
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
+                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
 
                     <!--//-->
                     <TextBlock x:Name="LotHeader" Margin="0 9 0 0" FontSize="16" FontWeight="Bold">

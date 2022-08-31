@@ -166,13 +166,23 @@ namespace MCAJawIns
         /// 建立 Collection
         /// </summary>
         /// <param name="collection">集合名稱</param>
-        public void CreateCollection(string collection)
+        /// <returns>若有新增回傳 true; 否則回傳 false</returns>
+        public bool CreateCollection(string collection)
         {
             try
             {
+                IMongoDatabase db = client.GetDatabase(Database);
                 // 先確認 Collection 是否存在，再新增
-                bool exist = client.GetDatabase(Database).ListCollectionNames().ToList().Contains(collection);
-                if (!exist) { client.GetDatabase(Database).CreateCollection(collection); }
+                bool exist = db.ListCollectionNames().ToList().Contains(collection);
+                if (!exist)
+                {
+                    db.CreateCollection(collection);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (MongoException)
             {
@@ -193,6 +203,67 @@ namespace MCAJawIns
             catch (MongoException)
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// 新增一項索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cName"></param>
+        /// <param name="indexModel"></param>
+        public void CreateIndexOne<T>(string cName, CreateIndexModel<T> indexModel)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                collection.Indexes.CreateOne(indexModel);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        /// <summary>
+        /// 新增多項索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cName"></param>
+        /// <param name="list"></param>
+        public void CreateIndexMany<T>(string cName, List<CreateIndexModel<T>> list)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                collection.Indexes.CreateMany(list);
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        /// <summary>
+        /// 取得索引
+        /// </summary>
+        /// <param name="cName"></param>
+        public void GetIndexes<T>(string cName, out List<BsonDocument> list)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                list = collection.Indexes.List().ToList();
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
             }
         }
 
@@ -446,7 +517,6 @@ namespace MCAJawIns
         }
     }
 
-
     /// <summary>
     /// DateTime Extension
     /// </summary>
@@ -462,5 +532,4 @@ namespace MCAJawIns
             return new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59);
         }
     }
-
 }

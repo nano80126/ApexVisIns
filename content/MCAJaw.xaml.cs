@@ -649,15 +649,35 @@ namespace MCAJawIns.content
                         // 建立資訊集合
                         MongoAccess.CreateCollection(nameof(JawCollection.Info));
                         // 建立批次結果集合
-                        MongoAccess.CreateCollection(nameof(JawCollection.Lots));
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Lots)))
+                        {
+                            CreateIndexModel<JawInspection> indexModel = new CreateIndexModel<JawInspection>(Builders<JawInspection>.IndexKeys.Ascending(x => x.DateTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Lots), indexModel);
+                        }
                         // 建立量測結果集合
-                        MongoAccess.CreateCollection(nameof(JawCollection.Measurements));
-                      
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Measurements)))
+                        {
+                            CreateIndexModel<JawMeasurements> indexModel = new CreateIndexModel<JawMeasurements>(Builders<JawMeasurements>.IndexKeys.Ascending(x => x.DateTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Measurements), indexModel);
+                        }
+
+#if false               // Show indexes
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Auth), out List<BsonDocument> list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Configs), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Info), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Lots), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Measurements), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}"); 
+#endif
+
                         // 取得 Mongo 版本
                         string version = MongoAccess.GetVersion();
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
-                        
 
 #if false               // 新增使用者、組態
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
@@ -673,13 +693,11 @@ namespace MCAJawIns.content
                         MongoAccess.InsertMany("Auth", authLevels);
 #endif
 
-
                         MongoAccess.FindAll("Auth", Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
-
 
 #if  false  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
