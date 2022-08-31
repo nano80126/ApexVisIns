@@ -172,7 +172,7 @@ namespace MCAJawIns.content
                 Title = "讀取圖片檔",
                 FileName = string.Empty,
                 Filter = "BMP Image(*.bmp)|*.bmp|JPEP Image (*.jpg)|*.jpg|All Files (*.*)|*.*",
-                FilterIndex = 1,
+                FilterIndex = 2,
                 InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}",
             };
 
@@ -920,6 +920,12 @@ namespace MCAJawIns.content
 
             if (openFileDialog.ShowDialog() == true)
             {
+                #region 移除過多 Children
+                int cnt = ImageCanvas.Children.Count;
+
+                ImageCanvas.Children.RemoveRange(7, 10);
+                #endregion
+
                 string filePath = openFileDialog.FileName;
 
                 //this.Import
@@ -933,30 +939,45 @@ namespace MCAJawIns.content
                 int oftX = -1 * (int)dxf.Lines.Min(line => Math.Min(line.StartPoint.X, line.EndPoint.X));
                 int oftY = -1 * (int)dxf.Lines.Min(line => Math.Min(line.StartPoint.Y, line.EndPoint.Y));
 
-                System.Windows.Shapes.Path path = new System.Windows.Shapes.Path
+
+                GeometryGroup dashGroup = new GeometryGroup();
+                System.Windows.Shapes.Path dashPath = new System.Windows.Shapes.Path
+                {
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1,
+                    StrokeDashArray = new DoubleCollection() { 15, 5 },
+                    Data = dashGroup
+                };
+
+                GeometryGroup solidGroup = new GeometryGroup();
+                System.Windows.Shapes.Path solidPath = new System.Windows.Shapes.Path
                 {
                     Stroke = Brushes.Red,
                     StrokeThickness = 1,
-                    //Data = new GeometryGroup()
+                    Data = solidGroup,
                 };
-
-                GeometryGroup geometryGroup = new GeometryGroup();
 
                 foreach (Line item in dxf.Lines)
                 {
-                    int x1 = (int)(item.StartPoint.X) + oftX;
-                    int y1 = (int)(item.StartPoint.Y) + oftY;
-                    int x2 = (int)(item.EndPoint.X) + oftX; ;
-                    int y2 = (int)(item.EndPoint.Y) + oftY;
-                    
+                    int x1 = (int)item.StartPoint.X + oftX;
+                    int y1 = (int)item.StartPoint.Y + oftY;
+                    int x2 = (int)item.EndPoint.X + oftX; ;
+                    int y2 = (int)item.EndPoint.Y + oftY;
+
                     Cv2.Line(img, x1 + 20, y1 + 20, x2 + 20, y2 + 20, Scalar.Black, 1);
 
+                    //Debug.WriteLine($"{item.Linetype.Name} {item.Linetype == Linetype.Dashed} {Linetype.Dashed.Name}");
 
                     #region Add lines
                     LineGeometry lineGeometry = new LineGeometry(new System.Windows.Point(x1, y1), new System.Windows.Point(x2, y2));
-                    //lineGeometry.StartPoint = new System.Windows.Point(x1, y1);
-                    //lineGeometry.EndPoint = new System.Windows.Point(x2, y2);
-                    geometryGroup.Children.Add(lineGeometry); 
+                    if (item.Linetype.Name.ToLower() == Linetype.Dashed.Name.ToLower())
+                    {
+                        dashGroup.Children.Add(lineGeometry);
+                    }
+                    else
+                    {
+                        solidGroup.Children.Add(lineGeometry);
+                    }
                     #endregion
                 }
 
@@ -966,24 +987,146 @@ namespace MCAJawIns.content
                 {
                     int x1 = (int)item.Center.X + oftX;
                     int y1 = (int)item.Center.Y + oftY;
-                    int rad = (int)(item.Radius);
+                    int rad = (int)item.Radius;
 
                     Cv2.Circle(img, x1 + 20, y1 + 20, rad, Scalar.Black, 1);
 
                     #region Add circles
                     EllipseGeometry ellipseGeometry = new EllipseGeometry(new System.Windows.Point(x1, y1), rad, rad);
-                    geometryGroup.Children.Add(ellipseGeometry);
+                    if (item.Linetype.Name.ToLower() == Linetype.Dashed.Name.ToLower())
+                    {
+                        dashGroup.Children.Add(ellipseGeometry);
+                    }
+                    else
+                    {
+                        solidGroup.Children.Add(ellipseGeometry);
+                    }
+                    //geometryGroup.Children.Add(ellipseGeometry);
                     #endregion
                 }
 
 
-                path.Data = geometryGroup;
-                ImageCanvas.Children.Add(path);
+                foreach (Ellipse item in dxf.Ellipses)
+                {
+                    int x = (int)item.Center.X + oftX;
+                    int y = (int)item.Center.Y + oftY;
+                    //Cv2.Ellipse();
+                    int rad1 = (int)item.MajorAxis / 2;
+                    int rad2 = (int)item.MinorAxis / 2;
+
+                    Debug.WriteLine($"{item.Center} {item.MajorAxis} {item.MinorAxis} {item.StartAngle} {item.EndAngle}");
+
+                    EllipseGeometry ellipseGeometry = new EllipseGeometry(new System.Windows.Point(x, y), rad1, rad2);
+                    if (item.Linetype.Name.ToLower() == Linetype.Dashed.Name.ToLower())
+                    {
+                        dashGroup.Children.Add(ellipseGeometry);
+                    }
+                    else
+                    {
+                        solidGroup.Children.Add(ellipseGeometry);
+                    }
+                }
+
+                StreamGeometry streamGeometry = new StreamGeometry();
+                using (StreamGeometryContext ctx = streamGeometry.Open())
+                {
+                    foreach (Arc item in dxf.Arcs)
+                    {
+                        int x = (int)item.Center.X + oftX;
+                        int y = (int)item.Center.Y + oftY;
+
+                        int rad = (int)item.Radius;
+
+                        int stAngle = (int)(Math.PI * item.StartAngle / 180);
+                        int endAngle = (int)(Math.PI * item.EndAngle / 180);
+                        int diffAngle = (int)(item.EndAngle - item.StartAngle);
+
+                        ctx.BeginFigure(new System.Windows.Point(x + (rad * Math.Cos(stAngle)), y + (rad * Math.Sin(stAngle))), false, false);
+
+                        ctx.ArcTo(new System.Windows.Point(x + (rad * Math.Cos(endAngle)), y + (rad * Math.Sin(endAngle))),
+                            new System.Windows.Size(rad, rad), diffAngle, diffAngle > 180, SweepDirection.Clockwise, true, true);
+                    }
+                }
+                solidGroup.Children.Add(streamGeometry);
+
+                StreamGeometry streamGeometry1 = new();
+
+                int j = 0;
+                using (StreamGeometryContext ctx = streamGeometry1.Open())
+                {
+                    foreach (Polyline polyline in dxf.Polylines)
+                    {
+                        ctx.BeginFigure(new System.Windows.Point(polyline.Vertexes[0].Position.X + oftX, polyline.Vertexes[0].Position.Y + oftY), false, polyline.IsClosed);
+
+                        Debug.WriteLine($"{polyline.IsClosed} {polyline.Vertexes[0].Position}");
+
+                        for (int i = 1; i < polyline.Vertexes.Count; i++)
+                        {
+                            double x = polyline.Vertexes[i].Position.X + oftX;
+                            double y = polyline.Vertexes[i].Position.Y + oftY;
+
+                            ctx.LineTo(new System.Windows.Point(x, y), true, false);
+                        }
+
+                        break;
+                    }
+
+                    foreach (LwPolyline lwPolyline in dxf.LwPolylines)
+                    {
+                        ctx.BeginFigure(new System.Windows.Point(lwPolyline.Vertexes[0].Position.X + oftX, lwPolyline.Vertexes[0].Position.Y + oftY), false, lwPolyline.IsClosed);
+
+                        for (int i = 1; i < lwPolyline.Vertexes.Count; i++)
+                        {
+                            double x = lwPolyline.Vertexes[i].Position.X + oftX;
+                            double y = lwPolyline.Vertexes[i].Position.Y + oftY;
+
+                            ctx.LineTo(new System.Windows.Point(x, y), true, false);
+                        }
+                    }
+
+                    foreach (Ray ray in dxf.Rays)
+                    {
+                        Debug.WriteLine($"{ray.Origin} {ray.Direction} {ray.Linetype}"); 
+                        ctx.BeginFigure(new System.Windows.Point(ray.Origin.X + oftX, ray.Origin.Y + oftY), false, false);
+
+                        ctx.LineTo(new System.Windows.Point(ray.Direction.X * 10000 + oftX, ray.Direction.Y * 10000 + oftY), true, true);
+                    }
 
 
-                Debug.WriteLine($"{ImageCanvas.Children.Count}");
+                    foreach (netDxf.Entities.Point point in dxf.Points)
+                    {
+                        Debug.WriteLine($"{point.Position}");
+
+                        //Debug.WriteLine($"{mLine.Vertexes.Count}");
+                        //Debug.WriteLine($"{mLine.Vertexes[0].Location} {oftX} {oftY}");
+                    }
+
+                }
+                solidGroup.Children.Add(streamGeometry1);
+
+                Debug.WriteLine($"Polylines {dxf.Polylines.Count()}");
+                Debug.WriteLine($"LwPolylines {dxf.LwPolylines.Count()}");
+                Debug.WriteLine($"Texts {dxf.Texts.Count()}");
+                Debug.WriteLine($"MLines {dxf.MLines.Count()}");
+                Debug.WriteLine($"MTexts {dxf.MTexts.Count()}");
+                Debug.WriteLine($"Points {dxf.Points.Count()}");
+                Debug.WriteLine($"Rays {dxf.Rays.Count()}");
+                //Debug.WriteLine($"block {dxf.Blocks.Count}");
+                //Debug.WriteLine($"Dimensions {dxf.Dimensions.Count()}");
+
+                //solidPath.Data = geometryGroup;
+                //dashPath.Data =
+                _ = ImageCanvas.Children.Add(dashPath);
+                _ = ImageCanvas.Children.Add(solidPath);
+
+                //foreach (object item in ImageCanvas.Children)
+                //{
+                //    Debug.WriteLine($"{item}");
+                //}
+                //Debug.WriteLine($"{ImageCanvas.Children.Count}");
+
                 Cv2.Flip(img, img, FlipMode.X);
-                Cv2.ImShow($"mat", img);
+                //Cv2.ImShow($"mat", img);
             }
         } 
 #endif
