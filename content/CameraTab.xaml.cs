@@ -333,6 +333,17 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void CameraConfigSave_Click(object sender, RoutedEventArgs e)
         {
+            if (CameraCard1.Visibility == Visibility.Visible)
+            {
+                CameraCard1.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                CameraCard1.Visibility = Visibility.Visible;
+            }
+
+            return;
+
             string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
             CameraConfigBase[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBase()

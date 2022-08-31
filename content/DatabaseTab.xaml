@@ -316,8 +316,8 @@
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Mode=OneWay}" />
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
-
-                    <Button Margin="0 8 0 0" Content="測試" Click="Test_Click" Height="24" />
+                    <!--<Button Margin="0 8 0 0" Content="測試" Click="Test_Click" Height="24" />-->
+                    
                 </StackPanel>
             </ctrl:CustomCard>
             <!--#endregion-->
