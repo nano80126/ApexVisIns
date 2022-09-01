@@ -59,25 +59,10 @@ namespace MCAJawIns.content
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-#if false
-            Debug.WriteLine($"Plateform {Environment.OSVersion.Platform}");
-            Debug.WriteLine($"Version {Environment.OSVersion.Version}");
-
-            Debug.WriteLine($"Version {Environment.OSVersion.Version.Major}");
-            Debug.WriteLine($"Version {Environment.OSVersion.Version.Minor}");
-            Debug.WriteLine($"Version {Environment.OSVersion.Version.Build}");
-            Debug.WriteLine($"Version {Environment.OSVersion.Version.Revision}");
-
-            Debug.WriteLine($"{Environment.OSVersion.VersionString}");
-
-            Debug.WriteLine($"PID {Environment.ProcessId}");
-            Debug.WriteLine($"x64 {Environment.Is64BitProcess}");
-
-            Debug.WriteLine($"x64 {Environment.MachineName}");
-            Debug.WriteLine($".NET {Environment.Version}");
-            Debug.WriteLine($"-------------------------------------------------"); 
-#endif
-            GetSystemInfomation();
+            if (inited)
+            {
+                GetSystemInfomation();
+            }
 
             if (!loaded)
             {
@@ -95,6 +80,7 @@ namespace MCAJawIns.content
 
         private void GetSystemInfomation()
         {
+
             SystemInfo.OS = $"{Environment.OSVersion.Version}";
             SystemInfo.SetPlateform(Environment.Is64BitProcess);
             SystemInfo.PID = Environment.ProcessId;
@@ -102,7 +88,8 @@ namespace MCAJawIns.content
 
             SystemInfo.PropertyChange();
 
-            if (inited && IsLoaded) { SystemInfo.EnableTimer(); }
+            // if (inited && IsLoaded) { SystemInfo.EnableTimer(); }
+            SystemInfo.EnableTimer();
         }
 
         #region Property Changed Event

@@ -300,25 +300,29 @@
 
             <!--#region 批號查詢 -->
             <ctrl:CustomCard Title="批號查詢" IconKind="Barcode" Background="Linen">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-                    <TextBox x:Name="LotNumberText" DockPanel.Dock="Top" Padding="8 3"
-                            materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard,AncestorLevel=1}}"
-                            materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                <Grid Tag="待刪除">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBox x:Name="LotNumberText" DockPanel.Dock="Top" Padding="8 3"
+                                materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard,AncestorLevel=1}}"
+                                materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
 
-                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="LotNumberFindBtn_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
-                            <TextBlock VerticalAlignment="Center" Text="查詢" />
-                        </StackPanel>
-                    </Button>
+                        <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="LotNumberFindBtn_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center" Text="查詢" />
+                            </StackPanel>
+                        </Button>
 
+                    </StackPanel>
                     <!--// // // // // // // //-->
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
+                    <TextBlock HorizontalAlignment="Left"
+                            Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
+                    <TextBlock HorizontalAlignment="Left" Margin="0 12 0 0"
+                            Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Mode=OneWay}" />
+                    <TextBlock HorizontalAlignment="Left" Margin="0 24 0 0"
+                            Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Mode=OneWay}" />
                     <!--<Button Margin="0 8 0 0" Content="測試" Click="Test_Click" Height="24" />-->
-                    
-                </StackPanel>
+                </Grid>
             </ctrl:CustomCard>
             <!--#endregion-->
         </StackPanel>
@@ -433,7 +437,6 @@
                         </Button>
                     </StackPanel>-->
 
-                    
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
                     <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />

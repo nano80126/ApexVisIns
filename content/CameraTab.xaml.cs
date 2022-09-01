@@ -15,6 +15,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MCAJawConfig = MCAJawIns.Config;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+
 namespace MCAJawIns.content
 {
     /// <summary>
@@ -72,6 +78,11 @@ namespace MCAJawIns.content
         /// 已載入旗標
         /// </summary>
         private bool loaded;
+
+        /// <summary>
+        /// 已初始化旗標
+        /// </summary>
+        private bool inited;
         #endregion
 
         public CameraTab()
@@ -90,13 +101,18 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // 載入 cameras config
-            LoadCamerasConfig();
+            if (inited)
+            {
+                // 載入 cameras config
+                LoadCamerasConfig();
+            }
 
             if (!loaded)
             {
                 MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "裝置組態頁面已載入");
                 loaded = true;
+
+                inited = true;
             }
         }
 
@@ -140,67 +156,109 @@ namespace MCAJawIns.content
         /// <summary>
         /// 載入 camera.json
         /// </summary>
-        private void LoadCamerasConfig()
+        /// <param name="fromDb">是否從資料庫載入，Default is True</param>
+        private void LoadCamerasConfig(bool fromDb = true)
         {
-            string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
-            ////return;
-
-            //Debug.WriteLine($"dir: {directory}");
-            //Debug.WriteLine($"path: {path}");
-
-            //if (!Directory.Exists(directory))
-            //{
-            //    // 新增路徑
-            //    _ = Directory.CreateDirectory(directory);
-            //    // 新增檔案
-            //    _ = File.CreateText(path);
-            //}
-            //else if (!File.Exists(path))
-            //{
-            //    // 新增檔案
-            //    _ = File.CreateText(path);
-            //}
-            //else
-            //{
-            using StreamReader reader = File.OpenText(path);
-            string jsonStr = reader.ReadToEnd();
-
-            if (jsonStr != string.Empty)
+            #region 讀取資料庫
+            if (fromDb)
             {
-                // 反序列化，載入JSON FILE
-                CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
-
-                // 目前有連線的相機
-                BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
-
-                // JSON FILE 儲存之 CameraConfig
-                CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
-
-                if (cameras.Length > cameraConfig.Length)
+                if (MainWindow.MongoAccess.Connected)
                 {
-                    foreach (CameraConfigBase d in cameras)
+                    FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
+
+                    MainWindow.MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
+
+                    if (cfg != null)
                     {
-                        if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                        CameraConfigBase[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
+
+                        //foreach (CameraConfigBase item in cameras)
+                        //{
+                        //    Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
+                        //}
+
+                        // 目前有連線的相機
+                        BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+
+                        // JSON FILE 儲存之 CameraConfig
+                        CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
+
+                        if (cameras.Length > cameraConfig.Length)
                         {
-                            CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                            foreach (CameraConfigBase d in cameras)
                             {
-                                VendorName = d.VendorName,
-                                CameraType = d.CameraType,
-                                TargetFeature = d.TargetFeature,
-                                // 
-                                Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
-                            };
-                            MainWindow?.CameraEnumer.CameraConfigs.Add(config);
-                        }
+                                if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                                {
+                                    CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                    {
+                                        VendorName = d.VendorName,
+                                        CameraType = d.CameraType,
+                                        TargetFeature = d.TargetFeature,
+                                        // 
+                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                    };
+                                    MainWindow?.CameraEnumer.CameraConfigs.Add(config);
+                                }
+                            }
+                        } 
                     }
+                    else
+                    {
+                        LoadCamerasConfig(false);
+                    }
+                }
+                else
+                {
+                    LoadCamerasConfig(false);
                 }
             }
             else
             {
-                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機設定檔為空");
+                string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+
+                using StreamReader reader = File.OpenText(path);
+                string jsonStr = reader.ReadToEnd();
+
+                if (jsonStr != string.Empty)
+                {
+                    // 反序列化，載入JSON FILE
+                    CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+
+                    // 目前有連線的相機
+                    BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+
+                    // JSON FILE 儲存之 CameraConfig
+                    CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
+
+                    if (cameras.Length > cameraConfig.Length)
+                    {
+                        foreach (CameraConfigBase d in cameras)
+                        {
+                            if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                            {
+                                CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                {
+                                    VendorName = d.VendorName,
+                                    CameraType = d.CameraType,
+                                    TargetFeature = d.TargetFeature,
+                                    // 
+                                    Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                };
+                                MainWindow?.CameraEnumer.CameraConfigs.Add(config);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定為空");
+                }
             }
-            //}
+            #endregion
         }
+
+
+
 
         /// <summary>
         /// 相機選擇 Combobox Right Click Event
@@ -239,6 +297,13 @@ namespace MCAJawIns.content
                 // CameraConfigSaved Flag set false
                 MainWindow.CameraEnumer.CameraCofingSaved = false;
             }
+
+            Debug.WriteLine($"{MainWindow.CameraEnumer.CameraConfigs}");
+            foreach (CameraConfig item in MainWindow.CameraEnumer.CameraConfigs)
+            {
+                Debug.WriteLine($"{item.Model} {item.SerialNumber}");
+            }
+
         }
 
         /// <summary>
@@ -333,17 +398,6 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void CameraConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            if (CameraCard1.Visibility == Visibility.Visible)
-            {
-                CameraCard1.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                CameraCard1.Visibility = Visibility.Visible;
-            }
-
-            return;
-
             string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
             CameraConfigBase[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBase()
@@ -358,10 +412,44 @@ namespace MCAJawIns.content
                 TargetFeature = item.TargetFeature
             }).ToArray();
 
+            #region 寫入本地JSON FILE
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);
             MainWindow.CameraEnumer.CameraCofingSaved = true;
+            #endregion
+
+
+            //MCAJawConfig cfg = new MCAJawConfig()
+            //{
+            //    ObjID = new ObjectId(),
+            //    Type = nameof(MCAJawConfig.ConfigType.CAMERA),
+            //    DataArray = bsonArray,
+            //    InsertTime = DateTime.Now,
+            //    UpdateTime = DateTime.Now,
+            //};
+
+            #region 寫入資料庫
+            try
+            {
+                BsonArray bsonArray = new BsonArray(infos.Length);
+                foreach (CameraConfigBase item in infos)
+                {
+                    _ = bsonArray.Add(item.ToBsonDocument());
+                }
+
+                FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
+                UpdateDefinition<MCAJawConfig> update = Builders<MCAJawConfig>.Update
+                    .Set(nameof(MCAJawConfig.UpdateTime), DateTime.Now)
+                    .Set(nameof(MCAJawConfig.DataArray), bsonArray)
+                    .SetOnInsert(nameof(MCAJawConfig.InsertTime), DateTime.Now);
+                _ = MainWindow.MongoAccess.UpsertOne(nameof(JawCollection.Configs), filter, update);
+            }
+            catch (MongoException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
+            }
+            #endregion
         }
 
         /// <summary>
@@ -563,8 +651,10 @@ namespace MCAJawIns.content
                 config.Gamma = camera.Parameters[PLGigECamera.Gamma].GetValue();
                 #endregion
 
+#if false
                 string userSet = camera.Parameters[PLGigECamera.UserSetDefaultSelector].GetValue();
-                Debug.WriteLine($"{userSet}");
+                Debug.WriteLine($"Default UserSet {userSet}"); 
+#endif
             }
             catch (Exception)
             {
@@ -753,6 +843,17 @@ namespace MCAJawIns.content
             CameraFuncTab = idx;
         }
 
+        private void TestSwitch(object sender, RoutedEventArgs e)
+        {
+            if (CameraCard1.Visibility == Visibility.Visible)
+            {
+                CameraCard1.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                CameraCard1.Visibility = Visibility.Visible;
+            }
+        }
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

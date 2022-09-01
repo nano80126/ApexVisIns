@@ -457,8 +457,8 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Empty;
-                    UpdateDefinition<MCAJawConfig> update = Builders<MCAJawConfig>.Update.Set("DataReserveMonths", month);
+                    FilterDefinition<MCAJawConfig_tmp> filter = Builders<MCAJawConfig_tmp>.Filter.Empty;
+                    UpdateDefinition<MCAJawConfig_tmp> update = Builders<MCAJawConfig_tmp>.Update.Set("DataReserveMonths", month);
 
                     UpdateResult result = MainWindow.MongoAccess.UpdateOne("Configs", filter, update);
                 }
@@ -491,15 +491,16 @@ namespace MCAJawIns.content
         /// <summary>
         /// 載入資料庫設定
         /// </summary>
+        [Obsolete("待修正")]
         private void LoadDatabaseConfig(bool recycling)
         {
             try
             {
                 if (!MainWindow.MongoAccess.Connected) { return; }
 
-                FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Empty;
+                FilterDefinition<MCAJawConfig_tmp> filter = Builders<MCAJawConfig_tmp>.Filter.Empty;
 
-                MainWindow.MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
+                MainWindow.MongoAccess.FindOne("Configs", Builders<MCAJawConfig_tmp>.Filter.Empty, out MCAJawConfig_tmp config);
 
                 if (config != null)
                 {

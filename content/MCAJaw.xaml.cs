@@ -1039,9 +1039,9 @@ namespace MCAJawIns.content
     }
 
     #region MCA Jaw Config Definition
-    public class MCAJawConfig
+    public class MCAJawConfig_tmp
     {
-        public MCAJawConfig()
+        public MCAJawConfig_tmp()
         {
             DateTime = DateTime.Now;
         }

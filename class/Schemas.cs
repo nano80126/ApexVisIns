@@ -64,11 +64,11 @@ namespace MCAJawIns
             /// <summary>
             /// 規格
             /// </summary>
-            Spec,
+            SPEC,
             /// <summary>
             /// 資料庫維護
             /// </summary>
-            Database,
+            DATABASE,
         }
 
         [BsonId]
@@ -78,7 +78,19 @@ namespace MCAJawIns
         /// 類別
         /// </summary>
         [BsonElement(nameof(Type))]
-        public ConfigType Type { get; set; }
+        public string Type { get; set; }
+
+        /// <summary>
+        /// 物件資料
+        /// </summary>
+        [BsonElement(nameof(Data))]
+        public BsonDocument Data { get; set; } = null;
+
+        /// <summary>
+        /// 陣列資料
+        /// </summary>
+        [BsonElement(nameof(DataArray))]
+        public BsonArray DataArray { get; set; } = null;
 
         /// <summary>
         /// 資料插入時間
@@ -89,10 +101,9 @@ namespace MCAJawIns
         /// <summary>
         /// 資料更新時間
         /// </summary>
-        [BsonElement(nameof(UpdateTimer))]
-        public DateTime UpdateTimer { get; set; }
+        [BsonElement(nameof(UpdateTime))]
+        public DateTime UpdateTime { get; set; }
     }
-
 
     /// <summary>
     /// 應用程式資訊
@@ -129,6 +140,12 @@ namespace MCAJawIns
         /// </summary>
         [BsonElement(nameof(Data))]
         public BsonDocument Data { get; set; }
+
+        /// <summary>
+        /// Bson Array 資料
+        /// </summary>
+        [BsonElement(nameof(DataArray))]
+        public BsonArray DataArray { get; set; }
 
         /// <summary>
         /// 資料插入時間

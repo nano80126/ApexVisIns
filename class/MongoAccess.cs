@@ -451,7 +451,6 @@ namespace MCAJawIns
                 IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
 
-
                 return collection.UpdateOne(filter, update, new UpdateOptions()
                 {
                     IsUpsert = true,
