@@ -14,10 +14,25 @@ namespace MCAJawIns
     /// </summary>
     public enum JawCollection
     {
+        /// <summary>
+        /// 記錄使用者權限
+        /// </summary>
         Auth,
+        /// <summary>
+        /// 紀錄各項設定
+        /// </summary>
         Configs,
+        /// <summary>
+        /// 紀錄系統資訊
+        /// </summary>
         Info,
+        /// <summary>
+        /// 紀錄批次資料
+        /// </summary>
         Lots,
+        /// <summary>
+        /// 紀錄量測資料
+        /// </summary>
         Measurements
     }
 

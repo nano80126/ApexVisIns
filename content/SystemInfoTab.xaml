@@ -132,6 +132,7 @@
                 <!--#endregion-->
             </Grid>
 
+            <!--#region Footer -->
             <ctrl:CustomCard.Footer>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Margin="12 0" Padding="8 3" Content="START" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
@@ -140,6 +141,7 @@
                             Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click" />
                 </StackPanel>
             </ctrl:CustomCard.Footer>
+            <!--#endregion-->
         </ctrl:CustomCard>
 
         <materialDesign:Card Padding="8" Width="200" Height="200" UniformCornerRadius="10" Background="{StaticResource ColorInfo}" Visibility="Collapsed">

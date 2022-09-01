@@ -15,21 +15,23 @@
             d:DataContext="{d:DesignInstance Type={x:Null}}"
             Loaded="StackPanel_Loaded" 
             Unloaded="StackPanel_Unloaded">
+    <!--#region Resources -->
     <StackPanel.Resources>
         <!-- Crosshair -->
         <app:Crosshair x:Key="Crosshair" Enable="False" Stroke="{StaticResource ColorDeepOrange}" />
         <!-- 輔助 Rect -->
         <app:AssistRect x:Key="AssistRect" Enable="False" Stroke="{StaticResource ColorOrange}" StrokeThickness="3" />
         <!-- 輔助 Points -->
-        <app:AssistPoints x:Key="AssistPoints"/>
+        <app:AssistPoints x:Key="AssistPoints" />
         <!-- 輔助標示器 -->
         <app:Indicator x:Key="Indicator" />
     </StackPanel.Resources>
+    <!--#endregion-->
 
     <!--#region Toolbar -->
     <DockPanel x:Name="ToolbarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region MainToolbar-->
-        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
+        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0">
             <!-- DataContext 動態變更, CamSelectort SelectedIndex Changed 觸發 -->
             <ToolBar x:Name="Toolbar" Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Height="38"
                     ToolBarTray.IsLocked="True" Focusable="False" DataContext="{StaticResource BaslerCam}">
@@ -187,8 +189,8 @@
                 </Border>
                 -->
                 <Border>
-                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown"
-                            Text="{Binding Path=ZoomRatio, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Padding="5 0" MinWidth="50" FontSize="16" TextAlignment="Center" Text="{Binding Path=ZoomRatio, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, 
+                        Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown" />
                 </Border>
                 <!--//-->
                 <Separator />
@@ -266,7 +268,7 @@
         <!--#endregion-->
         
         <!--#region SubToolbar -->
-        <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0"
+        <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0"
                 FlowDirection="RightToLeft">
             <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
                     FlowDirection="LeftToRight">
@@ -327,6 +329,13 @@
                         HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical">
                         <Grid x:Name="ImageGrid">
+
+                            <!--#region 待移除 -->
+                            <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Grid},Mode=OneWay}" />
+                            <TextBlock Margin="0 12 0 0" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=StackPanel},Mode=OneWay}" />
+                            <TextBlock Margin="0 24 0 0" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Border},Mode=OneWay}" />
+                            <!--#endregion-->
+
                             <ScrollViewer x:Name="ImageScroller" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Background="{x:Null}"
                                     PreviewMouseWheel="ImageScroller_PreviewMouseWheel">
                                 <ScrollViewer.Style>

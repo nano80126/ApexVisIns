@@ -32,8 +32,7 @@
                         <cvt:BooleanToVisibility x:Key="BooleanToVisibility" />
                     </ControlTemplate.Resources>
 
-                    <materialDesign:Card HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                            Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
+                    <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
                             materialDesign:ShadowAssist.ShadowDepth="{TemplateBinding materialDesign:ShadowAssist.ShadowDepth}" Foreground="{TemplateBinding Foreground}"
                             Background="{TemplateBinding Background}" UniformCornerRadius="{TemplateBinding UniformCornerRadius}">
                         <DockPanel Background="Transparent" Margin="2 0" x:Name="Panel">
