@@ -31,6 +31,8 @@ MCA Jaw CCD 尺寸量測設備
 		* 系統資訊
 		* 系統狀態
 
+### 每個 Tab 內部最左欄確保 pixel 對齊
+
 ### TO DO LIST
 
 * [ ] ServoMotion.Axes.Clear() 會導致 Binding Error 
@@ -206,7 +208,10 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] 確認 UserlayoutRounding 影響
 
-* [ ] 修正 WISE4050觸發機制
+* [x] 修正 WISE4050觸發機制
+
+* [ ] 
+
 
 ### Config Logic
 

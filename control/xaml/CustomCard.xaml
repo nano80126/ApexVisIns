@@ -27,7 +27,6 @@
                     <ControlTemplate.Resources>
                         <cvt:ObjectNotNullConverter x:Key="ObjectNotNullConverter" />
                         <cvt:ObjectNotNullToVisibility x:Key="ObjectNotNullToVisibility" />
-                        <!--<cvt:BooleanAndToVisibility x:Key="BooleanAndToVisibility" />-->
                         <cvt:BooleanOrToVisibility x:Key="BooleanOrToVisibility" />
                         <cvt:BooleanToVisibility x:Key="BooleanToVisibility" />
                     </ControlTemplate.Resources>
@@ -35,30 +34,28 @@
                     <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
                             materialDesign:ShadowAssist.ShadowDepth="{TemplateBinding materialDesign:ShadowAssist.ShadowDepth}" Foreground="{TemplateBinding Foreground}"
                             Background="{TemplateBinding Background}" UniformCornerRadius="{TemplateBinding UniformCornerRadius}">
-                        <DockPanel Background="Transparent" Margin="2 0" x:Name="Panel">
-                            <DockPanel x:Name="Header" DockPanel.Dock="Top" Focusable="True" Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}">
+                        <DockPanel Background="Transparent" Margin="1 0" x:Name="Panel">
+                            <DockPanel x:Name="Header" DockPanel.Dock="Top" Margin="1 0" Focusable="True"
+                                    Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}">
                                 <!--<materialDesign:PackIcon Kind="{Binding IconKind, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Width="30" Height="26"/>-->
                                 <materialDesign:PackIcon DockPanel.Dock="Left" Kind="{TemplateBinding IconKind}" Width="30" Height="26" />
-                                <TextBlock DockPanel.Dock="Left" Text="{TemplateBinding Title}"
-                                        Style="{StaticResource HeaderStyle}" />
+                                <TextBlock DockPanel.Dock="Left" Text="{TemplateBinding Title}" Style="{StaticResource HeaderStyle}" />
 
-                                <TextBlock DockPanel.Dock="Right" FontSize="16" Foreground="{StaticResource ColorSecondary}" Text="{TemplateBinding SubTitle}" Style="{StaticResource HeaderStyle}" />
+                                <TextBlock DockPanel.Dock="Right" FontSize="16" Foreground="{StaticResource ColorSecondary}" Text="{TemplateBinding SubTitle}"
+                                        Style="{StaticResource HeaderStyle}" />
                                 <TextBlock Text="{x:Null}" />
                             </DockPanel>
                             <!--//-->
-                            <!--<AdornerDecorator CacheMode=""></AdornerDecorator>-->
-                            <Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}"/>
+                            <Separator DockPanel.Dock="Top" Margin="1 8 1 4" Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}" />
                             <!--//-->
-                            <!--<ContentControl DockPanel.Dock="Top" Content="{Binding Content}" Background="Red"/>-->
-                            <!--<AdornerDecorator DockPanel.Dock="Top"></AdornerDecorator>-->
                             <AdornerDecorator DockPanel.Dock="Top">
-                                <ContentPresenter Margin="{TemplateBinding BodyPadding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
-                                        ContentStringFormat="{TemplateBinding ContentStringFormat}" />
+                                <ContentPresenter Margin="{TemplateBinding BodyPadding}" UseLayoutRounding="True" Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}" ContentStringFormat="{TemplateBinding ContentStringFormat}" />
                             </AdornerDecorator>
                             <!--<ContentPresenter DockPanel.Dock="Top" x:Name="MainContent2" Content="{Binding Path=Content}"/>-->
                             <!--//-->
                             <!--<Separator DockPanel.Dock="Top" Margin="0 8" Visibility="{Binding Footer, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ObjectNotNullToVisibility}}"/>-->
-                            <Separator DockPanel.Dock="Top" Margin="0 8" >
+                            <Separator DockPanel.Dock="Top" Margin="1 4">
                                 <!--Visibility="{TemplateBinding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"-->
                                 <Separator.Visibility>
                                     <MultiBinding Converter="{StaticResource BooleanOrToVisibility}">
@@ -67,7 +64,7 @@
                                     </MultiBinding>
                                 </Separator.Visibility>
                             </Separator>
-                                       
+
                             <!--Visibility="{Binding Footer, Converter={StaticResource ObjectNotNullToVisibility}}"-->
                             <!--//-->
                             <AdornerDecorator DockPanel.Dock="Bottom">
