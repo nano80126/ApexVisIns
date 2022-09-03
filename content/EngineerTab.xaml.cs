@@ -116,7 +116,7 @@ namespace MCAJawIns.content
             //Indicator.Image = m;
             //Indicator.ImageSource = m.ToImageSource();
         }
-
+        
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             //Debug.WriteLine("Engineer Tab Unload");

@@ -117,21 +117,6 @@ namespace MCAJawIns.content
         }
 
         /// <summary>
-        /// Config Tab Unload 事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // 取消 Collection 變更事件
-            // if (EventHasBound)  // 確認已綁定
-            // {
-            //     MainWindow.CameraEnumer.CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
-            //     EventHasBound = false;
-            // }
-        }
-
-        /// <summary>
         /// 初始化 cameras Config 路徑
         /// </summary>
         private void InitCamerasConfigPath()
