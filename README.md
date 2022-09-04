@@ -210,8 +210,11 @@ MCA Jaw CCD 尺寸量測設備
 
 * [x] 修正 WISE4050觸發機制
 
-* [ ] 
+* [ ] ConfigPanel 新增 Extension config
 
+* [ ] Engineertab.xaml 修正 CustomCard Padding
+
+* [ ] 刪除量測用的 TextBlockc 和 Binding
 
 ### Config Logic
 

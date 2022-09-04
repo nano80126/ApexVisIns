@@ -10,7 +10,7 @@
             mc:Ignorable="d" 
             d:DesignHeight="900" 
             d:DesignWidth="1600" 
-            UseLayoutRounding="True" 
+            UseLayoutRounding="False" 
             Orientation="Vertical"
             d:DataContext="{d:DesignInstance Type={x:Null}}"
             Loaded="StackPanel_Loaded" 
@@ -55,11 +55,11 @@
                 </ToolBar.Resources>
                 <!--#endregion-->
                 <!--相機選擇-->
-                <ComboBox x:Name="CamSelector" Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold" VerticalAlignment="Center"
-                        HorizontalAlignment="Left" materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                <ComboBox x:Name="CamSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 12 0" Padding="8 4" MinWidth="135" FontWeight="Bold"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                         IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                         ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                        SelectionChanged="CamSelector_SelectionChanged" MouseRightButtonUp="CamSelector_MouseRightButtonUp" MinWidth="135" Margin="0 0 12 0">
+                        SelectionChanged="CamSelector_SelectionChanged" MouseRightButtonUp="CamSelector_MouseRightButtonUp">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <!--// 這邊新增 Converter 縮短字串長度-->
@@ -92,12 +92,12 @@
                 <!--//-->
                 <Separator />
                 <!--單張擷取-->
-                <Button Name="SingleShot" VerticalAlignment="Center" Click="SingleShot_Click" Focusable="False" Foreground="Black" ToolTip="(F5) Single Shot"
-                        Style="{StaticResource MaterialDesignFlatButton}">
+                <Button Name="SingleShot" VerticalAlignment="Center" Foreground="Black" Focusable="False" ToolTip="(F5) Single Shot"
+                        Style="{StaticResource MaterialDesignFlatButton}" Click="SingleShot_Click">
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay" />
-                            <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay"></Binding>
+                            <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" Mode="OneWay" />
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
@@ -110,8 +110,8 @@
                     </materialDesign:PackIcon>
                 </Button>
                 <!--連續擷取-->
-                <Button x:Name="ContinouseShot" VerticalAlignment="Center" Click="ContinouseShot_Click" Focusable="False" Foreground="Black" ToolTip="(F6) Continuous Shot"
-                        Style="{StaticResource MaterialDesignFlatButton}">
+                <Button x:Name="ContinouseShot" VerticalAlignment="Center" Foreground="Black" Focusable="False" ToolTip="(F6) Continuous Shot"
+                        Style="{StaticResource MaterialDesignFlatButton}" Click="ContinouseShot_Click">
                     <Button.IsEnabled>
                         <MultiBinding Converter="{StaticResource BooleanAndGate}">
                             <Binding Path="IsOpen" FallbackValue="False" Mode="OneWay" />
@@ -516,19 +516,19 @@
             <!--#endregion-->
 
             <!--//-->
-            <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
+            <StackPanel Grid.Column="0" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Width="300">
                 <!--<uc:ConfigPanel x:Name="ConfigPanel1" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource BaslerCam}" />-->
                 <panel:ConfigPanel x:Name="ConfigPanel" Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
                 <!--<uc:OffsetPanel x:Name="OffsetPanel" Style="{StaticResource PanelTopCard}" Visibility="Collapsed" />-->
                 <panel:OffsetPanel Background="LightCyan" DataContext="{StaticResource BaslerCam}" />
             </StackPanel>
             <!--//-->
-            <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
+            <StackPanel Grid.Column="0" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Width="300" Background="{x:Null}">
                 <!--<uc:LightPanel x:Name="LightPanel" Style="{StaticResource PanelBottomCard}"/>-->
                 <panel:LightPanel x:Name="LightPanel" Background="LightCyan" Margin="2 8 2 0" />
             </StackPanel>
             <!--//-->
-            <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}" Width="300">
+            <StackPanel Grid.Column="2" Grid.Row="0" Margin="0 1" Orientation="Vertical" VerticalAlignment="Top" Width="300" Background="{x:Null}">
                 <!--<uc:DigitalIOPanel x:Name="DigitalIOPanel" Style="{StaticResource PanelTopCard}" DataContext="{StaticResource IOController}"/>-->
                 <panel:PointsPanel x:Name="PointsPanel" Background="LightCyan" DataContext="{StaticResource AssistPoints}"
                         Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, UpdateSourceTrigger=PropertyChanged}" />
@@ -541,13 +541,14 @@
                     <TextBox x:Name="ToText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="90" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
                 </StackPanel>
 
-                <TextBlock Margin="0 -26 0 0" Padding="0 3 0 0" VerticalAlignment="Stretch" TextAlignment="Center" FontSize="16" Text="這邊待刪除" 
-                           Background="{StaticResource ColorWarningTransparent}" />
+                <TextBlock Margin="0 -26 0 0" Padding="0 3 0 0" VerticalAlignment="Stretch" TextAlignment="Center" FontSize="16" Text="這邊待刪除"
+                        Background="{StaticResource ColorWarningTransparent}" />
             </StackPanel>
             <!--//-->
-            <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Background="{x:Null}" Width="300">
+            <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Width="300" Background="{x:Null}">
                 <!--保留-->
-                <!--保留--><!--保留-->
+                <!--保留-->
+                <!--保留-->
                 <!--<TextBlock Text="保留" HorizontalAlignment="Center" Background="Red"></TextBlock>-->
             </StackPanel>
         </Grid>

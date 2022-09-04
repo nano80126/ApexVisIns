@@ -852,12 +852,12 @@
 
                                     <!--標記上下限-->
                                     <ComboBox Grid.Row="2" Grid.Column="7" SelectedItem="{Binding GainAuto}" ItemsSource="{Binding GainAutoEnum}" />
-                                    <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                    <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3"
                                             IsEnabled="{Binding GainAuto, Converter={StaticResource StringEqualConverter}, ConverterParameter=Off}"
                                             Text="{Binding Gain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}" />
 
                                     <!--標記上下限-->
-                                    <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                    <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3"
                                             Text="{Binding BlackLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}" />
 
                                     <CheckBox Grid.Row="5" Grid.Column="7" IsChecked="{Binding GammaEnable}" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
@@ -865,7 +865,7 @@
 
                                     <ComboBox Grid.Row="6" Grid.Column="7" SelectedItem="{Binding GammaSelector}" ItemsSource="{Binding GammaSelectorEnum}" />
 
-                                    <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture"
+                                    <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3"
                                             IsEnabled="{Binding GammaSelector, Converter={StaticResource StringEqualConverter}, ConverterParameter=User}"
                                             Text="{Binding Gamma, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:f1}}" />
                                     <!--#endregion-->
@@ -1458,18 +1458,22 @@
                                     <TextBlock Grid.Row="4" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxWidth, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Grid.Row="5" Grid.Column="1" TextAlignment="Center" Text="{Binding MaxHeight, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                                    <TextBox Grid.Row="6" Grid.Column="1" Padding="8 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBox Grid.Row="7" Grid.Column="1" Padding="8 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Row="6" Grid.Column="1" Padding="8 3" Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />
+                                    <TextBox Grid.Row="7" Grid.Column="1" Padding="8 3" Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />
 
                                     <TextBox Grid.Row="8" Grid.Column="1" Padding="8 3" IsEnabled="{Binding CenterX, Converter={StaticResource BooleanInverter}}"
-                                            Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Text="{Binding OffsetX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
                                     <TextBox Grid.Row="9" Grid.Column="1" Padding="8 3" IsEnabled="{Binding CenterY, Converter={StaticResource BooleanInverter}}"
-                                            Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Text="{Binding OffsetY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
 
-                                    <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
-                                    <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" Style="{StaticResource MaterialDesignCheckBox}" />
+                                    <CheckBox Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                            IsChecked="{Binding CenterX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignCheckBox}" />
+                                    <CheckBox Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                            IsChecked="{Binding CenterY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignCheckBox}" />
 
                                     <!--量測用-->
                                     <!--<TextBlock Grid.Row="0" Grid.RowSpan="100" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center"
@@ -1500,12 +1504,14 @@
                                     <ComboBox Grid.Row="5" Grid.Column="4" SelectedItem="{Binding ExposureMode}" ItemsSource="{Binding ExposureModeEnum}" />
                                     <ComboBox Grid.Row="6" Grid.Column="4" SelectedItem="{Binding ExposureAuto}" ItemsSource="{Binding ExposureAutoEnum}" />
                                     <TextBox Grid.Row="7" Grid.Column="4" Padding="8 3"
-                                            Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F3}}" />
+                                            Text="{Binding ExposureTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F3}}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
 
-                                    <CheckBox Grid.Row="8" Grid.Column="4" IsChecked="{Binding FixedFPS}" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
-                                            Style="{StaticResource MaterialDesignCheckBox}" />
+                                    <CheckBox Grid.Row="8" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                            IsChecked="{Binding FixedFPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignCheckBox}" />
                                     <TextBox Grid.Row="9" Grid.Column="4" Padding="8 3" IsEnabled="{Binding FixedFPS}"
-                                            Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}" />
+                                            Text="{Binding FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F4}}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
                                     <!--量測用-->
                                     <!--<TextBlock Grid.Row="0" Grid.RowSpan="100" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center"
                                                 FontSize="24" Foreground="Blue" Background="{StaticResource ColorPurpleTransparent}"
@@ -1530,7 +1536,8 @@
                                     <ComboBox Grid.Row="2" Grid.Column="7" SelectedItem="{Binding GainAuto}" ItemsSource="{Binding GainAutoEnum}" />
                                     <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3"
                                             IsEnabled="{Binding GainAuto, Converter={StaticResource StringEqualConverter}, ConverterParameter=Off}"
-                                            Text="{Binding Gain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}">
+                                            Text="{Binding Gain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture">
                                         <materialDesign:HintAssist.HelperTextStyle>
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHelperTextBlock}">
                                                 <Setter Property="HorizontalAlignment" Value="Right" />
@@ -1540,16 +1547,18 @@
 
                                     <!--標記上下限-->
                                     <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3"
-                                            Text="{Binding BlackLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}" />
+                                            Text="{Binding BlackLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:D}}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
 
-                                    <CheckBox Grid.Row="5" Grid.Column="7" IsChecked="{Binding GammaEnable}" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
-                                            Style="{StaticResource MaterialDesignCheckBox}" />
+                                    <CheckBox Grid.Row="5" Grid.Column="7" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                            IsChecked="{Binding GammaEnable , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignCheckBox}" />
 
                                     <ComboBox Grid.Row="6" Grid.Column="7" SelectedItem="{Binding GammaSelector}" ItemsSource="{Binding GammaSelectorEnum}" />
 
                                     <TextBox Grid.Row="7" Grid.Column="7" Padding="0 3"
                                             IsEnabled="{Binding GammaSelector, Converter={StaticResource StringEqualConverter}, ConverterParameter=User}"
-                                            Text="{Binding Gamma, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:f1}}">
+                                            Text="{Binding Gamma, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:f1}}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture">
                                         <materialDesign:HintAssist.HelperTextStyle>
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHelperTextBlock}">
                                                 <Setter Property="HorizontalAlignment" Value="Right" />

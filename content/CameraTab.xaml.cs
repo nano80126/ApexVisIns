@@ -54,7 +54,7 @@ namespace MCAJawIns.content
         /// 主視窗物件
         /// </summary>
         public MainWindow MainWindow { get; set; }
-        
+
         /// <summary>
         /// Function Tab(相機、鏡頭)
         /// </summary>
@@ -185,7 +185,7 @@ namespace MCAJawIns.content
                                     MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                                 }
                             }
-                        } 
+                        }
                     }
                     else
                     {
@@ -241,9 +241,6 @@ namespace MCAJawIns.content
             }
             #endregion
         }
-
-
-
 
         /// <summary>
         /// 相機選擇 Combobox Right Click Event
