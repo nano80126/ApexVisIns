@@ -1,13 +1,10 @@
-﻿using Basler.Pylon;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -15,11 +12,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using Basler.Pylon;
+using MCAJawIns.Mongo;
 using MongoDB.Bson;
-using MongoDB.Driver;
-using MCAJawConfig = MCAJawIns.Config;
 using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
+using MCAJawConfig = MCAJawIns.Mongo.Config;
 
 namespace MCAJawIns.content
 {
@@ -157,10 +155,10 @@ namespace MCAJawIns.content
                     {
                         CameraConfigBase[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
 
-                        //foreach (CameraConfigBase item in cameras)
-                        //{
-                        //    Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
-                        //}
+                        // foreach (CameraConfigBase item in cameras)
+                        // {
+                        // Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
+                        // }
 
                         // 目前有連線的相機
                         BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
@@ -401,7 +399,6 @@ namespace MCAJawIns.content
             MainWindow.CameraEnumer.CameraCofingSaved = true;
             #endregion
 
-
             //MCAJawConfig cfg = new MCAJawConfig()
             //{
             //    ObjID = new ObjectId(),
@@ -422,8 +419,8 @@ namespace MCAJawIns.content
 
                 FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
                 UpdateDefinition<MCAJawConfig> update = Builders<MCAJawConfig>.Update
-                    .Set(nameof(MCAJawConfig.UpdateTime), DateTime.Now)
                     .Set(nameof(MCAJawConfig.DataArray), bsonArray)
+                    .Set(nameof(MCAJawConfig.UpdateTime), DateTime.Now)
                     .SetOnInsert(nameof(MCAJawConfig.InsertTime), DateTime.Now);
                 _ = MainWindow.MongoAccess.UpsertOne(nameof(JawCollection.Configs), filter, update);
             }

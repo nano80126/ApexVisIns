@@ -126,22 +126,12 @@ MCA Jaw CCD 尺寸量測設備
 
 * [x] ~DatebaseTab 不須 admin~
 
-* [x] 初始化完成前不允許切換 Tab
-	* 或避免重複進入 InitHardWare function
-	* 新增 Initlizing Flag
-
-* [x] 修正 DatabaseTab Height 不正常 BUG 
-
 * [x] 新增權限 Level功能
 	* 0 基本
 	* 1 作業員
 	* 2 品管員
 	* 5 工程師
 	* 9 開發者
-
-* [x] 新增 SerialPortBase 驅動
-
-* [x] 新增 TCPIPBase驅動
 
 * [ ] CameraTab 新增搭配鏡頭
 	* 廠商
@@ -150,15 +140,8 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] 測試各種彎曲
 
-* [x] 處理平直度重複性問題
-	* 初步測試完成
-
 * [ ] 0.088 左右差異問題
 	* 初步測試完成
-
-* [x] 移除多於物件
-	* IO Window
-	* Servomotion
 
 * [ ] MCA_Jaw 錯誤捕捉
 
@@ -186,7 +169,7 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] 增加系統啟動、關閉紀錄
 	* 每次啟動自動模式且初始化完成時插入一筆資料，紀錄啟動時間點，啟動計時
 	* 若為自動模式，關閉前插入一筆資料，關閉計時
-	* 閒置超過3分鐘，進入閒置狀態 (背景)，暫停計時
+	* 閒置超過1分鐘，進入閒置狀態 (背景)，暫停計時
 	* 一旦有操作，進入運作狀態，繼續計時
 
 * [ ] 切換大、中、小 JAW
@@ -207,14 +190,21 @@ MCA Jaw CCD 尺寸量測設備
 	* 已檢測數量
 
 * [ ] 確認 UserlayoutRounding 影響
-
-* [x] 修正 WISE4050觸發機制
+	* border, rectangl 使用 SnapToDevicePixels
 
 * [ ] ConfigPanel 新增 Extension config
 
 * [ ] Engineertab.xaml 修正 CustomCard Padding
 
+* [ ] MCAJaw.xaml	=>	MCAJaw.xaml (entry)
+					=>	MainUISubTab.xaml
+					=>	SizeSpecSubTab.xaml
+
 * [ ] 刪除量測用的 TextBlockc 和 Binding
+
+* [ ] SizeSpecSubTab 調整 UI
+
+* [ ] 確認 JawResultGroup.SizeSpecList 已被取代且移除
 
 ### Config Logic
 
