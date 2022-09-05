@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Basler.Pylon;
+using MCAJawIns.Mongo;
 using MCAJawIns.Product;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -37,8 +38,14 @@ namespace MCAJawIns.content
         /// <summary>
         /// Jaw 規格設定 (包含檢驗結果) (這邊物件再細分 => results collection group 拆出來)
         /// </summary>
-        public JawSpecGroup JawSpecGroup { get; set; }
+        public JawResultGroup JawResultGroup { get; set; }
 
+        /// <summary>
+        /// Jaw 尺寸規格設定列表
+        /// </summary>
+        public JawSizeSpecList JawSizeSpecList { get; set; }
+
+        //public obser
         /// JawResultsGroup // 量測結果顯示
         /// JawSpecSetting  // 尺寸啟用與否設定
         #endregion
@@ -173,9 +180,11 @@ namespace MCAJawIns.content
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 綁定 Resource
-            JawInspection = FindResource("JawInspection") as JawInspection;
-            JawSpecGroup = FindResource("SpecGroup") as JawSpecGroup;
-            if (!JawSpecGroup.SyncBinding) { JawSpecGroup.EnableCollectionBinding(); }
+            JawInspection = FindResource(nameof(JawInspection)) as JawInspection;
+            JawResultGroup = FindResource("SpecGroup") as JawResultGroup;
+            JawSizeSpecList = FindResource(nameof(JawSizeSpecList)) as JawSizeSpecList;
+
+            if (!JawResultGroup.SyncBinding) { JawResultGroup.EnableCollectionBinding(); }
             #endregion
 
             switch (MainWindow.InitMode)
@@ -693,7 +702,7 @@ namespace MCAJawIns.content
                         MongoAccess.InsertMany("Auth", authLevels);
 #endif
 
-                        MongoAccess.FindAll("Auth", Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
+                        MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
@@ -760,35 +769,33 @@ namespace MCAJawIns.content
                 _ = File.CreateText(path);
             }
 
-            SettingList.JsonPath = path;
+            SizeSpecSubTab.JsonPath = path;
         }
 
         /// <summary>
         /// 載入規格設定
         /// </summary>
-        internal void LoadSpecList()
+        internal void LoadSpecList(bool fromDb = true)
         {
-            SettingList.MCAJaw = this;
+            // 物件 綁定
+            SizeSpecSubTab.MCAJaw = this;
 
-
-#if false
-            if (JawSpecGroup.SpecList.Count > 0 && JawInspection.LotResults.Count > 0)
-            {
-                RenderTransform
-            }
-            else
-            {
-                JawSpecGroup.SpecList.Clear();
-                JawInspection.LotResults.Clear();
-            } 
-#endif
-
-
+            // 清除 集合
             Dispatcher.InvokeAsync(() =>
             {
-                JawSpecGroup.SpecList.Clear();
+                JawResultGroup.SizeSpecList.Clear();
+                JawSizeSpecList.Source.Clear();
                 JawInspection.LotResults.Clear();
             }).Wait();
+
+
+            if (fromDb)
+            {
+
+            } else
+            {
+
+            }
 
             string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
@@ -806,14 +813,17 @@ namespace MCAJawIns.content
                 JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                 foreach (JawSpecSetting item in list)
                 {
-                    //Debug.WriteLine($"{item.Key} {item.Enable}");
-
                     Dispatcher.Invoke(() =>
                     {
-                        JawSpecGroup.SpecList.Add(item);
+                        // 加入尺寸規格列表
+                        JawResultGroup.SizeSpecList.Add(item);
+                        // 加入尺寸規格列表
+                        JawSizeSpecList.Source.Add(item);
+                        // 加入批號檢驗結果 (初始化)
                         JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
                     });
                 }
+                JawSizeSpecList.Save();
             }
             else // 若規格列表不存在
             {
@@ -831,8 +841,10 @@ namespace MCAJawIns.content
                 JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    int id = JawSpecGroup.SpecList.Count + 1;
-                    JawSpecGroup.SpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
+                    int id = JawResultGroup.SizeSpecList.Count + 1;
+                    // 加入尺寸規格列表
+                    JawResultGroup.SizeSpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
+                    // 加入批號檢驗結果 (初始化)
                     JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
                 }
             }
@@ -921,9 +933,9 @@ namespace MCAJawIns.content
             DateTime t1 = DateTime.Now;
 
             // 清空當下 Collection
-            JawSpecGroup.Collection1.Clear();
-            JawSpecGroup.Collection2.Clear();
-            JawSpecGroup.Collection3.Clear();
+            JawResultGroup.Collection1.Clear();
+            JawResultGroup.Collection2.Clear();
+            JawResultGroup.Collection3.Clear();
 
             //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
@@ -941,7 +953,7 @@ namespace MCAJawIns.content
                 //if (true)
                 //{
                 JawMeasurements data = t.Result;
-                data.OK = JawSpecGroup.Col1Result && JawSpecGroup.Col2Result && JawSpecGroup.Col3Result;
+                data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
                 data.DateTime = DateTime.Now;
                 MongoAccess.InsertOne("Measurements", data);
                 //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });

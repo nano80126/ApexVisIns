@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
+    <Compile Remove="class\product\MCA Jaw\JawSizeSpecList.cs" />
     <Compile Remove="class\ShihlinSDE.cs" />
     <Compile Remove="content\MainTab.xaml.cs" />
     <Compile Remove="content\ModbusMotorTab.xaml.cs" />

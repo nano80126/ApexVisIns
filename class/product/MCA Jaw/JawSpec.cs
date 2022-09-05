@@ -1,20 +1,18 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
-using System.Windows.Media;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace MCAJawIns.Product
 {
     /// <summary>
-    /// MCA Jaw 規格輸出
+    /// MCA Jaw 檢驗結果輸出
     /// </summary>
     public class JawSpec : SpecBase
     {
@@ -55,7 +53,6 @@ namespace MCAJawIns.Product
             UpperCtrlLimit = ucl;
             Result = result;
         }
-
 
         /// <summary>
         /// 
@@ -98,11 +95,10 @@ namespace MCAJawIns.Product
         public bool OK => (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
     }
 
-
     /// <summary>
-    /// MCA Jaw 規格設定，規格設定列表用
+    /// MCA Jaw 尺寸規格設定，規格設定列表用
     /// </summary>
-    public class JawSpecSetting : SpecBase
+    public class JawSpecSetting : SpecBase, INotifyPropertyChanged
     {
         private string _note;
         private double _correction;
@@ -111,7 +107,6 @@ namespace MCAJawIns.Product
 
         public JawSpecSetting() { }
 
-
         /// <summary>
         /// 建構子
         /// </summary>
@@ -119,22 +114,22 @@ namespace MCAJawIns.Product
         /// <param name="enable">是否啟用</param>
         /// <param name="key">Dictionary Key</param>
         /// <param name="item">Item Name</param>
-        /// <param name="centerSpec">規格中心</param>
-        /// <param name="lowerCtrlLimit">管制下限</param>
-        /// <param name="upperCtrlLimit">管制上限</param>
+        /// <param name="cl">規格中心</param>
+        /// <param name="lcl">管制下限</param>
+        /// <param name="ucl">管制上限</param>
         /// <param name="correction">校正值 1</param>
         /// <param name="correction2">校正值 2 (開發者專用)</param>
         /// <param name="note">備註</param>
-        public JawSpecSetting(int id, bool enable, string key, string item, double centerSpec, double lowerCtrlLimit, double upperCtrlLimit, double correction, double correction2 = 0, string note = null)
+        public JawSpecSetting(int id, bool enable, string key, string item, double cl, double lcl, double ucl, double correction, double correction2 = 0, string note = null)
         {
             ID = id;
             Enable = enable;
 
             Key = key;
             Item = item;
-            CenterSpec = centerSpec;
-            LowerCtrlLimit = lowerCtrlLimit;
-            UpperCtrlLimit = upperCtrlLimit;
+            CenterSpec = cl;
+            LowerCtrlLimit = lcl;
+            UpperCtrlLimit = ucl;
             Correction = correction;
             CorrectionSecret = correction2;
             Note = note ?? string.Empty;
@@ -208,15 +203,14 @@ namespace MCAJawIns.Product
 
 
     /// <summary>
-    /// MCA Jaw 規格群組，即時顯示用
+    /// MCA Jaw 檢驗結果集合，即時顯示用
     /// </summary>
-    public class JawSpecGroup
+    public class JawResultGroup
     {
         #region Private
         private readonly object _c1lock = new();
         private readonly object _c2lock = new();
         private readonly object _c3lock = new();
-        //private readonly object _lock = new();
         #endregion
 
         #region Public
@@ -242,7 +236,7 @@ namespace MCAJawIns.Product
         /// <summary>
         /// 尺寸規格列表
         /// </summary>
-        public ObservableCollection<JawSpecSetting> SpecList { get; set; } = new ObservableCollection<JawSpecSetting>();
+        public ObservableCollection<JawSpecSetting> SizeSpecList { get; set; } = new ObservableCollection<JawSpecSetting>();
 
 #if false
         /// <summary>
@@ -278,6 +272,88 @@ namespace MCAJawIns.Product
         public bool Col3Result => Collection3.All(item => item.OK);
     }
 
+    public class JawSizeSpecList : INotifyPropertyChanged
+    {
+        #region private
+        private bool _saved;
+        #endregion
+
+        public JawSizeSpecList()
+        {
+            Source.CollectionChanged += Source_CollectionChanged;
+        }
+
+        private void Source_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"act {e.Action}");
+            System.Diagnostics.Debug.WriteLine($"new {e.NewItems}");
+            System.Diagnostics.Debug.WriteLine($"old {e.OldItems}");
+            
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    JawSpecSetting newItem = e.NewItems[0] as JawSpecSetting;
+                    newItem.PropertyChanged += SpecChange_PropertyChanged;
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    JawSpecSetting oldItem = e.OldItems[0] as JawSpecSetting;
+                    oldItem.PropertyChanged -= SpecChange_PropertyChanged;
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+
+                default:
+                    break;
+            }
+        }
+
+        private void SpecChange_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Saved = false;
+            //System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+        }
+
+        public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();
+      
+        /// <summary>
+        /// 是否已儲存
+        /// </summary>
+        public bool Saved
+        {
+            get => _saved;
+            private set
+            {
+                if (value != _saved)
+                {
+                    _saved = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 列表儲存 (變更 Saved Flags)
+        /// </summary>
+        public void Save()
+        {
+            _saved = true;
+            OnPropertyChanged(nameof(Saved));
+        }
+
+        #region Property Changed
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
+
+
     /// <summary>
     /// MAC Jaw 檢驗主物件，
     /// 狀態、計數等功能，
@@ -292,13 +368,13 @@ namespace MCAJawIns.Product
         #endregion
 
         /// <summary>
-        /// MOngo ID
+        /// Mongo ID
         /// </summary>
         [BsonId]
         public ObjectId ObjID { get; set; }
 
         /// <summary>
-        /// 批號輸入
+        /// 檢驗批號輸入
         /// </summary>
         [BsonElement(nameof(LotNumber))]
         public string LotNumber
@@ -317,7 +393,7 @@ namespace MCAJawIns.Product
         }
 
         /// <summary>
-        /// 批號是否已確認 (不會插入 MongoDB)
+        /// 批號是否已確認，用於確認該批號是否已確認，始可檢驗 (不會插入 MongoDB)
         /// </summary>
         [BsonIgnore]
         public bool LotNumberChecked
@@ -334,7 +410,7 @@ namespace MCAJawIns.Product
         }
 
         /// <summary>
-        /// 批號是否已確認 (不會插入 MongoDB)
+        /// 批號是否已確認，用於確認該批號是否已插入資料庫 (不會插入 MongoDB)
         /// </summary>
         [BsonIgnore]
         public bool LotInserted
@@ -351,7 +427,7 @@ namespace MCAJawIns.Product
         }
 
         /// <summary>
-        /// 批號檢驗結果
+        /// 該批檢驗結果紀錄
         /// </summary>
         [BsonElement(nameof(LotResults))]
         public ObservableDictionary<string, ResultElement> LotResults { get; set; } = new ObservableDictionary<string, ResultElement>();
@@ -429,7 +505,7 @@ namespace MCAJawIns.Product
             [BsonIgnore]
             public bool Enable { get; set; }
 
-            #region MyRegion
+            #region Property Changed
             public event PropertyChangedEventHandler PropertyChanged;
             private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {

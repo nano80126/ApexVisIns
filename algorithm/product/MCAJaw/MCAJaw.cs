@@ -94,7 +94,7 @@ namespace MCAJawIns
             try
             {
                 // 規格列表
-                List<JawSpecSetting> specList = MCAJaw.JawSpecGroup.SpecList.ToList();
+                List<JawSpecSetting> specList = MCAJaw.JawResultGroup.SizeSpecList.ToList();
                 JawSpecSetting spec;
                 // 有無料
                 bool partExist = false;
@@ -318,15 +318,15 @@ namespace MCAJawIns
                     {
                         avg = cam1results[key].Average();
                     }
-                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                    MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 ok
-                        bool ok = MCAJaw.JawSpecGroup.Collection1[^1].OK;
+                        bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
                         // ok => Count 不加 0
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
@@ -346,14 +346,14 @@ namespace MCAJawIns
                     //Debug.WriteLine($"{key} {cam2results[key].Count}");
                     //
                     double avg = cam2results[key].Min();
-                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                    MCAJaw.JawSpecGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    MCAJaw.JawResultGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 OK
-                        bool ok = MCAJaw.JawSpecGroup.Collection2[^1].OK;
+                        bool ok = MCAJaw.JawResultGroup.Collection2[^1].OK;
                         // ok => Count 不加 0
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
@@ -368,17 +368,17 @@ namespace MCAJawIns
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
-                spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == "開度差");
+                spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
                 if (spec.Enable)
                 {
                     double bfDiff = Math.Abs(d_front - d_back);
-                    MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
+                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
                     //MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;    // 保留
 
                     if (!isNG)
                     {
                         // 判斷是否 OK
-                        bool ok = MCAJaw.JawSpecGroup.Collection1[^1].OK;
+                        bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
                         // ok => Count 不加 0
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
@@ -391,7 +391,7 @@ namespace MCAJawIns
 
                 //MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
                 //MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
-                MCAJaw.JawSpecGroup.Collection1.Move(0, MCAJaw.JawSpecGroup.Collection1.LastIndex());
+                MCAJaw.JawResultGroup.Collection1.Move(0, MCAJaw.JawResultGroup.Collection1.LastIndex());
 
                 #endregion
 
@@ -421,15 +421,15 @@ namespace MCAJawIns
                     // Debug.WriteLine($"{string.Join(",", dict)}");
 
                     double avg = cam3results[item].Average();
-                    spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == item);
-                    MCAJaw.JawSpecGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
+                    MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再+1
                     if (!isNG)
                     {
                         // 判斷是否 OK
-                        bool ok = MCAJaw.JawSpecGroup.Collection3[^1].OK;
+                        bool ok = MCAJaw.JawResultGroup.Collection3[^1].OK;
                         // ok => Count 不加 0
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
@@ -442,7 +442,7 @@ namespace MCAJawIns
                 #endregion
 
                 // 判斷是否為良品
-                MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawSpecGroup.Col1Result && MCAJaw.JawSpecGroup.Col2Result && MCAJaw.JawSpecGroup.Col3Result ? 1 : 0;
+                MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawResultGroup.Col1Result && MCAJaw.JawResultGroup.Col2Result && MCAJaw.JawResultGroup.Col3Result ? 1 : 0;
                 #endregion
             }
             catch (OpenCVException ex)

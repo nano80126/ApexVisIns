@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
 
-namespace MCAJawIns
+namespace MCAJawIns.Mongo
 {
     /// <summary>
     /// 應用程式使用資料庫名稱
@@ -56,7 +51,6 @@ namespace MCAJawIns
         [BsonElement(nameof(Level))]
         public int Level { get; set; }
     }
-
 
     /// <summary>
     /// 應用程式用組態
@@ -173,19 +167,5 @@ namespace MCAJawIns
         /// </summary>
         [BsonElement(nameof(UpdateTime))]
         public DateTime UpdateTime { get; set; }
-
-#if false
-        /// <summary>
-        /// Int 型態資料
-        /// </summary>
-        [BsonElement(nameof(Numbers))]
-        public Dictionary<string, int> Numbers;
-
-        /// <summary>
-        /// String 型態資料
-        /// </summary>
-        [BsonElement(nameof(Strings))]
-        public Dictionary<string, string> Strings; 
-#endif
     }
 }

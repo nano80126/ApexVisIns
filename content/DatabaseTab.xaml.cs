@@ -364,7 +364,7 @@ namespace MCAJawIns.content
                         string resultRows = string.Empty;
 
                         // 啟用之規格
-                        JawSpecSetting[] enables = MainWindow.MCAJaw.JawSpecGroup.SpecList.Where(item => item.Enable).ToArray();
+                        JawSpecSetting[] enables = MainWindow.MCAJaw.JawResultGroup.SizeSpecList.Where(item => item.Enable).ToArray();
                         // 啟用規格之key
                         string[] keys = enables.Select(item => item.Key).ToArray();
                         // 量測結果 header
@@ -472,9 +472,9 @@ namespace MCAJawIns.content
         private void Test_Click(object sender, RoutedEventArgs e)
         {
             DateTime t1 = DateTime.Now;
-            JawSpecGroup jaws = MainWindow.MCAJaw.JawSpecGroup;
+            JawResultGroup jaws = MainWindow.MCAJaw.JawResultGroup;
          
-            JawSpecSetting[] enables = MainWindow.MCAJaw.JawSpecGroup.SpecList.Where(item => item.Enable).ToArray();
+            JawSpecSetting[] enables = MainWindow.MCAJaw.JawResultGroup.SizeSpecList.Where(item => item.Enable).ToArray();
           
             // result headers
             string concat = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果";
