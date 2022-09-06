@@ -18,7 +18,7 @@
                  Loaded="CustomCard_Loaded">
     <DockPanel x:Name="Body">
         <!--<StackPanel Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">-->
-        <TextBlock DockPanel.Dock="Left" Padding="0" FontSize="16">
+        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="1 0 0 0" Padding="0" FontSize="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}X: {0,4}, Y: {1,4}">
                     <Binding Path="OffsetX" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
