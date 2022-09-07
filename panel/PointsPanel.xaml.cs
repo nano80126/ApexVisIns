@@ -27,7 +27,6 @@ namespace MCAJawIns.Panel
     {
         public EngineerTab EngineerTab { get; set; }
 
-
         public AssistPoints AssistPoints { get; set; }
 
         public PointsPanel()
@@ -41,25 +40,12 @@ namespace MCAJawIns.Panel
             AssistPoints = DataContext as AssistPoints;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SourceClear_Click(object sender, RoutedEventArgs e)
         {
             AssistPoints.Source.Clear();
         }
 
-        //private void a_TextInput(object sender, TextCompositionEventArgs e)
-        //{
-        //    Debug.WriteLine($"{int.Parse(a.Text) > int.Parse(b.Text)}");
-
-        //    if (int.Parse(a.Text) > int.Parse(b.Text))
-        //    {
-        //        light.Background = System.Windows.Media.Brushes.Green;
-        //    }
-        //    else
-        //    {
-        //        light.Background = System.Windows.Media.Brushes.Red;
-        //    }
-        //}
-
+#if false
         private void b_TextChanged(object sender, TextChangedEventArgs e)
         {
             //Debug.WriteLine($"{int.Parse(aaa.Text) > int.Parse(bbb.Text)}");
@@ -75,6 +61,7 @@ namespace MCAJawIns.Panel
                     light.Background = System.Windows.Media.Brushes.Red;
                 }
             }
-        }
+        } 
+#endif
     }
 }

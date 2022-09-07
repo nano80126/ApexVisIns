@@ -16,11 +16,13 @@
                  Style="{StaticResource {x:Type ctrl:CustomCard}}"
                  d:DataContext="{d:DesignInstance Type={x:Null}}"
                  Loaded="CustomCard_Loaded">
+    <!--#region Resources -->
     <ctrl:CustomCard.Resources>
         <app:LightSerial x:Key="LightSerial" ChannelNumber="4" />
     </ctrl:CustomCard.Resources>
-    <!--//-->    
-    <Grid>
+    <!--#endregion-->
+
+    <Grid x:Name="Body" VerticalAlignment="Top">
         <!--#region Layout -->
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -36,10 +38,11 @@
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <!--#endregion-->
+        
         <!--#region Content -->
 
         <!--#region Row1 -->
-        <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MinWidth="135" Margin="0 8" Padding="5 3" MaxDropDownHeight="200"
+        <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MinWidth="135" Margin="1 4 0 4" Padding="5 3" MaxDropDownHeight="200"
                 materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
                 materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Path=Background}"
                 ItemsSource="{Binding ComPortSource, Source={StaticResource SerialEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -54,18 +57,21 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <!--//-->
-        <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="2" Margin="8 0 0 0"
+        <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="2" Margin="12 4 1 4" Height="24" SnapsToDevicePixels="True"
                 IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1}"
                 materialDesign:RippleAssist.IsDisabled="True" Focusable="False" Click="ComPortConnect_Click">
             <Button.Style>
-                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
+                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                    <!--<Setter Property="Background" Value="Red" />-->
                     <Setter Property="Content" Value="連線" />
                     <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
-
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorSuccess}" />
+                    <!--//-->
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                             <Setter Property="Content" Value="斷線" />
-                            <Setter Property="Foreground" Value="{StaticResource ColorWarning}" />
+                            <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -74,21 +80,24 @@
         <!--#endregion-->
 
         <!--#region Row2 -->
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Vertical">
-            <ItemsControl ItemsSource="{Binding Channels,Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}">
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Vertical" Margin="1 0">
+            <ItemsControl ItemsSource="{Binding Channels,Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}"
+                    AlternationCount="{Binding Channels.Count, Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 
-                <!--<ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentControl" />
-                </ItemsControl.ItemContainerStyle>-->
+                <!--
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentControl" />
+                    </ItemsControl.ItemContainerStyle>
+                -->
                 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 4">
+                        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0">
                             <!--#region Resources -->
                             <DockPanel.Resources>
                                 <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
@@ -104,13 +113,9 @@
                                     <Setter Property="Foreground" Value="{StaticResource ColorGray}" />
                                     <Setter Property="BorderBrush" Value="{StaticResource ColorGray}" />
                                     <Setter Property="MinWidth" Value="60" />
-                                    <Setter Property="Margin" Value="8 0" />
+                                    <Setter Property="Margin" Value="12 12 0 4" />
                                     <!--//-->
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderThickness" Value="1" />
-                                        </Trigger>
-                                        <!--//-->
                                         <Trigger Property="IsEnabled" Value="True">
                                             <Setter Property="Foreground" Value="{StaticResource ColorPrimary}" />
                                             <Setter Property="BorderBrush" Value="{StaticResource ColorPrimary}" />
@@ -124,15 +129,16 @@
                                 </Style>
                             </DockPanel.Resources>
                             <!--#endregion-->
-
-                            <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="0 0 12 0" Text="{Binding Channel}" />
+                            <!--channel-->
+                            <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 12 0" Text="{Binding Channel}" />
 
                             <TextBox DockPanel.Dock="Right" Grid.Column="1" Padding="0 3" HorizontalAlignment="Right" VerticalAlignment="Center" TextAlignment="Center"
                                     Cursor="Arrow" Focusable="False" Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                     IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                             <!--IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+                            <!--Text="{Binding Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
 
-                            <Slider DockPanel.Dock="Right" Minimum="0" Maximum="1023" Margin="0 8 " VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False"
+                            <Slider DockPanel.Dock="Right" Minimum="0" Maximum="1023" Margin="0 4" VerticalAlignment="Center" HorizontalAlignment="Stretch" Focusable="False"
                                     materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="32"
                                     Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -149,20 +155,14 @@
 
     <!--#region Footer -->
     <ctrl:CustomCard.Footer>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">
             <!--#region Resources -->
             <StackPanel.Resources>
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOffBtnStyle">
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Foreground" Value="{StaticResource ColorWarning}" />
-                    <Style.Triggers>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOnBtnStyle">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="MinWidth" Value="60" />
                     <Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
                     <Style.Triggers>
@@ -171,20 +171,36 @@
                         </Trigger>
                     </Style.Triggers>
                 </Style>
+                <!--//-->
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOffBtnStyle">
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="MinWidth" Value="60" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorDeepOrange}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
             </StackPanel.Resources>
             <!--#endregion-->
 
-            <Button x:Name="BulbOnBtn" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Center" materialDesign:RippleAssist.IsDisabled="True"
-                    materialDesign:ButtonAssist.CornerRadius="16" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" MinWidth="60"
-                    Click="BulbOnBtn_Click" Style="{StaticResource LightOnBtnStyle}">
-                <materialDesign:PackIcon Kind="LightbulbOutline" Width="30" Height="26" />
+            <Button x:Name="BulbOnBtn" Grid.Row="4" Grid.Column="2" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="12" Focusable="False"
+                    IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOnBtn_Click" Style="{StaticResource LightOnBtnStyle}">
+                <materialDesign:PackIcon Kind="LightbulbOutline" Width="24" Height="20" />
             </Button>
 
-            <Button x:Name="BulbOffBtn" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" materialDesign:RippleAssist.IsDisabled="True"
-                    materialDesign:ButtonAssist.CornerRadius="16" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" MinWidth="60"
-                    Click="BulbOffBtn_Click" Style="{StaticResource LightOffBtnStyle}">
-                <materialDesign:PackIcon Kind="LightbulbOffOutline" Width="30" Height="26" />
+            <Button x:Name="BulbOffBtn" Grid.Row="4" Grid.Column="0" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="12" Focusable="False"
+                    IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOffBtn_Click" Style="{StaticResource LightOffBtnStyle}">
+                <materialDesign:PackIcon Kind="LightbulbOffOutline" Width="24" Height="20" />
             </Button>
+
+            <!--<Button x:Name="BulbOffBtn2" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" materialDesign:RippleAssist.IsDisabled="True"
+                    materialDesign:ButtonAssist.CornerRadius="16" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" MinWidth="60"
+                    Click="BulbOffBtn_Click" Style="{StaticResource LightOffBtnStyle}" Content="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+            </Button>-->
         </StackPanel>
     </ctrl:CustomCard.Footer>
     <!--#endregion-->

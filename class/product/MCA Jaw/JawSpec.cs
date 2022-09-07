@@ -233,8 +233,6 @@ namespace MCAJawIns.Product
             SyncBinding = false;
         }
 
-
-
         /// <summary>
         /// 尺寸規格列表
         /// </summary>
@@ -278,11 +276,13 @@ namespace MCAJawIns.Product
     public class JawSizeSpecList : INotifyPropertyChanged
     {
         #region private
+        // private readonly object _srcLock = new object();
         private bool _saved;
         #endregion
 
         public JawSizeSpecList()
         {
+            //BindingOperations.EnableCollectionSynchronization(Source, _srcLock);
             Source.CollectionChanged += Source_CollectionChanged;
         }
 
@@ -320,14 +320,16 @@ namespace MCAJawIns.Product
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();
 
         /// <summary>
-        /// Source 新增物件
+        /// Source 新增物件 (自動增加 ID)
         /// </summary>
         public void AddNew(JawSpecSetting item)
         {
             int id = Source.Count + 1;
-
             item.ID = id;
+            //lock (_srcLock)
+            //{
             Source.Add(item);
+            //}
         }
 
         /// <summary>
@@ -357,14 +359,12 @@ namespace MCAJawIns.Product
 
         #region Property Changed
         public event PropertyChangedEventHandler PropertyChanged;
-
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }
-
 
     /// <summary>
     /// MAC Jaw 檢驗主物件，

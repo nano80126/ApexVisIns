@@ -23,14 +23,30 @@
                     <Setter Property="FooterTemplate" Value="{x:Null}" />
                 </DataTrigger>
             </Style.Triggers>
-
+            <!--//-->
+            <!--<Setter Property="FooterTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">
+                            <Button Content="清空標記" BorderThickness="0" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Click="SourceClear_Click" />
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>-->
             <Setter Property="FooterTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="清空標記" BorderThickness="0" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Click="Button_Click" />
-                        </StackPanel>
+                        <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">-->
+                        <Button HorizontalAlignment="Right" Margin="1 4 1 0" Height="24" Focusable="False" Foreground="{StaticResource ColorInfo}"
+                                Style="{StaticResource MaterialDesignFlatButton}" Click="SourceClear_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="TrashCanOutline"/>
+                                <TextBlock Margin="8 0 0 0" Text="清空標記" />
+                            </StackPanel>
+                        </Button>
+                        <!--清空標記-->
+                        <!--</StackPanel>-->
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -42,8 +58,8 @@
     <!-- 要新增 ScrollViewer -->
     <!-- 要新增 ScrollViewer -->
 
-    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}">
+    <StackPanel x:Name="Body" Orientation="Vertical" VerticalAlignment="Top">
+        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}" Margin="1 0">
             <ItemsControl ItemsSource="{Binding Source}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -58,9 +74,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel Margin="0 4">
-                            <!-- 
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding X, StringFormat={}{0:F0}}" Background="Red" /> 
-                        -->
+                            <!--<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding X, StringFormat={}{0:F0}}" Background="Red" />-->
                             <Border VerticalAlignment="Center" BorderThickness="1" CornerRadius="12" Background="{StaticResource ColorLightGrayTransparent}">
                                 <materialDesign:PackIcon VerticalAlignment="Center" Height="24" Width="24" Kind="Plus" Foreground="{Binding Stroke}" />
                             </Border>
@@ -75,21 +89,21 @@
                             </TextBlock>
                             <!--//-->
                             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Run Foreground="Red">
-                                <Run.Text>
-                                    <Binding Path="R" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
-                                </Run.Text>
-                            </Run>
-                            <Run Foreground="Green">
-                                <Run.Text>
-                                    <Binding Path="G" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
-                                </Run.Text>
-                            </Run>
-                            <Run Foreground="Blue">
-                                <Run.Text>
-                                    <Binding Path="B" StringFormat="{}{0,3:F0}" UpdateSourceTrigger="PropertyChanged" />
-                                </Run.Text>
-                            </Run>
+                                <Run Foreground="Red">
+                                    <Run.Text>
+                                        <Binding Path="R" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
+                                    </Run.Text>
+                                </Run>
+                                <Run Foreground="Green">
+                                    <Run.Text>
+                                        <Binding Path="G" StringFormat="{}{0,3:F0}," UpdateSourceTrigger="PropertyChanged" />
+                                    </Run.Text>
+                                </Run>
+                                <Run Foreground="Blue">
+                                    <Run.Text>
+                                        <Binding Path="B" StringFormat="{}{0,3:F0}" UpdateSourceTrigger="PropertyChanged" />
+                                    </Run.Text>
+                                </Run>
                             </TextBlock>
                         </DockPanel>
                     </DataTemplate>
@@ -97,14 +111,13 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" Visibility="Collapsed">
+        <!--<StackPanel Orientation="Horizontal" Visibility="Visible" Background="Red" Margin="0 12 0 0">
             <TextBox x:Name="aaa" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 3" MinWidth="80" Style="{StaticResource MaterialDesignOutlinedTextBox}"
                     TextChanged="b_TextChanged" Text="0"/>
             <materialDesign:PackIcon Kind="GreaterThan" VerticalAlignment="Center" />
             <TextBox x:Name="bbb" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0 3" MinWidth="80" Style="{StaticResource MaterialDesignOutlinedTextBox}"
                     TextChanged="b_TextChanged" Text="0"/>
-
-            <TextBlock x:Name="light" Margin="12 0 0 0" Width="20" Height="20" Background="Red" />
-        </StackPanel>
+            <TextBlock x:Name="light" Margin="12 0 0 0" Width="20" Height="20" Background="{StaticResource ColorAccent}" />
+        </StackPanel>-->
     </StackPanel>
 </ctrl:CustomCard>

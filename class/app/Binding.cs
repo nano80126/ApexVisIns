@@ -224,20 +224,45 @@ namespace MCAJawIns
         #endregion
 
         #region Properties
-        // // First Column
+        /// <summary>
+        /// 作業系統
+        /// </summary>
         public string OS { get; set; }
+        /// <summary>
+        /// 64 / 32 位元
+        /// </summary>
         public string Plateform => _x64 ? "64位元" : "32位元";
+        /// <summary>
+        /// Program ID
+        /// </summary>
         public int PID { get; set; }
+        /// <summary>
+        /// .NET 版本
+        /// </summary>
         public string DotNetVer { get; set; }
+        /// <summary>
+        /// MongoDB 版本
+        /// </summary>
+        [BsonElement(nameof(MongoVer))]
         public string MongoVer => _mongoVer ?? "未連線";
+        /// <summary>
+        /// 系統時間
+        /// </summary>
+        [BsonElement(nameof(SystemTime))]
         public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
 
-        // // Second Column
+        /// <summary>
+        /// 軟體版本
+        /// </summary>
         public string SoftVer { get; set; } = "2.0.0";
+        /// <summary>
+        /// 模式
+        /// </summary>
         public string Mode => _auto ? "自動模式" : "編輯模式";
         /// <summary>
         /// 自動運行時間
         /// </summary>
+        [BsonElement(nameof(AutoTime))]
         public string AutoTime
         {
             get
@@ -256,6 +281,7 @@ namespace MCAJawIns
         /// <summary>
         /// 自動運行時間 (累計)
         /// </summary>
+        [BsonElement(nameof(TotalAutoTime))]
         public string TotalAutoTime
         {
             get
@@ -275,6 +301,7 @@ namespace MCAJawIns
         /// <summary>
         /// 自動運行時間 (小時)，(TotalAutoTime 超過 9999時，由這邊紀錄)
         /// </summary>
+        [BsonElement(nameof(TotalHours))]
         public int TotalHours
         {
             get
@@ -294,6 +321,7 @@ namespace MCAJawIns
         /// <summary>
         /// 總計檢驗數量
         /// </summary>
+        [BsonElement(nameof(TotalParts))]
         public int TotalParts {
             get => _totalParts;
             set
@@ -308,6 +336,7 @@ namespace MCAJawIns
         /// <summary>
         /// 閒置時間 (seconds) (無條件捨棄)
         /// </summary>
+        [BsonElement(nameof(IdleTime))]
         public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000.0) : 0;
         #endregion
 
@@ -429,6 +458,11 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// 計時器 Elapsed 事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             OnPropertyChanged(nameof(SystemTime));
@@ -440,14 +474,7 @@ namespace MCAJawIns
 
             OnPropertyChanged(nameof(IdleTime)); // 之後需移除
 
-            Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
-
-            // if (_stopwatch != null)
-            // {
-            //     Debug.WriteLine($"{_stopwatch.IsRunning}");
-            //     Debug.WriteLine($"{_stopwatch.Elapsed} {_stopwatch.ElapsedMilliseconds} {_stopwatch.ElapsedTicks}");
-            //     Debug.WriteLine($"{_stopwatch.Elapsed.TotalSeconds:00}");
-            // }
+            Debug.WriteLine($"Binding.cs line 443 {DateTime.Now:HH:mm:ss}");
         }
 
         /// <summary>
@@ -962,7 +989,6 @@ namespace MCAJawIns
                 return new SolidColorBrush(Color.FromRgb(r, g, b));
             }
         }
-
 
         public double StrokeThickness { get; set; }
 

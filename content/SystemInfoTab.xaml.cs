@@ -16,6 +16,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using MaterialDesignThemes.Wpf;
+using MongoDB;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 
 namespace MCAJawIns.content
@@ -102,9 +105,13 @@ namespace MCAJawIns.content
 
         private void StartIdleTimer_Click(object sender, RoutedEventArgs e)
         {
-            //SystemInfo.StartIdleWatch();
-            //SystemInfo.GetAutoTimeInSeconds();
-            SystemInfo.GetTotalAutoTimeTnSeconds();
+            // SystemInfo.StartIdleWatch();
+            // SystemInfo.GetAutoTimeInSeconds();
+            int seconds = SystemInfo.GetTotalAutoTimeTnSeconds();
+
+            Debug.WriteLine($"Seconds: {seconds}");
+
+            Debug.WriteLine($"{SystemInfo.ToBsonDocument()}");
         }
         
         private void StopIdleTimer_Click(object sender, RoutedEventArgs e)

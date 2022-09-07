@@ -175,23 +175,26 @@ namespace MCAJawIns
 
         private void CameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems}");
-            //CameraConfig item = e.NewItems[0] as CameraConfig;
-            //System.Diagnostics.Debug.WriteLine($"{item.DeviceVersion} {item.Model} {item.Name}");
+            // // // // // // 
+            System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems} CameraEnumer.cs line 179");
+            // // // // // // 
 
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    CameraConfig item = e.NewItems[0] as CameraConfig;
-                    System.Diagnostics.Debug.WriteLine($"{item.VendorName} {item.Model} {item.Name}");
-                    item.PropertyChanged += Item_PropertyChanged;
+                    CameraConfig newItem = e.NewItems[0] as CameraConfig;
+                    System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
+                    newItem.PropertyChanged += Item_PropertyChanged;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-
+                    CameraConfig oldItem = e.OldItems[0] as CameraConfig;
+                    System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
+                    oldItem.PropertyChanged -= Item_PropertyChanged;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                default:
                     break;
             }
         }
