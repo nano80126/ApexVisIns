@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,8 @@ using MaterialDesignThemes.Wpf;
 using MongoDB;
 using MongoDB.Driver;
 using MongoDB.Bson;
-
+using MCAJawIns.Mongo;
+using MCAJawInfo = MCAJawIns.Mongo.Info;
 
 namespace MCAJawIns.content
 {
@@ -113,10 +115,20 @@ namespace MCAJawIns.content
 
             Debug.WriteLine($"{SystemInfo.ToBsonDocument()}");
         }
-        
+
         private void StopIdleTimer_Click(object sender, RoutedEventArgs e)
         {
-            //SystemInfo.StopIdleWatch();
+            // SystemInfo.StopIdleWatch();
+
+            MCAJawInfo info = new MCAJawInfo()
+            {
+                Type = MCAJawInfo.InfoTypes.System,
+                Data = SystemInfo.ToBsonDocument(),
+                InsertTime = DateTime.Now,
+                UpdateTime = DateTime.Now
+            };
+
+            MainWindow.MongoAccess.InsertOne(nameof(JawCollection.Info), info);
         }
     }
 }

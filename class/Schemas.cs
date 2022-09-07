@@ -99,7 +99,7 @@ namespace MCAJawIns.Mongo
         /// 陣列資料
         /// </summary>
         [BsonElement(nameof(DataArray))]
-        public BsonArray DataArray { get; set; } = null;
+        public BsonArray DataArray { get; set; } = new BsonArray();
 
         /// <summary>
         /// 資料插入時間
@@ -148,13 +148,13 @@ namespace MCAJawIns.Mongo
         /// Bson 資料
         /// </summary>
         [BsonElement(nameof(Data))]
-        public BsonDocument Data { get; set; }
+        public BsonDocument Data { get; set; } = null;
 
         /// <summary>
         /// Bson Array 資料
         /// </summary>
         [BsonElement(nameof(DataArray))]
-        public BsonArray DataArray { get; set; }
+        public BsonArray DataArray { get; set; } = new BsonArray();
 
         /// <summary>
         /// 資料插入時間

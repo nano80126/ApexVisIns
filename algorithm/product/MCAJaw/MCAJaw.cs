@@ -18,9 +18,9 @@ namespace MCAJawIns
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
-        //private readonly double cam1Mag = 0.21867;
+        // private readonly double cam1Mag = 0.21867;
+        // private readonly double cam2Mag = 0.25461;
         private readonly double cam1Mag = 0.21839;
-        //private readonly double cam2Mag = 0.25461;
         private readonly double cam2Mag = 0.25431;
         private readonly double cam3Mag = 0.1063;
 

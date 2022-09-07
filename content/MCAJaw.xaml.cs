@@ -661,7 +661,11 @@ namespace MCAJawIns.content
                         // 建立組態集合 (目前只有資料庫保存時間設定)
                         MongoAccess.CreateCollection(nameof(JawCollection.Configs));
                         // 建立資訊集合
-                        MongoAccess.CreateCollection(nameof(JawCollection.Info));
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Info)))
+                        {
+                            CreateIndexModel<Info> indexModel = new CreateIndexModel<Info>(Builders<Info>.IndexKeys.Ascending(x => x.InsertTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Info), indexModel);
+                        }
                         // 建立批次結果集合
                         if (MongoAccess.CreateCollection(nameof(JawCollection.Lots)))
                         {

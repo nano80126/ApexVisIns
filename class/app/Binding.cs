@@ -224,6 +224,9 @@ namespace MCAJawIns
         #endregion
 
         #region Properties
+        //[BsonId]
+        //public ObjectId ObjID { get; set; } 
+
         /// <summary>
         /// 作業系統
         /// </summary>
@@ -235,6 +238,7 @@ namespace MCAJawIns
         /// <summary>
         /// Program ID
         /// </summary>
+        [BsonIgnore]
         public int PID { get; set; }
         /// <summary>
         /// .NET 版本
@@ -248,21 +252,23 @@ namespace MCAJawIns
         /// <summary>
         /// 系統時間
         /// </summary>
-        [BsonElement(nameof(SystemTime))]
+        [BsonIgnore]
         public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
 
         /// <summary>
         /// 軟體版本
         /// </summary>
+        [BsonElement(nameof(SoftVer))]
         public string SoftVer { get; set; } = "2.0.0";
         /// <summary>
         /// 模式
         /// </summary>
+        [BsonIgnore]
         public string Mode => _auto ? "自動模式" : "編輯模式";
         /// <summary>
         /// 自動運行時間
         /// </summary>
-        [BsonElement(nameof(AutoTime))]
+        [BsonIgnore]
         public string AutoTime
         {
             get
@@ -322,7 +328,8 @@ namespace MCAJawIns
         /// 總計檢驗數量
         /// </summary>
         [BsonElement(nameof(TotalParts))]
-        public int TotalParts {
+        public int TotalParts
+        {
             get => _totalParts;
             set
             {
@@ -336,10 +343,11 @@ namespace MCAJawIns
         /// <summary>
         /// 閒置時間 (seconds) (無條件捨棄)
         /// </summary>
-        [BsonElement(nameof(IdleTime))]
+        [BsonIgnore]
         public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000.0) : 0;
         #endregion
 
+        #region Methods
         /// <summary>
         /// 設定 32/64 位元
         /// </summary>
@@ -434,6 +442,7 @@ namespace MCAJawIns
                 return _totalAutoTime;
             }
         }
+        #endregion
 
         #region 定時執行 timer
         /// <summary>
@@ -486,7 +495,7 @@ namespace MCAJawIns
             {
                 _timer.Stop();
             }
-        } 
+        }
         #endregion
 
         #region Property Changed Event
@@ -595,7 +604,6 @@ namespace MCAJawIns
                 OnPropertyChanged();
             }
         }
-
 
         /// <summary>
         /// 主影像 Source

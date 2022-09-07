@@ -93,7 +93,7 @@
                 <!--#endregion-->
 
                 <!-- Separator -->
-                <Separator Grid.Column="1" Grid.Row="100" Margin="8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
 
                 <!--#region Auto Mode Info -->
@@ -117,17 +117,16 @@
                     <TextBlock Text="量測工件數（累計）" />
                     <TextBox Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}"/>
+                    <TextBlock Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
                     <TextBox Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
                     <TextBlock Text="" />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
                         AncestorType=UniformGrid}, Mode=OneWay}" />
 
-                    
                     <!--<Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
                     <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>-->
-                    
+
                 </UniformGrid>
                 <!--#endregion-->
             </Grid>
