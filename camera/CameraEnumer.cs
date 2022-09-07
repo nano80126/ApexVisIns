@@ -44,6 +44,11 @@ namespace MCAJawIns
             }
         }
 
+        public CameraEnumer()
+        {
+            CameraConfigs.CollectionChanged += CameraConfigs_CollectionChanged;
+        }
+
         #region CamsSource 操作
         /// <summary>
         /// 新增相機至 CamsSource
@@ -94,6 +99,7 @@ namespace MCAJawIns
                 CameraConfigs.Add(config);
             }
         }
+
         /// <summary>
         /// 從 CameraConfigs 移除指定物件
         /// </summary>
@@ -105,6 +111,7 @@ namespace MCAJawIns
                 CameraConfigs.Remove(config);
             }
         }
+
         /// <summary>
         /// 清空 CameraConfigs
         /// </summary>
@@ -134,7 +141,7 @@ namespace MCAJawIns
         /// 全部相機設為 Online
         /// </summary>
         /// <param name="online"></param>
-        private void AllSetOnlineCameraConfigs(bool online)
+        private void SetOnlineCameraConfigsAll(bool online)
         {
             lock (_cameraConfigsLock)
             {
@@ -143,6 +150,15 @@ namespace MCAJawIns
                     cfg.Online = online;
                 }
             }
+        }
+
+        /// <summary>
+        /// 儲存 Camera Config
+        /// </summary>
+        public void ConfigSave()
+        {
+            _cameraConfigSaved = true;
+            OnPropertyChanged(nameof(CameraCofingSaved));
         }
         #endregion
 
@@ -157,6 +173,35 @@ namespace MCAJawIns
             base.WorkerStart();
         }
 
+        private void CameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems}");
+            //CameraConfig item = e.NewItems[0] as CameraConfig;
+            //System.Diagnostics.Debug.WriteLine($"{item.DeviceVersion} {item.Model} {item.Name}");
+
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    CameraConfig item = e.NewItems[0] as CameraConfig;
+                    System.Diagnostics.Debug.WriteLine($"{item.VendorName} {item.Model} {item.Name}");
+                    item.PropertyChanged += Item_PropertyChanged;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    break;
+            }
+        }
+
+        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+            CameraCofingSaved = false;
+        }
+
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             List<BaslerCamInfo> list;
@@ -165,14 +210,6 @@ namespace MCAJawIns
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     // Get CamsSource 
                     list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
-
-                    //foreach (DeviceConfig dev in DeviceConfigs)
-                    //{
-                    //    if (list.Any(cam => cam.SerialNumber == dev.SerialNumber))
-                    //    {
-                    //        //ChangeDeviceConfigs();
-                    //    }
-                    //}
                     for (int i = 0; i < CameraConfigs.Count; i++)
                     {
                         if (list.Any(cam => cam.SerialNumber == CameraConfigs[i].SerialNumber))
@@ -186,12 +223,6 @@ namespace MCAJawIns
                     // Get CamsSource
                     list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
 
-                    // foreach (DeviceConfig dev in DeviceConfigs)
-                    // {
-                    //     if (!list.Any(cam => cam.SerialNumber == dev.SerialNumber))
-                    //     {
-                    //     }
-                    // }
                     for (int i = 0; i < CameraConfigs.Count; i++)
                     {
                         if (!list.Any(cam => cam.SerialNumber == CameraConfigs[i].SerialNumber))
@@ -201,12 +232,8 @@ namespace MCAJawIns
                     }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    // CamsSource
-                    // for (int i = 0; i < DeviceConfigs.Count; i++)
-                    // {
-                    //     ChangeDeviceConfigs(i, "Online", false);
-                    // }
-                    AllSetOnlineCameraConfigs(false);
+
+                    SetOnlineCameraConfigsAll(false);
                     break;
             }
             // throw new NotImplementedException();

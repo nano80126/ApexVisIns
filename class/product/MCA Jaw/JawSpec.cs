@@ -318,7 +318,18 @@ namespace MCAJawIns.Product
         }
 
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();
-      
+
+        /// <summary>
+        /// Source 新增物件
+        /// </summary>
+        public void AddNew(JawSpecSetting item)
+        {
+            int id = Source.Count + 1;
+
+            item.ID = id;
+            Source.Add(item);
+        }
+
         /// <summary>
         /// 是否已儲存
         /// </summary>

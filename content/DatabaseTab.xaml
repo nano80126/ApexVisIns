@@ -266,8 +266,8 @@
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
                             <TextBlock VerticalAlignment="Center" Text="查詢" />
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
-                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
+                            <!--<TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
+                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />-->
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -308,16 +308,16 @@
                 <StackPanel Orientation="Vertical" SnapsToDevicePixels="True">
                     <TextBox x:Name="LotNumberText" Grid.Row="0" Margin="1 4" Padding="8 3"
                             materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard,AncestorLevel=1}}"
-                            materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}" />
+                            materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    <!--Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"-->
 
                     <Button DockPanel.Dock="Bottom" Grid.Row="1" HorizontalAlignment="Right" Margin="1 4 1 0" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="LotNumberFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
                             <TextBlock VerticalAlignment="Center" Text="查詢" Margin="0" />
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
-                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
+                            <!--<TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
+                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />-->
                         </StackPanel>
                     </Button>
                 </StackPanel>

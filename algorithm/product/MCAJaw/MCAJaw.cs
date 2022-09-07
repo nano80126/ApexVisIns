@@ -94,7 +94,8 @@ namespace MCAJawIns
             try
             {
                 // 規格列表
-                List<JawSpecSetting> specList = MCAJaw.JawResultGroup.SizeSpecList.ToList();
+                //List<JawSpecSetting> specList = MCAJaw.JawResultGroup.SizeSpecList.ToList();
+                List<JawSpecSetting> specList = MCAJaw.JawSizeSpecList.Source.ToList();
                 JawSpecSetting spec;
                 // 有無料
                 bool partExist = false;
@@ -318,7 +319,8 @@ namespace MCAJawIns
                     {
                         avg = cam1results[key].Average();
                     }
-                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == key);
                     MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
 
@@ -346,7 +348,8 @@ namespace MCAJawIns
                     //Debug.WriteLine($"{key} {cam2results[key].Count}");
                     //
                     double avg = cam2results[key].Min();
-                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == key);
                     MCAJaw.JawResultGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
@@ -368,7 +371,8 @@ namespace MCAJawIns
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
-                spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
+                //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
+                spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == "開度差");
                 if (spec.Enable)
                 {
                     double bfDiff = Math.Abs(d_front - d_back);
@@ -421,7 +425,8 @@ namespace MCAJawIns
                     // Debug.WriteLine($"{string.Join(",", dict)}");
 
                     double avg = cam3results[item].Average();
-                    spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
+                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == item);
                     MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 

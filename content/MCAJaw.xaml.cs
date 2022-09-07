@@ -225,7 +225,7 @@ namespace MCAJawIns.content
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
                 // 載入規格設定
-                //LoadSpecList();
+                // LoadSpecList();
 
                 loaded = true;
             }
@@ -629,6 +629,8 @@ namespace MCAJawIns.content
                     }
                 });
             }
+
+            Debug.WriteLine($"{e.NewValue} {e.OldValue}");
             // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
@@ -706,13 +708,13 @@ namespace MCAJawIns.content
                         MongoAccess.InsertMany("Auth", authLevels);
 #endif
 
+                        // 載入使用者權限
                         MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
-
-
+                        // 讀取 Size Spec 設定
                         LoadSpecList();
 
 
@@ -792,7 +794,7 @@ namespace MCAJawIns.content
             // 清除 集合
             _ = Dispatcher.InvokeAsync(() =>
             {
-                JawResultGroup.SizeSpecList.Clear();
+                //JawResultGroup.SizeSpecList.Clear();
                 JawSizeSpecList.Source.Clear();
                 JawInspection.LotResults.Clear();
             }).Wait();
@@ -813,10 +815,10 @@ namespace MCAJawIns.content
                         JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                         foreach (JawSpecSetting item in jawSpecs)
                         {
-                            Debug.WriteLine($"{item.Key} {item.CenterSpec}");
+                            //Debug.WriteLine($"{item.Key} {item.CenterSpec}");
                             Dispatcher.Invoke(() => {
                                 // 加入尺寸規格列表
-                                JawResultGroup.SizeSpecList.Add(item);
+                                //JawResultGroup.SizeSpecList.Add(item);
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
@@ -857,7 +859,7 @@ namespace MCAJawIns.content
                         Dispatcher.Invoke(() =>
                         {
                             // 加入尺寸規格列表
-                            JawResultGroup.SizeSpecList.Add(item);
+                            //JawResultGroup.SizeSpecList.Add(item);
                             // 加入尺寸規格列表
                             JawSizeSpecList.Source.Add(item);
                             // 加入批號檢驗結果 (初始化)
@@ -882,9 +884,19 @@ namespace MCAJawIns.content
                     JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                     for (int i = 0; i < keys.Length; i++)
                     {
+#if false
+                        #region delete after testing
                         int id = JawResultGroup.SizeSpecList.Count + 1;
                         // 加入尺寸規格列表
                         JawResultGroup.SizeSpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
+                        #endregion  
+#endif
+
+                        // 加入尺寸規格表
+                        // id = 0 means auto increase by source count
+                        JawSpecSetting newItem = new JawSpecSetting(0, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]);
+                        //JawSizeSpecList.Source.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
+                        JawSizeSpecList.AddNew(newItem);
                         // 加入批號檢驗結果 (初始化)
                         JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
                     }
@@ -1078,8 +1090,11 @@ namespace MCAJawIns.content
             // 停止計時 Idle
             MainWindow.SystemInfoTab.SystemInfo.StopIdleWatch();
             // Reset Idle Timer
-            _idleTimer.Stop();
-            _idleTimer.Start();
+            if (_idleTimer != null)
+            {
+                _idleTimer.Stop();
+                _idleTimer.Start();
+            }
         }
         #endregion
 

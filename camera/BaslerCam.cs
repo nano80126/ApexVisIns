@@ -499,6 +499,8 @@ namespace MCAJawIns
     /// </summary>
     public class CameraConfig : BaslerCamInfo, INotifyPropertyChanged
     {
+        private CameraConfigBase.TargetFeatureType _targetFeature;
+        //
         private string _userSet;
         private string[] _userSetEnum;
         private string _userSetRead;
@@ -574,6 +576,25 @@ namespace MCAJawIns
                 if (value != _online)
                 {
                     _online = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region Target Feature
+        /// <summary>
+        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
+        /// </summary>
+        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
+        public CameraConfigBase.TargetFeatureType TargetFeature
+        {
+            get => _targetFeature;
+            set
+            {
+                if (value != _targetFeature)
+                {
+                    _targetFeature = value;
                     OnPropertyChanged();
                 }
             }
@@ -1216,32 +1237,9 @@ namespace MCAJawIns
         ///// </summary>
         //public string SerialNumber { get; set; }  
 #endif
-
         #endregion
 
-        #region Application 應用
-
-        /// <summary>
-        /// 擔任角色
-        /// </summary>
-        //public enum TargetFeatureType
-        //{
-        //    [Description("耳朵")]
-        //    Ear = 1,
-        //    [Description("窗戶")]
-        //    Window = 2,
-        //    [Description("表面 1")]
-        //    Surface1 = 3,
-        //    [Description("表面 2")]
-        //    Surface2 = 4
-        //}
-
-        /// <summary>
-        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
-        /// </summary>
-        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
-        public CameraConfigBase.TargetFeatureType TargetFeature { get; set; }
-
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

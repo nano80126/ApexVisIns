@@ -359,7 +359,7 @@ namespace MCAJawIns
                 _stopwatch = new Stopwatch();
                 _stopwatch.Start();
             }
-            else if (!_stopwatch.IsRunning)
+            else if (_stopwatch?.IsRunning is false)
             {
                 _stopwatch.Start();
             }
@@ -369,7 +369,7 @@ namespace MCAJawIns
         /// </summary>
         public void StopIdleWatch()
         {
-            if (_stopwatch.IsRunning)
+            if (_stopwatch?.IsRunning is true)
             {
                 _stopwatch.Stop();
             }

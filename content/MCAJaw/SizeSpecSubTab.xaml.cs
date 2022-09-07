@@ -54,14 +54,15 @@ namespace MCAJawIns.content
 
             JawSizeSpecList specList = DataContext as JawSizeSpecList;
 
+            #region 寫入本地 JSON
             string jsonStr = JsonSerializer.Serialize(specList.Source, new JsonSerializerOptions
             {
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString,
                 WriteIndented = true,
             });
-
             File.WriteAllText(JsonPath, jsonStr);
+            #endregion
 
             #region 寫入資料庫
             try
@@ -86,6 +87,7 @@ namespace MCAJawIns.content
             }
             #endregion
 
+            specList.Save();
             _ = Task.Run(() => MCAJaw.LoadSpecList(true));
         }
     }

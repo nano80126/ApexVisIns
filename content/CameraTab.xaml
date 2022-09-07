@@ -324,42 +324,41 @@
                     <Button x:Name="CameraConfigSave" HorizontalAlignment="Right" Margin="1 4 1 0" Height="24" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="CameraConfigSave_Click">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-                                <Setter Property="Foreground" Value="{StaticResource ColorInfo}" />
-                                <Setter Property="BorderBrush" Value="{StaticResource ColorInfo}" />
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}" />
+                                <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="ExclamationBold" />
+                                            <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                        </StackPanel>
+                                    </Setter.Value>
+                                </Setter>
+                                <!--//-->
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CameraCofingSaved, Source={StaticResource CameraEnumer}}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
                                         <Setter Property="BorderBrush" Value="{StaticResource ColorSuccess}" />
+                                        <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="CheckBold" />
+                                                    <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                                </StackPanel>
+                                            </Setter.Value>
+                                        </Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <!--//-->
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Width="24" Height="20" VerticalAlignment="Center">
-                                <materialDesign:PackIcon.Style>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Kind" Value="FileDocumentEdit" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CameraCofingSaved, Source={StaticResource CameraEnumer}}" Value="True">
-                                                <Setter Property="Kind" Value="Check" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </materialDesign:PackIcon.Style>
-                            </materialDesign:PackIcon>
-                            <TextBlock VerticalAlignment="Center" Text="儲存" />
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
-                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />
-                        </StackPanel>
                     </Button>
                 </ctrl:CustomCard.Footer>
                 <!--#endregion-->
             </ctrl:CustomCard>
             <!--#endregion-->
 
-            <Button HorizontalAlignment="Right" Content="切換" Style="{StaticResource MaterialDesignFlatButton}" Click="TestSwitch" />
+            <!--<Button HorizontalAlignment="Right" Content="切換" Style="{StaticResource MaterialDesignFlatButton}" Click="TestSwitch" />-->
         </StackPanel>
         <!--#endregion-->
         
@@ -369,6 +368,8 @@
 
         <!--#region 2nd Col -->
         <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Top" Background="{x:Null}">
+
+            <!--待刪除 待刪除 待刪除 待刪除 待刪除 待刪除 待刪除 待刪除 待刪除 待刪除-->
             <materialDesign:Card x:Name="CameraCard1" Style="{StaticResource PanelTopCard}" Background="{StaticResource ColorOrangeTransparent}" Padding="6 8"
                     VerticalAlignment="Top" HorizontalAlignment="Stretch" d:DataContext="{d:DesignInstance Type=app:CameraConfig}"
                     DataContextChanged="CameraCard_DataContextChanged" Visibility="Collapsed">
@@ -433,7 +434,7 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
-                            <!-- <ColumnDefinition Width="2*"/>-->
+                             <!--<ColumnDefinition Width="2*"/>-->
                         </Grid.ColumnDefinitions>
                         <!--#endregion-->
 
@@ -505,7 +506,7 @@
                             <TextBox Grid.Row="3" Grid.Column="3" Padding="0 3" Text="{Binding SerialNumber}"/>
                         -->
 
-                        <Separator Grid.Column="4" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                        <Separator Grid.RowSpan="100" Grid.Column="4" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
                                 Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         <!--//-->
                         <TextBlock Grid.Row="0" Grid.Column="5" Text="S/N" />
@@ -518,7 +519,7 @@
                         <TextBlock Grid.Row="2" Grid.Column="5" Text="MAC" />
                         <TextBox Grid.Row="2" Grid.Column="6" Padding="0 3" Text="{Binding MAC, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <Separator Grid.Column="7" Grid.RowSpan="100" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
+                        <Separator Grid.RowSpan="100" Grid.Column="7" Margin="12 0" Width="1" Background="{StaticResource ColorSecondary}"
                                 Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
                         <!--
@@ -562,14 +563,13 @@
                                 HorizontalAlignment="Left" ItemsSource="{Binding Source={StaticResource DataFromEunm}, Mode=OneWay}"
                                 SelectionChanged="TargetFeatureCombobox_SelectionChanged"
                                 SelectedItem="{Binding TargetFeature, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}" MinWidth="135">
-                            <!--materialDesign:TextFieldAssist.PrefixText=""-->
+                                <!-- materialDesign:TextFieldAssist.PrefixText="" -->
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-
                         <!--<TextBlock Text="{Binding ElementName=CameraClose, Path=Padding}" VerticalAlignment="Center"/>-->
                     </StackPanel>
                     <!--//-->
@@ -1125,7 +1125,7 @@
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="1*" />
-                            <!-- <ColumnDefinition Width="2*"/>-->
+                             <!--<ColumnDefinition Width="2*"/>-->
                         </Grid.ColumnDefinitions>
                         <!--#endregion-->
                         <!--#region 開啟 / 關閉相機, 1st Col -->

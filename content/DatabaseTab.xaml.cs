@@ -110,7 +110,7 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadDatabaseConfig(recycled);
+            //LoadDatabaseConfig(recycled);
 
             if (!loaded)
             {
@@ -364,7 +364,8 @@ namespace MCAJawIns.content
                         string resultRows = string.Empty;
 
                         // 啟用之規格
-                        JawSpecSetting[] enables = MainWindow.MCAJaw.JawResultGroup.SizeSpecList.Where(item => item.Enable).ToArray();
+                        //JawSpecSetting[] enables = MainWindow.MCAJaw.JawResultGroup.SizeSpecList.Where(item => item.Enable).ToArray();
+                        JawSpecSetting[] enables = MainWindow.MCAJaw.JawSizeSpecList.Source.Where(item => item.Enable).ToArray();
                         // 啟用規格之key
                         string[] keys = enables.Select(item => item.Key).ToArray();
                         // 量測結果 header
@@ -469,6 +470,7 @@ namespace MCAJawIns.content
             }
         }
 
+        [Obsolete("測試用")]
         private void Test_Click(object sender, RoutedEventArgs e)
         {
             DateTime t1 = DateTime.Now;

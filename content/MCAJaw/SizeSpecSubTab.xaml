@@ -34,7 +34,7 @@
                     ToolTip="儲存變更" Click="SpecSettingSave_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                        <Setter Property="Foreground" Value="{StaticResource ColorError}" />
+                        <Setter Property="Foreground" Value="{StaticResource ColorWarning}" />
                         <Setter Property="Content">
                             <Setter.Value>
                                 <StackPanel Orientation="Horizontal">
@@ -56,9 +56,6 @@
                                     </Setter.Value>
                                 </Setter>
                             </DataTrigger>
-                            <!--<Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
-                            </Trigger>-->
                         </Style.Triggers>
                     </Style>
                 </Button.Style>

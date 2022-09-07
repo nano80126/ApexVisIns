@@ -142,9 +142,9 @@ namespace MCAJawIns.content
         /// <param name="fromDb">是否從資料庫載入，Default is True</param>
         private void LoadCamerasConfig(bool fromDb = true)
         {
-            #region 讀取資料庫
             if (fromDb)
             {
+                #region 從資料庫讀取
                 if (MainWindow.MongoAccess.Connected)
                 {
                     FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
@@ -157,7 +157,7 @@ namespace MCAJawIns.content
 
                         // foreach (CameraConfigBase item in cameras)
                         // {
-                        // Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
+                        //      Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
                         // }
 
                         // 目前有連線的相機
@@ -183,20 +183,25 @@ namespace MCAJawIns.content
                                     MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                                 }
                             }
+                            MainWindow?.CameraEnumer.ConfigSave();
                         }
                     }
                     else
                     {
+                        // 資料庫無資料，轉玩讀取 JSON
                         LoadCamerasConfig(false);
                     }
                 }
                 else
                 {
+                    // 資料庫未連線，轉為讀取 JSON
                     LoadCamerasConfig(false);
-                }
+                } 
+                #endregion
             }
             else
             {
+                #region 從 JSON 檔讀取
                 string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
                 using StreamReader reader = File.OpenText(path);
@@ -230,14 +235,16 @@ namespace MCAJawIns.content
                                 MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                             }
                         }
+                        MainWindow?.CameraEnumer.ConfigSave();
                     }
                 }
                 else
                 {
+                    // JSON 檔為空，回報錯誤
                     MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定為空");
-                }
+                } 
+                #endregion
             }
-            #endregion
         }
 
         /// <summary>
@@ -275,15 +282,17 @@ namespace MCAJawIns.content
                 }
                 cameraConfigs = null;   // 
                 // CameraConfigSaved Flag set false
-                MainWindow.CameraEnumer.CameraCofingSaved = false;
+                // MainWindow.CameraEnumer.CameraCofingSaved = false;
+
+
             }
 
+            // 
             Debug.WriteLine($"{MainWindow.CameraEnumer.CameraConfigs}");
             foreach (CameraConfig item in MainWindow.CameraEnumer.CameraConfigs)
             {
                 Debug.WriteLine($"{item.Model} {item.SerialNumber}");
             }
-
         }
 
         /// <summary>
@@ -368,7 +377,8 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void CameraCard_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            MainWindow.CameraEnumer.CameraCofingSaved = false;
+            // MainWindow.CameraEnumer.CameraCofingSaved = false;
+            Debug.WriteLine($"Data Context Changed {e.NewValue} {e.OldValue} 暫保留 Line: 381");
         }
 
         /// <summary>
@@ -392,21 +402,21 @@ namespace MCAJawIns.content
                 TargetFeature = item.TargetFeature
             }).ToArray();
 
-            #region 寫入本地JSON FILE
+            #region 寫入本地JSON
             string jsonStr = JsonSerializer.Serialize(infos, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText(path, jsonStr);
-            MainWindow.CameraEnumer.CameraCofingSaved = true;
+            // MainWindow.CameraEnumer.CameraCofingSaved = true; // user ConfigSave() instead
             #endregion
 
-            //MCAJawConfig cfg = new MCAJawConfig()
-            //{
-            //    ObjID = new ObjectId(),
-            //    Type = nameof(MCAJawConfig.ConfigType.CAMERA),
-            //    DataArray = bsonArray,
-            //    InsertTime = DateTime.Now,
-            //    UpdateTime = DateTime.Now,
-            //};
+            // MCAJawConfig cfg = new MCAJawConfig()
+            // {
+            //     ObjID = new ObjectId(),
+            //     Type = nameof(MCAJawConfig.ConfigType.CAMERA),
+            //     DataArray = bsonArray,
+            //     InsertTime = DateTime.Now,
+            //     UpdateTime = DateTime.Now,
+            // };
 
             #region 寫入資料庫
             try
@@ -428,6 +438,8 @@ namespace MCAJawIns.content
             {
                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
             }
+
+            MainWindow.CameraEnumer.ConfigSave();
             #endregion
         }
 
@@ -804,11 +816,11 @@ namespace MCAJawIns.content
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        [Obsolete]
         private void TargetFeatureCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //ComboBox combobox = sender as ComboBox;
-            //Debug.WriteLine($"{combobox.SelectedIndex} {combobox.SelectedItem}");
-            MainWindow.CameraEnumer.CameraCofingSaved = false;
+            // 待刪除
+            Debug.WriteLine($"Line: 822");
         }
 
         /// <summary>
@@ -832,6 +844,7 @@ namespace MCAJawIns.content
             {
                 CameraCard1.Visibility = Visibility.Visible;
             }
+            // MainWindow.CameraEnumer.ConfigSave();
         }
 
         #region PropertyChanged
