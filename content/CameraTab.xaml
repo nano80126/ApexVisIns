@@ -561,7 +561,6 @@
                         <ComboBox x:Name="TgtSelector1" Style="{StaticResource MaterialDesignOutlinedComboBox}" Padding="5 4" FontWeight="Bold"
                                 materialDesign:ComboBoxAssist.ClassicMode="False" materialDesign:ComboBoxAssist.ShowSelectedItem="True" VerticalAlignment="Center"
                                 HorizontalAlignment="Left" ItemsSource="{Binding Source={StaticResource DataFromEunm}, Mode=OneWay}"
-                                SelectionChanged="TargetFeatureCombobox_SelectionChanged"
                                 SelectedItem="{Binding TargetFeature, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}" MinWidth="135">
                                 <!-- materialDesign:TextFieldAssist.PrefixText="" -->
                             <ComboBox.ItemTemplate>
@@ -1236,8 +1235,7 @@
                         <ComboBox x:Name="TgtSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="8 3" MinWidth="135" FontWeight="Bold"
                                 Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{Binding Source={StaticResource DataFromEunm}, Mode=OneWay}"
                                 materialDesign:ComboBoxAssist.ClassicMode="False" materialDesign:ComboBoxAssist.ShowSelectedItem="True"
-                                SelectedItem="{Binding TargetFeature, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}"
-                                SelectionChanged="TargetFeatureCombobox_SelectionChanged">
+                                SelectedItem="{Binding TargetFeature, UpdateSourceTrigger=PropertyChanged, FallbackValue={x:Null}}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />

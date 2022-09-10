@@ -1,35 +1,41 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using MaterialDesignThemes.Wpf;
 using MCAJawIns.content;
-using OpenCvSharp;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using MCAJawInfo = MCAJawIns.Mongo.Info;
+using System.IO;
+using MongoDB.Bson;
+using MCAJawIns.Mongo;
 
 namespace MCAJawIns
 {
     #region Enumerator
-
     public enum JawTypes
     {
+        /// <summary>
+        /// 小Jaw
+        /// </summary>
         [Description("小 Jaw")]
         S = 1,
+        /// <summary>
+        /// 中 Jaw
+        /// </summary>
         [Description("中 Jaw")]
         M = 2,
+        /// <summary>
+        /// 大 Jaw
+        /// </summary>
         [Description("大 Jaw")]
         L = 3
     }
@@ -42,11 +48,13 @@ namespace MCAJawIns
         /// <summary>
         /// 自動
         /// </summary>
+        [Description("自動模式")]
         AUTO = 1,
         /// <summary>
         /// 編輯
         /// </summary>
-        EDIT = 2,
+        [Description("編輯模式")]
+        EDIT = 2
     }
     #endregion
 
@@ -569,6 +577,20 @@ namespace MCAJawIns
                         ctrl.ComClose();
                     }
                 }
+            }
+
+
+            // 若為自動模式，紀錄自動模式運行時間和檢驗數量
+            if (InitMode == InitModes.AUTO)
+            {
+                MCAJawInfo info = new MCAJawInfo()
+                {
+                    Type = MCAJawInfo.InfoTypes.System,
+                    Data = SystemInfoTab.SystemInfo.ToBsonDocument(),
+                    UpdateTime = DateTime.Now,
+                    InsertTime = DateTime.Now,
+                };
+                MongoAccess.InsertOne(nameof(JawCollection.Info), info);
             }
 
             // 與資料庫斷線

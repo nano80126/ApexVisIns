@@ -93,7 +93,7 @@ namespace MCAJawIns.content
         /// <summary>
         /// 是否已經回收
         /// </summary>
-        private bool recycled;
+        //private bool recycled;
         #endregion
 
         public DatabaseTab()
@@ -452,6 +452,7 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void SaveDatabaseRecycle_Click(object sender, RoutedEventArgs e)
         {
+#if false
             if (DataReserveSelector.SelectedIndex != -1)
             {
                 ushort month = (ushort)DataReserveSelector.SelectedItem;
@@ -467,27 +468,8 @@ namespace MCAJawIns.content
                 {
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
                 }
-            }
-        }
-
-        [Obsolete("測試用")]
-        private void Test_Click(object sender, RoutedEventArgs e)
-        {
-            DateTime t1 = DateTime.Now;
-            JawResultGroup jaws = MainWindow.MCAJaw.JawResultGroup;
-         
-            JawSpecSetting[] enables = MainWindow.MCAJaw.JawResultGroup.SizeSpecList.Where(item => item.Enable).ToArray();
-          
-            // result headers
-            string concat = enables.Aggregate("時間", (str, next) => $"{str},{next.Item}") + ",結果";
-            string[] keys = enables.Select(item => item.Key).ToArray();
-            // string concat2 = enables.Aggregate(string.Empty, (str, next) => str == string.Empty ? $"{next.Item}" : $"{str},{next.Item}");
-
-            Debug.WriteLine($"{concat}");
-            Debug.WriteLine($"{string.Join(",", keys)}");
-            // Debug.WriteLine($"{concat2}");
-
-            Debug.WriteLine($"============================================================= {(DateTime.Now - t1).TotalMilliseconds}");
+            } 
+#endif
         }
 
         /// <summary>
@@ -540,7 +522,7 @@ namespace MCAJawIns.content
                 Debug.WriteLine($"configs: {result.DeletedCount}");
 
                 // 設置已回收旗標
-                recycled = true;
+                //recycled = true;
             }
             catch (Exception ex)
             {
@@ -548,7 +530,6 @@ namespace MCAJawIns.content
             }
         }
 
-        
         #region PropertyChanged 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -25,7 +25,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
-
+using MCAJawInfo = MCAJawIns.Mongo.Info;
 
 namespace MCAJawIns.content
 {
@@ -43,7 +43,6 @@ namespace MCAJawIns.content
         /// Jaw 規格設定 (包含檢驗結果) (這邊物件再細分 => results collection group 拆出來)
         /// </summary>
         public JawResultGroup JawResultGroup { get; set; }
-
         /// <summary>
         /// Jaw 尺寸規格設定列表
         /// </summary>
@@ -215,6 +214,20 @@ namespace MCAJawIns.content
                     // 保留
                     break;
             }
+
+            //switch(MainWindow.JawType)
+            //{
+            //    case JawTypes.S:
+            //        break;
+            //    case JawTypes.M:
+            //        break;
+            //    case JawTypes.L:
+            //        break;
+            //    default:
+            //        break;
+            //}
+
+            Debug.WriteLine($"{MainWindow.JawType}");
 
             #region 初始化
             // 設定啟動時間
@@ -652,7 +665,22 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+                    // 選擇連線資料庫
+                    switch (MainWindow.JawType)
+                    {
+                        case JawTypes.S:
+                            MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+                            break;
+                        case JawTypes.M:
+                            MongoAccess.Connect("MCAJawM", "intaiUser", "mcajaw", 1500);
+                            break;
+                        case JawTypes.L:
+                            MongoAccess.Connect("MCAJawL", "intaiUser", "mcajaw", 1500);
+                            break;
+                        default:
+                            break;
+                    }
+                    // MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
 
                     if (MongoAccess.Connected)
                     {
@@ -720,9 +748,18 @@ namespace MCAJawIns.content
                         // 讀取 Size Spec 設定
                         LoadSpecList();
 
+                        // 載入自動模式時間、檢驗數量
+                        FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
+                        MongoAccess.FindOne(nameof(JawCollection.Info), filter, out MCAJawInfo info);
 
+                        #region 待刪除
+                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.AutoTime)]}");
+                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalAutoTime)]}");
+                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalHours)]}");
+                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalParts)]}");
+                        #endregion
 
-#if  false  // 移除過期資料
+#if false  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)
                         {
@@ -754,6 +791,9 @@ namespace MCAJawIns.content
                 }
                 catch (Exception ex)
                 {
+                    // 讀取 Size Spec
+                    LoadSpecList(false);
+
                     // 不切的話，message 太長
                     MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message.Split(new string[] { "\n", ". " }, StringSplitOptions.RemoveEmptyEntries)[0]}");
                 }
@@ -821,7 +861,7 @@ namespace MCAJawIns.content
                             Dispatcher.Invoke(() =>
                             {
                                 // 加入尺寸規格列表
-                                //JawResultGroup.SizeSpecList.Add(item);
+                                // JawResultGroup.SizeSpecList.Add(item);
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
@@ -888,15 +928,6 @@ namespace MCAJawIns.content
                     JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                     for (int i = 0; i < keys.Length; i++)
                     {
-#if false
-                        #region delete after testing
-                        int id = JawResultGroup.SizeSpecList.Count + 1;
-                        // 加入尺寸規格列表
-                        JawResultGroup.SizeSpecList.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
-                        #endregion  
-#endif
-
-
                         // 調用 Dispacher 變更集合
                         Dispatcher.Invoke(() =>
                         {

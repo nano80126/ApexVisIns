@@ -13,6 +13,8 @@ using System.Windows.Media;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using OpenCvSharp;
 
 
@@ -230,19 +232,23 @@ namespace MCAJawIns
         /// <summary>
         /// 作業系統
         /// </summary>
+        [BsonElement(nameof(OS))]
         public string OS { get; set; }
         /// <summary>
         /// 64 / 32 位元
         /// </summary>
+        [BsonElement(nameof(Plateform))]
         public string Plateform => _x64 ? "64位元" : "32位元";
         /// <summary>
         /// Program ID
         /// </summary>
         [BsonIgnore]
+        [JsonIgnore]
         public int PID { get; set; }
         /// <summary>
         /// .NET 版本
         /// </summary>
+        [BsonElement(nameof(DotNetVer))]
         public string DotNetVer { get; set; }
         /// <summary>
         /// MongoDB 版本
@@ -253,6 +259,7 @@ namespace MCAJawIns
         /// 系統時間
         /// </summary>
         [BsonIgnore]
+        [JsonIgnore]
         public string SystemTime => $"{DateTime.Now:HH:mm:ss}";
 
         /// <summary>
@@ -264,11 +271,13 @@ namespace MCAJawIns
         /// 模式
         /// </summary>
         [BsonIgnore]
+        [JsonIgnore]
         public string Mode => _auto ? "自動模式" : "編輯模式";
         /// <summary>
         /// 自動運行時間
         /// </summary>
         [BsonIgnore]
+        [JsonIgnore]
         public string AutoTime
         {
             get
@@ -344,6 +353,7 @@ namespace MCAJawIns
         /// 閒置時間 (seconds) (無條件捨棄)
         /// </summary>
         [BsonIgnore]
+        [JsonIgnore]
         public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000.0) : 0;
         #endregion
 
@@ -480,10 +490,8 @@ namespace MCAJawIns
                 OnPropertyChanged(nameof(AutoTime));
                 OnPropertyChanged(nameof(TotalAutoTime));
             }
-
             OnPropertyChanged(nameof(IdleTime)); // 之後需移除
-
-            Debug.WriteLine($"Binding.cs line 443 {DateTime.Now:HH:mm:ss}");
+                                                 // Debug.WriteLine($"Binding.cs line 443 {DateTime.Now:HH:mm:ss}");
         }
 
         /// <summary>

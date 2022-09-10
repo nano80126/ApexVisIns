@@ -7,6 +7,7 @@
             xmlns:local="clr-namespace:MCAJawIns.content" 
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
             xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
+
             mc:Ignorable="d" 
             d:DesignHeight="900" 
             d:DesignWidth="1600" 
@@ -20,9 +21,6 @@
     <!--#endregion-->
 
     <Grid Style="{StaticResource TabGrid}" Background="{StaticResource ColorLightGrayTransparent}">
-        <!--#region Layout -->
-        <!--#endregion-->
-
         <ctrl:CustomCard HorizontalAlignment="Center" VerticalAlignment="Center" Title="系統資訊" IconKind="InformationOutline" UniformCornerRadius="8" MinWidth="800"
                 Background="{StaticResource ColorAccentTransparent}">
             <Grid MinHeight="300" DataContext="{Binding SystemInfo}">
@@ -55,14 +53,8 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="1*" />
-                    <!--
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="1*" />
-                    -->
                 </Grid.ColumnDefinitions>
                 <!--#endregion-->
-
-                <!--<Grid Grid.Column="0" Background="{StaticResource ColorAccentTransparent}"></Grid>-->
 
                 <!--#region System info -->
                 <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
@@ -91,10 +83,6 @@
 
                 </UniformGrid>
                 <!--#endregion-->
-
-                <!-- Separator -->
-                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
-                        Background="{StaticResource ColorGrayTransparent}" />
 
                 <!--#region Auto Mode Info -->
                 <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
@@ -129,6 +117,10 @@
 
                 </UniformGrid>
                 <!--#endregion-->
+
+                <!-- Separator -->
+                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                        Background="{StaticResource ColorGrayTransparent}" />
             </Grid>
 
             <!--#region Footer -->

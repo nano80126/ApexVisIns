@@ -33,6 +33,9 @@ MCA Jaw CCD 尺寸量測設備
 
 ### 每個 Tab 內部最左欄確保 pixel 對齊
 
+### Mongo 移出MCAJaw.xaml.cs
+
+
 ### TO DO LIST
 
 * [ ] ServoMotion.Axes.Clear() 會導致 Binding Error 

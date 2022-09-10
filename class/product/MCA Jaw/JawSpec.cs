@@ -236,8 +236,8 @@ namespace MCAJawIns.Product
         /// <summary>
         /// 尺寸規格列表
         /// </summary>
-        [Obsolete("deprecated, use JawSizeSpecList instead")]
-        public ObservableCollection<JawSpecSetting> SizeSpecList { get; set; } = new ObservableCollection<JawSpecSetting>();
+        /// [Obsolete("deprecated, use JawSizeSpecList instead")]
+        /// public ObservableCollection<JawSpecSetting> SizeSpecList { get; set; } = new ObservableCollection<JawSpecSetting>();
 
 #if false
         /// <summary>

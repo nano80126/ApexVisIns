@@ -1,27 +1,17 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using MaterialDesignThemes.Wpf;
 using MongoDB;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MCAJawIns.Mongo;
+
 using MCAJawInfo = MCAJawIns.Mongo.Info;
+using System.Text.Json;
+using System.IO;
 
 namespace MCAJawIns.content
 {
@@ -31,7 +21,7 @@ namespace MCAJawIns.content
     public partial class SystemInfoTab : StackPanel, INotifyPropertyChanged
     {
         #region Private
-      
+        private string InformationPath { get; } = @"info.json";
         #endregion
 
         #region Properties
@@ -60,6 +50,8 @@ namespace MCAJawIns.content
             InitializeComponent();
 
             MainWindow = (MainWindow)Application.Current.MainWindow;
+            // 初始化路徑
+            InitInfoPath();
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -97,6 +89,16 @@ namespace MCAJawIns.content
             SystemInfo.EnableTimer();
         }
 
+        private void InitInfoPath()
+        {
+            string path = $@"{Directory.GetCurrentDirectory()}\{InformationPath}";
+
+            if (!File.Exists(path))
+            {
+                _ = File.CreateText(path);
+            }
+        }
+
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -108,27 +110,55 @@ namespace MCAJawIns.content
         private void StartIdleTimer_Click(object sender, RoutedEventArgs e)
         {
             // SystemInfo.StartIdleWatch();
-            // SystemInfo.GetAutoTimeInSeconds();
-            int seconds = SystemInfo.GetTotalAutoTimeTnSeconds();
-
-            Debug.WriteLine($"Seconds: {seconds}");
-
+            // SystemInfo.GetAutoTimeInSeconds(); 
+            //int seconds = SystemInfo.GetTotalAutoTimeTnSeconds();
+            //Debug.WriteLine($"Seconds: {seconds}");
             Debug.WriteLine($"{SystemInfo.ToBsonDocument()}");
+
+            string jsonStr = JsonSerializer.Serialize(SystemInfo, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            });
+
+            File.WriteAllText(@$"{Directory.GetCurrentDirectory()}\info.json", jsonStr);
+
+            Debug.WriteLine($"{jsonStr}");
         }
 
         private void StopIdleTimer_Click(object sender, RoutedEventArgs e)
         {
-            // SystemInfo.StopIdleWatch();
+            string path = $@"{Directory.GetCurrentDirectory()}\info.json";
 
-            MCAJawInfo info = new MCAJawInfo()
+
+            using StreamReader reader = File.OpenText(path);
+            string jsonStr = reader.ReadToEnd();
+
+            if (jsonStr != string.Empty)
             {
-                Type = MCAJawInfo.InfoTypes.System,
-                Data = SystemInfo.ToBsonDocument(),
-                InsertTime = DateTime.Now,
-                UpdateTime = DateTime.Now
-            };
+                SystemInfo systemInfo = JsonSerializer.Deserialize<SystemInfo>(jsonStr, new JsonSerializerOptions
+                {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                });
 
-            MainWindow.MongoAccess.InsertOne(nameof(JawCollection.Info), info);
+                Debug.WriteLine($"{systemInfo.OS} {systemInfo.MongoVer}");
+                Debug.WriteLine($"{systemInfo.Plateform} {systemInfo.AutoTime}");
+                Debug.WriteLine($"{systemInfo.TotalHours} {systemInfo.TotalAutoTime}");
+                Debug.WriteLine($"{systemInfo.SoftVer}");
+                Debug.WriteLine($"{systemInfo.AutoTime}");
+            }
+
+            // SystemInfo.StopIdleWatch();
+            // MCAJawInfo info = new MCAJawInfo()
+            // {
+            //     Type = MCAJawInfo.InfoTypes.System,
+            //     Data = SystemInfo.ToBsonDocument(),
+            //     InsertTime = DateTime.Now,
+            //     UpdateTime = DateTime.Now
+            // };
+
+            // MainWindow.MongoAccess.InsertOne(nameof(JawCollection.Info), info);
+
         }
     }
 }
