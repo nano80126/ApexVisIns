@@ -72,12 +72,49 @@
                           Loaded="Scroller_Loaded">
                 <!--#region Content -->
                 <ItemsControl ItemsSource="{Binding ItemsSource}" AlternationCount="100">
+                    <!--#region Resources -->
+                    <ItemsControl.Resources>
+                        <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                            <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
+                            <Setter Property="Background" Value="{StaticResource ColorError}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                        Value="Maximized">
+                                    <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
+                                </DataTrigger>
+                                <!--//-->
+                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                    <Setter Property="Background" Value="LimeGreen" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                        <!--//-->
+                        <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
+                            <Setter Property="Width" Value="18" />
+                            <Setter Property="Height" Value="18" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Kind" Value="Close" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}"
+                                        Value="True">
+                                    <Setter Property="Kind" Value="Check" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.Resources>
+                    <!--#endregion-->
+
+                    <!--#region ItemsPanel -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" MinHeight="300"/>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" MinHeight="300" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+                    <!--#endregion-->
 
+                    <!--#region ItemTemplate -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" x:Name="GridBody">
@@ -104,43 +141,12 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                    <!--//-->
-                                    <Style TargetType="materialDesign:Chip" x:Key="ResultMark">
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
-                                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
-                                        <Setter Property="Background" Value="{StaticResource ColorError}" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
-                                                    Value="Maximized">
-                                                <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
-                                            </DataTrigger>
-                                            <!--//-->
-                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                <Setter Property="Background" Value="LimeGreen" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                    <!--//-->
-                                    <Style TargetType="materialDesign:PackIcon" x:Key="ResultMarkIcon">
-                                        <Setter Property="Width" Value="18" />
-                                        <Setter Property="Height" Value="18" />
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="Kind" Value="Close" />
-                                        <Style.Triggers>
-                                            <DataTrigger
-                                                    Binding="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Chip, AncestorLevel=1}}"
-                                                    Value="True">
-                                                <Setter Property="Kind" Value="Check" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
                                 </Grid.Resources>
                                 <!--#endregion-->
 
                                 <!--#region Layout -->
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="col1"/>
+                                    <ColumnDefinition SharedSizeGroup="col1" />
                                     <ColumnDefinition SharedSizeGroup="col2" />
                                     <ColumnDefinition SharedSizeGroup="col3" />
                                     <ColumnDefinition SharedSizeGroup="col4" />
@@ -152,38 +158,39 @@
                                 <!--#endregion-->
 
                                 <!-- Backgroud -->
-                                <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+                                <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}" />
 
                                 <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" 
                                 Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
-                                <TextBlock Grid.Column="0" Margin="0 0 12 0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                           Text="{Binding Item, StringFormat={}{0:D4}}"/> 
-                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}"/>
-                                <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"/>
-                                <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"/>
-                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result, StringFormat={}{0:0.00000}}"/>
+                                <TextBlock Grid.Column="0" Margin="0 0 12 0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                        Text="{Binding Item, StringFormat={}{0:D4}}" />
+                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}" />
+                                <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}" />
+                                <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}" />
+                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result, StringFormat={}{0:0.00000}}" />
 
-                                <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" 
-                                                 IsEnabled="False" Grid.Column="5" Margin="12 3">
+                                <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" IsEnabled="False" Grid.Column="5"
+                                        Margin="12 3">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock VerticalAlignment="Bottom">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="不良"/>
+                                                    <Setter Property="Text" Value="不良" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding OK}" Value="True">
-                                                            <Setter Property="Text" Value="良品"/>
+                                                            <Setter Property="Text" Value="良品" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}"/>
+                                        <materialDesign:PackIcon Style="{StaticResource ResultMarkIcon}" />
                                     </StackPanel>
                                 </materialDesign:Chip>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+                    <!--#endregion-->
                 </ItemsControl>
                 <!--#endregion-->
             </ScrollViewer>

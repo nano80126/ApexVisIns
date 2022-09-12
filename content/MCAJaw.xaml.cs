@@ -198,8 +198,8 @@ namespace MCAJawIns.content
                     {
                         InitHardware();
                     }
-                    // 設定為自動模式
-                    MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
+                    // 設定為自動模式 (轉至 MainWindow.xaml.cs)
+                    //MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
                     // 設定閒置計時器
                     SetIdleTimer(60);
                     break;
@@ -207,8 +207,8 @@ namespace MCAJawIns.content
                     // 只連線 MongoDB
                     _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
                     // _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // delete this line
-                    // 設定為編輯模式
-                    MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
+                    // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
+                    //MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                     break;
                 default:
                     // 保留
@@ -226,12 +226,10 @@ namespace MCAJawIns.content
             //    default:
             //        break;
             //}
-
-            Debug.WriteLine($"{MainWindow.JawType}");
+            // Debug.WriteLine($"{MainWindow.JawType}");
 
             #region 初始化
-            // 設定啟動時間
-            MainWindow.SystemInfoTab.SystemInfo.SetStartTime();
+
             #endregion
 
             if (!loaded)
@@ -752,11 +750,16 @@ namespace MCAJawIns.content
                         FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
                         MongoAccess.FindOne(nameof(JawCollection.Info), filter, out MCAJawInfo info);
 
+                        Debug.WriteLine($"info {info}");
+
                         #region 待刪除
-                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.AutoTime)]}");
-                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalAutoTime)]}");
-                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalHours)]}");
-                        Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalParts)]}");
+                        if (info != null)
+                        {
+                            //Debug.WriteLine($"{info.Data[nameof(SystemInfo.AutoTime)]}");
+                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalAutoTime)]}");
+                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalHours)]}");
+                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalParts)]}");
+                        }
                         #endregion
 
 #if false  // 移除過期資料
@@ -1145,6 +1148,13 @@ namespace MCAJawIns.content
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
+            JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
+            JawResultGroup.Collection3.Add(new JawSpec("DDD", 0.005, 0.003, 0.007, 0.0075));
+        }
     }
 
     #region MCA Jaw Config Definition

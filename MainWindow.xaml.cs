@@ -277,8 +277,12 @@ namespace MCAJawIns
             if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}, MainWindow.xaml Line: 280"); }
             #endregion
 
-            #region 保留測試區
 
+            #region 初始化
+            // 設定啟動時間
+            SystemInfoTab.SystemInfo.SetStartTime();
+            // 設定是否為自動模式
+            SystemInfoTab.SystemInfo.SetMode(InitMode == InitModes.AUTO);
             #endregion
         }
 

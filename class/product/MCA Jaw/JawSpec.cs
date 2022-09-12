@@ -98,12 +98,13 @@ namespace MCAJawIns.Product
     /// <summary>
     /// MCA Jaw 尺寸規格設定，規格設定列表用
     /// </summary>
-    public class JawSpecSetting : SpecBase, INotifyPropertyChanged
+    public class JawSpecSetting : SpecBase
     {
         private string _note;
         private double _correction;
         private bool _enable;
         private double _correctionSecret;
+        private SpecInsGroup _group = SpecInsGroup.NONE;
 
         public JawSpecSetting() { }
 
@@ -133,6 +134,39 @@ namespace MCAJawIns.Product
             Correction = correction;
             CorrectionSecret = correction2;
             Note = note ?? string.Empty;
+        }
+
+        /// <summary>
+        /// 檢驗群組，同一群組
+        /// </summary>
+        public enum SpecInsGroup {
+            [Description("未分組")]
+            NONE = 0,
+            [Description("群組 1")]
+            Group1 = 1,
+            [Description("群組 2")]
+            Group2 = 2,
+            [Description("群組 3")]
+            Group3 = 3,
+            [Description("群組 4")]
+            Group4 = 4,
+            [Description("群組 5")]
+            Group5 = 5
+        };
+
+        [Description("群組")]
+        public SpecInsGroup Group
+        {
+            get => _group;
+            set
+            {
+                if (value != _group)
+                {
+                    _group = value;
+                    OnPropertyChanged();
+
+                }
+            }
         }
 
         /// <summary>
@@ -315,6 +349,8 @@ namespace MCAJawIns.Product
         {
             Saved = false;
             //System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+
+            System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
         }
 
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();

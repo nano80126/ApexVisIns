@@ -29,15 +29,15 @@
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region Toolbar 1 -->
-        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}" Margin="0">
-            <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
+        <ToolBarTray DockPanel.Dock="Left" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}">
+            <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0 0" ToolBarTray.IsLocked="True" Focusable="False" Background="{x:Null}"
                     Style="{StaticResource MaterialDesignToolBar}">
                 <ToolBar.Resources>
                     <!--<Style></Style>-->
                 </ToolBar.Resources>
 
                 <!--#region Title -->
-                <TextBlock Margin="12 0 0 4" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorInfo}" Text="{Binding JawType, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged ,
+                <TextBlock Margin="12 0 0 0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorInfo}" Text="{Binding JawType, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged ,
                     Converter={StaticResource EnumDescriptionConverter}, StringFormat={}{0} 檢驗系統}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
@@ -52,7 +52,7 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <!--//-->
-                <TextBlock Margin="12 0 0 4" Text="Ver. 1.0.0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
+                <TextBlock Margin="12 0 0 0" Text="Ver. 1.0.0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
                         Foreground="{StaticResource ColorPrimaryTransparent}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
@@ -66,10 +66,10 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-                <!--//-->
-                <Separator Margin="12 6" />
                 <!--#endregion-->
-
+                
+                <Separator Margin="12 4" />
+                <!--//-->
                 <ListBox x:Name="TabSelector" Background="Transparent" materialDesign:ListBoxAssist.IsToggle="False"
                         SelectedIndex="{Binding JawTab, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}}">
                     <ListBox.Resources>
@@ -98,7 +98,7 @@
                             <TextBlock Text="檢驗畫面" />
                         </ListBoxItem.ToolTip>
                         <!--//-->
-                        <materialDesign:PackIcon Kind="ViewGrid" Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
+                        <materialDesign:PackIcon Kind="ViewGrid" Width="28" Height="24" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                     <ListBoxItem Padding="16 4" Cursor="Hand" IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
                             Converter={StaticResource NumberGreaterConvert}, ConverterParameter=2, UpdateSourceTrigger=PropertyChanged}">
@@ -106,13 +106,13 @@
                             <TextBlock Text="規格設定" />
                         </ListBoxItem.ToolTip>
                         <!--//-->
-                        <materialDesign:PackIcon Kind="PlaylistEdit" Width="30" Height="26" Foreground="{StaticResource ColorPrimary}" />
+                        <materialDesign:PackIcon Kind="PlaylistEdit" Width="28" Height="24" Foreground="{StaticResource ColorPrimary}" />
                     </ListBoxItem>
                 </ListBox>
+                <!--//-->
+                <Separator Margin="12 4" />
 
-                <Separator Margin="12 6" />
-
-                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
+                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>
 
                 <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
@@ -127,38 +127,38 @@
         <!--#endregion-->
 
         <!--#region Toolbar 2 -->
-        <ToolBarTray DockPanel.Dock="Right" FlowDirection="RightToLeft" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="True"
-                Background="{x:Null}" Margin="0">
-            <ToolBar HorizontalAlignment="Right" VerticalAlignment="Center" Height="38" Background="{x:Null}" Style="{StaticResource MaterialDesignToolBar}"
-                    ToolBarTray.IsLocked="True" FlowDirection="RightToLeft" Focusable="False">
+        <ToolBarTray DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}"
+                FlowDirection="RightToLeft">
+            <ToolBar HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0 0" ToolBarTray.IsLocked="True" Focusable="False" Background="{x:Null}"
+                    FlowDirection="RightToLeft" Style="{StaticResource MaterialDesignToolBar}">
                 <ToolBar.Resources>
                     <!--//-->
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="BorderBrush" Value="DarkBlue" />
                         <Setter Property="BorderThickness" Value="1" />
-                        <Setter Property="CornerRadius" Value="2" />
+                        <Setter Property="CornerRadius" Value="8" />
                         <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Padding" Value="0 2" />
+                        <Setter Property="Padding" Value="0 0" />
                     </Style>
                     <!--//-->
                     <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
-                        <Setter Property="FlowDirection" Value="LeftToRight"/>
-                        <Setter Property="Margin" Value="8 0"/>
-                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="FlowDirection" Value="LeftToRight" />
+                        <Setter Property="Margin" Value="8 0" />
+                        <Setter Property="Background" Value="Transparent" />
                     </Style>
                     <!-- Hardware Status-->
                     <Style TargetType="materialDesign:PackIcon" x:Key="HWStatus">
-                        <Setter Property="Width" Value="16"/>
-                        <Setter Property="Height" Value="16"/>
-                        <Setter Property="Canvas.Right" Value="0"/>
-                        <Setter Property="Canvas.Bottom" Value="0"/>
+                        <Setter Property="Width" Value="16" />
+                        <Setter Property="Height" Value="16" />
+                        <Setter Property="Canvas.Right" Value="0" />
+                        <Setter Property="Canvas.Bottom" Value="0" />
                         <!--//-->
-                        <Setter Property="Kind" Value="CloseCircle"/>
-                        <Setter Property="Foreground" Value="{StaticResource ColorError}"/>
+                        <Setter Property="Kind" Value="CloseCircle" />
+                        <Setter Property="Foreground" Value="{StaticResource ColorError}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding (ctProperty:StatusHelper.Connected), RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                <Setter Property="Kind" Value="CheckCircle"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
+                                <Setter Property="Kind" Value="CheckCircle" />
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -166,8 +166,8 @@
                     <Style TargetType="materialDesign:PackIcon" x:Key="CamStatus" BasedOn="{StaticResource HWStatus}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding (ctProperty:StatusHelper.IsGrabbing), RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                <Setter Property="Kind" Value="CameraImage"/>
-                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}"/>
+                                <Setter Property="Kind" Value="CameraImage" />
+                                <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -177,7 +177,7 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="資料庫">
-                            <materialDesign:PackIcon Kind="Database" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
+                            <materialDesign:PackIcon Kind="Database" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding Connected, Source={StaticResource MongoAccess}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
@@ -189,7 +189,7 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="IO 控制器">
-                            <materialDesign:PackIcon Kind="LightningBolt" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
+                            <materialDesign:PackIcon Kind="LightningBolt" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
                             <materialDesign:PackIcon Style="{StaticResource HWStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding Conneected, Source={StaticResource ModbusTCPIO}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
@@ -201,9 +201,9 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="光源控制器">
-                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}" />
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
+                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                                    ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
                     </StackPanel>
                 </Border>
@@ -213,21 +213,21 @@
                 <Border FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="Camera 1">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource CamStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
-                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                    ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                    ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
                         <!--//-->
                         <Canvas ToolTip="Camera 2">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource CamStatus}" 
-                                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
-                                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
+                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                                    ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
+                                    ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
                         <!--//-->
                         <Canvas ToolTip="Camera 3">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24" />
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
                             <materialDesign:PackIcon Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
@@ -260,7 +260,6 @@
                     </StackPanel>
                 </Border>-->
                 <!--#endregion-->
-
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
