@@ -975,8 +975,8 @@
                     <!--#endregion-->
 
                     <!--<Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorErrorTransparent}"/>
-            <Border Grid.Row="0" Grid.Column="2" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorSuccessTransparent}"/>
-            <Border Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorPrimaryTransparent}"/>-->
+                    <Border Grid.Row="0" Grid.Column="2" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorSuccessTransparent}"/>
+                    <Border Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorPrimaryTransparent}"/>-->
 
                 </Grid>
             </Border>

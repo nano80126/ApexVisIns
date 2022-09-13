@@ -740,9 +740,9 @@ namespace MCAJawIns
                 }
             }
         }
-        public OpenCvSharp.Rect GetRect()
+        public Rect GetRect()
         {
-            return new OpenCvSharp.Rect((int)_x, (int)_y, (int)_width, (int)_height);
+            return new Rect((int)_x, (int)_y, (int)_width, (int)_height);
         }
         // // // // // //
         public event PropertyChangedEventHandler PropertyChanged;

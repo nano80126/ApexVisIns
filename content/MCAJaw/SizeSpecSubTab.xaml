@@ -1,19 +1,25 @@
-﻿<Border x:Class="MCAJawIns.content.SizeSpecSubTab" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:pd="clr-namespace:MCAJawIns.Product" xmlns:local="clr-namespace:MCAJawIns.content"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=pd:JawSizeSpecList}" mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800"
-        BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1" Background="AliceBlue" VerticalAlignment="Top" Margin="0 -2 0 0">
+﻿<Border x:Class="MCAJawIns.content.SizeSpecSubTab" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:pd="clr-namespace:MCAJawIns.Product" 
+        xmlns:local="clr-namespace:MCAJawIns.content"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+        
+        d:DataContext="{d:DesignInstance Type=pd:JawSizeSpecList}" 
+        mc:Ignorable="d" 
+        d:DesignHeight="450" 
+        d:DesignWidth="800"
+        VerticalAlignment="Top" 
+        Margin="0 -2 0 0" 
+        BorderBrush="{StaticResource ColorGray}" 
+        BorderThickness="0 1" 
+        Background="AliceBlue"
+        Loaded="Border_Loaded">
     <Grid x:Name="Content" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0" UseLayoutRounding="True" Style="{StaticResource TabGrid}" Grid.IsSharedSizeScope="True">
-        <!--<Grid.Style> 待刪除
-            <Style TargetType="{x:Type Grid}">
-                <Setter Property="Height" Value="780" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                        <Setter Property="Height" Value="960" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>-->
+        <!--#region Resources -->
         <Grid.Resources>
             <ObjectDataProvider x:Key="GroupEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
@@ -21,6 +27,7 @@
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </Grid.Resources>
+        <!--#endregion-->
 
         <!--#region Layout -->
         <Grid.RowDefinitions>
@@ -38,13 +45,13 @@
         <!--#endregion-->
 
         <!--#region Spec Setting Title -->
-        <DockPanel Margin="8 8 0 0" Background="{x:Null}" MouseDown="DockPanel_MouseDown">
+        <DockPanel Margin="8 8 0 0" VerticalAlignment="Stretch" Background="Transparent" MouseDown="Grid_MouseDown">
             <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0 0" FontSize="{StaticResource Title-sm}" FontWeight="SemiBold"
                     Text="規格設定 Specification Setting" />
             <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="12 0" FontSize="{StaticResource Title-xs}" FontWeight="SemiBold"
                     Text="單位 (inch)" />
 
-            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" Margin="0 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" MinWidth="200" Height="24" ToolTip="儲存變更"
+            <Button x:Name="SpecSettingSave" DockPanel.Dock="Right" Margin="0 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" MinWidth="200" Height="24"
                     Click="SpecSettingSave_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -76,9 +83,7 @@
             </Button>
         </DockPanel>
         <!--#endregion-->
-
         <Separator Grid.Row="1" Grid.Column="0" Margin="8 8 0 0" />
-
         <!--#region Spec Settings -->
         <DataGrid x:Name="SpecDataGrid" Grid.Row="2" Margin="8 0 0 0" ItemsSource="{Binding Source, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" CanUserSortColumns="False"
                 CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="16 8"
@@ -158,24 +163,59 @@
                 <!--//-->
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
                     Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}" />
+
+                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups[0].Color}" />
+                <local:BindingProxy x:Key="backgroundProxy2" Background="{Binding Groups[1].Color}" />
+                <local:BindingProxy x:Key="backgroundProxy3" Background="{Binding Groups[2].Color}" />
+                <local:BindingProxy x:Key="backgroundProxy4" Background="{Binding Groups[3].Color}" />
+                <local:BindingProxy x:Key="backgroundProxy5" Background="{Binding Groups[4].Color}" />
             </DataGrid.Resources>
+            <!--#endregion-->
+
+            <!--#region Style -->
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                    <!--<Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=Background}" />-->
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Group}" Value="Group1">
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy1}}" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Group}" Value="Group2">
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy2}}" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Group}" Value="Group3">
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy3}}" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Group}" Value="Group4">
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy4}}" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Group}" Value="Group5">
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy5}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <!--#endregion-->
 
             <!--#region Columns -->
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ID}" Header="ID" MinWidth="60" Foreground="{StaticResource ColorBlack}" IsReadOnly="True"
                         HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRightTextColume}" />
-
+                <!--//-->
                 <DataGridCheckBoxColumn Binding="{Binding Enable}" MinWidth="80" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                         ElementStyle="{StaticResource DataGridAlignRightCheckBox}" EditingElementStyle="{StaticResource DataGridAlignRightEditingCheckBox}">
                     <DataGridCheckBoxColumn.Header>
                         <TextBlock Text="啟用" HorizontalAlignment="Center" TextAlignment="Center" />
                     </DataGridCheckBoxColumn.Header>
                 </DataGridCheckBoxColumn>
-
-                <DataGridTextColumn Binding="{Binding Item}" Header="項目" MinWidth="100" Foreground="{StaticResource ColorBlack}" IsReadOnly="True"
+                <!--//-->
+                <DataGridTextColumn Header="項目" MinWidth="100" Binding="{Binding Item}" Foreground="{StaticResource ColorBlack}" IsReadOnly="True"
                         HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRightTextColume}" />
-
                 <!--//-->
                 <DataGridTextColumn Header="規格中心" MinWidth="120" Binding="{Binding CenterSpec}" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                         ElementStyle="{StaticResource DataGridAlignRightTextColume}" EditingElementStyle="{StaticResource TextRightDataGridEditColumn}" />
@@ -189,10 +229,9 @@
                 <DataGridComboBoxColumn MinWidth="120" ItemsSource="{Binding Source={StaticResource GroupEnum}}" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                         ElementStyle="{StaticResource DataGridAlignRightComboxBox}" EditingElementStyle="{StaticResource DataGridAlignRightEditingComboxBox}"
                         SelectedItemBinding="{Binding Group}">
-
                     <DataGridComboBoxColumn.Header>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="群組"></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Text="群組" />
                             <materialDesign:PackIcon HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8 0 0 0" Kind="HelpCircleOutline" Background="Transparent"
                                     Foreground="{StaticResource ColorInfo}" Cursor="Help" ToolTip="同群組的項目會合併顯示良品 / 不良，但不會顯示檢驗數值" />
                         </StackPanel>
@@ -223,68 +262,162 @@
         </DataGrid>
         <!--#endregion-->
         <Separator Grid.RowSpan="100" Grid.Column="1" Margin="12 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-        <!--//-->
+        
+        <!--#region Group Title -->
+        <DockPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Stretch" Margin="0 8 8 0" Background="Transparent" MouseDown="Grid_MouseDown">
+            <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0 0" FontSize="{StaticResource Title-xs}" FontWeight="SemiBold"
+                    Text="群組設定" />
 
-        <!--#region Group Header -->
-        <Grid Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" Background="Red" Margin="0 0">
-            <!--#region Layout -->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition SharedSizeGroup="col1" Width="1*" />
-                <ColumnDefinition SharedSizeGroup="col2" Width="1*" />
-                <ColumnDefinition SharedSizeGroup="col3" Width="1*" />
-            </Grid.ColumnDefinitions>
-            <!--#endregion-->
-
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="名稱" />
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="說明" />
-            <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="顏色" />
-        </Grid>
+            <Button x:Name="SpecSettingGroupSettingSave" DockPanel.Dock="Right" Margin="0 0" VerticalAlignment="Bottom" HorizontalAlignment="Right" MinWidth="120" Height="24" Click="SpecSettingGroupSave_Click">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                        <Setter Property="Foreground" Value="{StaticResource ColorWarning}" />
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ExclamationBold" />
+                                    <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                </StackPanel>
+                            </Setter.Value>
+                        </Setter>
+                        <!--//-->
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding GroupSaved}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="CheckBold" />
+                                            <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                        </StackPanel>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+        </DockPanel>
         <!--#endregion-->
 
         <Separator Grid.Row="1" Grid.Column="2" Margin="0 8 8 0" />
 
         <!--#region Group Settings -->
-        <StackPanel Grid.Row="2" Grid.RowSpan="100" Grid.Column="2" Margin="0 8 8 0" Background="{StaticResource ColorBlueGrayTranparent}">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupEnum} }">
+        <StackPanel Grid.Row="2" Grid.RowSpan="100" Grid.Column="2" Margin="0 0 8 0" Background="Transparent" MouseDown="Grid_MouseDown" >
+            <!--#region Header -->
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 12 0 4">
+                <!--#region Resources -->
+                <Grid.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="FontFamily" Value="微軟正黑體" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
+                    </Style>
+                    <!--//-->
+                    <Style TargetType="materialDesign:PackIcon">
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="Margin" Value="4 0 0 0" />
+                        <Setter Property="Height" Value="19" />
+                        <Setter Property="Kind" Value="HelpCircleOutline" />
+                        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Cursor" Value="Help" />
+                    </Style>
+                </Grid.Resources>
+                <!--#endregion-->
+
+                <!--#region Layout -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="col1" Width="auto" />
+                    <ColumnDefinition SharedSizeGroup="col2" Width="1*" />
+                    <ColumnDefinition SharedSizeGroup="col3" Width="auto" />
+                </Grid.ColumnDefinitions>
+                <!--#endregion-->
+
+                <TextBlock Grid.Column="0" Text="名稱" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12 0 0 0">
+                    <TextBlock Text="內容" />
+                    <materialDesign:PackIcon ToolTip="合併顯示項目名稱與規格中心，隱藏上、下限與檢驗數值" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="12 0 0 0">
+                    <TextBlock Text="顏色" />
+                    <materialDesign:PackIcon ToolTip="僅作為標示用途，無實際功能" />
+                </StackPanel>
+            </Grid>
+            <!--#endregion-->
+
+            <Separator Margin="0 8 0 0" Background="{StaticResource ColorGrayTransparent}" />
+
+            <ItemsControl ItemsSource="{Binding Groups}" x:Name="GroupItems">
+                <!--#region Resources -->
+                <ItemsControl.Resources>
+                    <x:Array Type="SolidColorBrush" x:Key="ColorArray">
+                        <SolidColorBrush Color="Transparent" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorErrorTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorOrangeTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorWarningTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorSuccessTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorPrimaryTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorIndigoTransparent}}" Opacity="0.36" />
+                        <SolidColorBrush Color="{Binding Color, Source= {StaticResource ColorPurpleTransparent}}" Opacity="0.36" />
+                    </x:Array>
+                </ItemsControl.Resources>
+                <!--#endregion-->
+
+                <!--#region ItemsPanel -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical"/>
+                        <StackPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+                <!--#endregion-->
+
+                <!--#region ItemTemplate -->
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="0 8" HorizontalAlignment="Stretch" Background="{StaticResource ColorBlueGrayTranparent}">
-                            <!--#region Style -->
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding}" Value="NONE">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <!--#endregion-->
-
+                        <Grid Margin="0 8" HorizontalAlignment="Stretch">
                             <!--#region Layout -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition SharedSizeGroup="col1" ></ColumnDefinition>
-                                <ColumnDefinition SharedSizeGroup="col2" ></ColumnDefinition>
-                                <ColumnDefinition SharedSizeGroup="col3" ></ColumnDefinition>
+                                <ColumnDefinition SharedSizeGroup="col1" Width="auto" />
+                                <ColumnDefinition SharedSizeGroup="col2" Width="1*" />
+                                <ColumnDefinition SharedSizeGroup="col3" Width="auto" />
                             </Grid.ColumnDefinitions>
                             <!--#endregion-->
 
-                            <!--<TextBlock-->
-                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"
+                                    Text="{Binding GroupName, Converter={StaticResource EnumDescriptionConverter}, Mode=OneWay}" />
 
-                            <TextBox Grid.Column="1" VerticalAlignment="Center" Margin="0 0 0 0" Padding="0 3" TextAlignment="Center" MinWidth="80"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                            <TextBox Grid.Column="1" VerticalAlignment="Center" Margin="12 0 0 0" Padding="8 3" MinWidth="160" Height="24" TextAlignment="Center"
+                                    Style="{StaticResource MaterialDesignOutlinedTextBox}" Text="{Binding Content, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
 
-                            <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="123" />
+                            <ComboBox Grid.Column="2" VerticalAlignment="Center" Margin="12 0 0 0" Padding="8 3" Height="24" MinWidth="140"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{StaticResource ColorArray}"
+                                    SelectedValue="{Binding Color.Color, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Color" SelectedItem="{Binding Color}"
+                                      MouseRightButtonUp="ComboBox_MouseRightButtonUp">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Rectangle Fill="{Binding}" Width="20" />
+                                            <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="{Binding UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
+                <!--#endregion-->
             </ItemsControl>
+
+            <!--#region NewRegion -->
+            
+            <!--#endregion-->
+
         </StackPanel>
         <!--#endregion-->
 

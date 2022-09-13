@@ -6,8 +6,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
+using System.Windows.Media;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MCAJawIns.Product
 {
@@ -235,6 +238,69 @@ namespace MCAJawIns.Product
         }
     }
 
+    /// <summary>
+    /// MCA Jaw 尺寸檢驗群組物件
+    /// </summary>
+    public class JawSpecGroupSetting : INotifyPropertyChanged
+    {
+        #region private
+        private SolidColorBrush _color;
+        #endregion
+
+        public JawSpecGroupSetting() { }
+
+        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, SolidColorBrush color)
+        {
+            GroupName = groupName;
+            Content = content;
+            Color = color;
+        }
+
+        /// <summary>
+        /// 群組名稱
+        /// </summary>
+        [Description("群組名稱")][JsonPropertyName("GroupName")]
+        public JawSpecSetting.SpecInsGroup GroupName { get; set; }
+
+        /// <summary>
+        /// 內容
+        /// </summary>
+        [Description("內容")]
+        [JsonPropertyName("Content")]
+        public string Content { get; set; }
+
+        /// <summary>
+        /// 群組顏色
+        /// </summary>
+        [Description("顏色")]
+        [JsonPropertyName("Color")]
+        public SolidColorBrush Color
+        {
+            get => _color;
+            set
+            {
+                if (value != _color)
+                {
+                    _color = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        #region Property Changed
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void PropertyChange(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
 
     /// <summary>
     /// MCA Jaw 檢驗結果集合，即時顯示用
@@ -312,19 +378,31 @@ namespace MCAJawIns.Product
         #region private
         // private readonly object _srcLock = new object();
         private bool _saved;
+        private bool _groupSaved;
         #endregion
 
         public JawSizeSpecList()
         {
-            //BindingOperations.EnableCollectionSynchronization(Source, _srcLock);
             Source.CollectionChanged += Source_CollectionChanged;
+
+            foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
+            {
+                if (group != JawSpecSetting.SpecInsGroup.NONE)
+                {
+                    JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
+                    Groups.Add(jaw);
+                    // jaw.PropertyChanged += Jaw_PropertyChanged;
+                }
+            }
         }
+
+        //private void Jaw_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+        //}
 
         private void Source_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine($"act {e.Action}");
-            //System.Diagnostics.Debug.WriteLine($"new {e.NewItems}");
-            //System.Diagnostics.Debug.WriteLine($"old {e.OldItems}");
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -339,7 +417,6 @@ namespace MCAJawIns.Product
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Reset:
-
                 default:
                     break;
             }
@@ -348,12 +425,12 @@ namespace MCAJawIns.Product
         private void SpecChange_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Saved = false;
-            //System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
-
-            System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+            // System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
         }
 
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();
+
+        public ObservableCollection<JawSpecGroupSetting> Groups { get; set; } = new ObservableCollection<JawSpecGroupSetting>();
 
         /// <summary>
         /// Source 新增物件 (自動增加 ID)
@@ -391,6 +468,31 @@ namespace MCAJawIns.Product
         {
             _saved = true;
             OnPropertyChanged(nameof(Saved));
+        }
+
+        /// <summary>
+        /// 群組已儲存
+        /// </summary>
+        public bool GroupSaved
+        {
+            get => _groupSaved;
+            set
+            {
+                if (value != _groupSaved)
+                {
+                    _groupSaved = true;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 群組設定儲存
+        /// </summary>
+        public void GroupSave()
+        {
+            _groupSaved = true;
+            OnPropertyChanged(nameof(GroupSaved));
         }
 
         #region Property Changed

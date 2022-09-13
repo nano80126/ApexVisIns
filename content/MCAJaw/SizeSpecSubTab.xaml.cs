@@ -12,6 +12,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 using System;
+using System.Windows.Media;
 
 namespace MCAJawIns.content
 {
@@ -20,25 +21,36 @@ namespace MCAJawIns.content
     /// </summary>
     public partial class SizeSpecSubTab : Border
     {
+        #region Private
+        private SolidColorBrush[] ColorArray;
+        #endregion
+
         #region Properties
         public MCAJaw MCAJaw { get; set; }
         #endregion
 
+
         /// <summary>
         /// JSON FILE 儲存路徑
         /// </summary>
-        public string JsonPath { get; set; }
+        public string JsonDirectory { get; set; }
 
         public SizeSpecSubTab()
         {
             InitializeComponent();
         }
 
-        private void DockPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Border_Loaded(object sender, RoutedEventArgs e)
+        {
+            ColorArray = GroupItems.FindResource("ColorArray") as SolidColorBrush[];
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Keyboard.ClearFocus();
             _ = (Window.GetWindow(this) as MainWindow).TitleGrid.Focus();
         }
+
 
         private void SpecSettingSave_Click(object sender, RoutedEventArgs e)
         {
@@ -61,7 +73,7 @@ namespace MCAJawIns.content
                 NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString,
                 WriteIndented = true,
             });
-            File.WriteAllText(JsonPath, jsonStr);
+            File.WriteAllText(@$"{JsonDirectory}\MCAJaw.json", jsonStr);
             #endregion
 
             #region 寫入資料庫
@@ -89,6 +101,39 @@ namespace MCAJawIns.content
 
             specList.Save();
             _ = Task.Run(() => MCAJaw.LoadSpecList(true));
+        }
+
+
+        private void SpecSettingGroupSave_Click(object sender, RoutedEventArgs e)
+        {
+            JawSizeSpecList specList = DataContext as JawSizeSpecList;
+
+            #region 寫入本地 JSON
+            string jsonStr = JsonSerializer.Serialize(specList.Groups, new JsonSerializerOptions
+            {
+                //Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                //NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString,
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                MaxDepth = 1,
+                WriteIndented = true,
+            });
+
+            Debug.WriteLine($"{jsonStr}");
+            #endregion
+
+            Debug.WriteLine(@$"{JsonDirectory}\Group.json");
+        }
+
+
+        /// <summary>
+        /// 重置 Combobox (選擇第一個 item)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ComboBox_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            comboBox.SelectedItem = comboBox.Items[0];
         }
     }
 }

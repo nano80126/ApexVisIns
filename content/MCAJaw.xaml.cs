@@ -826,7 +826,7 @@ namespace MCAJawIns.content
                 _ = File.CreateText(path);
             }
 
-            SizeSpecSubTab.JsonPath = path;
+            SizeSpecSubTab.JsonDirectory = directory;
         }
 
         /// <summary>
@@ -1151,9 +1151,14 @@ namespace MCAJawIns.content
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
-            JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
-            JawResultGroup.Collection3.Add(new JawSpec("DDD", 0.005, 0.003, 0.007, 0.0075));
+            //JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
+            //JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
+            //JawResultGroup.Collection3.Add(new JawSpec("DDD", 0.005, 0.003, 0.007, 0.0075));
+
+            // JawSizeSpecList.Groups[1].Color = Brushes.Transparent;
+            // JawSizeSpecList.Groups[2].Color = Brushes.Transparent;
+            // JawSizeSpecList.Groups[3].Color = Brushes.Transparent;
+            // JawSizeSpecList.Groups[0].PropertyChange("Color");
         }
     }
 
