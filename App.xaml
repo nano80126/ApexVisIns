@@ -53,7 +53,8 @@
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
 
-            <cvt:DictionaryGetValueConverter x:Key="DictionaryGetValueConverter"/>
+            <cvt:DictionaryGetValueConverter x:Key="DictionaryGetValueConverter" />
+            <cvt:ObjectGetValueConverter x:Key="ObjectGetValueConverter" />
             <!--#endregion-->
 
             <!--#region App 應用程式 Resources -->

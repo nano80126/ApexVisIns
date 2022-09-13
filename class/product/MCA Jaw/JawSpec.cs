@@ -249,31 +249,47 @@ namespace MCAJawIns.Product
 
         public JawSpecGroupSetting() { }
 
-        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, SolidColorBrush color)
+        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, SolidColorBrush backgroundColor)
         {
             GroupName = groupName;
             Content = content;
-            Color = color;
+            Color = backgroundColor;
+            // backgroundColor.Color = new BrushConverter().ConvertFrom("#00FFFFFF");
+        }
+
+        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, string colorStr)
+        {
+            GroupName = groupName;
+            Content = content;
+            Color = (SolidColorBrush)new BrushConverter().ConvertFrom(colorStr);
         }
 
         /// <summary>
         /// 群組名稱
         /// </summary>
-        [Description("群組名稱")][JsonPropertyName("GroupName")]
+        [Description("群組名稱")]
+        [JsonPropertyName(nameof(GroupName))]
         public JawSpecSetting.SpecInsGroup GroupName { get; set; }
 
         /// <summary>
         /// 內容
         /// </summary>
         [Description("內容")]
-        [JsonPropertyName("Content")]
+        [JsonPropertyName(nameof(Content))]
         public string Content { get; set; }
+
+        [Description("顏色字串")]
+        [JsonPropertyName(nameof(ColorString))]
+        public string ColorString
+        {
+            get => _color.ToString();
+        }
 
         /// <summary>
         /// 群組顏色
         /// </summary>
-        [Description("顏色")]
-        [JsonPropertyName("Color")]
+        [Description("背景顏色")]
+        [JsonIgnore]
         public SolidColorBrush Color
         {
             get => _color;
@@ -384,16 +400,17 @@ namespace MCAJawIns.Product
         public JawSizeSpecList()
         {
             Source.CollectionChanged += Source_CollectionChanged;
+            Groups.CollectionChanged += Groups_CollectionChanged;
 
-            foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
-            {
-                if (group != JawSpecSetting.SpecInsGroup.NONE)
-                {
-                    JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
-                    Groups.Add(jaw);
-                    // jaw.PropertyChanged += Jaw_PropertyChanged;
-                }
-            }
+            //foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
+            //{
+            //    if (group != JawSpecSetting.SpecInsGroup.NONE)
+            //    {
+            //        JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
+            //        Groups.Add(jaw);
+            //        // jaw.PropertyChanged += Jaw_PropertyChanged;
+            //    }
+            //}
         }
 
         //private void Jaw_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -407,25 +424,51 @@ namespace MCAJawIns.Product
             {
                 case NotifyCollectionChangedAction.Add:
                     JawSpecSetting newItem = e.NewItems[0] as JawSpecSetting;
-                    newItem.PropertyChanged += SpecChange_PropertyChanged;
+                    newItem.PropertyChanged += Spec_PropertyChanged;
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     JawSpecSetting oldItem = e.OldItems[0] as JawSpecSetting;
-                    oldItem.PropertyChanged -= SpecChange_PropertyChanged;
+                    oldItem.PropertyChanged -= Spec_PropertyChanged;
                     break;
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Move:
-                    break;
                 case NotifyCollectionChangedAction.Reset:
                 default:
                     break;
             }
         }
 
-        private void SpecChange_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"{e.Action} {e.NewItems?[0]} {e.OldItems?[0]}");
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    JawSpecGroupSetting newItem = e.NewItems[0] as JawSpecGroupSetting;
+                    newItem.PropertyChanged += SpecGroup_PropertyChanged;
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    JawSpecGroupSetting oldItem = e.NewItems[0] as JawSpecGroupSetting;
+                    oldItem.PropertyChanged -= SpecGroup_PropertyChanged;
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Move:
+                case NotifyCollectionChangedAction.Reset:
+                default:
+                    break;
+            }
+
+        }
+
+        private void SpecGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            GroupSaved = false;
+        }
+
+        private void Spec_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Saved = false;
-            // System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
         }
 
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();

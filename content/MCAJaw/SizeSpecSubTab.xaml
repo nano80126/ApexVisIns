@@ -164,11 +164,11 @@
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
                     Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}" />
 
-                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups[0].Color}" />
-                <local:BindingProxy x:Key="backgroundProxy2" Background="{Binding Groups[1].Color}" />
-                <local:BindingProxy x:Key="backgroundProxy3" Background="{Binding Groups[2].Color}" />
-                <local:BindingProxy x:Key="backgroundProxy4" Background="{Binding Groups[3].Color}" />
-                <local:BindingProxy x:Key="backgroundProxy5" Background="{Binding Groups[4].Color}" />
+                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups, Converter={StaticResource ObjectGetValueConverter}, ConverterParameter=Color}" />
+                <local:BindingProxy x:Key="backgroundProxy2" Background="{Binding Groups[1].Color, FallbackValue=#00FFFFFF}" />
+                <local:BindingProxy x:Key="backgroundProxy3" Background="{Binding Groups[2].Color, FallbackValue=#00FFFFFF}" />
+                <local:BindingProxy x:Key="backgroundProxy4" Background="{Binding Groups[3].Color, FallbackValue=#00FFFFFF}" />
+                <local:BindingProxy x:Key="backgroundProxy5" Background="{Binding Groups[4].Color, FallbackValue=#00FFFFFF}" />
             </DataGrid.Resources>
             <!--#endregion-->
 
@@ -397,8 +397,8 @@
 
                             <ComboBox Grid.Column="2" VerticalAlignment="Center" Margin="12 0 0 0" Padding="8 3" Height="24" MinWidth="140"
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{StaticResource ColorArray}"
-                                    SelectedValue="{Binding Color.Color, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Color" SelectedItem="{Binding Color}"
-                                      MouseRightButtonUp="ComboBox_MouseRightButtonUp">
+                                    SelectedValue="{Binding Color.Color, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Color"
+                                    SelectedItem="{Binding Color}" MouseRightButtonUp="ComboBox_MouseRightButtonUp">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">

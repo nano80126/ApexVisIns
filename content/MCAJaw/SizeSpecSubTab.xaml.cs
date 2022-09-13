@@ -1,18 +1,19 @@
-﻿using System.Diagnostics;
+﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MCAJawIns.Product;
-using MCAJawIns.Mongo;
-
-using MongoDB.Driver;
-using MongoDB.Bson;
-using MCAJawConfig = MCAJawIns.Mongo.Config;
-using System;
 using System.Windows.Media;
+
+using MCAJawIns.Mongo;
+using MCAJawIns.Product;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MCAJawConfig = MCAJawIns.Mongo.Config;
 
 namespace MCAJawIns.content
 {
@@ -70,7 +71,7 @@ namespace MCAJawIns.content
             string jsonStr = JsonSerializer.Serialize(specList.Source, new JsonSerializerOptions
             {
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
                 WriteIndented = true,
             });
             File.WriteAllText(@$"{JsonDirectory}\MCAJaw.json", jsonStr);
@@ -106,22 +107,19 @@ namespace MCAJawIns.content
 
         private void SpecSettingGroupSave_Click(object sender, RoutedEventArgs e)
         {
+
             JawSizeSpecList specList = DataContext as JawSizeSpecList;
 
             #region 寫入本地 JSON
-            string jsonStr = JsonSerializer.Serialize(specList.Groups, new JsonSerializerOptions
+            string jsonStr = JsonSerializer.Serialize(specList.Groups.ToArray(), new JsonSerializerOptions
             {
-                //Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                //NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString | System.Text.Json.Serialization.JsonNumberHandling.WriteAsString,
-                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
-                MaxDepth = 1,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = true,
             });
-
-            Debug.WriteLine($"{jsonStr}");
+            File.WriteAllText(@$"{JsonDirectory}\Group.json", jsonStr);
             #endregion
 
-            Debug.WriteLine(@$"{JsonDirectory}\Group.json");
+            specList.GroupSave();
         }
 
 

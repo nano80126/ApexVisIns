@@ -177,7 +177,7 @@ namespace MCAJawIns.content
 
             MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑 
-            InitSpecSettingPath();
+            InitSpecSettingDirectory();
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -808,24 +808,15 @@ namespace MCAJawIns.content
         /// <summary>
         /// 初始化規格路徑
         /// </summary>
-        private void InitSpecSettingPath()
+        private void InitSpecSettingDirectory()
         {
             string directory = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}";
-            string path = $@"{directory}\{SpecPath}";
 
             if (!Directory.Exists(directory))
             {
                 // 新增路徑
                 _ = Directory.CreateDirectory(directory);
-                // 新增檔案
-                _ = File.CreateText(path);
             }
-            else if (!File.Exists(path))
-            {
-                // 新增檔案
-                _ = File.CreateText(path);
-            }
-
             SizeSpecSubTab.JsonDirectory = directory;
         }
 

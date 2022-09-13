@@ -566,6 +566,36 @@ namespace MCAJawIns.Converter
         }
     }
 
+
+    [ValueConversion(typeof(object), typeof(object))]
+    public class ObjectGetValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            System.Diagnostics.Debug.WriteLine($"value {value} {parameter} {value.GetType()}");
+
+            if (value != null)
+            {
+                PropertyInfo propertyInfo = value.GetType().GetProperty($"{parameter}");
+
+                System.Diagnostics.Debug.WriteLine($"value {propertyInfo}");
+
+
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     /// <summary>
     /// Multiple value 轉陣列
     /// </summary>
