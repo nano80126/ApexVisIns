@@ -274,9 +274,50 @@ namespace MCAJawIns.content
 
                 #region TEST
                 //Task.Run(() => { }).ContinueWitht=();
-
-
                 #endregion
+
+
+                //await Task.Run(() => { 
+
+                //}).ContinueWith( async t=> { 
+                //    //await Task.WhenAll()
+                //});
+
+
+                await InitMongoDB(token).ContinueWith(async t =>
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        Status = INS_STATUS.UNKNOWN;
+                        token.ThrowIfCancellationRequested();
+                    }
+
+                    await Task.WhenAll(
+                        InitCamera(token),
+                        InitLightCtrl(token),
+                        InitIOCtrl(token));
+                }).ContinueWith(t =>
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        Status = INS_STATUS.UNKNOWN;
+                        token.ThrowIfCancellationRequested();
+                    }
+
+                    // 等待進度條滿，超過 5 秒則 Timeout
+                    if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
+                    {
+                        // 硬體初始化失敗
+                        return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                    }
+
+                    return MainWindow.InitFlags.OK;
+                }).ContinueWith(t =>
+                {
+
+
+                });
+
 
                 await Task.WhenAll(
                     InitCamera(token),
@@ -298,9 +339,6 @@ namespace MCAJawIns.content
                             // 硬體初始化失敗
                             return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
                         }
-
-                        // Debug.WriteLine($"ProgressValue: {MainWindow.MsgInformer.ProgressValue}");
-                        // Debug.WriteLine($"TargetProgressValue: {MainWindow.MsgInformer.TargetProgressValue}");
 
                         return MainWindow.InitFlags.OK;
                     }, token).ContinueWith(t =>
@@ -413,6 +451,19 @@ namespace MCAJawIns.content
 
                 try
                 {
+                    if (MongoAccess.Connected)
+                    {
+                        FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
+
+                        MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
+
+                        if (cfg != null)
+                        {
+                            CameraConfigBase[] configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
+                        }
+                    }
+
+
                     // string path = @"./devices/device.json";
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
@@ -426,10 +477,8 @@ namespace MCAJawIns.content
                             // json 反序列化
                             CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
 
-                            if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
-                            {
-                                throw new TimeoutException();
-                            }
+                            // 等待 Camera Enumerator 初始化
+                            if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
 
                             // 已連線之 Camera
                             List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
@@ -439,8 +488,6 @@ namespace MCAJawIns.content
 
                             _ = Parallel.ForEach(devices, (dev) =>
                             {
-                                Debug.WriteLine($"{dev.SerialNumber} {dev.Model} {dev.TargetFeature}");
-
                                 // 確認 Device 為在線上之 Camera 
                                 if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                                 {
@@ -1244,17 +1291,24 @@ namespace MCAJawIns.content
                 {
                     SpinWait.SpinUntil(() => false, 1500);
                     Debug.WriteLine("wait 1500 ms");
+                    return 10;
                 }),
                 Task.Run(() =>
                 {
                     SpinWait.SpinUntil(() => false, 3500);
                     Debug.WriteLine("wait 3500 ms");
+                    return 11;
                 }),
                 Task.Run(() =>
                 {
                     SpinWait.SpinUntil(() => false, 2500);
                     Debug.WriteLine("wait 2500 ms");
-                }));
+                    return 12;
+                })).ContinueWith(tt =>
+                {
+
+                    Debug.WriteLine($"tt {tt.Status} {tt.Result} {string.Join(",", tt.Result)}");
+                });
 
                 return 3;
             });

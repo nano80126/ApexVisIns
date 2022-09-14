@@ -24,7 +24,7 @@
         Topmost="False"
         Title="ModeWindow" 
         Width="300"
-        Height="130"
+        Height="auto"
         Loaded="Window_Loaded">
     <Window.Resources>
         <RoutedCommand x:Key="ChangeTypeAction" />
@@ -41,24 +41,25 @@
         <CommandBinding Command="{StaticResource ChangeModeAction}" CanExecute="CanExecute" Executed="ChangeModeCommand" />
     </Window.CommandBindings>
     <!--//-->
-    <Border HorizontalAlignment="Stretch"  CornerRadius="20" Background="WhiteSmoke" Style="{StaticResource MainWindowBorder}">
+    <Border HorizontalAlignment="Stretch" VerticalAlignment="Center" CornerRadius="20" Background="WhiteSmoke" Style="{StaticResource MainWindowBorder}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!--#region Layout -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <!--#endregion-->
-            <Grid x:Name="TitleGrid" Grid.Row="0" Margin="5 3">
-                <Image Grid.Column="0" UseLayoutRounding="True" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png"/>
-            </Grid>
+            <!--<Grid x:Name="TitleGrid" Grid.Row="0" Margin="8 0" ></Grid>-->
+
+            <Image Grid.Row="0" Margin="8 0" UseLayoutRounding="True" HorizontalAlignment="Left" Height="30" Source="pack://application:,,,/intai.png" />
             <!--//-->
-            <Separator Grid.Row="1" />
-            
+            <Separator Grid.Row="1" Margin="0 8" />
+            <!--//-->
+
             <!--#region Type Select -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <!--#region Resources -->
                 <StackPanel.Resources>
                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipRadioButton}">
@@ -67,7 +68,6 @@
                     </Style>
                     <Style TargetType="materialDesign:PackIcon" x:Key="TypeChoice">
                         <Setter Property="Margin" Value="0 0 4 0" />
-                        <!--<Setter Property="Width" Value="30" />-->
                         <Setter Property="Height" Value="16" />
                         <Setter Property="VerticalAlignment" Value="Center" />
                         <Setter Property="Kind" Value="CheckboxBlankOutline" />
@@ -120,7 +120,7 @@
             <!--#endregion-->
 
             <!--#region Mode Select -->
-            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 8" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <!--#region Resources -->
                 <StackPanel.Resources>
                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignChoiceChipAccentRadioButton}">

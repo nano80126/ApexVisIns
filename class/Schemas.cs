@@ -75,6 +75,10 @@ namespace MCAJawIns.Mongo
             /// </summary>
             SPEC,
             /// <summary>
+            /// 規格分組
+            /// </summary>
+            SPECGROUP,
+            /// <summary>
             /// 資料庫維護
             /// </summary>
             DATABASE,
