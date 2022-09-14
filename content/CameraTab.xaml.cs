@@ -31,12 +31,6 @@ namespace MCAJawIns.content
 
         #region Varibles
         /// <summary>
-        /// Camera 組態路徑, Camera Configs Directory
-        /// </summary>
-        private string CamerasDirectory { get; } = @"cameras";
-        private string CamerasPath { get; } = @"camera.json";
-
-        /// <summary>
         /// Cameras for CameraTab, only useing in this tab. 
         /// </summary>
         private readonly List<BaslerCam> _camerasList = new();
@@ -71,6 +65,17 @@ namespace MCAJawIns.content
 
         #endregion
 
+        #region Path
+        /// <summary>
+        /// 相機組態目錄, Camera Configs Directory
+        /// </summary>
+        private string CamerasDirectory { get; } = @"cameras";
+        /// <summary>
+        /// 相機組態檔名稱, Camara Configs File Name
+        /// </summary>
+        private string CamerasPath { get; } = @"camera.json";
+        #endregion
+
         #region Flags
         /// <summary>
         /// 已載入旗標
@@ -89,7 +94,7 @@ namespace MCAJawIns.content
 
             MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑
-            InitCamerasConfigPath();
+            InitCamerasConfigDirectory();
         }
 
         /// <summary>
@@ -117,23 +122,23 @@ namespace MCAJawIns.content
         /// <summary>
         /// 初始化 cameras Config 路徑
         /// </summary>
-        private void InitCamerasConfigPath()
+        private void InitCamerasConfigDirectory()
         {
             string directory = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}";
-            string path = $@"{directory}\{CamerasPath}";
+            //string path = $@"{directory}\{CamerasPath}";
 
             if (!Directory.Exists(directory))
             {
                 // 新增路徑
                 _ = Directory.CreateDirectory(directory);
                 // 新增檔案
-                _ = File.CreateText(path);
+                //_ = File.CreateText(path);
             }
-            else if (!File.Exists(path))
-            {
-                // 新增檔案
-                _ = File.CreateText(path);
-            }
+            //else if (!File.Exists(path))
+            //{
+            //    // 新增檔案
+            //    _ = File.CreateText(path);
+            //}
         }
 
         /// <summary>
@@ -204,44 +209,52 @@ namespace MCAJawIns.content
                 #region 從 JSON 檔讀取
                 string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
-                using StreamReader reader = File.OpenText(path);
-                string jsonStr = reader.ReadToEnd();
-
-                if (jsonStr != string.Empty)
+                if (File.Exists(path))
                 {
-                    // 反序列化，載入JSON FILE
-                    CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                    using StreamReader reader = File.OpenText(path);
+                    string jsonStr = reader.ReadToEnd();
 
-                    // 目前有連線的相機
-                    BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
-
-                    // JSON FILE 儲存之 CameraConfig
-                    CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
-
-                    if (cameras.Length > cameraConfig.Length)
+                    if (jsonStr != string.Empty)
                     {
-                        foreach (CameraConfigBase d in cameras)
+                        // 反序列化，載入JSON FILE
+                        CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+
+                        // 目前有連線的相機
+                        BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+
+                        // JSON FILE 儲存之 CameraConfig
+                        CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
+
+                        if (cameras.Length > cameraConfig.Length)
                         {
-                            if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                            foreach (CameraConfigBase d in cameras)
                             {
-                                CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
                                 {
-                                    VendorName = d.VendorName,
-                                    CameraType = d.CameraType,
-                                    TargetFeature = d.TargetFeature,
-                                    // 
-                                    Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
-                                };
-                                MainWindow?.CameraEnumer.CameraConfigs.Add(config);
+                                    CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                    {
+                                        VendorName = d.VendorName,
+                                        CameraType = d.CameraType,
+                                        TargetFeature = d.TargetFeature,
+                                        // 
+                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                    };
+                                    MainWindow?.CameraEnumer.CameraConfigs.Add(config);
+                                }
                             }
+                            MainWindow?.CameraEnumer.ConfigSave();
                         }
-                        MainWindow?.CameraEnumer.ConfigSave();
+                    }
+                    else
+                    {
+                        // JSON 為空，回報 info
+                        MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定檔不存在");
                     }
                 }
                 else
                 {
-                    // JSON 檔為空，回報錯誤
-                    MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定為空");
+                    // JSON 檔不存在，回報 info
+                    MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定檔不存在");
                 } 
                 #endregion
             }

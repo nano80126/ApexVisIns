@@ -164,7 +164,7 @@
                 <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
                     Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}" />
 
-                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups, Converter={StaticResource ObjectGetValueConverter}, ConverterParameter=Color}" />
+                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups[0].Color, FallbackValue=#00FFFFFF}" />
                 <local:BindingProxy x:Key="backgroundProxy2" Background="{Binding Groups[1].Color, FallbackValue=#00FFFFFF}" />
                 <local:BindingProxy x:Key="backgroundProxy3" Background="{Binding Groups[2].Color, FallbackValue=#00FFFFFF}" />
                 <local:BindingProxy x:Key="backgroundProxy4" Background="{Binding Groups[3].Color, FallbackValue=#00FFFFFF}" />

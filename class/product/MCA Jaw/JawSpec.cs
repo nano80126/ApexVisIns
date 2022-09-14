@@ -340,7 +340,7 @@ namespace MCAJawIns.Product
             BindingOperations.EnableCollectionSynchronization(Collection3, _c3lock);
             SyncBinding = true;
         }
-
+        
         public void DisableCollectionBinding()
         {
             BindingOperations.DisableCollectionSynchronization(Collection1);
@@ -348,19 +348,6 @@ namespace MCAJawIns.Product
             BindingOperations.DisableCollectionSynchronization(Collection3);
             SyncBinding = false;
         }
-
-        /// <summary>
-        /// 尺寸規格列表
-        /// </summary>
-        /// [Obsolete("deprecated, use JawSizeSpecList instead")]
-        /// public ObservableCollection<JawSpecSetting> SizeSpecList { get; set; } = new ObservableCollection<JawSpecSetting>();
-
-#if false
-        /// <summary>
-        /// 規格集合
-        /// </summary>
-        public ObservableCollection<JawSpec> SpecCollection { get; set; } = new ObservableCollection<JawSpec>(); 
-#endif
 
         /// <summary>
         /// 規格集合 1
@@ -400,17 +387,17 @@ namespace MCAJawIns.Product
         public JawSizeSpecList()
         {
             Source.CollectionChanged += Source_CollectionChanged;
-            Groups.CollectionChanged += Groups_CollectionChanged;
+            //Groups.CollectionChanged += Groups_CollectionChanged;
 
-            //foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
-            //{
-            //    if (group != JawSpecSetting.SpecInsGroup.NONE)
-            //    {
-            //        JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
-            //        Groups.Add(jaw);
-            //        // jaw.PropertyChanged += Jaw_PropertyChanged;
-            //    }
-            //}
+            foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
+            {
+                if (group != JawSpecSetting.SpecInsGroup.NONE)
+                {
+                    JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
+                    jaw.PropertyChanged += SpecGroup_PropertyChanged;
+                    Groups.Add(jaw);
+                }
+            }
         }
 
         //private void Jaw_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -438,6 +425,7 @@ namespace MCAJawIns.Product
             }
         }
 
+        [Obsolete("deprecated")]
         private void Groups_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"{e.Action} {e.NewItems?[0]} {e.OldItems?[0]}");
@@ -461,19 +449,19 @@ namespace MCAJawIns.Product
 
         }
 
-        private void SpecGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            GroupSaved = false;
-        }
-
         private void Spec_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             Saved = false;
         }
 
+        private void SpecGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            GroupSaved = false;
+        }
+
         public ObservableCollection<JawSpecSetting> Source { get; set; } = new ObservableCollection<JawSpecSetting>();
 
-        public ObservableCollection<JawSpecGroupSetting> Groups { get; set; } = new ObservableCollection<JawSpecGroupSetting>();
+        public List<JawSpecGroupSetting> Groups { get; set; } = new List<JawSpecGroupSetting>();
 
         /// <summary>
         /// Source 新增物件 (自動增加 ID)

@@ -92,14 +92,6 @@ namespace MCAJawIns.content
         }
 
         private INS_STATUS _status = INS_STATUS.UNKNOWN;
-        /// <summary>
-        /// 規格路徑
-        /// </summary>
-        private string SpecDirectory { get; } = @$"specification";
-        /// <summary>
-        /// 規格檔案
-        /// </summary>
-        private string SpecPath { get; } = $@"MCAJaw.json";
         #endregion
 
         #region Properties
@@ -127,6 +119,25 @@ namespace MCAJawIns.content
                 OnPropertyChanged();
             }
         }
+        #endregion
+
+        #region Path
+        /// <summary>
+        /// 規格路徑
+        /// </summary>
+        private string SpecDirectory { get; } = @$"specification";
+        /// <summary>
+        /// 規格檔案
+        /// </summary>
+        private string SpecPath { get; } = $@"MCAJaw.json";
+        /// <summary>
+        /// 相機組態目錄, Camera Configs Directory
+        /// </summary>
+        private string CamerasDirectory { get; } = @"cameras";
+        /// <summary>
+        /// 相機組態檔名稱, Camera Configs File Name
+        /// </summary>
+        private string CamerasPath { get; } = @"camera.json";
         #endregion
 
         #region Local Object (方便呼叫)
@@ -260,6 +271,13 @@ namespace MCAJawIns.content
                 initialzing = true;
 
                 Status = INS_STATUS.INIT;
+
+                #region TEST
+                //Task.Run(() => { }).ContinueWitht=();
+
+
+                #endregion
+
                 await Task.WhenAll(
                     InitCamera(token),
                     InitLightCtrl(token),
@@ -396,17 +414,17 @@ namespace MCAJawIns.content
                 try
                 {
                     // string path = @"./devices/device.json";
-                    string path = $@"{Directory.GetCurrentDirectory()}\cameras\camera.json";
+                    string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
 
                     if (File.Exists(path))
                     {
                         using StreamReader reader = new StreamReader(path);
-                        string json = reader.ReadToEnd();
+                        string jsonStr = reader.ReadToEnd();
 
-                        if (json != string.Empty)
+                        if (jsonStr != string.Empty)
                         {
                             // json 反序列化
-                            CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(json);
+                            CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
 
                             if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000))
                             {
@@ -437,7 +455,7 @@ namespace MCAJawIns.content
                                                 if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
                                                     _ = SpinWait.SpinUntil(() => false, 25);
-                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
                                                     MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
@@ -449,7 +467,7 @@ namespace MCAJawIns.content
                                                 if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
                                                     _ = SpinWait.SpinUntil(() => false, 50);
-                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
                                                     MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
@@ -461,7 +479,7 @@ namespace MCAJawIns.content
                                                 if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
                                                 {
                                                     _ = SpinWait.SpinUntil(() => false, 75);
-                                                    //MainWindow.MsgInformer.TargetProgressValue += 17;
+                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
                                                     MainWindow.MsgInformer.AdvanceProgressValue(17);
                                                 }
                                             }
@@ -641,6 +659,7 @@ namespace MCAJawIns.content
             }
 
             Debug.WriteLine($"{e.NewValue} {e.OldValue}");
+
             // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
@@ -750,7 +769,7 @@ namespace MCAJawIns.content
                         FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
                         MongoAccess.FindOne(nameof(JawCollection.Info), filter, out MCAJawInfo info);
 
-                        Debug.WriteLine($"info {info}");
+                        //Debug.WriteLine($"info {info}");
 
                         #region 待刪除
                         if (info != null)
@@ -821,7 +840,7 @@ namespace MCAJawIns.content
         }
 
         /// <summary>
-        /// 載入規格設定
+        /// 載入規格設定 (因同一組件(namespace MCAJawIns.content)會使用，故為 internal)
         /// </summary>
         internal void LoadSpecList(bool fromDb = true)
         {
@@ -854,8 +873,9 @@ namespace MCAJawIns.content
                             // 調用 Dispacher 變更集合
                             Dispatcher.Invoke(() =>
                             {
-                                // 加入尺寸規格列表
-                                // JawResultGroup.SizeSpecList.Add(item);
+                                // // 加入尺寸規格列表
+                                // // JawResultGroup.SizeSpecList.Add(item);
+
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
@@ -866,11 +886,13 @@ namespace MCAJawIns.content
                     }
                     else
                     {
+                        // 從本機文件載入
                         LoadSpecList(false);
                     }
                 }
                 else
                 {
+                    // 從本機文件載入
                     LoadSpecList(false);
                 }
             }
@@ -878,36 +900,49 @@ namespace MCAJawIns.content
             {
                 string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
-                using StreamReader reader = File.OpenText(path);
-                string jsonStr = reader.ReadToEnd();
-
-                if (jsonStr != string.Empty)
+                if (File.Exists(path))
                 {
-                    // 反序列化，載入 JSON FILE
-                    //List<JawSpecSetting> list = JsonSerializer.Deserialize<List<JawSpecSetting>>(jsonStr, new JsonSerializerOptions
-                    JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
-                    {
-                        NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
-                    });
+                    using StreamReader reader = File.OpenText(path);
+                    string jsonStr = reader.ReadToEnd();
 
-                    JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
-                    foreach (JawSpecSetting item in list)
+                    if (jsonStr != string.Empty)
                     {
-                        // 調用 Dispacher 變更集合
-                        Dispatcher.Invoke(() =>
+                        // 反序列化，載入 JSON FILE
+                        // List<JawSpecSetting> list = JsonSerializer.Deserialize<List<JawSpecSetting>>(jsonStr, new JsonSerializerOptions
+                        JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
                         {
-                            // 加入尺寸規格列表
-                            // JawResultGroup.SizeSpecList.Add(item);
-                            // 加入尺寸規格列表
-                            JawSizeSpecList.Source.Add(item);
-                            // 加入批號檢驗結果 (初始化)
-                            JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
+                            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
                         });
+
+                        JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+                        foreach (JawSpecSetting item in list)
+                        {
+                            // 調用 Dispacher 變更集合
+                            Dispatcher.Invoke(() =>
+                            {
+                                // // 加入尺寸規格列表
+                                // // JawResultGroup.SizeSpecList.Add(item);
+
+                                // 加入尺寸規格列表
+                                JawSizeSpecList.Source.Add(item);
+                                // 加入批號檢驗結果 (初始化)
+                                JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
+                            });
+                        }
+                        JawSizeSpecList.Save();
                     }
-                    JawSizeSpecList.Save();
+                    else
+                    {
+                        // 初始化尺寸規格
+                        InitSizeSpec();
+                    }
                 }
                 else // 若規格列表不存在
                 {
+                    // 初始化尺寸規格
+                    InitSizeSpec();
+
+#if false
                     string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
                     string[] items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                     double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
@@ -933,8 +968,43 @@ namespace MCAJawIns.content
                             // 加入批號檢驗結果 (初始化)
                             JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
                         });
-                    }
+                    } 
+#endif
+
                 }
+            }
+        }
+
+        /// <summary>
+        /// 初始化尺寸規格設定
+        /// </summary>
+        private void InitSizeSpec()
+        {
+            string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
+            string[] items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+            double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+            double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+            double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+            // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            double[] correc = new double[center.Length];
+            Array.Fill(correc, 0);
+            double[] correc2 = new double[center.Length];
+            Array.Fill(correc2, 0);
+
+            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+            for (int i = 0; i < keys.Length; i++)
+            {
+                // 調用 Dispacher 變更集合
+                Dispatcher.Invoke(() =>
+                {
+                    // 加入尺寸規格表
+                    // id = 0 means auto increase by source count
+                    // JawSizeSpecList.Source.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
+                    JawSpecSetting newItem = new JawSpecSetting(0, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]);
+                    JawSizeSpecList.AddNew(newItem);
+                    // 加入批號檢驗結果 (初始化)
+                    JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
+                });
             }
         }
         #endregion
@@ -1140,7 +1210,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             //JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
             //JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
@@ -1150,6 +1220,46 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[2].Color = Brushes.Transparent;
             // JawSizeSpecList.Groups[3].Color = Brushes.Transparent;
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
+            Task<int> t = await Task.Run(() =>
+            {
+                Debug.WriteLine($"first start {DateTime.Now:HH:mm:ss.fff}");
+                SpinWait.SpinUntil(() => false, 1000);
+                Debug.WriteLine($"first end {DateTime.Now:HH:mm:ss.fff}");
+
+                return 1;
+            }).ContinueWith(t =>
+            {
+                Debug.WriteLine($"second ID {t.Id} {t.Result}");
+
+                Debug.WriteLine($"second start {DateTime.Now:HH:mm:ss.fff}");
+                SpinWait.SpinUntil(() => false, 1000);
+                Debug.WriteLine($"second end {DateTime.Now:HH:mm:ss.fff}");
+
+                return 2;
+            }).ContinueWith(async t =>
+            {
+                Debug.WriteLine($"Third ID {t.Id} {t.Result}");
+
+                await Task.WhenAll(Task.Run(() =>
+                {
+                    SpinWait.SpinUntil(() => false, 1500);
+                    Debug.WriteLine("wait 1500 ms");
+                }),
+                Task.Run(() =>
+                {
+                    SpinWait.SpinUntil(() => false, 3500);
+                    Debug.WriteLine("wait 3500 ms");
+                }),
+                Task.Run(() =>
+                {
+                    SpinWait.SpinUntil(() => false, 2500);
+                    Debug.WriteLine("wait 2500 ms");
+                }));
+
+                return 3;
+            });
+
+            Debug.WriteLine($"Task {t.Id} {t.Result}");
         }
     }
 
