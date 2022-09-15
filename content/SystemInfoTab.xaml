@@ -68,13 +68,7 @@
                     <TextBox Padding="0 3" Text="{Binding Plateform, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
                     <TextBlock Text="PID" />
-                    <TextBox Padding="0 3" Text="{Binding PID, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-
-                    <TextBlock Text=".NET" />
-                    <TextBox Padding="0 3" Text="{Binding DotNetVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-
-                    <TextBlock Text="資料庫" />
-                    <TextBox Padding="0 3" Text="{Binding MongoVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                    <TextBox Padding="0 3" Text="{Binding PID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
                     <TextBlock Text="系統時間" />
                     <TextBox Padding="0 3" Text="{Binding SystemTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
@@ -89,9 +83,32 @@
                 <!--#region Auto Mode Info -->
                 <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
 
+                    <TextBlock Text=".NET" />
+                    <TextBox Padding="0 3" Text="{Binding DotNetVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+
+                    <TextBlock Text="資料庫" />
+                    <TextBox Padding="0 3" Text="{Binding MongoVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+
+                    <TextBlock Text="Pylon SDK" />
+                    <TextBox Padding="0 3" Text="{Binding PylonVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+
                     <TextBlock Text="設備版本" />
                     <TextBox Padding="0 3" Text="{Binding SoftVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
+                    <!--<TextBlock Text="建立日期" />
+                    <TextBox Padding="0 3" Text="{Binding BuileTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />-->
+
+                    <TextBlock Text="" />
+                    <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
+                        AncestorType=UniformGrid}, Mode=OneWay}" />
+
+                    <!--<Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
+                    <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>-->
+                </UniformGrid>
+                <!--#endregion-->
+
+                <!--#region NewRegion -->
+                <UniformGrid Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
                     <TextBlock Text="當前模式" />
                     <TextBox Padding="0 3" Text="{Binding Mode, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
@@ -113,15 +130,6 @@
                     <TextBlock Text="" />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
                         AncestorType=UniformGrid}, Mode=OneWay}" />
-
-                    <!--<Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
-                    <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>-->
-                </UniformGrid>
-                <!--#endregion-->
-
-                <!--#region NewRegion -->
-                <UniformGrid Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
-
                 </UniformGrid>
                 <!--#endregion-->
 

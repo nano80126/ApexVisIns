@@ -16,7 +16,8 @@ using MongoDB.Driver;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OpenCvSharp;
-
+using System.IO;
+using System.Reflection;
 
 namespace MCAJawIns
 {
@@ -207,7 +208,7 @@ namespace MCAJawIns
         private System.Timers.Timer _timer;
         private bool _disposed;
 
-        private bool _x64;
+        //private bool _x64;
         private bool _auto;
         private string _mongoVer = null;
         private DateTime _startTime;
@@ -233,23 +234,23 @@ namespace MCAJawIns
         /// 作業系統
         /// </summary>
         [BsonElement(nameof(OS))]
-        public string OS { get; set; }
+        public string OS => $"{Environment.OSVersion.Version}";
         /// <summary>
         /// 64 / 32 位元
         /// </summary>
         [BsonElement(nameof(Plateform))]
-        public string Plateform => _x64 ? "64位元" : "32位元";
+        public string Plateform => Environment.Is64BitProcess ? "64位元" : "32位元";
         /// <summary>
         /// Program ID
         /// </summary>
         [BsonIgnore]
         [JsonIgnore]
-        public int PID { get; set; }
+        public int PID => Environment.ProcessId;
         /// <summary>
         /// .NET 版本
         /// </summary>
         [BsonElement(nameof(DotNetVer))]
-        public string DotNetVer { get; set; }
+        public string DotNetVer => $"{Environment.Version}";
         /// <summary>
         /// MongoDB 版本
         /// </summary>
@@ -278,6 +279,20 @@ namespace MCAJawIns
         /// </summary>
         [BsonElement(nameof(SoftVer))]
         public string SoftVer { get; set; } = "2.0.0";
+
+        /// <summary>
+        /// 建立日期
+        /// </summary>
+        [BsonElement(nameof(BuileTime))]
+        public string BuileTime
+        {
+            get
+            {
+                string filePath = Assembly.GetExecutingAssembly().Location;
+                return new FileInfo(filePath).LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+        }
+
         /// <summary>
         /// 模式
         /// </summary>
@@ -374,14 +389,6 @@ namespace MCAJawIns
         #endregion
 
         #region Methods
-        /// <summary>
-        /// 設定 32/64 位元
-        /// </summary>
-        /// <param name="is64bit">是否為 64 bits</param>
-        public void SetPlateform(bool is64bit)
-        {
-            _x64 = is64bit;
-        }
         /// <summary>
         /// 設定 自動/編輯 模式
         /// </summary>
@@ -503,7 +510,6 @@ namespace MCAJawIns
         {
             OnPropertyChanged(nameof(SystemTime));
 
-            Debug.WriteLine(_auto);
             if (_auto)
             {
                 OnPropertyChanged(nameof(AutoTime));
