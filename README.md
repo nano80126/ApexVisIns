@@ -209,6 +209,8 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] 確認 JawResultGroup.SizeSpecList 已被取代且移除
 
+* [ ] Systeminfo 資訊取得改為內置 
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

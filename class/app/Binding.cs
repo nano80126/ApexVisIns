@@ -256,6 +256,17 @@ namespace MCAJawIns
         [BsonElement(nameof(MongoVer))]
         public string MongoVer => _mongoVer ?? "未連線";
         /// <summary>
+        /// Basler Pylon API Versnio Number
+        /// </summary>
+        public string PylonVer
+        {
+            get
+            {
+                Debug.WriteLine($"Get Pylon Version");
+                return FileVersionInfo.GetVersionInfo("Basler.Pylon.dll").FileVersion;
+            }
+        }
+        /// <summary>
         /// 系統時間
         /// </summary>
         [BsonIgnore]
@@ -381,6 +392,7 @@ namespace MCAJawIns
         {
             _mongoVer = version;
         }
+
         /// <summary>
         /// 設定啟動時間
         /// </summary>

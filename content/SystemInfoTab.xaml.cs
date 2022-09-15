@@ -77,12 +77,13 @@ namespace MCAJawIns.content
 
         private void GetSystemInfomation()
         {
-
             SystemInfo.OS = $"{Environment.OSVersion.Version}";
             SystemInfo.SetPlateform(Environment.Is64BitProcess);
             SystemInfo.PID = Environment.ProcessId;
             SystemInfo.DotNetVer = $"{Environment.Version}";
 
+            Debug.WriteLine($"{SystemInfo.PylonVer}");
+            
             SystemInfo.PropertyChange();
 
             // if (inited && IsLoaded) { SystemInfo.EnableTimer(); }

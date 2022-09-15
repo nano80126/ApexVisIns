@@ -191,7 +191,7 @@ namespace MCAJawIns.content
             InitSpecSettingDirectory();
         }
 
-        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
+        private async void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 綁定 Resource
             JawInspection = FindResource(nameof(JawInspection)) as JawInspection;
@@ -216,8 +216,10 @@ namespace MCAJawIns.content
                     break;
                 case InitModes.EDIT:
                     // 只連線 MongoDB
-                    _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
+                    await Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
                     // _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // delete this line
+                    _ = Task.Run(() => InitCamera(_cancellationTokenSource.Token));
+
                     // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
                     //MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                     break;
@@ -276,59 +278,30 @@ namespace MCAJawIns.content
                 //Task.Run(() => { }).ContinueWitht=();
                 #endregion
 
-
                 //await Task.Run(() => { 
-
                 //}).ContinueWith( async t=> { 
                 //    //await Task.WhenAll()
                 //});
 
-
-                await InitMongoDB(token).ContinueWith(async t =>
-                {
-                    if (token.IsCancellationRequested)
+                await InitMongoDB(token)
+                    .ContinueWith(async t =>
                     {
-                        Status = INS_STATUS.UNKNOWN;
-                        token.ThrowIfCancellationRequested();
-                    }
-
-                    await Task.WhenAll(
-                        InitCamera(token),
-                        InitLightCtrl(token),
-                        InitIOCtrl(token));
-                }).ContinueWith(t =>
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        Status = INS_STATUS.UNKNOWN;
-                        token.ThrowIfCancellationRequested();
-                    }
-
-                    // 等待進度條滿，超過 5 秒則 Timeout
-                    if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
-                    {
-                        // 硬體初始化失敗
-                        return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
-                    }
-
-                    return MainWindow.InitFlags.OK;
-                }).ContinueWith(t =>
-                {
-
-
-                });
-
-
-                await Task.WhenAll(
-                    InitCamera(token),
-                    InitLightCtrl(token),
-                    InitIOCtrl(token),
-                    InitMongoDB(token)).ContinueWith(t =>
-                    {
-                        // 終止初始化，狀態變更為閒置
                         if (token.IsCancellationRequested)
                         {
-                            //StatusLabel.Text = "閒置";
+                            Status = INS_STATUS.UNKNOWN;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        await Task.WhenAll(
+                            InitCamera(token),
+                            InitLightCtrl(token),
+                            InitIOCtrl(token));
+                    })
+                    .ContinueWith(t =>
+                    {
+                        // 終止初始化，狀態變更為未知
+                        if (token.IsCancellationRequested)
+                        {
                             Status = INS_STATUS.UNKNOWN;
                             token.ThrowIfCancellationRequested();
                         }
@@ -341,24 +314,26 @@ namespace MCAJawIns.content
                         }
 
                         return MainWindow.InitFlags.OK;
-                    }, token).ContinueWith(t =>
+                    })
+                    .ContinueWith(t =>
                     {
                         // 終止初始化，狀態變更為閒置
                         if (token.IsCancellationRequested)
                         {
-                            //StatusLabel.Text = "閒置";
                             Status = INS_STATUS.UNKNOWN;
                             token.ThrowIfCancellationRequested();
                         }
 
-                        // 啟動 StreamGrabber & Triiger Mode 
+                        // 啟動相機 StreamGrabber & Trigger Mode
                         if (t.Result == MainWindow.InitFlags.OK)
                         {
                             // 相機開啟 Grabber
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                             {
                                 BaslerCam cam = MainWindow.BaslerCams[i];
-                                #region 載入 UserSet1
+
+                                #region 載入 UserSet1 (可以刪除?)
+#if false
                                 if (!cam.IsGrabbing)
                                 {
                                     // 這邊要防呆
@@ -366,7 +341,8 @@ namespace MCAJawIns.content
                                     cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
                                     MainWindow.Basler_StartStreamGrabber(cam);
-                                }
+                                } 
+#endif
                                 #endregion
                             }
 
@@ -399,7 +375,8 @@ namespace MCAJawIns.content
                         }
 
                         return MainWindow.InitFlags.OK;
-                    }).ContinueWith(t =>
+                    })
+                    .ContinueWith(t =>
                     {
                         if (t.Result != MainWindow.InitFlags.OK)
                         {
@@ -410,7 +387,106 @@ namespace MCAJawIns.content
                             _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                         }
                         initialzing = false;
-                    }, token);
+                    });
+
+
+#if false   // 暫時保留
+                await Task.WhenAll(
+                     InitCamera(token),
+                     InitLightCtrl(token),
+                     InitIOCtrl(token),
+                     InitMongoDB(token))
+                     .ContinueWith(t =>
+                     {
+                        // 終止初始化，狀態變更為閒置
+                        if (token.IsCancellationRequested)
+                         {
+                            //StatusLabel.Text = "閒置";
+                            Status = INS_STATUS.UNKNOWN;
+                             token.ThrowIfCancellationRequested();
+                         }
+
+                        // 等待進度條滿，超過 5 秒則 Timeout
+                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
+                         {
+                            // 硬體初始化失敗
+                            return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                         }
+
+                         return MainWindow.InitFlags.OK;
+                     }, token)
+                     .ContinueWith(t =>
+                     {
+                        // 終止初始化，狀態變更為閒置
+                        if (token.IsCancellationRequested)
+                         {
+                            //StatusLabel.Text = "閒置";
+                            Status = INS_STATUS.UNKNOWN;
+                             token.ThrowIfCancellationRequested();
+                         }
+
+                        // 啟動 StreamGrabber & Triiger Mode 
+                        if (t.Result == MainWindow.InitFlags.OK)
+                         {
+                            // 相機開啟 Grabber
+                            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
+                             {
+                                 BaslerCam cam = MainWindow.BaslerCams[i];
+                                #region 載入 UserSet1
+                                if (!cam.IsGrabbing)
+                                 {
+                                    // 這邊要防呆
+                                    cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
+                                     cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+
+                                     MainWindow.Basler_StartStreamGrabber(cam);
+                                 }
+                                #endregion
+                            }
+
+                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
+                             {
+                                // 開啟 Trigger Mode 失敗
+                                return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                             }
+
+                            #region 確認相機鏡頭蓋取下
+                            foreach (BaslerCam cam in MainWindow.BaslerCams)
+                             {
+                                 OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
+                                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
+                                 Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out byte threshold);
+
+                                 mat.Dispose();
+                                 otsu.Dispose();
+
+                                 if (50 < threshold)
+                                 {
+                                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機鏡頭蓋未取下或有遮蔽物");
+                                 }
+                             }
+                            #endregion
+                        }
+                         else
+                         {
+                             return t.Result;
+                         }
+
+                         return MainWindow.InitFlags.OK;
+                     })
+                     .ContinueWith(t =>
+                     {
+                         if (t.Result != MainWindow.InitFlags.OK)
+                         {
+                             MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {1}");
+                         }
+                         else
+                         {
+                             _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                         }
+                         initialzing = false;
+                     }, token); 
+#endif
             }
             catch (OperationCanceledException cancell)
             {
@@ -451,7 +527,7 @@ namespace MCAJawIns.content
 
                 try
                 {
-                    if (MongoAccess.Connected)
+                    if (MongoAccess?.Connected == true)
                     {
                         FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
 
@@ -460,9 +536,17 @@ namespace MCAJawIns.content
                         if (cfg != null)
                         {
                             CameraConfigBase[] configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
+
+
+                            foreach (CameraConfigBase config in configs)
+                            {
+                                Debug.WriteLine($"{config.IP} {config.Model} {config.VendorName}");
+                            }
                         }
                     }
 
+
+                    return;
 
                     // string path = @"./devices/device.json";
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
@@ -705,7 +789,7 @@ namespace MCAJawIns.content
                 });
             }
 
-            Debug.WriteLine($"{e.NewValue} {e.OldValue}");
+            Debug.WriteLine($"{e.NewValue} {e.OldValue} line 720");
 
             // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
@@ -906,6 +990,8 @@ namespace MCAJawIns.content
             {
                 if (MainWindow.MongoAccess.Connected)
                 {
+                    Debug.WriteLine($"load from mongo, Line: 921");
+
                     FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.SPEC));
 
                     MainWindow.MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
@@ -945,6 +1031,8 @@ namespace MCAJawIns.content
             }
             else
             {
+                Debug.WriteLine($"load from Json, Line: 962");
+
                 string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
                 if (File.Exists(path))
