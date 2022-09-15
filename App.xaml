@@ -38,6 +38,7 @@
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
             <cvt:NumbersAllEqualConverter x:Key="NumberAllEqualConverter"/>
+            <cvt:NumberInArrayConverter x:Key="NumberInArrayConverter" />
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
             <cvt:NumberGreaterConverter x:Key="NumberGreaterConvert"/>
             <cvt:NumberGreaterToVisibility x:Key="NumberGreaterConvertToVisibility"/>

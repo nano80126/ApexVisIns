@@ -62,6 +62,25 @@ namespace MCAJawIns.Converter
         }
     }
 
+
+    /// <summary>
+    /// 數字存在在陣列中轉換器
+    /// </summary>
+    [ValueConversion(typeof(int), typeof(bool))]
+    public class NumberInArrayConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Array.Exists((int[])parameter, x => x == (int)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     /// <summary>
     /// 數字 Odd 轉換器
     /// </summary>

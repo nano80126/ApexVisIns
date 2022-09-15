@@ -82,7 +82,7 @@ namespace MCAJawIns.content
             SystemInfo.PID = Environment.ProcessId;
             SystemInfo.DotNetVer = $"{Environment.Version}";
 
-            Debug.WriteLine($"{SystemInfo.PylonVer}");
+            //Debug.WriteLine($"{SystemInfo.PylonVer}");
             
             SystemInfo.PropertyChange();
 

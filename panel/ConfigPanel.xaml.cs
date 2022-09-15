@@ -65,6 +65,7 @@ namespace MCAJawIns.Panel
                 Mode = BindingMode.OneWay,
                 ElementName = nameof(ConfigSelector),
                 Path = new PropertyPath(nameof(ConfigSelector.SelectedIndex)),
+                Converter = new Converter.NumberNotEqualConverter(),
                 ConverterParameter = -1,
                 FallbackValue = false,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged

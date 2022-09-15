@@ -5,7 +5,8 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:local="clr-namespace:MCAJawIns.content"
-            xmlns:control="clr-namespace:MCAJawIns.Control" 
+            xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
+            xmlns:sys="clr-namespace:System;assembly=mscorlib" 
             xmlns:ctProperty="clr-namespace:MCAJawIns.CustomProperty" 
             xmlns:pd="clr-namespace:MCAJawIns.Product"
 
@@ -790,7 +791,14 @@
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                                 <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"
-                                                        Converter="{StaticResource NumberEqualConverter}" ConverterParameter="1" />
+                                                         Converter="{StaticResource NumberInArrayConverter}" >
+                                                    <Binding.ConverterParameter>
+                                                        <x:Array Type="sys:Int32">
+                                                            <sys:Int32>1</sys:Int32>
+                                                            <sys:Int32>4</sys:Int32>
+                                                        </x:Array>
+                                                    </Binding.ConverterParameter>
+                                                </Binding>
                                                 <Binding Path="LotNumberChecked" Source="{StaticResource JawInspection}" UpdateSourceTrigger="PropertyChanged" />
                                             </MultiBinding>
                                         </Button.IsEnabled>
@@ -849,12 +857,12 @@
                             </Border>
                             
                             <!--量測結果列表 1-->
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
+                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
                                 <!--
-                                <control:SpecListView.Style>
-                                        <Style TargetType="control:SpecListView">
+                                <ctrl:SpecListView.Style>
+                                        <Style TargetType="ctrl:SpecListView">
                                             <Setter Property="ScrollViewerHeight" Value="120"/> 
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
@@ -862,9 +870,9 @@
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                </control:SpecListView.Style>
+                                </ctrl:SpecListView.Style>
                                 -->
-                            </control:SpecListView>
+                            </ctrl:SpecListView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
@@ -900,12 +908,12 @@
                             </Border>
 
                             <!-- 量測結果列表 2-->
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
+                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
                                 <!--
-                                <control:SpecListView.Style>
-                                    <Style TargetType="control:SpecListView">
+                                <ctrl:SpecListView.Style>
+                                    <Style TargetType="ctrl:SpecListView">
                                         <Setter Property="ScrollViewerHeight" Value="120"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
@@ -913,9 +921,9 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </control:SpecListView.Style>
+                                </ctrl:SpecListView.Style>
                                 -->
-                            </control:SpecListView>
+                            </ctrl:SpecListView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
@@ -953,12 +961,12 @@
                             </Border>
 
                             <!--量測結果列表 3-->
-                            <control:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
+                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
                                 <!--
-                                <control:SpecListView.Style>
-                                    <Style TargetType="control:SpecListView">
+                                <ctrl:SpecListView.Style>
+                                    <Style TargetType="ctrl:SpecListView">
                                         <Setter Property="ScrollViewerHeight" Value="120"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
@@ -966,9 +974,9 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </control:SpecListView.Style>
+                                </ctrl:SpecListView.Style>
                                 -->
-                            </control:SpecListView>
+                            </ctrl:SpecListView>
                         </Grid>
                         <!--</StackPanel>-->
                     </GroupBox>

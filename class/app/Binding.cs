@@ -107,7 +107,7 @@ namespace MCAJawIns
         {
             OK = 0,
             INIT_HARDWARE_FAILED = 1,
-            SET_CAMERA_TRIGGER_MODE = 2
+            SET_CAMERA_TRIGGER_MODE_FAILED = 2
         }
         #endregion
 
@@ -295,7 +295,12 @@ namespace MCAJawIns
             {
                 if (_auto)
                 {
-                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds);
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - (_stopwatch?.Elapsed.TotalSeconds ?? 0));
+
+                    Debug.WriteLine($"{timeSpan} {(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}");
+                    Debug.WriteLine($"{timeSpan.Seconds} {timeSpan.TotalSeconds}");
+
+
                     return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
                 }
                 else
@@ -314,7 +319,7 @@ namespace MCAJawIns
             {
                 if (_auto)
                 {
-                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds + _totalAutoTime);
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - (_stopwatch?.Elapsed.TotalSeconds ?? 0) + _totalAutoTime);
                     return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
                 }
                 else
@@ -334,7 +339,7 @@ namespace MCAJawIns
             {
                 if (_auto)
                 {
-                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - _stopwatch.Elapsed.TotalSeconds + _totalAutoTime);
+                    TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - (_stopwatch?.Elapsed.TotalSeconds ?? 0) + _totalAutoTime);
                     return (int)timeSpan.TotalHours;
                 }
                 else
@@ -497,6 +502,8 @@ namespace MCAJawIns
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             OnPropertyChanged(nameof(SystemTime));
+
+            Debug.WriteLine(_auto);
             if (_auto)
             {
                 OnPropertyChanged(nameof(AutoTime));

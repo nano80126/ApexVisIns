@@ -359,9 +359,7 @@ namespace MCAJawIns
         public bool Basler_Connect(BaslerCam cam, string serialNumber, object userData, CancellationToken ct)
         {
             int retryCount = 0;
-
-            Debug.WriteLine($"{cam.IsConnected} {serialNumber} {userData}");
-
+            //Debug.WriteLine($"{cam.IsConnected} {serialNumber} {userData}");
 
             while (!cam.IsOpen)
             {

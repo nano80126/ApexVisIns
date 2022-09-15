@@ -9,6 +9,7 @@ using System.Windows.Data;
 
 namespace MCAJawIns.Converter
 {
+
 #if false
     #region Bool 轉換器
     /// <summary>
@@ -451,6 +452,7 @@ namespace MCAJawIns.Converter
 
     #endregion
 #endif
+
     #region DateTime 轉換器
     [ValueConversion(typeof(DateTime), typeof(DateTime))]
     public class DateTimeToLocalConverter : IValueConverter

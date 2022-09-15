@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define UNITTEST
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -175,7 +177,11 @@ namespace MCAJawIns.content
         /// <summary>
         /// 硬體正在初始化旗標
         /// </summary>
-        private bool initialzing;
+        private bool initializing;
+        /// <summary>
+        /// 硬體初始化完畢
+        /// </summary>
+        private bool initialized;
         private bool CameraInitialized { get; set; }
         private bool LightCtrlInitilized { get; set; }
         private bool IOCtrlInitialized { get; set; }
@@ -191,7 +197,7 @@ namespace MCAJawIns.content
             InitSpecSettingDirectory();
         }
 
-        private async void StackPanel_Loaded(object sender, RoutedEventArgs e)
+        private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
             #region 綁定 Resource
             JawInspection = FindResource(nameof(JawInspection)) as JawInspection;
@@ -201,57 +207,46 @@ namespace MCAJawIns.content
             if (!JawResultGroup.SyncBinding) { JawResultGroup.EnableCollectionBinding(); }
             #endregion
 
-            switch (MainWindow.InitMode)
-            {
-                case InitModes.AUTO:
-                    // 硬體初始化
-                    if (!initialzing)
-                    {
-                        InitHardware();
-                    }
-                    // 設定為自動模式 (轉至 MainWindow.xaml.cs)
-                    //MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
-                    // 設定閒置計時器
-                    SetIdleTimer(60);
-                    break;
-                case InitModes.EDIT:
-                    // 只連線 MongoDB
-                    await Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-                    // _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // delete this line
-                    _ = Task.Run(() => InitCamera(_cancellationTokenSource.Token));
-
-                    // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
-                    //MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
-                    break;
-                default:
-                    // 保留
-                    break;
-            }
-
-            //switch(MainWindow.JawType)
-            //{
-            //    case JawTypes.S:
-            //        break;
-            //    case JawTypes.M:
-            //        break;
-            //    case JawTypes.L:
-            //        break;
-            //    default:
-            //        break;
-            //}
-            // Debug.WriteLine($"{MainWindow.JawType}");
-
             #region 初始化
+            // 先確認已初始化旗標
+            if (!initialized)
+            {
+                switch (MainWindow.InitMode)
+                {
+                    case InitModes.AUTO:
+                        // 硬體初始化
+                        if (!initializing) { InitHardware(); }
+                        // 設定為自動模式 (轉至 MainWindow.xaml.cs)
+                        // MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
+                        // 設定閒置計時器
+                        SetIdleTimer(60);
+                        break;
+                    case InitModes.EDIT:
+                        // 只連線 MongoDB
+                        _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
 
+                        // _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // delete this line
+                        // _ = Task.Run(() => InitCamera(_cancellationTokenSource.Token)); // delete this line
+
+                        // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
+                        // MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
+                        break;
+                    default:
+                        // 保留
+                        break;
+                }
+            }
             #endregion
 
+            #region All Tab basic info
             if (!loaded)
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
                 // 載入規格設定 (called after mongo initialized)
                 // LoadSpecList();
                 loaded = true;
-            }
+            } 
+            #endregion
         }
 
         #region 初始化
@@ -263,25 +258,22 @@ namespace MCAJawIns.content
             try
             {
                 // 若正在初始化，直接 return
-                if (initialzing)
-                {
-                    return;
-                }
+                if (initializing) { return; }
 
                 CancellationToken token = _cancellationTokenSource.Token;
 
-                initialzing = true;
+                initializing = true;
 
                 Status = INS_STATUS.INIT;
 
                 #region TEST
-                //Task.Run(() => { }).ContinueWitht=();
+                // Task.Run(() => { }).ContinueWitht=();
                 #endregion
 
-                //await Task.Run(() => { 
-                //}).ContinueWith( async t=> { 
-                //    //await Task.WhenAll()
-                //});
+                // await Task.Run(() => { 
+                // }).ContinueWith( async t=> { 
+                //     //await Task.WhenAll()
+                // });
 
                 await InitMongoDB(token)
                     .ContinueWith(async t =>
@@ -333,23 +325,25 @@ namespace MCAJawIns.content
                                 BaslerCam cam = MainWindow.BaslerCams[i];
 
                                 #region 載入 UserSet1 (可以刪除?)
-#if false
                                 if (!cam.IsGrabbing)
                                 {
                                     // 這邊要防呆
-                                    cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
-                                    cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+                                    // cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
+                                    // cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+
+                                    // 確認為 UserSet1
+                                    // string userSet = cam.Camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+                                    // Debug.WriteLine($"{cam.ModelName} {userSet}");
 
                                     MainWindow.Basler_StartStreamGrabber(cam);
-                                } 
-#endif
+                                }
                                 #endregion
                             }
 
                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
                             {
                                 // 開啟 Trigger Mode 失敗
-                                return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                                return MainWindow.InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED;
                             }
 
                             #region 確認相機鏡頭蓋取下
@@ -380,13 +374,14 @@ namespace MCAJawIns.content
                     {
                         if (t.Result != MainWindow.InitFlags.OK)
                         {
-                            MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {1}");
+                            MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
                         }
                         else
                         {
                             _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                         }
-                        initialzing = false;
+                        initializing = false;
+                        initialized = true;
                     });
 
 
@@ -527,6 +522,10 @@ namespace MCAJawIns.content
 
                 try
                 {
+                    string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+                    CameraConfigBase[] configs = Array.Empty<CameraConfigBase>();
+
+
                     if (MongoAccess?.Connected == true)
                     {
                         FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
@@ -535,107 +534,19 @@ namespace MCAJawIns.content
 
                         if (cfg != null)
                         {
-                            CameraConfigBase[] configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
-
-
-                            foreach (CameraConfigBase config in configs)
-                            {
-                                Debug.WriteLine($"{config.IP} {config.Model} {config.VendorName}");
-                            }
+                            // 反序列化
+                            configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
                         }
                     }
-
-
-                    return;
-
-                    // string path = @"./devices/device.json";
-                    string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
-
-                    if (File.Exists(path))
+                    else if (File.Exists(path))
                     {
                         using StreamReader reader = new StreamReader(path);
                         string jsonStr = reader.ReadToEnd();
 
                         if (jsonStr != string.Empty)
                         {
-                            // json 反序列化
-                            CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
-
-                            // 等待 Camera Enumerator 初始化
-                            if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
-
-                            // 已連線之 Camera
-                            List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
-
-                            // 排序 Devices
-                            Array.Sort(devices, (a, b) => a.TargetFeature - b.TargetFeature);
-
-                            _ = Parallel.ForEach(devices, (dev) =>
-                            {
-                                // 確認 Device 為在線上之 Camera 
-                                if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
-                                {
-                                    // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
-                                    //SpinWait.SpinUntil(() => false, );
-                                    switch (dev.TargetFeature)
-                                    {
-                                        case CameraConfigBase.TargetFeatureType.MCA_Front:
-                                            if (!MainWindow.BaslerCams[0].IsConnected)
-                                            {
-                                                BaslerCam1 = MainWindow.BaslerCams[0];
-                                                if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
-                                                {
-                                                    _ = SpinWait.SpinUntil(() => false, 25);
-                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
-                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
-                                                }
-                                            }
-                                            break;
-                                        case CameraConfigBase.TargetFeatureType.MCA_Bottom:
-                                            if (!MainWindow.BaslerCams[1].IsConnected)
-                                            {
-                                                BaslerCam2 = MainWindow.BaslerCams[1];
-                                                if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
-                                                {
-                                                    _ = SpinWait.SpinUntil(() => false, 50);
-                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
-                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
-                                                }
-                                            }
-                                            break;
-                                        case CameraConfigBase.TargetFeatureType.MCA_SIDE:
-                                            if (!MainWindow.BaslerCams[2].IsConnected)
-                                            {
-                                                BaslerCam3 = MainWindow.BaslerCams[2];
-                                                if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
-                                                {
-                                                    _ = SpinWait.SpinUntil(() => false, 75);
-                                                    // MainWindow.MsgInformer.TargetProgressValue += 17;
-                                                    MainWindow.MsgInformer.AdvanceProgressValue(17);
-                                                }
-                                            }
-                                            break;
-                                        case CameraConfigBase.TargetFeatureType.Null:
-                                            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
-                                            break;
-                                        default:
-                                            MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵設置有誤");
-                                            break;
-                                    }
-                                }
-                            });
-
-
-                            if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
-                            {
-                                // 設置初始化完成旗標
-                                CameraInitialized = true;
-                                MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
-                            }
-                            else
-                            {
-                                throw new CameraException("相機未完全初始化");
-                            }
+                            // 反序列化
+                            configs = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
                         }
                         else
                         {
@@ -646,6 +557,104 @@ namespace MCAJawIns.content
                     {
                         throw new CameraException("相機設定檔不存在");
                     }
+
+
+                    // string path = @"./devices/device.json";
+                    //string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+                    //if (File.Exists(path))
+                    //{
+                    //    using StreamReader reader = new StreamReader(path);
+                    //    string jsonStr = reader.ReadToEnd();
+                    //    if (jsonStr != string.Empty)
+                    //    {
+                    //        // json 反序列化
+                    //        CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+
+
+                    // 等待 Camera Enumerator 初始化
+                    if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
+
+                    // 已連線之 Camera
+                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+
+                    // 排序 Devices
+                    Array.Sort(configs, (a, b) => a.TargetFeature - b.TargetFeature);
+
+#if true
+                    _ = Parallel.ForEach(configs, (dev) =>
+                    {
+                        // 確認 Device 為在線上之 Camera 
+                        if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
+                        {
+                            // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
+                            //SpinWait.SpinUntil(() => false, );
+                            switch (dev.TargetFeature)
+                            {
+                                case CameraConfigBase.TargetFeatureType.MCA_Front:
+                                    if (!MainWindow.BaslerCams[0].IsConnected)
+                                    {
+                                        BaslerCam1 = MainWindow.BaslerCams[0];
+                                        if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
+                                        {
+                                            _ = SpinWait.SpinUntil(() => false, 25);
+                                            MainWindow.MsgInformer.AdvanceProgressValue(17);
+                                        }
+                                    }
+                                    break;
+                                case CameraConfigBase.TargetFeatureType.MCA_Bottom:
+                                    if (!MainWindow.BaslerCams[1].IsConnected)
+                                    {
+                                        BaslerCam2 = MainWindow.BaslerCams[1];
+                                        if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
+                                        {
+                                            _ = SpinWait.SpinUntil(() => false, 50);
+                                            MainWindow.MsgInformer.AdvanceProgressValue(17);
+                                        }
+                                    }
+                                    break;
+                                case CameraConfigBase.TargetFeatureType.MCA_SIDE:
+                                    if (!MainWindow.BaslerCams[2].IsConnected)
+                                    {
+                                        BaslerCam3 = MainWindow.BaslerCams[2];
+                                        if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
+                                        {
+                                            _ = SpinWait.SpinUntil(() => false, 75);
+                                            MainWindow.MsgInformer.AdvanceProgressValue(17);
+                                        }
+                                    }
+                                    break;
+                                case CameraConfigBase.TargetFeatureType.Null:
+                                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
+                                    break;
+                                default:
+                                    MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵設置有誤");
+                                    break;
+                            }
+                        }
+                    });
+
+
+                    if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
+                    {
+                        // 設置初始化完成旗標
+                        CameraInitialized = true;
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.CAMERA, "相機初始化完成");
+                    }
+                    else
+                    {
+                        throw new CameraException("相機未完全初始化");
+                    }
+#endif
+                    //    }
+                    //    else
+                    //    {
+                    //        throw new CameraException("相機設定檔為空");
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    throw new CameraException("相機設定檔不存在");
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -1197,31 +1206,64 @@ namespace MCAJawIns.content
         #endregion
 
         #region 觸發檢測、結批、重置 Timer
-        private void TriggerInspection_Click(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// 觸發相機拍攝 (僅測試拍攝)
+        /// </summary>
+        /// <param name="sendder"></param>
+        /// <param name="e"></param>
+        private void TriggerCamera_Click(object sendder, RoutedEventArgs e)
         {
-#if false
-            //if (_testTask != null && _testTask.Status == TaskStatus.Running) { return; }
+            bool ready = BaslerCam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
-            //Debug.WriteLine($"{_testTask.Status}");
-            //_testCancelTokenSource = new();
-
-            if (_testCancelTokenSource != null && !_testCancelTokenSource.IsCancellationRequested)
+            if (ready)
             {
-                _testCancelTokenSource.Cancel();
-                return;
+                BaslerCam1.Camera.ExecuteSoftwareTrigger();
+                using IGrabResult grabResult = BaslerCam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+
+                if (grabResult?.GrabSucceeded == true)
+                {
+                    OpenCvSharp.Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+
+                    MainWindow.ImageSource1 = mat.ToImageSource();
+                }
             }
 
-            _testCancelTokenSource = new();
+            ready = BaslerCam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
-            _testTask = Task.Run(async () =>
+            if (ready)
             {
-                for (int i = 0; i < 150; i++)
-                {
-                    if (_testCancelTokenSource.IsCancellationRequested) { break; }
+                BaslerCam2.Camera.ExecuteSoftwareTrigger();
+                using IGrabResult grabResult = BaslerCam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
 
-                    // MainWindow.ListJawParam();
-                    DateTime t1 = DateTime.Now;
-#endif
+                if (grabResult?.GrabSucceeded == true)
+                {
+                    OpenCvSharp.Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+                    MainWindow.ImageSource2 = mat.ToImageSource();
+                }
+            }
+
+
+            ready = BaslerCam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+
+            if (ready)
+            {
+                BaslerCam3.Camera.ExecuteSoftwareTrigger();
+                using IGrabResult grabResult = BaslerCam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+
+                if (grabResult?.GrabSucceeded == true)
+                {
+                    OpenCvSharp.Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
+                    MainWindow.ImageSource3 = mat.ToImageSource();
+                }
+            }
+        }
+
+        private void TriggerInspection_Click(object sender, RoutedEventArgs e)
+        {
+#if UNITTEST
+            TriggerCamera_Click(sender, e);
+#else
             if (Status != INS_STATUS.READY) { return; }
             DateTime t1 = DateTime.Now;
 
@@ -1261,18 +1303,6 @@ namespace MCAJawIns.content
                 if (!data.OK) { SoundNG.Play(); }
 
                 return data.OK;
-            });
-
-            // if (!b) break;
-
-#if false
-                    Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-
-                    _ = SpinWait.SpinUntil(() => false || _testCancelTokenSource.IsCancellationRequested, 3000);
-                }
-            }, _testCancelTokenSource.Token).ContinueWith(t =>
-            {
-                _testCancelTokenSource.Cancel();
             });
 #endif
         }
@@ -1357,6 +1387,7 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
             Task<int> t = await Task.Run(() =>
             {
+
                 Debug.WriteLine($"first start {DateTime.Now:HH:mm:ss.fff}");
                 SpinWait.SpinUntil(() => false, 1000);
                 Debug.WriteLine($"first end {DateTime.Now:HH:mm:ss.fff}");
