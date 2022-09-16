@@ -100,18 +100,6 @@ namespace MCAJawIns
         }
         #endregion
 
-        #region Flags
-        /// <summary>
-        /// 硬體初始化用旗標
-        /// </summary>
-        public enum InitFlags
-        {
-            OK = 0,
-            INIT_HARDWARE_FAILED = 1,
-            SET_CAMERA_TRIGGER_MODE_FAILED = 2
-        }
-        #endregion
-
         /// <summary>
         /// 相機影像 1
         /// </summary>
@@ -239,7 +227,7 @@ namespace MCAJawIns
         /// 64 / 32 位元
         /// </summary>
         [BsonElement(nameof(Plateform))]
-        public string Plateform => Environment.Is64BitProcess ? "64位元" : "32位元";
+        public string Plateform => Environment.Is64BitProcess ? "64 位元" : "32 位元";
         /// <summary>
         /// Program ID
         /// </summary>
@@ -256,17 +244,12 @@ namespace MCAJawIns
         /// </summary>
         [BsonElement(nameof(MongoVer))]
         public string MongoVer => _mongoVer ?? "未連線";
+
         /// <summary>
         /// Basler Pylon API Versnio Number
         /// </summary>
-        public string PylonVer
-        {
-            get
-            {
-                Debug.WriteLine($"Get Pylon Version");
-                return FileVersionInfo.GetVersionInfo("Basler.Pylon.dll").FileVersion;
-            }
-        }
+        [BsonElement(nameof(PylonVer))]
+        public string PylonVer => FileVersionInfo.GetVersionInfo("Basler.Pylon.dll").FileVersion;
         /// <summary>
         /// 系統時間
         /// </summary>
@@ -283,7 +266,7 @@ namespace MCAJawIns
         /// <summary>
         /// 建立日期
         /// </summary>
-        [BsonElement(nameof(BuileTime))]
+        [BsonIgnore]
         public string BuileTime
         {
             get
@@ -380,6 +363,7 @@ namespace MCAJawIns
                 }
             }
         }
+
         /// <summary>
         /// 閒置時間 (seconds) (無條件捨棄)
         /// </summary>
@@ -460,7 +444,6 @@ namespace MCAJawIns
                 return 0;
             }
         }
-
         /// <summary>
         /// 取得 累計自動運行時間 (秒)
         /// </summary>

@@ -215,7 +215,7 @@ namespace MCAJawIns.content
                 {
                     case InitModes.AUTO:
                         // 硬體初始化
-                        if (!initializing) { InitHardware(); }
+                        if (!initializing) { InitPeripherals(); }
                         // 設定為自動模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
                         // 設定閒置計時器
@@ -251,9 +251,9 @@ namespace MCAJawIns.content
 
         #region 初始化
         /// <summary>
-        /// 硬體初始化
+        /// 外圍設備初始化初始化
         /// </summary>
-        private async void InitHardware()
+        private async void InitPeripherals()
         {
             try
             {
@@ -289,8 +289,41 @@ namespace MCAJawIns.content
                             InitLightCtrl(token),
                             InitIOCtrl(token));
                     })
+                    .ContinueWith(t => {
+                        // 終止初始化，狀態變更為未知
+                        if (token.IsCancellationRequested)
+                        {
+                            Status = INS_STATUS.UNKNOWN;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        // 載入自動模式時間與檢驗數量
+                        FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
+                        SortDefinition<MCAJawInfo> sort = Builders<MCAJawInfo>.Sort.Descending(nameof(MCAJawInfo.UpdateTime));
+
+                        MongoAccess.FindOneSort(nameof(JawCollection.Info), filter, sort, out MCAJawInfo info);
+
+                        if (info != null)
+                        {
+                            string timeString = (string)info.Data[nameof(SystemInfo.TotalAutoTime)];
+                            string[] split = timeString.Split(':');
+
+                            TimeSpan timeSpan = new TimeSpan(int.Parse(split[0], CultureInfo.CurrentCulture),
+                                int.Parse(split[1], CultureInfo.CurrentCulture),
+                                int.Parse(split[2], CultureInfo.CurrentCulture));
+
+                            MainWindow.SystemInfoTab.SystemInfo.SetTotalAutoTime((int)timeSpan.TotalSeconds);
+                        }
+
+                        return InitFlags.OK;
+                    })
                     .ContinueWith(t =>
                     {
+                        ///
+                        ///
+                        ///
+
+
                         // 終止初始化，狀態變更為未知
                         if (token.IsCancellationRequested)
                         {
@@ -302,10 +335,10 @@ namespace MCAJawIns.content
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
                         {
                             // 硬體初始化失敗
-                            return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
+                            return InitFlags.INIT_PERIPHERALS_FAILED;
                         }
 
-                        return MainWindow.InitFlags.OK;
+                        return InitFlags.OK;
                     })
                     .ContinueWith(t =>
                     {
@@ -317,7 +350,7 @@ namespace MCAJawIns.content
                         }
 
                         // 啟動相機 StreamGrabber & Trigger Mode
-                        if (t.Result == MainWindow.InitFlags.OK)
+                        if (t.Result == InitFlags.OK)
                         {
                             // 相機開啟 Grabber
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
@@ -343,7 +376,7 @@ namespace MCAJawIns.content
                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
                             {
                                 // 開啟 Trigger Mode 失敗
-                                return MainWindow.InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED;
+                                return InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED;
                             }
 
                             #region 確認相機鏡頭蓋取下
@@ -368,11 +401,11 @@ namespace MCAJawIns.content
                             return t.Result;
                         }
 
-                        return MainWindow.InitFlags.OK;
+                        return InitFlags.OK;
                     })
                     .ContinueWith(t =>
                     {
-                        if (t.Result != MainWindow.InitFlags.OK)
+                        if (t.Result != InitFlags.OK)
                         {
                             MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
                         }
@@ -498,7 +531,7 @@ namespace MCAJawIns.content
         /// <summary>
         /// 硬體關閉
         /// </summary>
-        private void DisableHardware()
+        private void DisablePeripherals()
         {
             LightCOM2?.ComClose();
             LightCOM2?.Dispose();
@@ -799,7 +832,6 @@ namespace MCAJawIns.content
             }
 
             Debug.WriteLine($"{e.NewValue} {e.OldValue} line 720");
-
             // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
@@ -905,21 +937,6 @@ namespace MCAJawIns.content
                         // 讀取 Size Spec 設定
                         LoadSpecList();
 
-                        // 載入自動模式時間、檢驗數量
-                        FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
-                        MongoAccess.FindOne(nameof(JawCollection.Info), filter, out MCAJawInfo info);
-
-                        //Debug.WriteLine($"info {info}");
-
-                        #region 待刪除
-                        if (info != null)
-                        {
-                            //Debug.WriteLine($"{info.Data[nameof(SystemInfo.AutoTime)]}");
-                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalAutoTime)]}");
-                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalHours)]}");
-                            Debug.WriteLine($"{info.Data[nameof(SystemInfo.TotalParts)]}");
-                        }
-                        #endregion
 
 #if false  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);

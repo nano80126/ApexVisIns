@@ -56,12 +56,34 @@ namespace MCAJawIns
         [Description("編輯模式")]
         EDIT = 2
     }
+
+    /// <summary>
+    /// 硬體初始化用旗標
+    /// </summary>
+    public enum InitFlags
+    {
+        /// <summary>
+        /// 初始化完成
+        /// </summary>
+        [Description("初始化完成")]
+        OK = 0,
+        /// <summary>
+        /// 外圍設備連線失敗
+        /// </summary>
+        [Description("外設初始化失敗")]
+        INIT_PERIPHERALS_FAILED = 1,
+        /// <summary>
+        /// 相機Trigger Mode 設置失敗
+        /// </summary>
+        [Description("相機Trigger Mode設置失敗")]
+        SET_CAMERA_TRIGGER_MODE_FAILED = 2
+    }
     #endregion
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
         #region Cameras
         /// <summary>

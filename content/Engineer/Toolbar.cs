@@ -381,7 +381,7 @@ namespace MCAJawIns.content
 
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
-            Mat mat = Indicator.OriImage;
+            Mat mat = Indicator.Image;
 
             // if (mat != null)
             // {

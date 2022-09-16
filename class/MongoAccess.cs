@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Libmongocrypt;
 
 
 namespace MCAJawIns
@@ -371,13 +366,12 @@ namespace MCAJawIns
         /// <param name="cName">集合名</param>
         /// <param name="filter">過濾器</param>
         /// <param name="data">(out) 資料</param>
-        public void FindOne<T>(string cName, FilterDefinition<T> filter, out T data)
+        public void FindOne<T>(string cName, FilterDefinition<T> filter, out T data, bool first = true)
         {
             if (client != null)
             {
                 IMongoDatabase db = client.GetDatabase(Database);
                 IMongoCollection<T> collection = db.GetCollection<T>(cName);
-                // FilterDefinition<T> filter = Builders<T>.Filter.Gt(field, dateTime.GetStartOfDay());
                 data = collection.Find(filter).FirstOrDefault();
             }
             else
@@ -385,6 +379,23 @@ namespace MCAJawIns
                 throw new MongoException("MongoDB connection is not established");
             }
         }
+
+
+        public void FindOneSort<T>(string cName, FilterDefinition<T> filter, SortDefinition<T> sort, out T data)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                data = collection.Find(filter).Sort(sort).FirstOrDefault();
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
 
         /// <summary>
         /// 搜尋符合條件 Document

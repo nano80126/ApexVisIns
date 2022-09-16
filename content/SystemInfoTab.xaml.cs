@@ -21,6 +21,7 @@ namespace MCAJawIns.content
     public partial class SystemInfoTab : StackPanel, INotifyPropertyChanged
     {
         #region Private
+        [Obsolete]
         private string InformationPath { get; } = @"info.json";
         #endregion
 
@@ -90,6 +91,9 @@ namespace MCAJawIns.content
             SystemInfo.EnableTimer();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitInfoPath()
         {
             string path = $@"{Directory.GetCurrentDirectory()}\{InformationPath}";
@@ -108,6 +112,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
+        [Obsolete]
         private void StartIdleTimer_Click(object sender, RoutedEventArgs e)
         {
             // SystemInfo.StartIdleWatch();
@@ -123,10 +128,10 @@ namespace MCAJawIns.content
             });
 
             File.WriteAllText(@$"{Directory.GetCurrentDirectory()}\info.json", jsonStr);
-
             Debug.WriteLine($"{jsonStr}");
         }
 
+        [Obsolete]
         private void StopIdleTimer_Click(object sender, RoutedEventArgs e)
         {
             string path = $@"{Directory.GetCurrentDirectory()}\info.json";

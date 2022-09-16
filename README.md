@@ -211,6 +211,8 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] Systeminfo 資訊取得改為內置 
 
+* [ ] 盡量在命名空間下宣告 enum
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

@@ -17,13 +17,19 @@
             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded">
-    <!--#region StackPanel Resources -->
-    <!--#endregion-->
-
     <Grid Style="{StaticResource TabGrid}" Background="{StaticResource ColorLightGrayTransparent}">
-        <ctrl:CustomCard HorizontalAlignment="Center" VerticalAlignment="Center" Title="系統資訊" IconKind="InformationOutline" UniformCornerRadius="8" MinWidth="1200"
+        <!--#region NewRegion -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <!--#endregion-->
+
+        <!--#region 系統資訊-->
+        <ctrl:CustomCard HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8 8 8 0" Title="系統資訊" IconKind="InformationOutline" MinWidth="1200"
                 Background="{StaticResource ColorAccentTransparent}">
-            <Grid MinHeight="300" DataContext="{Binding SystemInfo}">
+            <Grid DataContext="{Binding SystemInfo}">
                 <!--#region Resources -->
                 <Grid.Resources>
                     <Style TargetType="{x:Type TextBlock}">
@@ -37,6 +43,7 @@
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                         <Setter Property="HorizontalAlignment" Value="Center" />
                         <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
                         <Setter Property="Margin" Value="0 8" />
                         <Setter Property="Width" Value="120" />
                         <Setter Property="TextAlignment" Value="Center" />
@@ -59,8 +66,7 @@
                 <!--#endregion-->
 
                 <!--#region System info -->
-                <UniformGrid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
-
+                <UniformGrid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0" Columns="2">
                     <TextBlock Text="作業系統" />
                     <TextBox Padding="0 3" Text="{Binding OS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
@@ -73,15 +79,14 @@
                     <TextBlock Text="系統時間" />
                     <TextBox Padding="0 3" Text="{Binding SystemTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock />
+                    <!--<TextBlock />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />
-
+                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
                 </UniformGrid>
                 <!--#endregion-->
 
                 <!--#region Auto Mode Info -->
-                <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
+                <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0" Columns="2">
 
                     <TextBlock Text=".NET" />
                     <TextBox Padding="0 3" Text="{Binding DotNetVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
@@ -98,17 +103,14 @@
                     <!--<TextBlock Text="建立日期" />
                     <TextBox Padding="0 3" Text="{Binding BuileTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />-->
 
-                    <TextBlock Text="" />
+                    <!--<TextBlock Text="" />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />
-
-                    <!--<Button Content="START" HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click"/>
-                    <Button Content="STOP"  HorizontalAlignment="Center" Padding="8 3" Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click"/>-->
+                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
                 </UniformGrid>
                 <!--#endregion-->
 
                 <!--#region NewRegion -->
-                <UniformGrid Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
+                <UniformGrid Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2" Margin="0 0">
                     <TextBlock Text="當前模式" />
                     <TextBox Padding="0 3" Text="{Binding Mode, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
@@ -127,35 +129,38 @@
                     <TextBlock Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
                     <TextBox Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="" />
+                    <!--<TextBlock Text="" />
                     <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />
+                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
                 </UniformGrid>
                 <!--#endregion-->
 
                 <!-- Separator -->
-                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
 
-                <Separator Grid.Column="3" Grid.Row="100" Margin="8 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.Column="3" Grid.Row="100" Margin="8 4 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
             </Grid>
 
             <!--#region Footer -->
-            <ctrl:CustomCard.Footer>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Margin="12 0" Padding="8 3" Content="START" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
-                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click" />
-                    <Button Margin="12 0 0 0" Padding="8 3" Content="STOP" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
-                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click" />
-                </StackPanel>
-            </ctrl:CustomCard.Footer>
+                <!--<ctrl:CustomCard.Footer>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Margin="12 0" Padding="8 3" Content="START" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="StartIdleTimer_Click" />
+                        <Button Margin="12 0 0 0" Padding="8 3" Content="STOP" HorizontalAlignment="Center" Width="120" FontWeight="Bold" FontSize="16"
+                                Style="{StaticResource MaterialDesignOutlinedButton}" Click="StopIdleTimer_Click" />
+                    </StackPanel>
+                </ctrl:CustomCard.Footer>-->
             <!--#endregion-->
         </ctrl:CustomCard>
+        <!--#endregion-->
+        <Separator Grid.Row="1" Margin="8 8"/>
 
-        <materialDesign:Card Padding="8" Width="200" Height="200" UniformCornerRadius="10" Background="{StaticResource ColorInfo}" Visibility="Collapsed">
-            <TextBlock Text="{Binding UniformCornerRadius, RelativeSource={RelativeSource Mode=FindAncestor, 
-                AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
-        </materialDesign:Card>
+        <!--#region 網卡資訊-->
+        <ctrl:CustomCard Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8 0" Title="網卡資訊" IconKind="Lan" MinHeight="300">
+
+        </ctrl:CustomCard>
+        <!--#endregion-->
     </Grid>
 </StackPanel>
