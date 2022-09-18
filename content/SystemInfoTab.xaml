@@ -18,7 +18,7 @@
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded">
     <Grid Style="{StaticResource TabGrid}" Background="{StaticResource ColorLightGrayTransparent}">
-        <!--#region NewRegion -->
+        <!--#region Layout -->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -29,13 +29,16 @@
         <!--#region 系統資訊-->
         <ctrl:CustomCard HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8 8 8 0" Title="系統資訊" IconKind="InformationOutline" MinWidth="1200"
                 Background="{StaticResource ColorAccentTransparent}">
-            <Grid DataContext="{Binding SystemInfo}">
+            <Grid DataContext="{Binding SystemInfo}" Background="{StaticResource ColorErrorTransparent}">
                 <!--#region Resources -->
                 <Grid.Resources>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="HorizontalAlignment" Value="Right" />
                         <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Margin" Value="0 0 12 0" />
+                        <Setter Property="Margin" Value="0 0 16 0" />
+                        <Setter Property="Padding" Value="0 4" />
+                        <!--<Setter Property="Height" Value="24" />-->
+                        <!--<Setter Property="Background" Value="{StaticResource ColorPurpleTransparent}" />-->
                         <!--<Setter Property="FontSize" Value="{StaticResource BasicFont}" />-->
                         <!--<Setter Property="Background" Value="{StaticResource ColorInfoTransparent}" />-->
                     </Style>
@@ -46,100 +49,95 @@
                         <Setter Property="VerticalContentAlignment" Value="Center" />
                         <Setter Property="Margin" Value="0 8" />
                         <Setter Property="Width" Value="120" />
+                        <Setter Property="Height" Value="24" />
                         <Setter Property="TextAlignment" Value="Center" />
                         <Setter Property="IsReadOnly" Value="True" />
                         <Setter Property="Focusable" Value="False" />
                         <Setter Property="Cursor" Value="Arrow" />
+                        <!--<Setter Property="SnapsToDevicePixels" Value="True" />-->
                         <!--<Setter Property="BorderThickness" Value="0" />-->
                     </Style>
                 </Grid.Resources>
                 <!--#endregion-->
 
                 <!--#region Layout -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <!--//-->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <!--#endregion-->
 
                 <!--#region System info -->
-                <UniformGrid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0" Columns="2">
-                    <TextBlock Text="作業系統" />
-                    <TextBox Padding="0 3" Text="{Binding OS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0 4 16 8" Text="作業系統" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="0 4 0 8" Padding="0 3" Text="{Binding OS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="平台" />
-                    <TextBox Padding="0 3" Text="{Binding Plateform, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="平台" />
+                <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" Text="{Binding Plateform, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="PID" />
-                    <TextBox Padding="0 3" Text="{Binding PID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="PID" />
+                <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" Text="{Binding PID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="系統時間" />
-                    <TextBox Padding="0 3" Text="{Binding SystemTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-
-                    <!--<TextBlock />
-                    <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
-                </UniformGrid>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="系統時間" />
+                <TextBox Grid.Row="3" Grid.Column="1" Padding="0 3" Text="{Binding SystemTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                 <!--#endregion-->
 
                 <!--#region Auto Mode Info -->
-                <UniformGrid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 0" Columns="2">
+                <TextBlock Grid.Row="0" Grid.Column="3" Margin="0 4 16 8" Text=".NET" />
+                <TextBox Grid.Row="0" Grid.Column="4" Margin="0 4 0 8" Padding="0 3" Text="{Binding DotNetVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text=".NET" />
-                    <TextBox Padding="0 3" Text="{Binding DotNetVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="資料庫" />
+                <TextBox Grid.Row="1" Grid.Column="4" Padding="0 3" Text="{Binding MongoVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="資料庫" />
-                    <TextBox Padding="0 3" Text="{Binding MongoVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="Pylon SDK" />
+                <TextBox Grid.Row="2" Grid.Column="4" Padding="0 3" Text="{Binding PylonVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="Pylon SDK" />
-                    <TextBox Padding="0 3" Text="{Binding PylonVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-
-                    <TextBlock Text="設備版本" />
-                    <TextBox Padding="0 3" Text="{Binding SoftVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-
-                    <!--<TextBlock Text="建立日期" />
-                    <TextBox Padding="0 3" Text="{Binding BuileTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />-->
-
-                    <!--<TextBlock Text="" />
-                    <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
-                </UniformGrid>
+                <TextBlock Grid.Row="3" Grid.Column="3" Text="設備版本" />
+                <TextBox Grid.Row="3" Grid.Column="4" Padding="0 3" Text="{Binding SoftVer, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                 <!--#endregion-->
 
                 <!--#region NewRegion -->
-                <UniformGrid Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2" Margin="0 0">
-                    <TextBlock Text="當前模式" />
-                    <TextBox Padding="0 3" Text="{Binding Mode, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="0" Grid.Column="6" Margin="0 4 16 8" Text="當前模式" />
+                <TextBox Grid.Row="0" Grid.Column="7" Margin="0 4 0 8" Padding="0 3" Text="{Binding Mode, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="自動模式運行時間（本次）" />
-                    <TextBox Padding="0 3" Text="{Binding AutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="6" Text="自動模式運行時間（本次）" />
+                <TextBox Grid.Row="1" Grid.Column="7" Padding="0 3" Text="{Binding AutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="自動模式運行時間（累計）" />
-                    <TextBox Padding="0 3" Text="{Binding TotalAutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="2" Grid.Column="6" Text="自動模式運行時間（累計）" />
+                <TextBox Grid.Row="2" Grid.Column="7" Padding="0 3" Text="{Binding TotalAutoTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="自動模式運行時數（累計）" />
-                    <TextBox Padding="0 3" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="3" Grid.Column="6" Text="自動模式運行時數（累計）" />
+                <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="量測工件數（累計）" />
-                    <TextBox Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="4" Grid.Column="6" Text="量測工件數（累計）" />
+                <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                    <TextBlock Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
-                    <TextBox Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
-
-                    <!--<TextBlock Text="" />
-                    <TextBox Padding="0 3" Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType=UniformGrid}, Mode=OneWay}" />-->
-                </UniformGrid>
+                <TextBlock Grid.Row="5" Grid.Column="6" Margin="0 8 16 0" Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
+                <TextBox Grid.Row="5" Grid.Column="7" Margin="0 8 0 0" Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                 <!--#endregion-->
 
                 <!-- Separator -->
-                <Separator Grid.Column="1" Grid.Row="100" Margin="8 4 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                
+                <Separator Grid.RowSpan="100" Grid.Column="2" Margin="8 0 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
-
-                <Separator Grid.Column="3" Grid.Row="100" Margin="8 4 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.RowSpan="100" Grid.Column="5" Margin="8 0 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
             </Grid>
 
@@ -155,11 +153,67 @@
             <!--#endregion-->
         </ctrl:CustomCard>
         <!--#endregion-->
-        <Separator Grid.Row="1" Margin="8 8"/>
+        
+        <Separator Grid.Row="1" Margin="8 8" Height="1"/>
 
         <!--#region 網卡資訊-->
-        <ctrl:CustomCard Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8 0" Title="網卡資訊" IconKind="Lan" MinHeight="300">
+        <ctrl:CustomCard Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8 0" Title="網卡資訊" IconKind="Lan">
+            <UniformGrid Columns="3">
+                <ItemsControl ItemsSource="{Binding NetworkInfos}">
+                    <!--#region ItemsPanel -->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <!--#endregion-->
 
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
+                                <!--#region Resources -->
+                                <UniformGrid.Resources>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <!--<Setter Property="Background" Value="Blue" />-->
+                                    </Style>
+                                    <!--//-->
+                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                                        <Setter Property="Padding" Value="8 3" />
+                                        <Setter Property="Margin" Value="0 8" />
+                                        <Setter Property="Height" Value="24" />
+                                        <Setter Property="Width" Value="150" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="IsReadOnly" Value="True" />
+                                        <Setter Property="Focusable" Value="False" />
+                                        <Setter Property="Cursor" Value="Arrow" />
+                                    </Style>
+                                </UniformGrid.Resources>
+                                <!--#endregion-->
+
+                                <TextBlock Text="名稱" />
+                                <TextBox Padding="0 3" Text="{Binding IP}" />
+
+                                <TextBlock Text="MAC" />
+                                <TextBox Padding="0 3" Text="{Binding MAC}" />
+
+                                <TextBlock Text="IP" />
+                                <TextBox Padding="0 3" Text="{Binding IP}" />
+
+                                <TextBlock Text="子網路遮罩" />
+                                <TextBox Padding="0 3" Text="{Binding SubMask}" />
+
+                                <TextBlock Text="預設閘道" />
+                                <TextBox Padding="0 3" Text="{Binding DefaultGetway}" />
+                            </UniformGrid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </UniformGrid>
         </ctrl:CustomCard>
         <!--#endregion-->
     </Grid>

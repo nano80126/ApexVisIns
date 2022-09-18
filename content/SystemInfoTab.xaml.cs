@@ -8,6 +8,7 @@ using MongoDB;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MCAJawIns.Mongo;
+using System.Net.NetworkInformation;
 
 using MCAJawInfo = MCAJawIns.Mongo.Info;
 using System.Text.Json;
@@ -32,6 +33,8 @@ namespace MCAJawIns.content
         public MainWindow MainWindow { get; set; }
 
         public SystemInfo SystemInfo { get; set; } = new SystemInfo();
+
+        public NetWorkInfoCollection NetworkInfos { get; set; } = new NetWorkInfoCollection();
         #endregion
 
         #region Flags
@@ -83,8 +86,36 @@ namespace MCAJawIns.content
             //SystemInfo.PID = Environment.ProcessId;
             //SystemInfo.DotNetVer = $"{Environment.Version}";
 
-            //Debug.WriteLine($"{SystemInfo.PylonVer}");
-            
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+
+            foreach (NetworkInterface item in networkInterfaces)
+            {
+                Debug.WriteLine($"{item.NetworkInterfaceType}");
+
+                if (item.NetworkInterfaceType.ToString().Equals("Ethernet"))
+                {
+                    IPInterfaceProperties iPInterfaceProperties = item.GetIPProperties();
+
+                    Debug.WriteLine($"{item.GetIPProperties().UnicastAddresses.Count}");
+                    foreach (UnicastIPAddressInformation unicast in item.GetIPProperties().UnicastAddresses)
+                    {
+                        //if (unicast.)
+                        if (unicast.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            Debug.WriteLine($"{unicast.Address} {unicast.IPv4Mask}");
+                        }
+                    }
+
+                    Debug.WriteLine($"{item.GetIPProperties().GatewayAddresses.Count}");
+                    foreach (GatewayIPAddressInformation unicast in item.GetIPProperties().GatewayAddresses)
+                    {
+                        Debug.WriteLine($"{unicast.Address}");
+                    }
+                }
+            }
+
+
             SystemInfo.PropertyChange();
 
             // if (inited && IsLoaded) { SystemInfo.EnableTimer(); }

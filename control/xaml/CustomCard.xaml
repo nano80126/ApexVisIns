@@ -15,7 +15,7 @@
 
     <Style x:Key="MaterialDesignCustomCard" TargetType="{x:Type ctrl:CustomCard}">
         <Setter Property="Margin" Value="2 0 2 8" />
-        <Setter Property="Padding" Value="6 8" />
+        <Setter Property="Padding" Value="7 8" />
         <Setter Property="Foreground" Value="Black" />
         <Setter Property="Background" Value="{DynamicResource ColorLightGrayTransparent}" />
         <Setter Property="FontFamily" Value="consolas" />
@@ -34,7 +34,7 @@
                     <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
                             materialDesign:ShadowAssist.ShadowDepth="{TemplateBinding materialDesign:ShadowAssist.ShadowDepth}" Foreground="{TemplateBinding Foreground}"
                             Background="{TemplateBinding Background}" UniformCornerRadius="{TemplateBinding UniformCornerRadius}">
-                        <DockPanel Background="Transparent" Margin="1 0" x:Name="Panel">
+                        <DockPanel Background="Transparent" x:Name="Panel">
                             <DockPanel x:Name="Header" DockPanel.Dock="Top" Margin="1 0" Focusable="True"
                                     Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}">
                                 <!--<materialDesign:PackIcon Kind="{Binding IconKind, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Width="30" Height="26"/>-->

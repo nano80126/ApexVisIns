@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 using OpenCvSharp;
 using System.IO;
 using System.Reflection;
+using System.Net.NetworkInformation;
 
 namespace MCAJawIns
 {
@@ -78,8 +79,9 @@ namespace MCAJawIns
         /// 5: 工程師；
         /// 9: 開發者；
         /// </summary>
-        public int AuthLevel {
-            get => _authLevel; 
+        public int AuthLevel
+        {
+            get => _authLevel;
             set
             {
                 if (value != _authLevel)
@@ -173,7 +175,6 @@ namespace MCAJawIns
         }
     }
 
-
     /// <summary>
     /// 權限等級
     /// </summary>
@@ -188,7 +189,6 @@ namespace MCAJawIns
         [BsonElement(nameof(Level))]
         public int Level { get; set; }
     }
-
 
     public class SystemInfo : INotifyPropertyChanged, IDisposable
     {
@@ -552,6 +552,71 @@ namespace MCAJawIns
         #endregion
     }
 
+    public class NetworkInfo : INotifyPropertyChanged
+    {
+        private OperationalStatus _status;
+
+        public NetworkInfo(OperationalStatus status)
+        {
+            _status = status;
+        }
+
+        public NetworkInfo(string name, OperationalStatus status)
+        {
+            _status = status;
+        }
+
+        public string Name { get; set; }
+
+        public string IP { get; set; }
+
+        public string MAC { get; set; }
+
+        public string SubMask { get; set; }
+
+        public string DefaultGetway { get; set; }
+
+        public bool Status => _status == OperationalStatus.Up;
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// 網卡資訊集合
+    /// </summary>
+    public class NetWorkInfoCollection : ObservableCollection<NetworkInfo>
+    {
+        public NetWorkInfoCollection() : base()
+        {
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface @interface in interfaces)
+            {
+                if (@interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                    GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
+
+                    Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
+                    {
+                        IP = $"{unicastIP.Address}",
+                        MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
+                        SubMask = $"{unicastIP.IPv4Mask}",
+                        DefaultGetway = $"{gatewayIP.Address}"
+                    });
+                }
+                //Debug.WriteLine($"Status {@interface.OperationalStatus}");
+            }
+        }
+    }
+
     /// <summary>
     /// Crosshair
     /// </summary>
@@ -586,7 +651,6 @@ namespace MCAJawIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-
 
     /// <summary>
     /// 標示器
@@ -754,7 +818,7 @@ namespace MCAJawIns
         }
         // // // // // //
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName]string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -868,7 +932,7 @@ namespace MCAJawIns
     {
         #region Private
         private bool _enable;
-        private bool _isMouseDown; 
+        private bool _isMouseDown;
         #endregion
 
         public AssistPoints()
@@ -880,7 +944,7 @@ namespace MCAJawIns
         /// 點集合
         /// </summary>
         public ObservableCollection<AssistPoint> Source { get; set; }
-            
+
         /// <summary>
         /// 是否啟用
         /// </summary>
@@ -1365,7 +1429,7 @@ namespace MCAJawIns
                 /// <summary>
                 /// JAW Inspection Error
                 /// </summary>
-                JAW, 
+                JAW,
                 /// <summary>
                 /// OpenCv Process Error Code
                 /// </summary>
@@ -1462,7 +1526,6 @@ namespace MCAJawIns
         #endregion
     }
 
-
     /// <summary>
     /// Observable Stack
     /// </summary>
@@ -1522,7 +1585,6 @@ namespace MCAJawIns
             throw new NotImplementedException();
         }
     }
-
 
     public class ObservablaQueue<T> : Queue<T>, ICollection<T>, INotifyPropertyChanged, INotifyCollectionChanged
     {
