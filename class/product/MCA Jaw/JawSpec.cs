@@ -262,7 +262,7 @@ namespace MCAJawIns.Product
     {
         #region private
         private string _content = string.Empty;
-        private SolidColorBrush _color;
+        private SolidColorBrush _color = Brushes.Transparent;
         #endregion
 
         public JawSpecGroupSetting() { }
@@ -313,7 +313,7 @@ namespace MCAJawIns.Product
         [JsonPropertyName(nameof(ColorString))]
         public string ColorString
         {
-            get => _color.ToString(CultureInfo.CurrentCulture);
+            get => _color?.ToString(CultureInfo.CurrentCulture);
             set
             {
                 if ((SolidColorBrush)new BrushConverter().ConvertFrom(value) != _color)
@@ -334,7 +334,7 @@ namespace MCAJawIns.Product
             get => _color;
             set
             {
-                if (value != _color)
+                if (value.Color != _color.Color)
                 {
                     _color = value;
                     OnPropertyChanged();
@@ -507,7 +507,7 @@ namespace MCAJawIns.Product
 
         private void SpecGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"{e.PropertyName} {sender}");
+            //System.Diagnostics.Debug.WriteLine($"{e.PropertyName} {sender}");
             GroupSaved = false;
         }
 
@@ -574,7 +574,6 @@ namespace MCAJawIns.Product
         /// </summary>
         public void GroupSave()
         {
-            System.Diagnostics.Debug.WriteLine($"{_groupSaved}");
             _groupSaved = true;
             OnPropertyChanged(nameof(GroupSaved));
         }

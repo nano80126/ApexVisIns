@@ -249,7 +249,7 @@ namespace MCAJawIns.content
                 // 載入規格設定 (called after mongo initialized)
                 // LoadSpecList();
                 loaded = true;
-            } 
+            }
             #endregion
         }
 
@@ -293,7 +293,8 @@ namespace MCAJawIns.content
                             InitLightCtrl(token),
                             InitIOCtrl(token));
                     })
-                    .ContinueWith(t => {
+                    .ContinueWith(t =>
+                    {
                         // 終止初始化，狀態變更為未知
                         if (token.IsCancellationRequested)
                         {
@@ -461,7 +462,7 @@ namespace MCAJawIns.content
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                              {
                                  BaslerCam cam = MainWindow.BaslerCams[i];
-                                #region 載入 UserSet1
+                #region 載入 UserSet1
                                 if (!cam.IsGrabbing)
                                  {
                                     // 這邊要防呆
@@ -470,7 +471,7 @@ namespace MCAJawIns.content
 
                                      MainWindow.Basler_StartStreamGrabber(cam);
                                  }
-                                #endregion
+                #endregion
                             }
 
                              if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
@@ -479,7 +480,7 @@ namespace MCAJawIns.content
                                 return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
                              }
 
-                            #region 確認相機鏡頭蓋取下
+                #region 確認相機鏡頭蓋取下
                             foreach (BaslerCam cam in MainWindow.BaslerCams)
                              {
                                  OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
@@ -494,7 +495,7 @@ namespace MCAJawIns.content
                                      MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機鏡頭蓋未取下或有遮蔽物");
                                  }
                              }
-                            #endregion
+                #endregion
                         }
                          else
                          {
@@ -539,6 +540,150 @@ namespace MCAJawIns.content
 
             ModbusTCPIO?.Disconnect();
             ModbusTCPIO?.Dispose();
+        }
+
+        /// <summary>
+        /// 初始化 Database
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        private Task InitMongoDB(CancellationToken ct)
+        {
+            return Task.Run(() =>
+            {
+                if (DatabaseInitialized) { return; }
+
+                if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
+
+                MongoAccess = MainWindow.MongoAccess;
+
+                try
+                {
+                    // 選擇連線資料庫
+                    switch (MainWindow.JawType)
+                    {
+                        case JawTypes.S:
+                            MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+                            break;
+                        case JawTypes.M:
+                            MongoAccess.Connect("MCAJawM", "intaiUser", "mcajaw", 1500);
+                            break;
+                        case JawTypes.L:
+                            MongoAccess.Connect("MCAJawL", "intaiUser", "mcajaw", 1500);
+                            break;
+                        default:
+                            break;
+                    }
+                    // MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
+
+                    if (MongoAccess.Connected)
+                    {
+                        // 建立權限集合
+                        MongoAccess.CreateCollection(nameof(JawCollection.Auth));
+                        // 建立組態集合 (目前只有資料庫保存時間設定)
+                        MongoAccess.CreateCollection(nameof(JawCollection.Configs));
+                        // 建立資訊集合
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Info)))
+                        {
+                            CreateIndexModel<Info> indexModel = new CreateIndexModel<Info>(Builders<Info>.IndexKeys.Ascending(x => x.InsertTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Info), indexModel);
+                        }
+                        // 建立批次結果集合
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Lots)))
+                        {
+                            CreateIndexModel<JawInspection> indexModel = new CreateIndexModel<JawInspection>(Builders<JawInspection>.IndexKeys.Ascending(x => x.DateTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Lots), indexModel);
+                        }
+                        // 建立量測結果集合
+                        if (MongoAccess.CreateCollection(nameof(JawCollection.Measurements)))
+                        {
+                            CreateIndexModel<JawMeasurements> indexModel = new CreateIndexModel<JawMeasurements>(Builders<JawMeasurements>.IndexKeys.Ascending(x => x.DateTime));
+                            MongoAccess.CreateIndexOne(nameof(JawCollection.Measurements), indexModel);
+                        }
+
+#if false               // Show indexes
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Auth), out List<BsonDocument> list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Configs), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Info), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Lots), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}");
+                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Measurements), out list);
+                        Debug.WriteLine($"{string.Join(", ", list)}"); 
+#endif
+
+                        // 取得 Mongo 版本
+                        string version = MongoAccess.GetVersion();
+                        // 設定 Mongo 版本
+                        MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
+
+#if false               // 新增使用者、組態
+                        MongoAccess.InsertOne("Configs", new MCAJawConfig()
+                        {
+                            DataReserveMonths = 6,
+                        });
+
+                        AuthLevel[] authLevels = new AuthLevel[] {
+                            new AuthLevel() { Password = "intai", Level = 1 },
+                            new AuthLevel() { Password = "qc", Level = 2 },
+                            new AuthLevel() { Password = "eng", Level = 5 },
+                        };
+                        MongoAccess.InsertMany("Auth", authLevels);
+#endif
+
+                        // 載入使用者權限
+                        MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
+                        foreach (AuthLevel item in levels)
+                        {
+                            MainWindow.PasswordDict.Add(item.Password, item.Level);
+                        }
+                        // 讀取 Size Spec 設定
+                        LoadSpecList();
+
+                        // 讀取 Size Group Spec 設定
+                        LoadSpecGroupList();
+
+#if false  // 移除過期資料
+                        MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
+                        if (config != null)
+                        {
+                            DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
+                            DeleteResult result;
+                            result = MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
+                            if (result.DeletedCount > 0)
+                            {
+                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"批次舊資料已刪除, 刪除數量: {result.DeletedCount}");
+                            }
+                            result = MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
+                            if (result.DeletedCount > 0)
+                            {
+                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"量測紀錄舊資料已刪除, 刪除數量: {result.DeletedCount}");
+                            }
+                        } 
+#endif
+
+                        // MainWindow.MsgInformer.TargetProgressValue += 17;
+                        MainWindow.MsgInformer.AdvanceProgressValue(17);
+
+                        DatabaseInitialized = true;
+                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.DATABASE, "資料庫初始化完成");
+                    }
+                    else
+                    {
+                        throw new DatabaseException("資料庫連線失敗");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // 讀取 Size Spec
+                    LoadSpecList(false);
+
+                    // 不切的話，message 太長
+                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message.Split(new string[] { "\n", ". " }, StringSplitOptions.RemoveEmptyEntries)[0]}");
+                }
+            }, ct);
         }
 
         /// <summary>
@@ -831,150 +976,6 @@ namespace MCAJawIns.content
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
         }
-
-        /// <summary>
-        /// 初始化 Database
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        private Task InitMongoDB(CancellationToken ct)
-        {
-            return Task.Run(() =>
-            {
-                if (DatabaseInitialized) { return; }
-
-                if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
-
-                MongoAccess = MainWindow.MongoAccess;
-
-                try
-                {
-                    // 選擇連線資料庫
-                    switch (MainWindow.JawType)
-                    {
-                        case JawTypes.S:
-                            MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
-                            break;
-                        case JawTypes.M:
-                            MongoAccess.Connect("MCAJawM", "intaiUser", "mcajaw", 1500);
-                            break;
-                        case JawTypes.L:
-                            MongoAccess.Connect("MCAJawL", "intaiUser", "mcajaw", 1500);
-                            break;
-                        default:
-                            break;
-                    }
-                    // MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
-
-                    if (MongoAccess.Connected)
-                    {
-                        // 建立權限集合
-                        MongoAccess.CreateCollection(nameof(JawCollection.Auth));
-                        // 建立組態集合 (目前只有資料庫保存時間設定)
-                        MongoAccess.CreateCollection(nameof(JawCollection.Configs));
-                        // 建立資訊集合
-                        if (MongoAccess.CreateCollection(nameof(JawCollection.Info)))
-                        {
-                            CreateIndexModel<Info> indexModel = new CreateIndexModel<Info>(Builders<Info>.IndexKeys.Ascending(x => x.InsertTime));
-                            MongoAccess.CreateIndexOne(nameof(JawCollection.Info), indexModel);
-                        }
-                        // 建立批次結果集合
-                        if (MongoAccess.CreateCollection(nameof(JawCollection.Lots)))
-                        {
-                            CreateIndexModel<JawInspection> indexModel = new CreateIndexModel<JawInspection>(Builders<JawInspection>.IndexKeys.Ascending(x => x.DateTime));
-                            MongoAccess.CreateIndexOne(nameof(JawCollection.Lots), indexModel);
-                        }
-                        // 建立量測結果集合
-                        if (MongoAccess.CreateCollection(nameof(JawCollection.Measurements)))
-                        {
-                            CreateIndexModel<JawMeasurements> indexModel = new CreateIndexModel<JawMeasurements>(Builders<JawMeasurements>.IndexKeys.Ascending(x => x.DateTime));
-                            MongoAccess.CreateIndexOne(nameof(JawCollection.Measurements), indexModel);
-                        }
-
-#if false               // Show indexes
-                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Auth), out List<BsonDocument> list);
-                        Debug.WriteLine($"{string.Join(", ", list)}");
-                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Configs), out list);
-                        Debug.WriteLine($"{string.Join(", ", list)}");
-                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Info), out list);
-                        Debug.WriteLine($"{string.Join(", ", list)}");
-                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Lots), out list);
-                        Debug.WriteLine($"{string.Join(", ", list)}");
-                        MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Measurements), out list);
-                        Debug.WriteLine($"{string.Join(", ", list)}"); 
-#endif
-
-                        // 取得 Mongo 版本
-                        string version = MongoAccess.GetVersion();
-                        // 設定 Mongo 版本
-                        MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
-
-#if false               // 新增使用者、組態
-                        MongoAccess.InsertOne("Configs", new MCAJawConfig()
-                        {
-                            DataReserveMonths = 6,
-                        });
-
-                        AuthLevel[] authLevels = new AuthLevel[] {
-                            new AuthLevel() { Password = "intai", Level = 1 },
-                            new AuthLevel() { Password = "qc", Level = 2 },
-                            new AuthLevel() { Password = "eng", Level = 5 },
-                        };
-                        MongoAccess.InsertMany("Auth", authLevels);
-#endif
-
-                        // 載入使用者權限
-                        MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
-                        foreach (AuthLevel item in levels)
-                        {
-                            MainWindow.PasswordDict.Add(item.Password, item.Level);
-                        }
-                        // 讀取 Size Spec 設定
-                        LoadSpecList();
-
-                        // 讀取 Size Group Spec 設定
-                        LoadSpecGroupList();
-
-#if false  // 移除過期資料
-                        MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
-                        if (config != null)
-                        {
-                            DateTime dt = DateTime.Now.AddMonths(config.DataReserveMonths * -1);
-                            DeleteResult result;
-                            result = MongoAccess.DeleteMany("Lots", Builders<JawInspection>.Filter.Lt("DateTime", dt));
-                            if (result.DeletedCount > 0)
-                            {
-                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"批次舊資料已刪除, 刪除數量: {result.DeletedCount}");
-                            }
-                            result = MongoAccess.DeleteMany("Measurements", Builders<JawMeasurements>.Filter.Lt("DateTime", dt));
-                            if (result.DeletedCount > 0)
-                            {
-                                MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.DATABASE, $"量測紀錄舊資料已刪除, 刪除數量: {result.DeletedCount}");
-                            }
-                        } 
-#endif
-
-                        // MainWindow.MsgInformer.TargetProgressValue += 17;
-                        MainWindow.MsgInformer.AdvanceProgressValue(17);
-
-                        DatabaseInitialized = true;
-                        MainWindow.MsgInformer.AddSuccess(MsgInformer.Message.MsgCode.DATABASE, "資料庫初始化完成");
-                    }
-                    else
-                    {
-                        throw new DatabaseException("資料庫連線失敗");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // 讀取 Size Spec
-                    LoadSpecList(false);
-
-                    // 不切的話，message 太長
-                    MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, $"資料庫初始化失敗: {ex.Message.Split(new string[] { "\n", ". " }, StringSplitOptions.RemoveEmptyEntries)[0]}");
-                }
-            }, ct);
-        }
         #endregion
 
         #region 初始化 SpecList
@@ -1166,7 +1167,7 @@ namespace MCAJawIns.content
             }
             else
             {
-#if false
+#if true
                 string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecGroupPath}";
 
                 if (File.Exists(path))
@@ -1187,6 +1188,8 @@ namespace MCAJawIns.content
                             {
                                 JawSizeSpecList.Groups[i].Content = jawSpecs[i].Content;
                                 JawSizeSpecList.Groups[i].ColorString = jawSpecs[i].ColorString;
+
+                                Debug.WriteLine($"{JawSizeSpecList.Groups[i].ColorString}");
                             }
                         });
                         JawSizeSpecList.GroupSave();

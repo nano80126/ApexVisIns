@@ -176,7 +176,6 @@
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
                     <!--<Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=Background}" />-->
-
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Group}" Value="Group1">
                             <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy1}}" />
@@ -397,13 +396,13 @@
 
                             <ComboBox Grid.Column="2" VerticalAlignment="Center" Margin="12 0 0 0" Padding="8 3" Height="24" MinWidth="140"
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{StaticResource ColorArray}"
-                                    SelectedValue="{Binding ColorString, UpdateSourceTrigger=PropertyChanged}"
-                                      SelectedItem="{Binding ColorString}"
-                                     MouseRightButtonUp="ComboBox_MouseRightButtonUp">
+                                    SelectedValue="{Binding Color.Color, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Color"
+                                      SelectedItem="{Binding Color}"
+                                    MouseRightButtonUp="ComboBox_MouseRightButtonUp">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Rectangle Fill="{Binding}" Width="20" />
+                                            <Rectangle Fill="{Binding UpdateSourceTrigger=PropertyChanged}" Width="20" />
                                             <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="{Binding UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" />
                                         </StackPanel>
                                     </DataTemplate>

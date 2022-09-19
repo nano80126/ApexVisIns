@@ -23,7 +23,7 @@ namespace MCAJawIns.content
     public partial class SizeSpecSubTab : Border
     {
         #region Private
-        //private SolidColorBrush[] ColorArray;
+        private SolidColorBrush[] ColorArray;
         #endregion
 
         #region Properties
@@ -44,6 +44,11 @@ namespace MCAJawIns.content
         private void Border_Loaded(object sender, RoutedEventArgs e)
         {
             //ColorArray = GroupItems.FindResource("ColorArray") as SolidColorBrush[];
+
+            //foreach (SolidColorBrush item in ColorArray)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"{item.Color}");
+            //}
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
