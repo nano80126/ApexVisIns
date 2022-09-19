@@ -50,151 +50,9 @@
             </StackPanel.Resources>
             <!--#endregion-->
 
-            <!--#region 日期查詢 (舊) -->
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen" Visibility="Collapsed">
-                <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <DockPanel.Resources>
-                        <!--#region Calender Style -->
-                        <Style x:Key="CustomCalendarDayButton" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
-                            <Setter Property="FontSize" Value="16" />
-                            <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="{StaticResource ColorSuccess}" />
-                            <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
-                        </Style>
-                        <!--//-->
-                        <Style x:Key="CustomCalendarButton" TargetType="CalendarButton" BasedOn="{StaticResource MaterialDesignCalendarButton}">
-                            <Setter Property="materialDesign:CalendarAssist.SelectionColor" Value="{StaticResource ColorSuccess}" />
-                            <Setter Property="materialDesign:CalendarAssist.SelectionForegroundColor" Value="Black" />
-                        </Style>
-                        <!--#endregion-->
-                        <Style x:Key="CustomTimerPicker" TargetType="materialDesign:TimePicker" BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="HorizontalContentAlignment" Value="Left" />
-                            <Setter Property="Is24Hours" Value="True" />
-                            <Setter Property="IsHeaderVisible" Value="False" />
-                            <Setter Property="Padding" Value="10 3" />
-                            <Setter Property="Focusable" Value="False" />
-                        </Style>
-                        <!--//-->
-                    </DockPanel.Resources>
-
-                    <DockPanel x:Name="CalenderHeader" DockPanel.Dock="Top">
-                        <materialDesign:PackIcon Kind="CalendarMonth" Width="30" Height="26" />
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="日期查詢" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
-                    </DockPanel>
-                    <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8" />
-                    <!--//-->
-                    <Calendar x:Name="DatePicker" Margin="0 0" DockPanel.Dock="Top" Background="{StaticResource ColorCyanTransparent}" Foreground="{StaticResource ColorSecondary}"
-                            FontSize="20" materialDesign:CalendarAssist.IsHeaderVisible="False" CalendarDayButtonStyle="{StaticResource CustomCalendarDayButton}"
-                            CalendarButtonStyle="{StaticResource CustomCalendarButton}" BorderThickness="1" BorderBrush="{StaticResource ColorError}" Visibility="Collapsed" />
-
-                    <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Top">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                        </Grid.RowDefinitions>
-
-                        <Grid.Resources>
-                            <Style TargetType="Calendar" BasedOn="{StaticResource MaterialDesignDatePickerCalendarPortrait}" x:Key="CustomCalendar">
-                                <Setter Property="Background" Value="AliceBlue" />
-                                <Setter Property="materialDesign:CalendarAssist.IsHeaderVisible" Value="False" />
-                                <Setter Property="materialDesign:ShadowAssist.ShadowDepth" Value="Depth2" />
-                                <Setter Property="CalendarDayButtonStyle" Value="{StaticResource CustomCalendarDayButton}" />
-                                <Setter Property="CalendarButtonStyle" Value="{StaticResource CustomCalendarButton}" />
-                            </Style>
-                            <Style TargetType="Calendar" BasedOn="{StaticResource CustomCalendar}" x:Key="CustomCalendar2">
-                                <Setter Property="Background" Value="AliceBlue" />
-                            </Style>
-
-                            <Style TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
-                                <!--<Setter Property="FlowDirection" Value="RightToLeft"/>-->
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                <Setter Property="Focusable" Value="False" />
-                            </Style>
-
-                            <!--<Style TargetType="DatePickerTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                <Setter Property="Foreground" Value="Red" />
-                            </Style>-->
-
-                        </Grid.Resources>
-
-                        <ListBox x:Name="ShortCutDatePicker2" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}" SelectionChanged="ShortCutDatePicker_SelectionChanged">
-                            <ListBoxItem Content="今天" IsSelected="True" />
-                            <ListBoxItem Content="上周" />
-                            <ListBoxItem Content="本周" />
-                            <ListBoxItem Content="本月" />
-                            <ListBoxItem Content="自訂" />
-                        </ListBox>
-
-                        <DatePicker x:Name="StartDatePicker2" Grid.Row="1" Grid.Column="0" Padding="8 3" CalendarStyle="{StaticResource CustomCalendar}" Margin="0 4 0 0"
-                                SelectedDate="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CalendarOpened="DatePicker_CalendarOpened" />
-                        <!--//-->
-                        <materialDesign:PackIcon Grid.Row="1" Grid.Column="1" Kind="Tilde" Width="20" Height="16" VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                                Margin="8 4 8 0" />
-                        <!--//-->
-                        <DatePicker x:Name="EndDatePicker2" Grid.Row="1" Grid.Column="2" Padding="8 3" CalendarStyle="{StaticResource CustomCalendar}" Margin="0 4 0 0"
-                                SelectedDate="{Binding EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CalendarOpened="DatePicker_CalendarOpened" />
-
-                        <Button Grid.Row="2" Grid.ColumnSpan="3" Margin="0 8 0 0" Height="24" Click="DateTimeFindBtn_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center" Text="查詢" />
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                    <!--//-->
-                    <!--#region 本專案隱藏 -->
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center" Visibility="Collapsed">
-                        <StackPanel.Resources>
-                            <Style x:Key="TimePickComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                                <Setter Property="Margin" Value="0 8" />
-                                <Setter Property="Width" Value="120" />
-                                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                                <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="MaxDropDownHeight" Value="200" />
-                            </Style>
-                        </StackPanel.Resources>
-
-                        <ComboBox x:Name="StartTimePicker" DockPanel.Dock="Top" Padding="8 3" ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                materialDesign:TextFieldAssist.PrefixText="S " Style="{StaticResource TimePickComboBox}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Width="90" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <!--//-->
-                        </ComboBox>
-                        <!--//-->
-                        <materialDesign:PackIcon Kind="Tilde" Width="20" Height="16" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="8 0" />
-                        <!--//-->
-                        <ComboBox x:Name="EndTimePicker" DockPanel.Dock="Top" Padding="8 3" ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                materialDesign:TextFieldAssist.PrefixText="E " Style="{StaticResource TimePickComboBox}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Width="90" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <!--//-->
-                        </ComboBox>
-                    </StackPanel>
-                    <!--#endregion-->
-                </DockPanel>
-            </materialDesign:Card>
-            <!--#endregion-->
-
             <!--#region 日期查詢 -->
             <ctrl:CustomCard Title="日期查詢" IconKind="CalendarMonth" Background="Linen">
-                <Grid HorizontalAlignment="Stretch" SnapsToDevicePixels="True">
+                <Grid HorizontalAlignment="Stretch">
                     <!--#region Resources -->
                     <Grid.Resources>
                         <Style x:Key="CustomCalendarDayButton" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
@@ -228,6 +86,7 @@
                         </Style>
                     </Grid.Resources>
                     <!--#endregion-->
+                    
                     <!--#region Layout -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -241,8 +100,9 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <!--#endregion-->
+                    
                     <!--#region Content -->
-                    <ListBox x:Name="ShortCutDatePicker" Grid.Row="0" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="1 4" Padding="0 0"
+                    <ListBox x:Name="ShortCutDatePicker" Grid.Row="0" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="4 4" Padding="0 0"
                             Cursor="Hand" Background="{StaticResource ColorInfo}" Foreground="{StaticResource ColorWhite}"
                             Style="{StaticResource MaterialDesignToolToggleFlatListBox}" SelectionChanged="ShortCutDatePicker_SelectionChanged">
                         <ListBoxItem Content="今天" IsSelected="True" />
@@ -252,16 +112,16 @@
                         <ListBoxItem Content="自訂" />
                     </ListBox>
 
-                    <DatePicker x:Name="StartDatePicker" Grid.Row="1" Grid.Column="0" Margin="1 4" Padding="8 3"
+                    <DatePicker x:Name="StartDatePicker" Grid.Row="1" Grid.Column="0" Margin="4 4" Padding="8 3" Height="24"
                             SelectedDate="{Binding StartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CalendarOpened="DatePicker_CalendarOpened" />
                     <!--//-->
                     <materialDesign:PackIcon x:Name="picon" Grid.Row="1" Grid.Column="1" Kind="Tilde" Width="20" Height="16" VerticalAlignment="Center"
                             HorizontalAlignment="Stretch" Margin="8 4" />
                     <!--//-->
-                    <DatePicker x:Name="EndDatePicker" Grid.Row="1" Grid.Column="2" Margin="1 4" Padding="8 3"
+                    <DatePicker x:Name="EndDatePicker" Grid.Row="1" Grid.Column="2" Margin="4 4" Padding="8 3" Height="24"
                             SelectedDate="{Binding EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" CalendarOpened="DatePicker_CalendarOpened" />
 
-                    <Button Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" Margin="1 4 1 0" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
+                    <Button Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" Margin="4 4" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="DateTimeFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
@@ -304,14 +164,12 @@
 
             <!--#region 批號查詢 -->
             <ctrl:CustomCard Title="批號查詢" IconKind="Barcode" Background="Linen">
-                <!--<Grid Tag="待刪除">-->
                 <StackPanel Orientation="Vertical" SnapsToDevicePixels="True">
-                    <TextBox x:Name="LotNumberText" Grid.Row="0" Margin="1 4" Padding="8 3"
+                    <TextBox x:Name="LotNumberText" Grid.Row="0" Margin="4 4" Padding="8 3" Height="24"
                             materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard,AncestorLevel=1}}"
                             materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-                    <!--Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"-->
 
-                    <Button DockPanel.Dock="Bottom" Grid.Row="1" HorizontalAlignment="Right" Margin="1 4 1 0" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
+                    <Button DockPanel.Dock="Bottom" Grid.Row="1" HorizontalAlignment="Right" Margin="4 4" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="LotNumberFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
@@ -326,7 +184,7 @@
         </StackPanel>
 
         <!--//-->
-        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" Width="300" VerticalAlignment="Bottom" Background="{x:Null}" >
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" Width="300" VerticalAlignment="Bottom" Background="{x:Null}">
             <!--#region Resources -->
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
@@ -422,7 +280,8 @@
             <materialDesign:Card x:Name="HistoryCard" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="6 8" Style="{StaticResource PanelTopCard}"
                     Background="WhiteSmoke">
                 <StackPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <!--
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
                         <ComboBox x:Name="DefectFilterCombobox" DockPanel.Dock="Left" HorizontalAlignment="Right" Padding="8 3" Cursor="Hand" MinWidth="180" 
                                   materialDesign:HintAssist.Hint="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
                                   Style="{StaticResource MaterialDesignOutlinedComboBox}">

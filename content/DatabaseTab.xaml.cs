@@ -120,32 +120,6 @@ namespace MCAJawIns.content
         }
 
         /// <summary>
-        /// DatePicker & TimePicker 初始化
-        /// </summary>
-        [Obsolete("Deprecated")]
-        private void InitDateTimePickers()
-        {
-            DatePicker.SelectedDate = DateTime.Today;
-
-            if (StartTimePicker.Items.Count == 0 || EndTimePicker.Items.Count == 0)
-            {
-                StartTimePicker.Items.Clear();
-                EndTimePicker.Items.Clear();
-
-                DateTime st = DateTime.Today;
-                for (int i = 0; i < 86400; i += 30 * 60)
-                {
-                    StartTimePicker.Items.Add($"{st.AddSeconds(i):HH:mm}");
-                    EndTimePicker.Items.Add($"{st.AddSeconds(i):HH:mm}");
-                }
-                EndTimePicker.Items.Add($"{st.AddSeconds(86399):HH:mm}");
-
-                StartTimePicker.SelectedIndex = 0;  // 00:00
-                EndTimePicker.SelectedIndex = EndTimePicker.Items.Count - 1;    // 23:59
-            }
-        }
-
-        /// <summary>
         /// Clear Focus 用
         /// </summary>
         /// <param name="sender"></param>

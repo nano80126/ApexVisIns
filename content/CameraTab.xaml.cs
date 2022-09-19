@@ -201,7 +201,7 @@ namespace MCAJawIns.content
                 {
                     // 資料庫未連線，轉為讀取 JSON
                     LoadCamerasConfig(false);
-                } 
+                }
                 #endregion
             }
             else
@@ -255,7 +255,7 @@ namespace MCAJawIns.content
                 {
                     // JSON 檔不存在，回報 info
                     MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機組態設定檔不存在");
-                } 
+                }
                 #endregion
             }
         }
@@ -849,6 +849,7 @@ namespace MCAJawIns.content
 
         private void TestSwitch(object sender, RoutedEventArgs e)
         {
+#if false
             if (CameraCard1.Visibility == Visibility.Visible)
             {
                 CameraCard1.Visibility = Visibility.Collapsed;
@@ -856,8 +857,8 @@ namespace MCAJawIns.content
             else
             {
                 CameraCard1.Visibility = Visibility.Visible;
-            }
-            // MainWindow.CameraEnumer.ConfigSave();
+            } 
+#endif
         }
 
         #region PropertyChanged
