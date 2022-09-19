@@ -167,6 +167,20 @@ namespace MCAJawIns.Converter
         }
     }
 
+    [ValueConversion(typeof(int), typeof(int))]
+    public class MathRemainderConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToInt32(value, CultureInfo.CurrentCulture) % System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 
     /// <summary>
     /// 數字小於比較器轉

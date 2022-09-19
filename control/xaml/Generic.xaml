@@ -4,7 +4,10 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="CustomCard.xaml"/>
+        <ResourceDictionary Source="OutlineTextBlock.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type ctrl:CustomCard}" BasedOn="{StaticResource MaterialDesignCustomCard}"/>
+    <Style TargetType="{x:Type ctrl:OutlineTextBlock}" BasedOn="{StaticResource OutlineTextBlock}" />
+    
 </ResourceDictionary>

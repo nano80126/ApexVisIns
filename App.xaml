@@ -33,6 +33,7 @@
             <cvt:MathMinusConverter x:Key="MathMinusConverter"/>
             <cvt:MathMultiplyConverter x:Key="MathMultiplyConverter"/>
             <cvt:MathDivideConverter x:Key="MathDivideConverter"/>
+            <cvt:MathRemainderConverter x:Key="MathRemainderConverter" />
             <!--//-->
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>

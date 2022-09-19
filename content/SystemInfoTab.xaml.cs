@@ -86,36 +86,6 @@ namespace MCAJawIns.content
             //SystemInfo.PID = Environment.ProcessId;
             //SystemInfo.DotNetVer = $"{Environment.Version}";
 
-            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-
-            foreach (NetworkInterface item in networkInterfaces)
-            {
-                Debug.WriteLine($"{item.NetworkInterfaceType}");
-
-                if (item.NetworkInterfaceType.ToString().Equals("Ethernet"))
-                {
-                    IPInterfaceProperties iPInterfaceProperties = item.GetIPProperties();
-
-                    Debug.WriteLine($"{item.GetIPProperties().UnicastAddresses.Count}");
-                    foreach (UnicastIPAddressInformation unicast in item.GetIPProperties().UnicastAddresses)
-                    {
-                        //if (unicast.)
-                        if (unicast.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        {
-                            Debug.WriteLine($"{unicast.Address} {unicast.IPv4Mask}");
-                        }
-                    }
-
-                    Debug.WriteLine($"{item.GetIPProperties().GatewayAddresses.Count}");
-                    foreach (GatewayIPAddressInformation unicast in item.GetIPProperties().GatewayAddresses)
-                    {
-                        Debug.WriteLine($"{unicast.Address}");
-                    }
-                }
-            }
-
-
             SystemInfo.PropertyChange();
 
             // if (inited && IsLoaded) { SystemInfo.EnableTimer(); }

@@ -563,6 +563,7 @@ namespace MCAJawIns
 
         public NetworkInfo(string name, OperationalStatus status)
         {
+            Name = name;
             _status = status;
         }
 
@@ -595,7 +596,7 @@ namespace MCAJawIns
     {
         public NetWorkInfoCollection() : base()
         {
-            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces().OrderBy(x => x.Name).ToArray();
 
             foreach (NetworkInterface @interface in interfaces)
             {
@@ -609,10 +610,9 @@ namespace MCAJawIns
                         IP = $"{unicastIP.Address}",
                         MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
                         SubMask = $"{unicastIP.IPv4Mask}",
-                        DefaultGetway = $"{gatewayIP.Address}"
+                        DefaultGetway = $"{gatewayIP?.Address}"
                     });
                 }
-                //Debug.WriteLine($"Status {@interface.OperationalStatus}");
             }
         }
     }
