@@ -23,7 +23,7 @@
         <Grid.Resources>
             <ObjectDataProvider x:Key="GroupEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="pd:JawSpecSetting+SpecInsGroup" />
+                    <x:Type TypeName="pd:JawSpecGroups" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </Grid.Resources>
@@ -397,8 +397,9 @@
 
                             <ComboBox Grid.Column="2" VerticalAlignment="Center" Margin="12 0 0 0" Padding="8 3" Height="24" MinWidth="140"
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}" ItemsSource="{StaticResource ColorArray}"
-                                    SelectedValue="{Binding Color.Color, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Color"
-                                    SelectedItem="{Binding Color}" MouseRightButtonUp="ComboBox_MouseRightButtonUp">
+                                    SelectedValue="{Binding ColorString, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedItem="{Binding ColorString}"
+                                     MouseRightButtonUp="ComboBox_MouseRightButtonUp">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">

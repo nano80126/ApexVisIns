@@ -23,7 +23,7 @@ namespace MCAJawIns.content
     public partial class SizeSpecSubTab : Border
     {
         #region Private
-        private SolidColorBrush[] ColorArray;
+        //private SolidColorBrush[] ColorArray;
         #endregion
 
         #region Properties
@@ -43,7 +43,7 @@ namespace MCAJawIns.content
 
         private void Border_Loaded(object sender, RoutedEventArgs e)
         {
-            ColorArray = GroupItems.FindResource("ColorArray") as SolidColorBrush[];
+            //ColorArray = GroupItems.FindResource("ColorArray") as SolidColorBrush[];
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -104,7 +104,6 @@ namespace MCAJawIns.content
             _ = Task.Run(() => MCAJaw.LoadSpecList(true));
         }
 
-
         private void SpecSettingGroupSave_Click(object sender, RoutedEventArgs e)
         {
 
@@ -119,9 +118,33 @@ namespace MCAJawIns.content
             File.WriteAllText(@$"{JsonDirectory}\Group.json", jsonStr);
             #endregion
 
-            specList.GroupSave();
-        }
+            #region 寫入資料庫
+            try
+            {
+                BsonArray bsonArray = new BsonArray(specList.Groups.Count);
 
+                foreach (JawSpecGroupSetting item in specList.Groups)
+                {
+                    _ = bsonArray.Add(item.ToBsonDocument());
+                }
+
+                FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.SPECGROUP));
+                UpdateDefinition<MCAJawConfig> update = Builders<MCAJawConfig>.Update
+                    .Set(nameof(MCAJawConfig.DataArray), bsonArray)
+                    .Set(nameof(MCAJawConfig.UpdateTime), DateTime.Now)
+                    .SetOnInsert(nameof(MCAJawConfig.InsertTime), DateTime.Now);
+
+                _ = MainWindow.MongoAccess.UpsertOne(nameof(JawCollection.Configs), filter, update);
+            }
+            catch (MongoException ex)
+            {
+                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.DATABASE, ex.Message);
+            }
+            #endregion
+
+            specList.GroupSave();
+            // 不用重新載入，因 Group 設定不會影響批次結果
+        }
 
         /// <summary>
         /// 重置 Combobox (選擇第一個 item)

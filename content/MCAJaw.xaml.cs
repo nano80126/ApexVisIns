@@ -133,6 +133,10 @@ namespace MCAJawIns.content
         /// </summary>
         private string SpecPath { get; } = $@"MCAJaw.json";
         /// <summary>
+        /// 規格群組檔案
+        /// </summary>
+        private string SpecGroupPath { get; } = $@"Group.json";
+        /// <summary>
         /// 相機組態目錄, Camera Configs Directory
         /// </summary>
         private string CamerasDirectory { get; } = @"cameras";
@@ -319,10 +323,7 @@ namespace MCAJawIns.content
                     })
                     .ContinueWith(t =>
                     {
-                        ///
-                        ///
-                        ///
-
+                        // 等待進度條 等待進度條 等待進度條
 
                         // 終止初始化，狀態變更為未知
                         if (token.IsCancellationRequested)
@@ -558,11 +559,9 @@ namespace MCAJawIns.content
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
                     CameraConfigBase[] configs = Array.Empty<CameraConfigBase>();
 
-
                     if (MongoAccess?.Connected == true)
                     {
                         FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
-
                         MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
 
                         if (cfg != null)
@@ -591,18 +590,16 @@ namespace MCAJawIns.content
                         throw new CameraException("相機設定檔不存在");
                     }
 
-
                     // string path = @"./devices/device.json";
-                    //string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
-                    //if (File.Exists(path))
-                    //{
-                    //    using StreamReader reader = new StreamReader(path);
-                    //    string jsonStr = reader.ReadToEnd();
-                    //    if (jsonStr != string.Empty)
-                    //    {
-                    //        // json 反序列化
-                    //        CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
-
+                    // string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+                    // if (File.Exists(path))
+                    // {
+                    //     using StreamReader reader = new StreamReader(path);
+                    //     string jsonStr = reader.ReadToEnd();
+                    //     if (jsonStr != string.Empty)
+                    //     {
+                    //      // json 反序列化
+                    //      CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
 
                     // 等待 Camera Enumerator 初始化
                     if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
@@ -613,14 +610,13 @@ namespace MCAJawIns.content
                     // 排序 Devices
                     Array.Sort(configs, (a, b) => a.TargetFeature - b.TargetFeature);
 
-#if true
                     _ = Parallel.ForEach(configs, (dev) =>
                     {
                         // 確認 Device 為在線上之 Camera 
                         if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                         {
                             // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
-                            //SpinWait.SpinUntil(() => false, );
+                            // SpinWait.SpinUntil(() => false, );
                             switch (dev.TargetFeature)
                             {
                                 case CameraConfigBase.TargetFeatureType.MCA_Front:
@@ -666,7 +662,6 @@ namespace MCAJawIns.content
                         }
                     });
 
-
                     if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
                     {
                         // 設置初始化完成旗標
@@ -677,17 +672,17 @@ namespace MCAJawIns.content
                     {
                         throw new CameraException("相機未完全初始化");
                     }
-#endif
-                    //    }
-                    //    else
-                    //    {
-                    //        throw new CameraException("相機設定檔為空");
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    throw new CameraException("相機設定檔不存在");
-                    //}
+
+                    //  }
+                    //  else
+                    //  {
+                    //      throw new CameraException("相機設定檔為空");
+                    //  }
+
+                    //  else
+                    //  {
+                    //          throw new CameraException("相機設定檔不存在");
+                    //  }
                 }
                 catch (Exception ex)
                 {
@@ -937,6 +932,8 @@ namespace MCAJawIns.content
                         // 讀取 Size Spec 設定
                         LoadSpecList();
 
+                        // 讀取 Size Group Spec 設定
+                        LoadSpecGroupList();
 
 #if false  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
@@ -1024,23 +1021,20 @@ namespace MCAJawIns.content
 
                     if (cfg != null)
                     {
-                        JawSpecSetting[] jawSpecs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<JawSpecSetting>(x.ToBsonDocument())).ToArray();
-
-                        JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
-                        foreach (JawSpecSetting item in jawSpecs)
+                        // 調用 Dispacher 變更集合
+                        Dispatcher.Invoke(() =>
                         {
-                            // 調用 Dispacher 變更集合
-                            Dispatcher.Invoke(() =>
-                            {
-                                // // 加入尺寸規格列表
-                                // // JawResultGroup.SizeSpecList.Add(item);
+                            JawSpecSetting[] jawSpecs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<JawSpecSetting>(x.ToBsonDocument())).ToArray();
 
+                            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+                            foreach (JawSpecSetting item in jawSpecs)
+                            {
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
                                 JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
-                            });
-                        }
+                            }
+                        });
                         JawSizeSpecList.Save();
                     }
                     else
@@ -1057,8 +1051,6 @@ namespace MCAJawIns.content
             }
             else
             {
-                Debug.WriteLine($"load from Json, Line: 962");
-
                 string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
 
                 if (File.Exists(path))
@@ -1068,28 +1060,25 @@ namespace MCAJawIns.content
 
                     if (jsonStr != string.Empty)
                     {
-                        // 反序列化，載入 JSON FILE
-                        // List<JawSpecSetting> list = JsonSerializer.Deserialize<List<JawSpecSetting>>(jsonStr, new JsonSerializerOptions
-                        JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
+                        // 調用 Dispacher 變更集合
+                        Dispatcher.Invoke(() =>
                         {
-                            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
-                        });
-
-                        JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
-                        foreach (JawSpecSetting item in list)
-                        {
-                            // 調用 Dispacher 變更集合
-                            Dispatcher.Invoke(() =>
+                            // 反序列化，載入 JSON FILE
+                            JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
                             {
-                                // // 加入尺寸規格列表
-                                // // JawResultGroup.SizeSpecList.Add(item);
+                                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                            });
+
+                            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+                            foreach (JawSpecSetting item in list)
+                            {
 
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
                                 JawInspection.LotResults.Add(item.Key, new JawInspection.ResultElement(item.Item, item.Note, 0, item.Enable));
-                            });
-                        }
+                            }
+                        });
                         JawSizeSpecList.Save();
                     }
                     else
@@ -1133,6 +1122,77 @@ namespace MCAJawIns.content
 #endif
 
                 }
+            }
+        }
+
+        /// <summary>
+        /// 載入規格群組設定 (因同一組件(namespace MCAJawIns.content)會使用，故為 internal)
+        /// </summary>
+        /// <param name="fromDB"></param>
+        internal void LoadSpecGroupList(bool fromDB = true)
+        {
+            if (fromDB)
+            {
+                if (MainWindow.MongoAccess.Connected)
+                {
+                    FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.SPECGROUP));
+
+                    MainWindow.MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
+
+                    if (cfg != null)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            JawSpecGroupSetting[] jawSpecs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<JawSpecGroupSetting>(x.ToBsonDocument())).ToArray();
+
+                            for (int i = 0; i < jawSpecs.Length; i++)
+                            {
+                                JawSizeSpecList.Groups[i].Content = jawSpecs[i].Content;
+                                JawSizeSpecList.Groups[i].ColorString = jawSpecs[i].ColorString;
+                                //Debug.WriteLine($"{JawSizeSpecList.Groups[i].Color}");
+                            }
+                        });
+                        JawSizeSpecList.GroupSave();
+                    }
+                    else
+                    {
+                        LoadSpecGroupList(false);
+                    }
+                }
+                else
+                {
+                    LoadSpecGroupList(false);
+                }
+            }
+            else
+            {
+#if false
+                string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecGroupPath}";
+
+                if (File.Exists(path))
+                {
+                    using StreamReader reader = File.OpenText(path);
+                    string jsonStr = reader.ReadToEnd();
+
+                    if (jsonStr != string.Empty)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            JawSpecGroupSetting[] jawSpecs = JsonSerializer.Deserialize<JawSpecGroupSetting[]>(jsonStr, new JsonSerializerOptions
+                            {
+                                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                            });
+
+                            for (int i = 0; i < jawSpecs.Length; i++)
+                            {
+                                JawSizeSpecList.Groups[i].Content = jawSpecs[i].Content;
+                                JawSizeSpecList.Groups[i].ColorString = jawSpecs[i].ColorString;
+                            }
+                        });
+                        JawSizeSpecList.GroupSave();
+                    }
+                } 
+#endif
             }
         }
 

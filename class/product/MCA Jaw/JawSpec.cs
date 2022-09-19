@@ -11,6 +11,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Globalization;
 
 namespace MCAJawIns.Product
 {
@@ -98,6 +99,22 @@ namespace MCAJawIns.Product
         public bool OK => (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
     }
 
+    public enum JawSpecGroups
+    {
+        [Description("未分組")]
+        NONE = 0,
+        [Description("群組 1")]
+        Group1 = 1,
+        [Description("群組 2")]
+        Group2 = 2,
+        [Description("群組 3")]
+        Group3 = 3,
+        [Description("群組 4")]
+        Group4 = 4,
+        [Description("群組 5")]
+        Group5 = 5
+    }
+
     /// <summary>
     /// MCA Jaw 尺寸規格設定，規格設定列表用
     /// </summary>
@@ -107,7 +124,7 @@ namespace MCAJawIns.Product
         private double _correction;
         private bool _enable;
         private double _correctionSecret;
-        private SpecInsGroup _group = SpecInsGroup.NONE;
+        private JawSpecGroups _group = JawSpecGroups.NONE;
 
         public JawSpecSetting() { }
 
@@ -142,23 +159,23 @@ namespace MCAJawIns.Product
         /// <summary>
         /// 檢驗群組，同一群組
         /// </summary>
-        public enum SpecInsGroup {
-            [Description("未分組")]
-            NONE = 0,
-            [Description("群組 1")]
-            Group1 = 1,
-            [Description("群組 2")]
-            Group2 = 2,
-            [Description("群組 3")]
-            Group3 = 3,
-            [Description("群組 4")]
-            Group4 = 4,
-            [Description("群組 5")]
-            Group5 = 5
-        };
+        //public enum SpecInsGroup {
+        //    [Description("未分組")]
+        //    NONE = 0,
+        //    [Description("群組 1")]
+        //    Group1 = 1,
+        //    [Description("群組 2")]
+        //    Group2 = 2,
+        //    [Description("群組 3")]
+        //    Group3 = 3,
+        //    [Description("群組 4")]
+        //    Group4 = 4,
+        //    [Description("群組 5")]
+        //    Group5 = 5
+        //};
 
         [Description("群組")]
-        public SpecInsGroup Group
+        public JawSpecGroups Group
         {
             get => _group;
             set
@@ -244,12 +261,13 @@ namespace MCAJawIns.Product
     public class JawSpecGroupSetting : INotifyPropertyChanged
     {
         #region private
+        private string _content = string.Empty;
         private SolidColorBrush _color;
         #endregion
 
         public JawSpecGroupSetting() { }
 
-        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, SolidColorBrush backgroundColor)
+        public JawSpecGroupSetting(JawSpecGroups groupName, string content, SolidColorBrush backgroundColor)
         {
             GroupName = groupName;
             Content = content;
@@ -257,7 +275,7 @@ namespace MCAJawIns.Product
             // backgroundColor.Color = new BrushConverter().ConvertFrom("#00FFFFFF");
         }
 
-        public JawSpecGroupSetting(JawSpecSetting.SpecInsGroup groupName, string content, string colorStr)
+        public JawSpecGroupSetting(JawSpecGroups groupName, string content, string colorStr)
         {
             GroupName = groupName;
             Content = content;
@@ -268,27 +286,48 @@ namespace MCAJawIns.Product
         /// 群組名稱
         /// </summary>
         [Description("群組名稱")]
+        [BsonElement(nameof(GroupName))]
         [JsonPropertyName(nameof(GroupName))]
-        public JawSpecSetting.SpecInsGroup GroupName { get; set; }
+        public JawSpecGroups GroupName { get; set; }
 
         /// <summary>
         /// 內容
         /// </summary>
         [Description("內容")]
+        [BsonElement(nameof(Content))]
         [JsonPropertyName(nameof(Content))]
-        public string Content { get; set; }
+        public string Content {
+            get => _content;
+            set
+            {
+                if (value != _content)
+                {
+                    _content = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         [Description("顏色字串")]
+        [BsonElement(nameof(ColorString))]
         [JsonPropertyName(nameof(ColorString))]
         public string ColorString
         {
-            get => _color.ToString();
+            get => _color.ToString(CultureInfo.CurrentCulture);
+            set
+            {
+                if ((SolidColorBrush)new BrushConverter().ConvertFrom(value) != _color)
+                {
+                    _color = (SolidColorBrush)new BrushConverter().ConvertFrom(value);
+                }
+            }
         }
 
         /// <summary>
         /// 群組顏色
         /// </summary>
         [Description("背景顏色")]
+        [BsonIgnore]
         [JsonIgnore]
         public SolidColorBrush Color
         {
@@ -299,9 +338,21 @@ namespace MCAJawIns.Product
                 {
                     _color = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(ColorString));
                 }
             }
         }
+
+        #region Methods
+        public void SetContent(string content)
+        {
+            _content = content;
+        }
+        public void SetColor(SolidColorBrush color)
+        {
+            _color = color;
+        }
+        #endregion
 
         #region Property Changed
         public event PropertyChangedEventHandler PropertyChanged;
@@ -389,9 +440,9 @@ namespace MCAJawIns.Product
             Source.CollectionChanged += Source_CollectionChanged;
             //Groups.CollectionChanged += Groups_CollectionChanged;
 
-            foreach (JawSpecSetting.SpecInsGroup group in Enum.GetValues<JawSpecSetting.SpecInsGroup>())
+            foreach (JawSpecGroups group in Enum.GetValues<JawSpecGroups>())
             {
-                if (group != JawSpecSetting.SpecInsGroup.NONE)
+                if (group != JawSpecGroups.NONE)
                 {
                     JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
                     jaw.PropertyChanged += SpecGroup_PropertyChanged;
@@ -456,6 +507,7 @@ namespace MCAJawIns.Product
 
         private void SpecGroup_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"{e.PropertyName} {sender}");
             GroupSaved = false;
         }
 
@@ -507,11 +559,11 @@ namespace MCAJawIns.Product
         public bool GroupSaved
         {
             get => _groupSaved;
-            set
+            private set
             {
                 if (value != _groupSaved)
                 {
-                    _groupSaved = true;
+                    _groupSaved = value;
                     OnPropertyChanged();
                 }
             }
@@ -522,6 +574,7 @@ namespace MCAJawIns.Product
         /// </summary>
         public void GroupSave()
         {
+            System.Diagnostics.Debug.WriteLine($"{_groupSaved}");
             _groupSaved = true;
             OnPropertyChanged(nameof(GroupSaved));
         }

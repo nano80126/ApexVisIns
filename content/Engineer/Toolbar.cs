@@ -825,7 +825,7 @@ namespace MCAJawIns.content
             Indicator.Image = null;
 
             // 啟動 Camera Enumerator
-            MainWindow.CameraEnumer.WorkerPause();
+            MainWindow.CameraEnumer.WorkerStart();
         }
         #endregion
 
