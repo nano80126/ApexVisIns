@@ -325,10 +325,12 @@ namespace MCAJawIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
+#if false
                         Debug.WriteLine($"{t.Result == InitFlags.INIT_DATABASE_FAILED}");
                         Debug.WriteLine($"{(t.Result | InitFlags.INIT_TIMEOUT_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
                         Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
-                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED}");
+                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED}"); 
+#endif
 
                         if ((t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED)
                         {
@@ -1577,7 +1579,7 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[3].Color = Brushes.Transparent;
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
 
-            MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+            //MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
 
 #if false
             Task<int> t = await Task.Run(() =>

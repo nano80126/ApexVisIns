@@ -30,7 +30,7 @@
 
     <DockPanel x:Name="ToolBarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region Toolbar 1 -->
-        <ToolBarTray DockPanel.Dock="Left" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}">
+        <ToolBarTray DockPanel.Dock="Left" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" Background="{x:Null}">
             <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0 0" ToolBarTray.IsLocked="True" Focusable="False" Background="{x:Null}"
                     Style="{StaticResource MaterialDesignToolBar}">
                 <ToolBar.Resources>
@@ -53,8 +53,8 @@
                     </TextBlock.Style>
                 </TextBlock>
                 <!--//-->
-                <TextBlock Margin="12 0 0 0" Text="Ver. 1.0.0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas"
-                        Foreground="{StaticResource ColorPrimaryTransparent}">
+                <TextBlock Margin="12 0 0 0" VerticalAlignment="Bottom" FontWeight="Bold" FontFamily="consolas" Foreground="{StaticResource ColorPrimaryTransparent}"
+                        Text="Ver. 1.0.0">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="FontSize" Value="{StaticResource Title-xs}" />
@@ -128,7 +128,7 @@
         <!--#endregion-->
 
         <!--#region Toolbar 2 -->
-        <ToolBarTray DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" UseLayoutRounding="True" Background="{x:Null}"
+        <ToolBarTray DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 -1" ClipToBounds="True" Background="{x:Null}"
                 FlowDirection="RightToLeft">
             <ToolBar HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0 0" ToolBarTray.IsLocked="True" Focusable="False" Background="{x:Null}"
                     FlowDirection="RightToLeft" Style="{StaticResource MaterialDesignToolBar}">
@@ -272,7 +272,7 @@
         <!--#region Tab1 -->
         <TabItem Header="{x:Null}" Height="0" Margin="0">
             <Border x:Name="ContentBorder" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1" Background="AliceBlue" VerticalAlignment="Top" Margin="0 -2 0 0">
-                <Grid x:Name="Content" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0" UseLayoutRounding="True">
+                <Grid x:Name="Content" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0">
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
                             <Setter Property="Height" Value="780"/>
@@ -424,53 +424,72 @@
                                                 </Style.Triggers>
                                             </Style>
                                             <!--//-->
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource Header}" x:Key="ItemText">
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource Header}" x:Key="ItemText">
+                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="Margin" Value="0 0" />
+                                                <Setter Property="Padding" Value="0 0 " />
                                                 <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
                                                 <Setter Property="FontWeight" Value="Bold" />
-                                                <Setter Property="VerticalAlignment" Value="Center" />
-                                                <Setter Property="HorizontalAlignment" Value="Right" />
                                                 <!--//-->
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                            Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
-                                                            Value="Maximized">
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, 
+                                                        AncestorLevel=1}}" Value="Maximized">
                                                         <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                             <!--//-->
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource ItemText}" x:Key="ItemNoteText">
+                                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                                <Setter Property="VerticalAlignment" Value="Center" />
                                                 <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
                                                 <Setter Property="FontWeight" Value="SemiBold" />
-                                                <Setter Property="Margin" Value="0 2 0 0" />
-                                                <Setter Property="VerticalAlignment" Value="Center" />
-                                                <Setter Property="HorizontalAlignment" Value="Center" />
                                                 <!--//-->
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                            Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
-                                                            Value="Maximized">
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, 
+                                                        AncestorLevel=1}}" Value="Maximized">
                                                         <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                             <!--//-->
                                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-                                                <Setter Property="Padding" Value="0" />
-                                                <Setter Property="Width" Value="26" />
-                                                <Setter Property="Height" Value="27" />
                                                 <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="Margin" Value="0 0" />
+                                                <Setter Property="Padding" Value="0 0" />
+                                                <Setter Property="Width" Value="24" />
+                                                <Setter Property="Height" Value="24" />
                                                 <Setter Property="Background" Value="{StaticResource ColorGrayTransparent}" />
+                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                <!--//-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, 
+                                                        AncestorLevel=1}}" Value="Maximized">
+                                                        <Setter Property="Width" Value="28" />
+                                                        <Setter Property="Height" Value="28" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
                                             <!--//-->
-                                            <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                                                <Setter Property="Margin" Value="1 4" />
-                                                <Setter Property="FontSize" Value="20" />
+                                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
                                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                                                 <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                                <Setter Property="Margin" Value="0 4" />
+                                                <Setter Property="Height" Value="24" />
+                                                <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
                                                 <Setter Property="TextAlignment" Value="Center" />
                                                 <Setter Property="IsReadOnly" Value="True" />
                                                 <Setter Property="Cursor" Value="Arrow" />
+                                                <!--//-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, 
+                                                        AncestorLevel=1}}" Value="Maximized">
+                                                        <Setter Property="Height" Value="28" />
+                                                        <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
                                         </Grid.Resources>
                                         <!--#endregion-->
@@ -485,10 +504,7 @@
                                             <RowDefinition Height="auto" />
                                             <RowDefinition Height="auto" />
                                             <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
+
                                             <!--header   -->
                                             <RowDefinition Height="auto" Tag="BackHeader" />
                                             <!--separator-->
@@ -499,6 +515,11 @@
                                             <RowDefinition Height="auto" />
                                             <RowDefinition Height="auto" />
                                             <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+
                                             <!--header-->
                                             <RowDefinition Height="auto" Tag="SideHeader" />
                                             <!--separator-->
@@ -528,7 +549,7 @@
                                         <Button Grid.Row="0" Grid.Column="4" Click="PlusButton_Click" CommandParameter="good" Content="{materialDesign:PackIcon Kind=Plus}" />
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="1" Margin="8 -2 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <TextBlock Grid.Row="1" Margin="8 0 0 0" Text="下部" VerticalAlignment="Center" Style="{StaticResource Header}" />
                                         <Separator Grid.Row="2" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
                                         <!--#region 0.088R -->
@@ -599,7 +620,7 @@
                                                 Visibility="{Binding LotResults[back].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="7" Margin="8 -2 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <TextBlock Grid.Row="7" Margin="8 0 0 0" Text="前部" VerticalAlignment="Center" Style="{StaticResource Header}" />
                                         <Separator Grid.Row="8" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
                                         <!--#region 0.008R -->
@@ -762,7 +783,7 @@
                                                 Visibility="{Binding LotResults[contourL].Enable, Converter={StaticResource BooleanToVisibility}}" />
                                         <!--#endregion-->
 
-                                        <TextBlock Grid.Row="19" Margin="8 -2 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}" />
+                                        <TextBlock Grid.Row="19" Margin="8 0 0 0" Text="側部" VerticalAlignment="Center" Style="{StaticResource Header}" />
                                         <Separator Grid.Row="20" Grid.ColumnSpan="100" Margin="8 4 0 4" />
 
                                         <!--#region 平直度 -->
