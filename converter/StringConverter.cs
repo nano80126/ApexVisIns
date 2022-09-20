@@ -134,5 +134,32 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
+
+
+    /// <summary>
+    /// 過長字串省略轉換器
+    /// </summary>
+    [ValueConversion(typeof(string), typeof(string))]
+    public class StringEllipsisConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool b = int.TryParse($"{parameter}", out int leng);
+
+            if (b)
+            {
+                return value.ToString().Length > leng ? $"{value.ToString().Substring(0, leng - 3)}..." : value;
+            }
+            else
+            {   // 原封不動回傳
+                return value;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     #endregion
 }

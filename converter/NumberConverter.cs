@@ -52,8 +52,15 @@ namespace MCAJawIns.Converter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            //object first = values[0];
-            return values.Length >= 2 && values.All(value => value.Equals(values[0]));
+            if (values.Length >= 2)
+            {
+                int[] array = Array.ConvertAll(values, x => int.TryParse($"{x}", out int value) ? value : -2 ^ 10);
+                return array.All(value => value.Equals(array[0]));
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

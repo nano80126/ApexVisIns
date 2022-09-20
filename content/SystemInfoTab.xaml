@@ -37,10 +37,7 @@
                         <Setter Property="VerticalAlignment" Value="Center" />
                         <Setter Property="Margin" Value="0 0 16 0" />
                         <Setter Property="Padding" Value="0 4" />
-                        <!--<Setter Property="Height" Value="24" />-->
-                        <!--<Setter Property="Background" Value="{StaticResource ColorPurpleTransparent}" />-->
-                        <!--<Setter Property="FontSize" Value="{StaticResource BasicFont}" />-->
-                        <!--<Setter Property="Background" Value="{StaticResource ColorInfoTransparent}" />-->
+                        <Setter Property="Height" Value="24" />
                     </Style>
                     <!--//-->
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -62,9 +59,6 @@
 
                 <!--#region Layout -->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -129,15 +123,15 @@
                 <TextBlock Grid.Row="4" Grid.Column="6" Text="量測工件數（累計）" />
                 <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                <TextBlock Grid.Row="5" Grid.Column="6" Margin="0 8 16 0" Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
-                <TextBox Grid.Row="5" Grid.Column="7" Margin="0 8 0 0" Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="5" Grid.Column="6" Margin="0 8 16 4" Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
+                <TextBox Grid.Row="5" Grid.Column="7" Margin="0 8 0 4" Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                 <!--#endregion-->
 
                 <!-- Separator -->
                 
-                <Separator Grid.RowSpan="100" Grid.Column="2" Margin="8 0 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.RowSpan="100" Grid.Column="2" Margin="12 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
-                <Separator Grid.RowSpan="100" Grid.Column="5" Margin="8 0 8 0" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                <Separator Grid.RowSpan="100" Grid.Column="5" Margin="12 4" Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
                         Background="{StaticResource ColorGrayTransparent}" />
             </Grid>
 

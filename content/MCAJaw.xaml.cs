@@ -89,6 +89,8 @@ namespace MCAJawIns.content
             ERROR = 3,
             [Description("閒置")]
             IDLE = 4,
+            [Description("編輯模式")]
+            DEVELOPMENT = 8,
             [Description("未知")]
             UNKNOWN = 9,
         }
@@ -218,19 +220,18 @@ namespace MCAJawIns.content
                 switch (MainWindow.InitMode)
                 {
                     case InitModes.AUTO:
-                        // 硬體初始化
+                        // 自動模式初始化
                         if (!initializing) { InitPeripherals(); }
+
                         // 設定為自動模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
+
                         // 設定閒置計時器
                         SetIdleTimer(60);
                         break;
                     case InitModes.EDIT:
-                        // 只連線 MongoDB
-                        _ = Task.Run(() => InitMongoDB(_cancellationTokenSource.Token));
-
-                        // _ = Task.Run(() => InitIOCtrl(_cancellationTokenSource.Token)); // delete this line
-                        // _ = Task.Run(() => InitCamera(_cancellationTokenSource.Token)); // delete this line
+                        // 編輯模式初始化 (只連線 MongoDB)
+                        if (!initializing) { InitDevelopment(); }
 
                         // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
@@ -240,6 +241,13 @@ namespace MCAJawIns.content
                         break;
                 }
             }
+
+#if false
+            // Debug.WriteLine($"Flags");
+            // Debug.WriteLine($"{InitFlags.INIT_PERIPHERALS_FAILED | InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED}");
+            // Debug.WriteLine($"{InitFlags.INIT_PERIPHERALS_FAILED}");
+            // Debug.WriteLine($"{((InitFlags.INIT_PERIPHERALS_FAILED | InitFlags.LOAD_SPEC_DATA_FAILED) & InitFlags.LOAD_SPEC_DATA_FAILED) == InitFlags.LOAD_SPEC_DATA_FAILED}");
+#endif
             #endregion
 
             #region All Tab basic info
@@ -270,17 +278,8 @@ namespace MCAJawIns.content
 
                 Status = INS_STATUS.INIT;
 
-                #region TEST
-                // Task.Run(() => { }).ContinueWitht=();
-                #endregion
-
-                // await Task.Run(() => { 
-                // }).ContinueWith( async t=> { 
-                //     //await Task.WhenAll()
-                // });
-
                 await InitMongoDB(token)
-                    .ContinueWith(async t =>
+                    .ContinueWith(t =>
                     {
                         if (token.IsCancellationRequested)
                         {
@@ -288,10 +287,34 @@ namespace MCAJawIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        await Task.WhenAll(
+                        if (!MongoAccess.Connected) { return InitFlags.INIT_DATABASE_FAILED; }
+
+                        // Debug.WriteLine($"start {DateTime.Now:ss.fff}");
+
+                        // 初始化其他外設且等待完成
+                        Task.WhenAll(
                             InitCamera(token),
                             InitLightCtrl(token),
-                            InitIOCtrl(token));
+                            InitIOCtrl(token)).Wait();
+                        // Debug.WriteLine($"start 2 {DateTime.Now:ss.fff}");
+
+                        return InitFlags.OK;
+                    }, token)
+                    .ContinueWith(t => {
+                        // 終止初始化，狀態變更為未知
+                        if (token.IsCancellationRequested)
+                        {
+                            Status = INS_STATUS.UNKNOWN;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        // 讀取 Size Spec 設定
+                        bool load = LoadSpecList();
+
+                        // 讀取 Size Spec Group 設定
+                        LoadSpecGroupList();
+
+                        return (!load ? InitFlags.LOAD_SPEC_DATA_FAILED : InitFlags.OK) | t.Result;
                     })
                     .ContinueWith(t =>
                     {
@@ -302,26 +325,38 @@ namespace MCAJawIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        // 載入自動模式時間與檢驗數量
-                        FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
-                        SortDefinition<MCAJawInfo> sort = Builders<MCAJawInfo>.Sort.Descending(nameof(MCAJawInfo.UpdateTime));
+                        Debug.WriteLine($"{t.Result == InitFlags.INIT_DATABASE_FAILED}");
+                        Debug.WriteLine($"{(t.Result | InitFlags.INIT_TIMEOUT_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
+                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
+                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED}");
 
-                        MongoAccess.FindOneSort(nameof(JawCollection.Info), filter, sort, out MCAJawInfo info);
-
-                        if (info != null)
+                        if ((t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED)
                         {
-                            string timeString = (string)info.Data[nameof(SystemInfo.TotalAutoTime)];
-                            string[] split = timeString.Split(':');
+                            // 載入自動模式時間與檢驗數量
+                            FilterDefinition<MCAJawInfo> filter = Builders<MCAJawInfo>.Filter.Eq(nameof(MCAJawInfo.Type), nameof(MCAJawInfo.InfoTypes.System));
+                            SortDefinition<MCAJawInfo> sort = Builders<MCAJawInfo>.Sort.Descending(nameof(MCAJawInfo.UpdateTime));
 
-                            TimeSpan timeSpan = new TimeSpan(int.Parse(split[0], CultureInfo.CurrentCulture),
-                                int.Parse(split[1], CultureInfo.CurrentCulture),
-                                int.Parse(split[2], CultureInfo.CurrentCulture));
+                            MongoAccess.FindOneSort(nameof(JawCollection.Info), filter, sort, out MCAJawInfo info);
 
-                            MainWindow.SystemInfoTab.SystemInfo.SetTotalAutoTime((int)timeSpan.TotalSeconds);
+                            if (info != null)
+                            {
+                                string timeString = (string)info.Data[nameof(SystemInfo.TotalAutoTime)];
+                                string[] split = timeString.Split(':');
+
+                                TimeSpan timeSpan = new TimeSpan(int.Parse(split[0], CultureInfo.CurrentCulture),
+                                    int.Parse(split[1], CultureInfo.CurrentCulture),
+                                    int.Parse(split[2], CultureInfo.CurrentCulture));
+
+                                MainWindow.SystemInfoTab.SystemInfo.SetTotalAutoTime((int)timeSpan.TotalSeconds);
+                            }
+                            else
+                            {
+                                return InitFlags.LOAD_AP_INFO_FAILED | t.Result;
+                            }
                         }
 
-                        return InitFlags.OK;
-                    })
+                        return t.Result;
+                    }, token)
                     .ContinueWith(t =>
                     {
                         // 等待進度條 等待進度條 等待進度條
@@ -336,12 +371,12 @@ namespace MCAJawIns.content
                         // 等待進度條滿，超過 5 秒則 Timeout
                         if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
                         {
-                            // 硬體初始化失敗
-                            return InitFlags.INIT_PERIPHERALS_FAILED;
+                            // 外設初始化逾時
+                            return InitFlags.INIT_TIMEOUT_FAILED | t.Result;
                         }
 
-                        return InitFlags.OK;
-                    })
+                        return t.Result;
+                    }, token)
                     .ContinueWith(t =>
                     {
                         // 終止初始化，狀態變更為閒置
@@ -351,22 +386,22 @@ namespace MCAJawIns.content
                             token.ThrowIfCancellationRequested();
                         }
 
-                        // 啟動相機 StreamGrabber & Trigger Mode
-                        if (t.Result == InitFlags.OK)
+                        // 若外設啟動成功，啟動相機 StreamGrabber & Trigger Mode
+                        if ((t.Result & InitFlags.INIT_TIMEOUT_FAILED) != InitFlags.INIT_TIMEOUT_FAILED)
                         {
                             // 相機開啟 Grabber
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                             {
                                 BaslerCam cam = MainWindow.BaslerCams[i];
 
-                                #region 載入 UserSet1 (可以刪除?)
+                                #region 載入 UserSet1
                                 if (!cam.IsGrabbing)
                                 {
                                     // 這邊要防呆
                                     // cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
                                     // cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
-                                    // 確認為 UserSet1
+                                    // 確認為 UserSet1 (已經設為預設)
                                     // string userSet = cam.Camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
                                     // Debug.WriteLine($"{cam.ModelName} {userSet}");
 
@@ -378,7 +413,7 @@ namespace MCAJawIns.content
                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
                             {
                                 // 開啟 Trigger Mode 失敗
-                                return InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED;
+                                return InitFlags.SET_CAMERA_TRIGGER_MODE_FAILED | t.Result;
                             }
 
                             #region 確認相機鏡頭蓋取下
@@ -398,28 +433,46 @@ namespace MCAJawIns.content
                             }
                             #endregion
                         }
-                        else
-                        {
-                            return t.Result;
-                        }
 
-                        return InitFlags.OK;
-                    })
+                        return t.Result;
+                    }, token)
                     .ContinueWith(t =>
                     {
-                        if (t.Result != InitFlags.OK)
+                        switch (t.Result)
                         {
-                            MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
+                            case InitFlags.OK:
+                                _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                break;
+                            case InitFlags.LOAD_SPEC_DATA_FAILED:
+                                // 若僅有此錯誤，不影響運作
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設之尺寸規格設定");
+                                _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                break;
+                            case InitFlags.LOAD_AP_INFO_FAILED:
+                                // 若僅有此錯誤，不影響運作
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用初始設定");
+                                _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                break;
+                            case InitFlags.LOAD_SPEC_DATA_FAILED | InitFlags.LOAD_AP_INFO_FAILED:
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設設定與初始值");
+                                _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                break;
+                            default:
+                                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
+                                _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.ERROR);
+                                break;
                         }
-                        else
-                        {
-                            _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
-                        }
+                       
                         initializing = false;
                         initialized = true;
-                    });
+                    }, token);
 
 
+
+                if (DateTime.Now > new DateTime(2022, 10, 1))
+                {
+                    throw new Exception($"delete old code now, LINE: 495");
+                }
 #if false   // 暫時保留
                 await Task.WhenAll(
                      InitCamera(token),
@@ -531,6 +584,59 @@ namespace MCAJawIns.content
         }
 
         /// <summary>
+        /// 開發模式初始化
+        /// </summary>
+        private async void InitDevelopment()
+        {
+            try
+            {
+                if (initializing) { return; }
+
+                CancellationToken token = _cancellationTokenSource.Token;
+                initializing = true;
+
+                Status = INS_STATUS.INIT;
+
+                await InitMongoDB(token)
+                    .ContinueWith(t =>
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            Status = INS_STATUS.UNKNOWN;
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        // 讀取 Size Spec 設定
+                        bool load = LoadSpecList();
+
+                        // 讀取 Size Group Spec 設定
+                        LoadSpecGroupList();
+
+                        return !load ? InitFlags.LOAD_SPEC_DATA_FAILED : InitFlags.OK;
+                    }, token).ContinueWith(t =>
+                    {
+                        switch (t.Result)
+                        {
+                            case InitFlags.LOAD_SPEC_DATA_FAILED:
+                                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
+                                break;
+                            case InitFlags.OK:
+                                break;
+                        }
+
+                        MainWindow.Dispatcher.Invoke(() => { Status = INS_STATUS.DEVELOPMENT; });
+                        initializing = false;
+                        initialized = true;
+                    });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 硬體關閉
         /// </summary>
         private void DisablePeripherals()
@@ -619,7 +725,7 @@ namespace MCAJawIns.content
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
 
-#if false               // 新增使用者、組態
+#if InsertAuth          // 新增使用者、組態
                         MongoAccess.InsertOne("Configs", new MCAJawConfig()
                         {
                             DataReserveMonths = 6,
@@ -639,13 +745,17 @@ namespace MCAJawIns.content
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
+
+#if LoadSpecList
+
                         // 讀取 Size Spec 設定
                         LoadSpecList();
 
                         // 讀取 Size Group Spec 設定
-                        LoadSpecGroupList();
+                        LoadSpecGroupList(); 
+#endif
 
-#if false  // 移除過期資料
+#if DeleteOldData  // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)
                         {
@@ -971,7 +1081,6 @@ namespace MCAJawIns.content
                 });
             }
 
-            Debug.WriteLine($"{e.NewValue} {e.OldValue} line 720");
             // Debug.WriteLine($"{e.NewValue} {e.OldValue} {DateTime.Now:ss.fff}");
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
@@ -997,7 +1106,7 @@ namespace MCAJawIns.content
         /// <summary>
         /// 載入規格設定 (因同一組件(namespace MCAJawIns.content)會使用，故為 internal)
         /// </summary>
-        internal void LoadSpecList(bool fromDb = true)
+        internal bool LoadSpecList(bool fromDb = true)
         {
             // 物件 綁定
             SizeSpecSubTab.MCAJaw = this;
@@ -1014,8 +1123,6 @@ namespace MCAJawIns.content
             {
                 if (MainWindow.MongoAccess.Connected)
                 {
-                    Debug.WriteLine($"load from mongo, Line: 921");
-
                     FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.SPEC));
 
                     MainWindow.MongoAccess.FindOne(nameof(JawCollection.Configs), filter, out MCAJawConfig cfg);
@@ -1086,6 +1193,8 @@ namespace MCAJawIns.content
                     {
                         // 初始化尺寸規格
                         InitSizeSpec();
+
+                        return false;
                     }
                 }
                 else // 若規格列表不存在
@@ -1093,6 +1202,7 @@ namespace MCAJawIns.content
                     // 初始化尺寸規格
                     InitSizeSpec();
 
+                    return false;
 #if false
                     string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
                     string[] items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
@@ -1124,6 +1234,7 @@ namespace MCAJawIns.content
 
                 }
             }
+            return true;
         }
 
         /// <summary>
@@ -1150,7 +1261,6 @@ namespace MCAJawIns.content
                             {
                                 JawSizeSpecList.Groups[i].Content = jawSpecs[i].Content;
                                 JawSizeSpecList.Groups[i].ColorString = jawSpecs[i].ColorString;
-                                //Debug.WriteLine($"{JawSizeSpecList.Groups[i].Color}");
                             }
                         });
                         JawSizeSpecList.GroupSave();
@@ -1167,7 +1277,6 @@ namespace MCAJawIns.content
             }
             else
             {
-#if true
                 string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecGroupPath}";
 
                 if (File.Exists(path))
@@ -1188,14 +1297,11 @@ namespace MCAJawIns.content
                             {
                                 JawSizeSpecList.Groups[i].Content = jawSpecs[i].Content;
                                 JawSizeSpecList.Groups[i].ColorString = jawSpecs[i].ColorString;
-
-                                Debug.WriteLine($"{JawSizeSpecList.Groups[i].ColorString}");
                             }
                         });
                         JawSizeSpecList.GroupSave();
                     }
                 } 
-#endif
             }
         }
 
@@ -1286,7 +1392,6 @@ namespace MCAJawIns.content
         #endregion
 
         #region 觸發檢測、結批、重置 Timer
-
         /// <summary>
         /// 觸發相機拍攝 (僅測試拍攝)
         /// </summary>
@@ -1294,6 +1399,10 @@ namespace MCAJawIns.content
         /// <param name="e"></param>
         private void TriggerCamera_Click(object sendder, RoutedEventArgs e)
         {
+            DateTime t1 = DateTime.Now;
+
+            Debug.WriteLine($"{t1:HH:mm:ss.fff}");
+
             bool ready = BaslerCam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
             if (ready)
@@ -1337,6 +1446,8 @@ namespace MCAJawIns.content
                     MainWindow.ImageSource3 = mat.ToImageSource();
                 }
             }
+
+            Debug.WriteLine($"{DateTime.Now:HH:mm:ss.fff}; {(DateTime.Now - t1).TotalMilliseconds} ms");
         }
 
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
@@ -1455,7 +1566,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             //JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
             //JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
@@ -1465,54 +1576,59 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[2].Color = Brushes.Transparent;
             // JawSizeSpecList.Groups[3].Color = Brushes.Transparent;
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
+
+            MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+
+#if false
             Task<int> t = await Task.Run(() =>
-            {
+              {
 
-                Debug.WriteLine($"first start {DateTime.Now:HH:mm:ss.fff}");
-                SpinWait.SpinUntil(() => false, 1000);
-                Debug.WriteLine($"first end {DateTime.Now:HH:mm:ss.fff}");
+                  Debug.WriteLine($"first start {DateTime.Now:HH:mm:ss.fff}");
+                  SpinWait.SpinUntil(() => false, 1000);
+                  Debug.WriteLine($"first end {DateTime.Now:HH:mm:ss.fff}");
 
-                return 1;
-            }).ContinueWith(t =>
-            {
-                Debug.WriteLine($"second ID {t.Id} {t.Result}");
+                  return 1;
+              }).ContinueWith(t =>
+              {
+                  Debug.WriteLine($"second ID {t.Id} {t.Result}");
 
-                Debug.WriteLine($"second start {DateTime.Now:HH:mm:ss.fff}");
-                SpinWait.SpinUntil(() => false, 1000);
-                Debug.WriteLine($"second end {DateTime.Now:HH:mm:ss.fff}");
+                  Debug.WriteLine($"second start {DateTime.Now:HH:mm:ss.fff}");
+                  SpinWait.SpinUntil(() => false, 1000);
+                  Debug.WriteLine($"second end {DateTime.Now:HH:mm:ss.fff}");
 
-                return 2;
-            }).ContinueWith(async t =>
-            {
-                Debug.WriteLine($"Third ID {t.Id} {t.Result}");
+                  return 2;
+              }).ContinueWith(async t =>
+              {
+                  Debug.WriteLine($"Third ID {t.Id} {t.Result}");
 
-                await Task.WhenAll(Task.Run(() =>
-                {
-                    SpinWait.SpinUntil(() => false, 1500);
-                    Debug.WriteLine("wait 1500 ms");
-                    return 10;
-                }),
-                Task.Run(() =>
-                {
-                    SpinWait.SpinUntil(() => false, 3500);
-                    Debug.WriteLine("wait 3500 ms");
-                    return 11;
-                }),
-                Task.Run(() =>
-                {
-                    SpinWait.SpinUntil(() => false, 2500);
-                    Debug.WriteLine("wait 2500 ms");
-                    return 12;
-                })).ContinueWith(tt =>
-                {
+                  await Task.WhenAll(Task.Run(() =>
+                  {
+                      SpinWait.SpinUntil(() => false, 1500);
+                      Debug.WriteLine("wait 1500 ms");
+                      return 10;
+                  }),
+                  Task.Run(() =>
+                  {
+                      SpinWait.SpinUntil(() => false, 3500);
+                      Debug.WriteLine("wait 3500 ms");
+                      return 11;
+                  }),
+                  Task.Run(() =>
+                  {
+                      SpinWait.SpinUntil(() => false, 2500);
+                      Debug.WriteLine("wait 2500 ms");
+                      return 12;
+                  })).ContinueWith(tt =>
+                  {
 
-                    Debug.WriteLine($"tt {tt.Status} {tt.Result} {string.Join(",", tt.Result)}");
-                });
+                      Debug.WriteLine($"tt {tt.Status} {tt.Result} {string.Join(",", tt.Result)}");
+                  });
 
-                return 3;
-            });
+                  return 3;
+              });
 
-            Debug.WriteLine($"Task {t.Id} {t.Result}");
+            Debug.WriteLine($"Task {t.Id} {t.Result}"); 
+#endif
         }
     }
 
@@ -1558,6 +1674,7 @@ namespace MCAJawIns.content
                 MCAJaw.INS_STATUS.INSPECTING => new SolidColorBrush(Color.FromArgb(0xff, 0x00, 0x96, 0x88)),
                 MCAJaw.INS_STATUS.ERROR => new SolidColorBrush(Color.FromArgb(0xff, 0xE9, 0x1E, 0x63)),
                 MCAJaw.INS_STATUS.IDLE => new SolidColorBrush(Color.FromArgb(0xff, 0xFF, 0xC1, 0x07)),
+                MCAJaw.INS_STATUS.DEVELOPMENT => new SolidColorBrush(Color.FromArgb(0xbb, 0x2b, 0xa8, 0x9a)),
                 MCAJaw.INS_STATUS.UNKNOWN => new SolidColorBrush(Color.FromArgb(0xbb, 0x9E, 0x9E, 0x9E)),
 
                 _ => new SolidColorBrush(Colors.Red),   // Default

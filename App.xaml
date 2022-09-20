@@ -38,7 +38,7 @@
             <cvt:NumberIsOddConverter x:Key="NumberIsOddConverter"/>
             <cvt:NumberEqualConverter x:Key="NumberEqualConverter"/>
             <cvt:NumberNotEqualConverter x:Key="NumberNotEqualConverter"/>
-            <cvt:NumbersAllEqualConverter x:Key="NumberAllEqualConverter"/>
+            <cvt:NumbersAllEqualConverter x:Key="NumbersAllEqualConverter"/>
             <cvt:NumberInArrayConverter x:Key="NumberInArrayConverter" />
             <cvt:NumberLessConverter x:Key="NumberLessConverter"/>
             <cvt:NumberGreaterConverter x:Key="NumberGreaterConvert"/>
@@ -50,6 +50,7 @@
             <cvt:StringNotEqualConverter x:Key="StringNotEqualConverter"/>
             <cvt:StringsAllEqualConverter x:Key="StringAllEqualConverter"/>
             <cvt:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <cvt:StringEllipsisConverter x:Key="StringEllipsisConverter" />
             <!--//-->
             <cvt:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <cvt:CombineValueConvert x:Key="CombineValueConvert"/>

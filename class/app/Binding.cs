@@ -295,9 +295,8 @@ namespace MCAJawIns
                 {
                     TimeSpan timeSpan = TimeSpan.FromSeconds((DateTime.Now - _startTime).TotalSeconds - (_stopwatch?.Elapsed.TotalSeconds ?? 0));
 
-                    Debug.WriteLine($"{timeSpan} {(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}");
-                    Debug.WriteLine($"{timeSpan.Seconds} {timeSpan.TotalSeconds}");
-
+                    //Debug.WriteLine($"{timeSpan} {(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}");
+                    //Debug.WriteLine($"{timeSpan.Seconds} {timeSpan.TotalSeconds}");
 
                     return $"{(int)timeSpan.TotalHours:00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
                 }

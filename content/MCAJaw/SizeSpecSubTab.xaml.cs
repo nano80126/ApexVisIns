@@ -23,7 +23,7 @@ namespace MCAJawIns.content
     public partial class SizeSpecSubTab : Border
     {
         #region Private
-        private SolidColorBrush[] ColorArray;
+        //private SolidColorBrush[] ColorArray;
         #endregion
 
         #region Properties

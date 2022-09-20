@@ -62,10 +62,14 @@ namespace MCAJawIns
                 byte[] data = new byte[16];
                 int bytes = _networkStream.Read(data, 0, data.Length);
 
+                // 確認數值有變更
                 if (data[bytes - 1] != Value)
                 {
-                    OnIOChanged(data[bytes - 1], Value);
-                    Value = data[bytes - 1];
+                    byte nV = data[bytes - 1];
+                    byte oV = Value;
+                    // 防彈跳，先變更舊值
+                    Value = data[bytes - 1];   
+                    OnIOChanged(nV, oV);
                 }
             }
             else

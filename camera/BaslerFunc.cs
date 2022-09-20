@@ -678,7 +678,6 @@ namespace MCAJawIns
         {
             Debug.WriteLine("Grabber Started");
             string userData = (sender as IStreamGrabber).UserData.ToString();
-            Debug.WriteLine($"{userData}");
 
             BaslerCam baslerCam = Array.Find(BaslerCams, cam => cam.Camera?.StreamGrabber.UserData.ToString() == userData);
             baslerCam.PropertyChange(nameof(baslerCam.IsGrabbing));

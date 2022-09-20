@@ -104,7 +104,7 @@ namespace MCAJawIns.content
 
             if (!loaded)
             {
-                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "測試頁面已載入");
+                MainWindow.MsgInformer?.AddInfo(MsgInformer.Message.MsgCode.APP, "開發者頁面已載入");
                 loaded = true;
             }
 

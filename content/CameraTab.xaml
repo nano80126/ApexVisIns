@@ -63,7 +63,9 @@
 
             <!--#region 組態列表 -->
             <ctrl:CustomCard ShowHeader="False" Background="AntiqueWhite">
-                <ItemsControl ItemsSource="{Binding CameraConfigs, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                <ItemsControl ItemsSource="{Binding CameraConfigs, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                        AlternationCount="{Binding CameraConfigs.Count, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+                    <!--{Binding CameraConfigs.Count, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}-->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Margin="0 0" />
@@ -76,18 +78,32 @@
                     <!--//-->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <RadioButton HorizontalAlignment="Stretch" Margin="0 8" Padding="0 0" FontWeight="Bold" GroupName="GroupChoiceChip" Checked="RadioButton_Checked"
+                            <RadioButton HorizontalAlignment="Stretch" Padding="0 0" FontWeight="Bold" GroupName="GroupChoiceChip" Checked="RadioButton_Checked"
                                     CommandParameter="{Binding SerialNumber}">
+                                <!--#region Style -->
                                 <RadioButton.Style>
                                     <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}">
+                                        <Setter Property="Margin" Value="4 8" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Model}" Value="">
                                                 <Setter Property="Content" Value="(NULL)" />
                                             </DataTrigger>
+                                            <!--//-->
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource NumbersAllEqualConverter}">
+                                                        <Binding Path="(ItemsControl.AlternationIndex)" RelativeSource="{RelativeSource Mode=TemplatedParent}" />
+                                                        <Binding Path="CameraConfigs.Count" Source="{StaticResource CameraEnumer}" UpdateSourceTrigger="PropertyChanged"
+                                                                Mode="OneWay" Converter="{StaticResource MathMinusConverter}" ConverterParameter="1" />
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Margin" Value="4 8 4 4" />
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </RadioButton.Style>
-                                <!--//-->
+                                <!--#endregion-->
+
                                 <RadioButton.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Width="26" Height="auto" VerticalAlignment="Center" HorizontalAlignment="Left">
@@ -107,9 +123,10 @@
                                         <!--//-->
                                         <TextBlock VerticalAlignment="Center" Margin="4 0 0 0" MaxWidth="200" TextTrimming="CharacterEllipsis">
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0,10}, S/N: {1,8:D0}">
-                                                    <Binding Path="Model" />
+                                                <MultiBinding StringFormat="{}{0,12}, S/N: {1,8:D0}">
+                                                    <Binding Path="Model" Converter="{StaticResource StringEllipsisConverter}" ConverterParameter="12"/>
                                                     <Binding Path="SerialNumber" />
+                                                    <!--<Binding Path="(ItemsControl.AlternationIndex)" RelativeSource="{RelativeSource Mode=TemplatedParent}"/>-->
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>

@@ -60,6 +60,7 @@ namespace MCAJawIns
     /// <summary>
     /// 硬體初始化用旗標
     /// </summary>
+    [Flags]
     public enum InitFlags
     {
         /// <summary>
@@ -68,15 +69,30 @@ namespace MCAJawIns
         [Description("初始化完成")]
         OK = 0,
         /// <summary>
+        /// 初始化資料庫失敗
+        /// </summary>
+        [Description("初始化資料庫失敗")]
+        INIT_DATABASE_FAILED = 1,
+        /// <summary>
+        /// 讀取尺寸規格資料失敗
+        /// </summary>
+        [Description("載入尺寸規格資料失敗")]
+        LOAD_SPEC_DATA_FAILED = 2,
+        /// <summary>
+        /// 載入稼動時間(availability)與檢驗數量(performance)失敗
+        /// </summary>
+        [Description("載入稼動時間(availability)與檢驗數量(performance)資料失敗")]
+        LOAD_AP_INFO_FAILED = 4,
+        /// <summary>
         /// 外圍設備連線失敗
         /// </summary>
-        [Description("外設初始化失敗")]
-        INIT_PERIPHERALS_FAILED = 1,
+        [Description("初始化逾時")]
+        INIT_TIMEOUT_FAILED = 8,
         /// <summary>
         /// 相機Trigger Mode 設置失敗
         /// </summary>
         [Description("相機Trigger Mode設置失敗")]
-        SET_CAMERA_TRIGGER_MODE_FAILED = 2
+        SET_CAMERA_TRIGGER_MODE_FAILED = 16
     }
     #endregion
 
@@ -213,9 +229,9 @@ namespace MCAJawIns
 
             //InitializePanels();
 
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             LoadTabItems();
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         /// <summary>
@@ -343,7 +359,7 @@ namespace MCAJawIns
             for (int i = 0; i < AppTabControl.Items.Count; i++)
             {
                 TabItem tabItem = (TabItem)AppTabControl.Items[i];
-                //Debug.WriteLine($"{tabItem.Header} {(tabItem.Header as PackIcon).Kind}");
+                // Debug.WriteLine($"{tabItem.Header} {(tabItem.Header as PackIcon).Kind}");
                 if (tabItem.Content != null) { continue; }
 
                 switch (i)
@@ -605,22 +621,22 @@ namespace MCAJawIns
             }
 
 
-            // 若為自動模式，紀錄自動模式運行時間和檢驗數量
-            if (InitMode == InitModes.AUTO)
-            {
-                MCAJawInfo info = new MCAJawInfo()
-                {
-                    Type = MCAJawInfo.InfoTypes.System,
-                    Data = SystemInfoTab.SystemInfo.ToBsonDocument(),
-                    UpdateTime = DateTime.Now,
-                    InsertTime = DateTime.Now,
-                };
-                MongoAccess.InsertOne(nameof(JawCollection.Info), info);
-            }
-
             // 與資料庫斷線
             if (MongoAccess != null && MongoAccess.Connected)
             {
+                // 若為自動模式，紀錄自動模式運行時間和檢驗數量
+                if (InitMode == InitModes.AUTO)
+                {
+                    MCAJawInfo info = new MCAJawInfo()
+                    {
+                        Type = MCAJawInfo.InfoTypes.System,
+                        Data = SystemInfoTab.SystemInfo.ToBsonDocument(),
+                        UpdateTime = DateTime.Now,
+                        InsertTime = DateTime.Now,
+                    };
+                    MongoAccess.InsertOne(nameof(JawCollection.Info), info);
+                }
+
                 MongoAccess.Disconnect();
             }
 
