@@ -31,9 +31,9 @@
     <!--#region Toolbar -->
     <DockPanel x:Name="ToolbarPanel" HorizontalAlignment="Stretch" Background="#22969696">
         <!--#region MainToolbar-->
-        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0">
+        <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0 -1">
             <!-- DataContext 動態變更, CamSelectort SelectedIndex Changed 觸發 -->
-            <ToolBar x:Name="Toolbar" Style="{StaticResource MaterialDesignToolBar}" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Height="38"
+            <ToolBar x:Name="Toolbar" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Style="{StaticResource MaterialDesignToolBar}"
                     ToolBarTray.IsLocked="True" Focusable="False" DataContext="{StaticResource BaslerCam}">
                 <!--#region Resources -->
                 <ToolBar.Resources>
@@ -52,10 +52,17 @@
                         <Setter Property="Focusable" Value="False" />
                         <Setter Property="Foreground" Value="Black" />
                     </Style>
+                    <!--//-->
+                    <Style TargetType="materialDesign:PackIcon">
+                        <Setter Property="Width" Value="28" />
+                        <Setter Property="Height" Value="24" />
+                    </Style>
                 </ToolBar.Resources>
                 <!--#endregion-->
+
+                <!--#region 相機連線 -->
                 <!--相機選擇-->
-                <ComboBox x:Name="CamSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 12 0" Padding="8 4" MinWidth="135" FontWeight="Bold"
+                <ComboBox x:Name="CamSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 12 0" Padding="8 3" MinWidth="135" FontWeight="Bold"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                         IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                         ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -89,8 +96,11 @@
                         </Style>
                     </ToggleButton.Style>
                 </ToggleButton>
-                <!--//-->
-                <Separator />
+                <!--#endregion-->
+
+                <Separator Width="1" Margin="8 8" />
+
+                <!--#region 影像擷取 -->
                 <!--單張擷取-->
                 <Button Name="SingleShot" VerticalAlignment="Center" Foreground="Black" Focusable="False" ToolTip="(F5) Single Shot"
                         Style="{StaticResource MaterialDesignFlatButton}" Click="SingleShot_Click">
@@ -101,9 +111,9 @@
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
-                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
+                    <materialDesign:PackIcon VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
-                            <Style TargetType="materialDesign:PackIcon">
+                            <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
                                 <Setter Property="Kind" Value="CameraOutline" />
                             </Style>
                         </materialDesign:PackIcon.Style>
@@ -119,9 +129,9 @@
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
-                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
+                    <materialDesign:PackIcon VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
-                            <Style TargetType="materialDesign:PackIcon">
+                            <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsGrabbing, FallbackValue=False}" Value="True">
                                         <Setter Property="Kind" Value="VideoOffOutline" />
@@ -132,8 +142,12 @@
                         </materialDesign:PackIcon.Style>
                     </materialDesign:PackIcon>
                 </Button>
+                <!--#endregion-->
+
+                <Separator Width="1" Margin="8 8" />
+
+                <!--#region StreamGrabber -->
                 <!--切換 StreamGrabber-->
-                <Separator />
                 <Button x:Name="ToggleStreamGrabber" VerticalAlignment="Center" Click="ToggleStreamGrabber_Click" Focusable="False" Foreground="Black"
                         ToolTip="(F7) Toggle Stream Grabber" Style="{StaticResource MaterialDesignFlatButton}">
                     <Button.IsEnabled>
@@ -142,9 +156,9 @@
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
-                    <materialDesign:PackIcon Width="30" Height="26" VerticalAlignment="Center">
+                    <materialDesign:PackIcon VerticalAlignment="Center">
                         <materialDesign:PackIcon.Style>
-                            <Style TargetType="materialDesign:PackIcon">
+                            <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsTriggerMode, FallbackValue=False}" Value="True">
                                         <Setter Property="Kind" Value="VideoMinusOutline" />
@@ -164,42 +178,38 @@
                         </MultiBinding>
                     </Button.IsEnabled>
                     <!--//-->
-                    <materialDesign:PackIcon Width="30" Height="26" Kind="ImageOutline" />
+                    <materialDesign:PackIcon Kind="ImageOutline" />
                 </Button>
-                <!--//-->
-                <Separator />
-                <!--解析度 (Resolution)-->
-                <Border>
-                    <TextBlock Padding="5 0" FontSize="16" TextAlignment="Center">
+                <!--#endregion-->
+
+                <Separator Width="1" Margin="8 8" />
+
+                <!--#region Resolution & Zoom Ration & Frames -->
+                <!--解析度 -->
+                <Border Height="24">
+                    <TextBlock VerticalAlignment="Center" Padding="8 0" FontSize="16" TextAlignment="Center">
                         <Run Text="{Binding Width, ElementName=ImageCanvas, Mode=OneWay, FallbackValue=0}" />
                         <materialDesign:PackIcon Kind="Close" Height="12" Margin="5 0" VerticalAlignment="Center" />
                         <Run Text="{Binding Height, ElementName=ImageCanvas, Mode=OneWay, FallbackValue=0}" />
                     </TextBlock>
                 </Border>
                 <!--//-->
-                <Separator />
-                <!--縮放率 (Zoom Ratio)-->
-                <!--
-                <Border>
-                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown">
-                        <Run Text="{Binding ZoomRatio, RelativeSource={RelativeSource AncestorType=StackPanel, Mode=FindAncestor}, 
-                            Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Run Text="%"/>
-                    </TextBlock>
-                </Border>
-                -->
-                <Border>
-                    <TextBlock Padding="5 0" MinWidth="50" FontSize="16" TextAlignment="Center" Text="{Binding Path=ZoomRatio, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, 
+                <Separator Margin="8 8" />
+                <!--縮放率-->
+                <Border Height="24">
+                    <TextBlock VerticalAlignment="Center" Padding="8 0" MinWidth="50" FontSize="16" TextAlignment="Center" Text="{Binding Path=ZoomRatio, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, 
                         Mode=OneWay, FallbackValue=100, StringFormat={}{0:F0} %, UpdateSourceTrigger=PropertyChanged}" MouseLeftButtonDown="RatioTextblock_MouseLeftButtonDown" />
                 </Border>
                 <!--//-->
-                <Separator />
-                <!--影像張數 (Frames)-->
-                <Border>
-                    <TextBlock Padding="5 0" FontSize="16" MinWidth="50" TextAlignment="Center" Text="{Binding Frames, Mode=OneWay, FallbackValue=0}" />
+                <Separator Margin="8 8" />
+                <!--影像張數-->
+                <Border Height="24">
+                    <TextBlock VerticalAlignment="Center" Padding="8 0" MinWidth="50" FontSize="16" TextAlignment="Center" Text="{Binding Frames, Mode=OneWay, FallbackValue=0}" />
                 </Border>
-                <!--//-->
-                <Separator />
+                <!--#endregion-->
+
+                <Separator Margin="8 8" />
+
                 <!--切換Crosshair-->
                 <Button ToolTip="(F1) Show Crosshair" Click="ToggleCrosshair_Click">
                     <Button.Style>
@@ -212,7 +222,7 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <materialDesign:PackIcon Kind="TargetVariant" Width="30" Height="26" />
+                    <materialDesign:PackIcon Kind="TargetVariant" />
                 </Button>
                 <!--輔助方塊-->
                 <Button ToolTip="(F2) Show Assist Rectangle" Click="ToggleAssistRect_Click">
@@ -230,7 +240,7 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <materialDesign:PackIcon Kind="SquareOutline" Width="30" Height="26" />
+                    <materialDesign:PackIcon Kind="SquareOutline" />
                 </Button>
                 <!--輔助點-->
                 <Button ToolTip="(F3) Show Assist Points" Click="ToggleAssisPoints_Click">
@@ -247,10 +257,10 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <materialDesign:PackIcon Kind="DotsHexagon" Width="30" Height="26" />
+                    <materialDesign:PackIcon Kind="DotsHexagon" />
                 </Button>
                 <!--//-->
-                <Separator />
+                <Separator Margin="8 8" />
 
                 <!--#region Region For Test Region For Test Region For Test Region For Test Region For Test -->
                 <!--
@@ -268,10 +278,10 @@
         <!--#endregion-->
         
         <!--#region SubToolbar -->
-        <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0"
+        <ToolBarTray DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0 -1"
                 FlowDirection="RightToLeft">
-            <ToolBar Style="{StaticResource MaterialDesignToolBar}" VerticalAlignment="Center" Background="{x:Null}" Height="38" ToolBarTray.IsLocked="True" Focusable="False"
-                    FlowDirection="LeftToRight">
+            <ToolBar HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}" Style="{StaticResource MaterialDesignToolBar}"
+                    ToolBarTray.IsLocked="True" Focusable="False" FlowDirection="LeftToRight">
 
                 <!--
                 <Button VerticalAlignment="Center" Click="Test_Click" Style="{StaticResource MaterialDesignFlatButton}">

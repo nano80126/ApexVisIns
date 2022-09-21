@@ -12,7 +12,7 @@ using OpenCvSharp;
 
 namespace MCAJawIns.Algorithm
 {
-    public class MCAJawM
+    public class MCAJawL
     {
         #region 單位換算
         private readonly double Cam1PixelSize = 2.2 * 1e-3;
@@ -67,7 +67,7 @@ namespace MCAJawIns.Algorithm
         };
         #endregion
 
-        public MCAJawM() { }
+        public MCAJawL() { }
 
         #region 測試用
         /// <summary>

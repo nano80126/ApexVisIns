@@ -9,6 +9,18 @@ using Basler.Pylon;
 using MCAJawIns.Product;
 using OpenCvSharp;
 
+namespace MCAJawIns.Algorithm
+{
+    /// <summary>
+    /// Jaw 左、右邊，演算法參數需要
+    /// </summary>
+    public enum JawPos
+    {
+        Left = 1,
+        Right = 2,
+    }
+}
+
 namespace MCAJawIns
 {
     public partial class MainWindow : System.Windows.Window

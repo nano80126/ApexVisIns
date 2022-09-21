@@ -56,7 +56,7 @@ namespace MCAJawIns.content
             // Set value when init
             // MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑
-            InitInfoPath();
+            // InitInfoPath();
         }
 
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
@@ -96,6 +96,7 @@ namespace MCAJawIns.content
         /// <summary>
         /// 
         /// </summary>
+        [Obsolete("No demands create info path")]
         private void InitInfoPath()
         {
             string path = $@"{Directory.GetCurrentDirectory()}\{InformationPath}";

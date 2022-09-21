@@ -227,11 +227,11 @@ namespace MCAJawIns
         {
             InitializeComponent();
 
-            //InitializePanels();
+            // InitializePanels();
 
-            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             LoadTabItems();
-            Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         /// <summary>

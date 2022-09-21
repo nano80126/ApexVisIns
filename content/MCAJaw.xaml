@@ -132,14 +132,15 @@
                 FlowDirection="RightToLeft">
             <ToolBar HorizontalAlignment="Right" VerticalAlignment="Center" Padding="0 0" ToolBarTray.IsLocked="True" Focusable="False" Background="{x:Null}"
                     FlowDirection="RightToLeft" Style="{StaticResource MaterialDesignToolBar}">
+                <!--#region Resources -->
                 <ToolBar.Resources>
-                    <!--//-->
                     <Style TargetType="{x:Type Border}">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <!--<Setter Property="Padding" Value="0 0" />-->
+                        <Setter Property="Height" Value="28" />
                         <Setter Property="BorderBrush" Value="DarkBlue" />
                         <Setter Property="BorderThickness" Value="1" />
                         <Setter Property="CornerRadius" Value="8" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Padding" Value="0 0" />
                     </Style>
                     <!--//-->
                     <Style TargetType="Canvas" BasedOn="{StaticResource ComplexPackIcon}">
@@ -173,13 +174,14 @@
                         </Style.Triggers>
                     </Style>
                 </ToolBar.Resources>
+                <!--#endregion-->
 
                 <!--#region Database Status -->
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="資料庫">
-                            <materialDesign:PackIcon Kind="Database" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                            <materialDesign:PackIcon Kind="Database" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource HWStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding Connected, Source={StaticResource MongoAccess}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
                     </StackPanel>
@@ -190,8 +192,8 @@
                 <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="IO 控制器">
-                            <materialDesign:PackIcon Kind="LightningBolt" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                            <materialDesign:PackIcon Kind="LightningBolt" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource HWStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding Conneected, Source={StaticResource ModbusTCPIO}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
                     </StackPanel>
@@ -199,11 +201,11 @@
                 <!--#endregion-->
 
                 <!--#region Light Ctrl Status -->
-                <Border Margin="0 0 12 0" FlowDirection="LeftToRight">
+                <Border Margin="0 0 12 0" Height="28" FlowDirection="LeftToRight">
                     <StackPanel Orientation="Horizontal">
                         <Canvas ToolTip="光源控制器">
-                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource HWStatus}"
+                            <materialDesign:PackIcon Kind="LightbulbOnOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource HWStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [1].IsComOpen, Source={StaticResource LightCtrls}, UpdateSourceTrigger=PropertyChanged}" />
                         </Canvas>
                     </StackPanel>
@@ -211,25 +213,25 @@
                 <!--#endregion-->
 
                 <!--#region Camera Status -->
-                <Border FlowDirection="LeftToRight">
-                    <StackPanel Orientation="Horizontal">
+                <Border Height="28" FlowDirection="LeftToRight">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Canvas ToolTip="Camera 1">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1"  Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
                         <!--//-->
                         <Canvas ToolTip="Camera 2">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
                         <!--//-->
                         <Canvas ToolTip="Camera 3">
-                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="3" Canvas.Top="1" Width="24" Height="24" />
-                            <materialDesign:PackIcon Style="{StaticResource CamStatus}"
+                            <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1"  Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>

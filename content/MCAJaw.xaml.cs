@@ -103,6 +103,8 @@ namespace MCAJawIns.content
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
         public MCAJawS MCAJawS { get; set; }
+        public MCAJawM MCAJawM { get; set; }
+        public MCAJawL MCAJawL { get; set; }
 
         public int JawTab
         {
@@ -250,7 +252,15 @@ namespace MCAJawIns.content
                     case JawTypes.S:
                         MCAJawS = new();
                         break;
+                    case JawTypes.M:
+                        MCAJawM = new();
+                        break;
+                    case JawTypes.L:
+                        MCAJawL = new();
+                        break;
                 }
+
+                Debug.WriteLine($"{MCAJawS};{MCAJawM};{MCAJawM?.GetType()};{MCAJawL?.GetType()}");
             }
 
 #if false

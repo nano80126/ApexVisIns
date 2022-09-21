@@ -23,7 +23,7 @@
     <!--#endregion-->
 
     <DockPanel x:Name="Body">
-        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="1 0 0 0" Padding="0" TextAlignment="Center" FontSize="16">
+        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4 0 0 0" Padding="0" TextAlignment="Center" FontSize="16">
             <!-- Resolution -->
             <Run>
                 <Run.Text>
@@ -56,9 +56,9 @@
             </materialDesign:PopupBox.IsEnabled>
 
             <materialDesign:PopupBox.ToggleContent>
-                <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}">
-                    <materialDesign:PackIcon Kind="CameraOutline" Width="26" Height="24" Foreground="{StaticResource ColorInfo}" />
-                    <materialDesign:PackIcon Kind="Edit" Canvas.Right="0" Canvas.Bottom="0" Foreground="{StaticResource ColorSuccess}" />
+                <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}" Margin="3 3">
+                    <materialDesign:PackIcon Kind="CameraOutline" Width="28" Height="24" Foreground="{StaticResource ColorInfo}" />
+                    <materialDesign:PackIcon Kind="Edit" Canvas.Right="-1" Canvas.Bottom="-1" Foreground="{StaticResource ColorSuccess}" />
                 </Canvas>
             </materialDesign:PopupBox.ToggleContent>
 

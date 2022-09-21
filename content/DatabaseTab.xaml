@@ -130,6 +130,7 @@
                                     Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />-->
                         </StackPanel>
                     </Button>
+                    <!--#endregion-->
                 </Grid>
             </ctrl:CustomCard>
             <!--#endregion-->
