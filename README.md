@@ -140,6 +140,7 @@ MCA Jaw CCD 尺寸量測設備
 	* 廠商
 	* 型號
 	* 放大倍率
+	* Pixel SIze
 
 * [ ] 測試各種彎曲
 
@@ -164,8 +165,6 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] No matching camera found.
 
 * [ ] 調整字體排版 (1.5倍、1倍)
-
-* [ ] 資料保存時間以年為單位
 
 * [ ] 測試 Methods.GetHorizontalFlatness
 
@@ -199,17 +198,18 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] Engineertab.xaml 修正 CustomCard Padding
 
-* [ ] MCAJaw.xaml	=>	MCAJaw.xaml (entry)
+* [ ] *MCAJaw.xaml*	=>	MCAJaw.xaml (entry)
 					=>	MainUISubTab.xaml
 					=>	SizeSpecSubTab.xaml
 
-* [ ] 刪除量測用的 TextBlockc 和 Binding
+* [ ] 刪除量測用的 TextBlock 和 Binding
 
 * [ ] SizeSpecSubTab 調整 UI
 
-* [ ] 確認 JawResultGroup.SizeSpecList 已被取代且移除
+* [x] 確認 JawResultGroup.SizeSpecList 已被取代且移除
 
 * [ ] Systeminfo 資訊取得改為內置 
+	* 新增 TCP server
 
 * [ ] 盡量在命名空間下宣告 enum
 

@@ -620,7 +620,7 @@ namespace MCAJawIns.content
                         switch (t.Result)
                         {
                             case InitFlags.LOAD_SPEC_DATA_FAILED:
-                                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
+                                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設之尺寸規格設定");
                                 break;
                             case InitFlags.OK:
                                 break;
@@ -1095,13 +1095,16 @@ namespace MCAJawIns.content
         /// </summary>
         private void InitSpecSettingDirectory()
         {
-            string directory = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}";
+            // switch
+            string directory = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{MainWindow.JawType}";
 
+            // 若不存在則新增
             if (!Directory.Exists(directory))
             {
                 // 新增路徑
                 _ = Directory.CreateDirectory(directory);
             }
+
             SizeSpecSubTab.JsonDirectory = directory;
         }
 
@@ -1161,7 +1164,8 @@ namespace MCAJawIns.content
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecPath}";
+                // 組成路徑字串
+                string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{MainWindow.JawType}\{SpecPath}";
 
                 if (File.Exists(path))
                 {
@@ -1196,6 +1200,7 @@ namespace MCAJawIns.content
                         // 初始化尺寸規格
                         InitSizeSpec();
 
+                        // 回傳 false
                         return false;
                     }
                 }
@@ -1204,36 +1209,8 @@ namespace MCAJawIns.content
                     // 初始化尺寸規格
                     InitSizeSpec();
 
+                    // 回傳 false
                     return false;
-#if false
-                    string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
-                    string[] items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
-                    double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
-                    double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
-                    double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
-                    // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                    double[] correc = new double[center.Length];
-                    Array.Fill(correc, 0);
-                    double[] correc2 = new double[center.Length];
-                    Array.Fill(correc2, 0);
-
-                    JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
-                    for (int i = 0; i < keys.Length; i++)
-                    {
-                        // 調用 Dispacher 變更集合
-                        Dispatcher.Invoke(() =>
-                        {
-                            // 加入尺寸規格表
-                            // id = 0 means auto increase by source count
-                            // JawSizeSpecList.Source.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
-                            JawSpecSetting newItem = new JawSpecSetting(0, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]);
-                            JawSizeSpecList.AddNew(newItem);
-                            // 加入批號檢驗結果 (初始化)
-                            JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
-                        });
-                    } 
-#endif
-
                 }
             }
             return true;
@@ -1279,7 +1256,8 @@ namespace MCAJawIns.content
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{SpecGroupPath}";
+                // 組成路徑字串
+                string path = $@"{Directory.GetCurrentDirectory()}\{SpecDirectory}\{MainWindow.JawType}\{SpecGroupPath}";
 
                 if (File.Exists(path))
                 {

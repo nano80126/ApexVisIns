@@ -319,6 +319,9 @@ namespace MCAJawIns.Product
                 if ((SolidColorBrush)new BrushConverter().ConvertFrom(value) != _color)
                 {
                     _color = (SolidColorBrush)new BrushConverter().ConvertFrom(value);
+                    _color.Opacity = 0.36;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Color));
                 }
             }
         }

@@ -273,16 +273,20 @@
         <TabItem Header="{x:Null}" Height="0" Margin="0">
             <Border x:Name="ContentBorder" BorderBrush="{StaticResource ColorGray}" BorderThickness="0 1" Background="AliceBlue" VerticalAlignment="Top" Margin="0 -2 0 0">
                 <Grid x:Name="Content" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0">
+                    <!--#region Style -->
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
-                            <Setter Property="Height" Value="780"/>
+                            <Setter Property="Height" Value="780" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                    <Setter Property="Height" Value="960"/>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}"
+                                        Value="Maximized">
+                                    <Setter Property="Height" Value="960" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
+                    <!--#endregion-->
+
                     <!--#region Layout -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="13*" />
@@ -404,7 +408,7 @@
                                     </Grid>
                                     <!--#endregion-->
 
-                                    <Separator Grid.Row="1" Grid.ColumnSpan="100" Margin="0 8" />
+                                    <Separator Grid.Row="1" Grid.ColumnSpan="100" Margin="0 8 0 4" />
 
                                     <!--#region 2nd row -->
                                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="100" Margin="0">
@@ -476,7 +480,7 @@
                                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                                                 <Setter Property="VerticalAlignment" Value="Center" />
                                                 <Setter Property="VerticalContentAlignment" Value="Center" />
-                                                <Setter Property="Margin" Value="0 4" />
+                                                <Setter Property="Margin" Value="1 4" />
                                                 <Setter Property="Height" Value="24" />
                                                 <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
                                                 <Setter Property="TextAlignment" Value="Center" />
@@ -493,6 +497,7 @@
                                             </Style>
                                         </Grid.Resources>
                                         <!--#endregion-->
+
                                         <!--#region Layout -->
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto" Tag="Row1" />
@@ -807,8 +812,8 @@
                                     <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalContentAlignment="Center"
                                             Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
                                             Style="{StaticResource MaterialDesignOutlinedButton}" Click="TriggerInspection_Click">
-                                        <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, 
-                                        Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
+                                            <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, 
+                                            Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                                 <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"
@@ -881,18 +886,6 @@
                             <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
-                                <!--
-                                <ctrl:SpecListView.Style>
-                                        <Style TargetType="ctrl:SpecListView">
-                                            <Setter Property="ScrollViewerHeight" Value="120"/> 
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                    <Setter Property="ScrollViewerHeight" Value="237"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                </ctrl:SpecListView.Style>
-                                -->
                             </ctrl:SpecListView>
                         </Grid>
                     </GroupBox>
@@ -932,18 +925,6 @@
                             <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
-                                <!--
-                                <ctrl:SpecListView.Style>
-                                    <Style TargetType="ctrl:SpecListView">
-                                        <Setter Property="ScrollViewerHeight" Value="120"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}, Mode=OneWay}" Value="Maximized">
-                                                <Setter Property="ScrollViewerHeight" Value="237"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ctrl:SpecListView.Style>
-                                -->
                             </ctrl:SpecListView>
                         </Grid>
                     </GroupBox>
@@ -954,7 +935,7 @@
                             FontSize="{StaticResource Header}" FontWeight="SemiBold" materialDesign:ColorZoneAssist.Mode="Custom"
                             materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                             Background="Transparent">
-                        <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
+                            <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />

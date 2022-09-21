@@ -723,9 +723,9 @@
                         <!--#region TabItem2 -->
                         <TabItem Header="{x:Null}" Margin="0 0" Height="0">
                             <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="4 4">
                                 <!--#region Model Select Action -->
-                                <StackPanel Orientation="Horizontal" Margin="0 4">
-                                    <ComboBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="1 0 0 0" Padding="8 3" MinWidth="135" FontWeight="SemiBold"
+                                    <ComboBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0" Padding="8 3" MinWidth="135" FontWeight="SemiBold"
                                             materialDesign:HintAssist.Hint="Model" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
                                             SelectedItem="{Binding UserSet, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                             ItemsSource="{Binding UserSetEnum, UpdateSourceTrigger=PropertyChanged}">
@@ -741,12 +741,12 @@
                                         <!--//-->
                                         <Button Height="auto" Content="儲存" />
                                     </StackPanel>
-                                </StackPanel>
                                 <!--#endregion-->
+                                </StackPanel>
                                 <!--//-->
-                                <Separator Margin="1 4" />
+                                <Separator Margin="4 4" />
                                 <!--//-->
-                                <Grid HorizontalAlignment="Stretch" Margin="1 4 1 0" Height="{Binding ActualHeight, ElementName=CameraGrid, UpdateSourceTrigger=PropertyChanged}">
+                                <Grid HorizontalAlignment="Stretch" Margin="4 4" Height="{Binding ActualHeight, ElementName=CameraGrid, UpdateSourceTrigger=PropertyChanged}">
                                     <!--#region Resources -->
                                     <Grid.Resources>
                                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
@@ -810,8 +810,8 @@
                                             FontWeight="Bold" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
                                     <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8 0 0" Height="1" />
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Manufacturer" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Model" />
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Model" />
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Manufacturer" />
                                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Focal Length" />
                                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Mount" />
                                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Magnification" />
