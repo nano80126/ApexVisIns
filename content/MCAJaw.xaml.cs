@@ -20,6 +20,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using Basler.Pylon;
+using MCAJawIns.Algorithm;
 using MCAJawIns.Mongo;
 using MCAJawIns.Product;
 using MongoDB.Bson;
@@ -100,6 +101,8 @@ namespace MCAJawIns.content
 
         #region Properties
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
+
+        public MCAJawS MCAJawS { get; set; }
 
         public int JawTab
         {
@@ -239,6 +242,13 @@ namespace MCAJawIns.content
                         break;
                     default:
                         // 保留
+                        break;
+                }
+
+                switch (MainWindow.JawType)
+                {
+                    case JawTypes.S:
+                        MCAJawS = new();
                         break;
                 }
             }
@@ -1434,8 +1444,20 @@ namespace MCAJawIns.content
         private void TriggerInspection_Click(object sender, RoutedEventArgs e)
         {
 #if UNITTEST
-            TriggerCamera_Click(sender, e);
+            #region Unit Test
+            // TriggerCamera_Click(sender, e);
+            DateTime t1 = DateTime.Now;
+            //MCAJawM M = new();
+            Task.Run(() =>
+            {
+                MCAJawS.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+            }).ContinueWith(t =>
+            {
+                Debug.WriteLine($"It takes {(DateTime.Now - t1).TotalMilliseconds} ms");
+            });
+            #endregion
 #else
+            #region Production
             if (Status != INS_STATUS.READY) { return; }
             DateTime t1 = DateTime.Now;
 
@@ -1476,6 +1498,7 @@ namespace MCAJawIns.content
 
                 return data.OK;
             });
+            #endregion
 #endif
         }
 
@@ -1559,6 +1582,11 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
 
             //MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+            Algorithm.MCAJawM M = new Algorithm.MCAJawM();
+
+            Task.Run(() => {
+                M.ListJawParam();
+            });
 
 #if false
             Task<int> t = await Task.Run(() =>

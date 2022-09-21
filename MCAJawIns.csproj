@@ -48,7 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="algorithm\product\MCAJaw\MCAJawM.cs" />
     <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
     <Compile Remove="class\product\MCA Jaw\JawSizeSpecList.cs" />

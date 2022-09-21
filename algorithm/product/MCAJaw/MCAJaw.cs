@@ -6,23 +6,12 @@ using System.Media;
 using System.Threading;
 using System.Threading.Tasks;
 using Basler.Pylon;
-using MCAJawIns.content;
 using MCAJawIns.Product;
 using OpenCvSharp;
 
-namespace MCAJawIns.Algorithm
+namespace MCAJawIns
 {
-    /// <summary>
-    /// Jaw 左、右邊，演算法參數需要
-    /// </summary>
-    public enum JawPos
-    {
-        Left = 1,
-        Right = 2,
-    }
-
-
-    public class MCAJawM
+    public partial class MainWindow : System.Windows.Window
     {
         #region 單位換算
         private readonly double Cam1PixelSize = 2.2 * 1e-3;
@@ -40,15 +29,11 @@ namespace MCAJawIns.Algorithm
         private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
         #endregion
 
-        #region Private
+        #region private
         /// <summary>
         /// 警告音效
         /// </summary>
         private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
-        #endregion
-
-        #region Properties
-        public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
         #region 演算法使用
@@ -77,8 +62,6 @@ namespace MCAJawIns.Algorithm
         };
         #endregion
 
-        public MCAJawM() { }
-
         #region 測試用
         /// <summary>
         /// 顯示換算單位
@@ -88,56 +71,7 @@ namespace MCAJawIns.Algorithm
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
             Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
-        }
-
-        public void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
-        {
-            MainWindow.Dispatcher.Invoke(() =>
-            {
-                bool ready = cam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
-
-                if (ready)
-                {
-                    cam1.Camera.ExecuteSoftwareTrigger();
-                    using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
-
-                    if (grabResult?.GrabSucceeded == true)
-                    {
-                        Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
-                        MainWindow.ImageSource1 = mat.ToImageSource();
-                    }
-                }
-
-                ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
-
-                if (ready)
-                {
-                    cam2.Camera.ExecuteSoftwareTrigger();
-                    using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
-
-                    if (grabResult?.GrabSucceeded == true)
-                    {
-                        Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
-                        MainWindow.ImageSource2 = mat.ToImageSource();
-                    }
-                }
-
-
-                ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
-
-                if (ready)
-                {
-                    cam3.Camera.ExecuteSoftwareTrigger();
-                    using IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
-
-                    if (grabResult?.GrabSucceeded == true)
-                    {
-                        Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
-                        MainWindow.ImageSource3 = mat.ToImageSource();
-                    }
-                }
-            });
-        }
+        } 
         #endregion
 
         #region 主要進入點
@@ -163,7 +97,6 @@ namespace MCAJawIns.Algorithm
             {
                 // 規格列表
                 //List<JawSpecSetting> specList = MCAJaw.JawResultGroup.SizeSpecList.ToList();
-                MCAJaw MCAJaw = MainWindow.MCAJaw;
                 List<JawSpecSetting> specList = MCAJaw.JawSizeSpecList.Source.ToList();
                 JawSpecSetting spec;
                 // 有無料
@@ -178,7 +111,7 @@ namespace MCAJawIns.Algorithm
                 #region 平行處理 Task 初始化
                 List<Task> task1 = new();
                 List<Task> task2 = new();
-                List<Task> task3 = new();
+                List<Task> task3 = new(); 
                 #endregion
 
                 #region results 記錄用物件初始化
@@ -193,13 +126,13 @@ namespace MCAJawIns.Algorithm
                 {
                     #region CAMERA 1
                     // COM2 光源控制器 (24V, 2CH)
-                    MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+                    LightCtrls[1].SetAllChannelValue(96, 0);
                     // 等待光源
                     _ = SpinWait.SpinUntil(() => false, 30);
 
                     // count = 0;
                     // 拍照要 Dispacker
-                    MainWindow.Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(() =>
                     {
                         for (int j = 0; j < (i == 0 ? 2 : 3); j++)
                         {
@@ -231,7 +164,7 @@ namespace MCAJawIns.Algorithm
                                 if (partExist) { task1.Add(Task.Run(() => JawInsSequenceCam1(mat, specList, cam1results))); }
                                 else { j += 999; }  // 跳出迴圈
 
-                                MainWindow.ImageSource1 = mat.ToImageSource();
+                                ImageSource1 = mat.ToImageSource();
                             }
                             else { j--; }
                         }
@@ -251,13 +184,13 @@ namespace MCAJawIns.Algorithm
 
                     #region CAMERA 2 
                     // COM2 光源控制器 (24V, 2CH)
-                    MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+                    LightCtrls[1].SetAllChannelValue(0, 128);
                     // 等待光源
                     _ = SpinWait.SpinUntil(() => false, 30);
 
                     //count = 0;
                     // 拍照要 Dispacker
-                    MainWindow.Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(() =>
                     {
                         for (int j = 0; j < 2; j++)
                         {
@@ -287,7 +220,7 @@ namespace MCAJawIns.Algorithm
                                 if (partExist) { task2.Add(Task.Run(() => JawInsSequenceCam2(mat, specList, cam2results))); }
                                 else { j += 999; }  // 跳出迴圈
 
-                                MainWindow.ImageSource2 = mat.ToImageSource();
+                                ImageSource2 = mat.ToImageSource();
                             }
                             else { j--; }
                         }
@@ -300,13 +233,13 @@ namespace MCAJawIns.Algorithm
 
                 #region CAMERA 3 平直度
                 // COM2 光源控制器 (24V, 2CH)
-                MainWindow.LightCtrls[1].SetAllChannelValue(256, 96);
+                LightCtrls[1].SetAllChannelValue(256, 96);
                 // 等待光源
                 _ = SpinWait.SpinUntil(() => false, 30);
 
                 //count = 0;
                 // 拍照要 Dispacker
-                MainWindow.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     for (int j = 0; j < 3; j++)
                     {
@@ -335,7 +268,7 @@ namespace MCAJawIns.Algorithm
                             if (partExist) { task3.Add(Task.Run(() => JawInsSequenceCam3(mat, specList, cam3results))); }
                             else { j += 999; }
 
-                            MainWindow.ImageSource3 = mat.ToImageSource();
+                            ImageSource3 = mat.ToImageSource();
                         }
                         else { j--; }
                     }
@@ -343,7 +276,7 @@ namespace MCAJawIns.Algorithm
 
                 #endregion
 
-                MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
+                LightCtrls[1].SetAllChannelValue(0, 0);
 
                 if (!partExist)
                 {
@@ -521,15 +454,15 @@ namespace MCAJawIns.Algorithm
             }
             catch (OpenCVException ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCV, ex.Message);
             }
             catch (OpenCvSharpException ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVSHARP, ex.Message);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.OPENCVSHARP, ex.Message);
             }
             catch (Exception ex)
             {
-                MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.JAW, ex.Message);
+                MsgInformer.AddError(MsgInformer.Message.MsgCode.JAW, ex.Message);
             }
         }
 
@@ -852,9 +785,9 @@ namespace MCAJawIns.Algorithm
             }
             catch (Exception ex)
             {
-                MainWindow.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
-                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
+                    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
                 });
             }
         }
@@ -943,9 +876,9 @@ namespace MCAJawIns.Algorithm
             }
             catch (Exception ex)
             {
-                MainWindow.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
-                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
+                    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
                 });
             }
         }
@@ -990,9 +923,9 @@ namespace MCAJawIns.Algorithm
             }
             catch (Exception ex)
             {
-                MainWindow.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
-                    MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
+                    MsgInformer.AddWarning(MsgInformer.Message.MsgCode.JAW, $"Jaw 檢驗過程發生錯誤, {ex.Message}");
                 });
             }
         }
