@@ -99,7 +99,7 @@ namespace MCAJawIns.content
         #endregion
 
         #region Properties
-        public MainWindow MainWindow { get; set; }
+        public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
         public int JawTab
         {
@@ -198,7 +198,8 @@ namespace MCAJawIns.content
         {
             InitializeComponent();
 
-            MainWindow = (MainWindow)Application.Current.MainWindow;
+            // Set value when init
+            // MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑 
             InitSpecSettingDirectory();
         }

@@ -30,7 +30,7 @@ namespace MCAJawIns.content
         /// <summary>
         /// 主視窗物件
         /// </summary>
-        public MainWindow MainWindow { get; set; }
+        public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
         public SystemInfo SystemInfo { get; set; } = new SystemInfo();
 
@@ -53,7 +53,8 @@ namespace MCAJawIns.content
         {
             InitializeComponent();
 
-            MainWindow = (MainWindow)Application.Current.MainWindow;
+            // Set value when init
+            // MainWindow = (MainWindow)Application.Current.MainWindow;
             // 初始化路徑
             InitInfoPath();
         }

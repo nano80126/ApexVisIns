@@ -35,15 +35,20 @@
   <ItemGroup>
     <Compile Remove="algorithm\product\Apex\**" />
     <Compile Remove="content\Main\**" />
+    <Compile Remove="module\**" />
     <EmbeddedResource Remove="algorithm\product\Apex\**" />
     <EmbeddedResource Remove="content\Main\**" />
+    <EmbeddedResource Remove="module\**" />
     <None Remove="algorithm\product\Apex\**" />
     <None Remove="content\Main\**" />
+    <None Remove="module\**" />
     <Page Remove="algorithm\product\Apex\**" />
     <Page Remove="content\Main\**" />
+    <Page Remove="module\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="algorithm\product\MCAJaw\MCAJawM.cs" />
     <Compile Remove="camera\BaslerEvent.cs" />
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
     <Compile Remove="class\product\MCA Jaw\JawSizeSpecList.cs" />

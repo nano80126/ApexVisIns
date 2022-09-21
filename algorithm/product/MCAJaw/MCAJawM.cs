@@ -9,9 +9,19 @@ using Basler.Pylon;
 using MCAJawIns.Product;
 using OpenCvSharp;
 
-namespace MCAJawIns
+namespace MCAJawIns.Algorithm
 {
-    public partial class MainWindow : System.Windows.Window
+    /// <summary>
+    /// Jaw 左、右邊，演算法參數需要
+    /// </summary>
+    public enum JawPos
+    {
+        Left = 1,
+        Right = 2,
+    }
+
+
+    public class MCAJawM : System.Windows.Window
     {
         #region 單位換算
         private readonly double Cam1PixelSize = 2.2 * 1e-3;
@@ -29,11 +39,15 @@ namespace MCAJawIns
         private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
         #endregion
 
-        #region private
+        #region Private
         /// <summary>
         /// 警告音效
         /// </summary>
         private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
+        #endregion
+
+        #region Properties
+        public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
         #region 演算法使用

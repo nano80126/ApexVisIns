@@ -24,7 +24,7 @@ namespace MCAJawIns.Panel
         /// <summary>，
         /// MainWindow
         /// </summary>
-        public MainWindow MainWindow { get; set; }
+        public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
         /// <summary>
         /// Parent Tab
@@ -40,7 +40,8 @@ namespace MCAJawIns.Panel
         {
             InitializeComponent();
 
-            MainWindow = (MainWindow)Application.Current.MainWindow;
+            // Set value when init
+            // MainWindow = (MainWindow)Application.Current.MainWindow;
         }
 
         private void CustomCard_Loaded(object sender, RoutedEventArgs e)
