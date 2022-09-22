@@ -215,6 +215,16 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] Set MainWindow value when each Tab/Panel initializing
 
+* [ ] 測試 IdleTimer 內置 SystemInfo
+
+* [ ] 開始檢測、節批 Padding 調整
+
+* [ ] 主控版更換為 CustomCard
+
+* [ ] SystemInfo 新增 TCP Listener
+
+* [ ] CameraConfigs 變更機制修正
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

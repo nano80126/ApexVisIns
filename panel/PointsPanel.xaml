@@ -24,24 +24,14 @@
                 </DataTrigger>
             </Style.Triggers>
             <!--//-->
-            <!--<Setter Property="FooterTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">
-                            <Button Content="清空標記" BorderThickness="0" Foreground="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Click="SourceClear_Click" />
-                        </StackPanel>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>-->
             <Setter Property="FooterTemplate">
                 <Setter.Value>
                     <DataTemplate>
                         <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">-->
-                        <Button HorizontalAlignment="Right" Margin="1 4 1 0" Height="24" Focusable="False" Foreground="{StaticResource ColorInfo}"
-                                Style="{StaticResource MaterialDesignFlatButton}" Click="SourceClear_Click">
+                        <Button HorizontalAlignment="Right" Margin="4 4" Height="24" Focusable="False" Foreground="{StaticResource ColorInfo}"
+                                materialDesign:ButtonAssist.CornerRadius="12" Style="{StaticResource MaterialDesignFlatButton}" Click="SourceClear_Click">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="TrashCanOutline"/>
+                                <materialDesign:PackIcon Kind="TrashCanOutline" />
                                 <TextBlock Margin="8 0 0 0" Text="清空標記" />
                             </StackPanel>
                         </Button>
@@ -54,12 +44,8 @@
     </ctrl:CustomCard.Style>
     <!--#endregion-->
 
-    <!-- 要新增 ScrollViewer -->
-    <!-- 要新增 ScrollViewer -->
-    <!-- 要新增 ScrollViewer -->
-
     <StackPanel x:Name="Body" Orientation="Vertical" VerticalAlignment="Top">
-        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}" Margin="1 0">
+        <ScrollViewer MaxHeight="250" Style="{StaticResource ScrollViewerGray}" Margin="4 0">
             <ItemsControl ItemsSource="{Binding Source}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

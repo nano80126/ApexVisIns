@@ -391,7 +391,7 @@ namespace MCAJawIns.content
         private void CameraCard_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // MainWindow.CameraEnumer.CameraCofingSaved = false;
-            Debug.WriteLine($"Data Context Changed {e.NewValue} {e.OldValue} 暫保留 Line: 381");
+            // Debug.WriteLine($"Data Context Changed {e.NewValue} {e.OldValue} 暫保留 Line: 381");
         }
 
         /// <summary>

@@ -113,6 +113,10 @@
                         materialDesign:HintAssist.Hint="Config" materialDesign:ComboBoxAssist.ShowSelectedItem="True"
                         materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
                         SelectedIndex="-1" SelectionChanged="ConfigSelector_SelectionChanged" ItemsSource="{Binding Path=ConfigList, Mode=OneWay}">
+                    <ComboBox.Resources>
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}" />
+                    </ComboBox.Resources>
+                    <!--//-->
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0">

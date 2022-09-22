@@ -158,27 +158,6 @@ namespace MCAJawIns
         #endregion
 
         #region Varibles
-        /// <summary>
-        /// MCA Jaw 種類
-        /// </summary>
-        //public enum JawTypes
-        //{
-        //    S = 1,
-        //    M = 2,
-        //    L = 3
-        //}
-
-        /// <summary>
-        /// 啟用模式
-        /// </summary>
-        //public enum InitModes
-        //{
-        //    AUTO = 1,
-        //    EDIT = 2,
-        //    // WARM = 3,
-        //}
-
-
 #if JawS
         private JawTypes _jawTypes = JawTypes.S;
 #elif JawM

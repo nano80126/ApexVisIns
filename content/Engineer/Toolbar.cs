@@ -650,30 +650,66 @@ namespace MCAJawIns.content
 
 #endif
                         //string sn = cam.Camera.CameraInfo[CameraInfoKey.SerialNumber];
-                        //Debug.WriteLine($"SN:{sn}");
+                        Debug.WriteLine($"SN: {sn}");
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
                         //Cv2.ImShow("canny", canny);
 
-                        switch (sn)
+                        switch (MainWindow.JawType)
                         {
-                            case "24214356":    // 前相機
-                                MainWindow.CheckPartCam1(mat);
-                                //MainWindow.JawInsSequenceCam1(mat);
+                            #region Jaw S
+                            case JawTypes.S:
+                                switch (sn)
+                                {
+                                    case "24214356":    // 前相機
+                                        MainWindow.CheckPartCam1(mat);
+                                        // MainWindow.JawInsSequenceCam1(mat);
+                                        break;
+                                    case "24214384":    // 下相機
+                                        MainWindow.CheckPartCam2(mat);
+                                        //MainWindow.JawInsSequenceCam2(mat);
+                                        break;
+                                    case "24115540":    // 側相機
+                                        MainWindow.CheckPartCam3(mat);
+                                        //MainWindow.JawInsSequenceCam3(mat);
+                                        break;
+                                    default:
+                                        break;
+                                }
                                 break;
-                            case "24214384":    // 下相機
-                                MainWindow.CheckPartCam2(mat);
-                                //MainWindow.JawInsSequenceCam2(mat);
+                            #endregion
+                            #region Jaw M
+                            case JawTypes.M:
+                                switch (sn)
+                                {
+                                    case "24214359":
+                                        // MainWindow.MCAJaw.MCAJawM.CheckPartCam1(mat);
+                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam1(mat);
+                                        break;
+                                    case "24413078":
+                                        MainWindow.MCAJaw.MCAJawM.CheckPartCam2(mat);
+                                        break;
+                                    case "40168095":
+                                        MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat);
+                                        break;
+                                    default:
+                                        break;
+                                }
                                 break;
-                            case "24115540":    // 側相機
-                                MainWindow.CheckPartCam3(mat);
-                                //MainWindow.JawInsSequenceCam3(mat);
+                            #endregion
+                            #region Jaw L
+                            case JawTypes.L:
+
                                 break;
+                            #endregion
                             default:
                                 break;
                         }
-                        //MainWindow.JawInsSequenceCam1(mat);
-                        //MainWindow.JawInsSequenceCam2(mat);
-                        //MainWindow.JawInsSequenceCam3(mat);
+
+#if false
+                        // MainWindow.JawInsSequenceCam1(mat);
+                        // MainWindow.JawInsSequenceCam2(mat);
+                        // MainWindow.JawInsSequenceCam3(mat);  
+#endif
                     }
 
                     Indicator.Image = mat;

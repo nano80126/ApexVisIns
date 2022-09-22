@@ -35,7 +35,7 @@ namespace MCAJawIns.content
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯
     /// </summary>
-    public partial class MCAJaw : StackPanel, INotifyPropertyChanged
+    public partial class MCAJaw : StackPanel, INotifyPropertyChanged, IDisposable
     {
         #region Resources (xaml 內)
         /// <summary>
@@ -63,12 +63,17 @@ namespace MCAJawIns.content
         private readonly CancellationTokenSource _cancellationTokenSource = new();
 
         /// <summary>
+        /// Disposed 旗標
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
         /// Main & Spec Setting
         /// </summary>
         private int _jawTab;
 
         /// <summary>
-        /// 
+        /// 閒置計時器
         /// </summary>
         private System.Timers.Timer _idleTimer;
 
@@ -193,6 +198,7 @@ namespace MCAJawIns.content
         /// 硬體初始化完畢
         /// </summary>
         private bool initialized;
+
         private bool CameraInitialized { get; set; }
         private bool LightCtrlInitilized { get; set; }
         private bool IOCtrlInitialized { get; set; }
@@ -232,8 +238,8 @@ namespace MCAJawIns.content
                         // 設定為自動模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(true);
 
-                        // 設定閒置計時器
-                        SetIdleTimer(60);
+                        // 設定閒置計時器 (移動到初始化完成後)
+                        // SetIdleTimer(60);
                         break;
                     case InitModes.EDIT:
                         // 編輯模式初始化 (只連線 MongoDB)
@@ -321,7 +327,8 @@ namespace MCAJawIns.content
 
                         return InitFlags.OK;
                     }, token)
-                    .ContinueWith(t => {
+                    .ContinueWith(t =>
+                    {
                         // 終止初始化，狀態變更為未知
                         if (token.IsCancellationRequested)
                         {
@@ -465,27 +472,32 @@ namespace MCAJawIns.content
                         {
                             case InitFlags.OK:
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                SetIdleTimer(60);
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設之尺寸規格設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                SetIdleTimer(60);
                                 break;
                             case InitFlags.LOAD_AP_INFO_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用初始設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                SetIdleTimer(60);
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED | InitFlags.LOAD_AP_INFO_FAILED:
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設設定與初始值");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
+                                SetIdleTimer(60);
                                 break;
                             default:
                                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.ERROR);
+                                // 若初始化失敗，不設定 IdleTimer();
                                 break;
                         }
-                       
+
                         initializing = false;
                         initialized = true;
                     }, token);
@@ -837,6 +849,7 @@ namespace MCAJawIns.content
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
                     CameraConfigBase[] configs = Array.Empty<CameraConfigBase>();
 
+                    // 載入相機組態
                     if (MongoAccess?.Connected == true)
                     {
                         FilterDefinition<MCAJawConfig> filter = Builders<MCAJawConfig>.Filter.Eq(nameof(MCAJawConfig.Type), nameof(MCAJawConfig.ConfigType.CAMERA));
@@ -846,6 +859,24 @@ namespace MCAJawIns.content
                         {
                             // 反序列化
                             configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
+                        }
+                        else
+                        {
+                            if (File.Exists(path))
+                            {
+                                using StreamReader reader = new StreamReader(path);
+                                string jsonStr = reader.ReadToEnd();
+
+                                if (jsonStr != string.Empty)
+                                {
+                                    // 反序列化
+                                    configs = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                                }
+                                else
+                                {
+                                    throw new CameraException("相機設定檔為空");
+                                }
+                            }
                         }
                     }
                     else if (File.Exists(path))
@@ -868,6 +899,7 @@ namespace MCAJawIns.content
                         throw new CameraException("相機設定檔不存在");
                     }
 
+#if false
                     // string path = @"./devices/device.json";
                     // string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
                     // if (File.Exists(path))
@@ -877,7 +909,8 @@ namespace MCAJawIns.content
                     //     if (jsonStr != string.Empty)
                     //     {
                     //      // json 反序列化
-                    //      CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                    //      CameraConfigBase[] devices = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);  
+#endif
 
                     // 等待 Camera Enumerator 初始化
                     if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
@@ -950,17 +983,6 @@ namespace MCAJawIns.content
                     {
                         throw new CameraException("相機未完全初始化");
                     }
-
-                    //  }
-                    //  else
-                    //  {
-                    //      throw new CameraException("相機設定檔為空");
-                    //  }
-
-                    //  else
-                    //  {
-                    //          throw new CameraException("相機設定檔不存在");
-                    //  }
                 }
                 catch (Exception ex)
                 {
@@ -1170,17 +1192,19 @@ namespace MCAJawIns.content
                             }
                         });
                         JawSizeSpecList.Save();
+
+                        return true;
                     }
                     else
                     {
-                        // 從本機文件載入
-                        LoadSpecList(false);
+                        // 從本機文件載入 (遞迴)
+                        return LoadSpecList(false);
                     }
                 }
                 else
                 {
-                    // 從本機文件載入
-                    LoadSpecList(false);
+                    // 從本機文件載入 (遞迴)
+                    return LoadSpecList(false);
                 }
             }
             else
@@ -1215,6 +1239,8 @@ namespace MCAJawIns.content
                             }
                         });
                         JawSizeSpecList.Save();
+
+                        return true;
                     }
                     else
                     {
@@ -1234,7 +1260,6 @@ namespace MCAJawIns.content
                     return false;
                 }
             }
-            return true;
         }
 
         /// <summary>
@@ -1302,7 +1327,7 @@ namespace MCAJawIns.content
                         });
                         JawSizeSpecList.GroupSave();
                     }
-                } 
+                }
             }
         }
 
@@ -1460,7 +1485,18 @@ namespace MCAJawIns.content
             //MCAJawM M = new();
             Task.Run(() =>
             {
-                MCAJawS.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                switch (MainWindow.JawType)
+                {
+                    case JawTypes.S:
+                        MCAJawS.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                        break;
+                    case JawTypes.M:
+                        MCAJawM.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                        break;
+                    case JawTypes.L:
+                        MCAJawL.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                        break;
+                }
             }).ContinueWith(t =>
             {
                 Debug.WriteLine($"It takes {(DateTime.Now - t1).TotalMilliseconds} ms");
@@ -1537,6 +1573,9 @@ namespace MCAJawIns.content
         /// <param name="seconds">閒置幾秒後切換狀態</param>
         private void SetIdleTimer(int seconds)
         {
+            MainWindow.SystemInfoTab.SystemInfo.IdleChanged += SystemInfo_StatusIdle;
+            MainWindow.SystemInfoTab.SystemInfo.SetIdleTimer(seconds);
+#if false
             //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
             if (_idleTimer == null)
             {
@@ -1554,11 +1593,27 @@ namespace MCAJawIns.content
                     MainWindow.SystemInfoTab.SystemInfo.StartIdleWatch();
                 };
                 _idleTimer.Start();
+            } 
+#endif
+        }
+
+        private void SystemInfo_StatusIdle(object sender, SystemInfo.IdleChangedEventArgs e)
+        {
+            Debug.WriteLine($"On Idle {e.Idle} line: 1576");
+            if (e.Idle)
+            {
+                Status = INS_STATUS.IDLE;
+            }
+            else
+            {
+                Status = INS_STATUS.READY;
             }
         }
 
         private void ResetIdleTimer()
         {
+            MainWindow.SystemInfoTab.SystemInfo.ResetIdlTimer();
+#if false
             // 變更狀態為 Ready
             Status = INS_STATUS.READY;
             // 停止計時 Idle
@@ -1568,7 +1623,8 @@ namespace MCAJawIns.content
             {
                 _idleTimer.Stop();
                 _idleTimer.Start();
-            }
+            }  
+#endif
         }
         #endregion
 
@@ -1578,6 +1634,28 @@ namespace MCAJawIns.content
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
+
+        #region Dispose Method
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                SoundNG.Dispose();
+            }
+            _disposed = true;
+        } 
         #endregion
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -1594,7 +1672,8 @@ namespace MCAJawIns.content
             //MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
             Algorithm.MCAJawM M = new Algorithm.MCAJawM();
 
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 M.ListJawParam();
             });
 

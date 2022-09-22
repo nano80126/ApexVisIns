@@ -141,7 +141,7 @@ namespace MCAJawIns
         /// 全部相機設為 Online
         /// </summary>
         /// <param name="online"></param>
-        private void SetOnlineCameraConfigsAll(bool online)
+        private void SetAllCameraConfigsOnline(bool online)
         {
             lock (_cameraConfigsLock)
             {
@@ -176,20 +176,22 @@ namespace MCAJawIns
         private void CameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             // // // // // // 
-            System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems} CameraEnumer.cs line 179");
+            //System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems} CameraEnumer.cs line 179");
             // // // // // // 
 
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     CameraConfig newItem = e.NewItems[0] as CameraConfig;
-                    System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
+                    //System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
                     newItem.PropertyChanged += Item_PropertyChanged;
+                    CameraCofingSaved = false;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
                     CameraConfig oldItem = e.OldItems[0] as CameraConfig;
-                    System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
+                    //System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
                     oldItem.PropertyChanged -= Item_PropertyChanged;
+                    CameraCofingSaved = false;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
@@ -201,7 +203,7 @@ namespace MCAJawIns
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            // System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
+            System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
             CameraCofingSaved = false;
         }
 
@@ -236,7 +238,7 @@ namespace MCAJawIns
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
 
-                    SetOnlineCameraConfigsAll(false);
+                    SetAllCameraConfigsOnline(false);
                     break;
             }
             // throw new NotImplementedException();

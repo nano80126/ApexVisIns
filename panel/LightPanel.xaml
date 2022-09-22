@@ -42,7 +42,7 @@
         <!--#region Content -->
 
         <!--#region Row1 -->
-        <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MinWidth="135" Margin="1 4 0 4" Padding="5 3" MaxDropDownHeight="200"
+        <ComboBox x:Name="ComPortSelector" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MinWidth="135" Margin="4 4 0 4" Padding="8 3" MaxDropDownHeight="200"
                 materialDesign:HintAssist.Hint="COM" FontWeight="Bold"
                 materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard, AncestorLevel=1}, Path=Background}"
                 ItemsSource="{Binding ComPortSource, Source={StaticResource SerialEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -57,7 +57,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <!--//-->
-        <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="2" Margin="12 4 1 4" Height="24" SnapsToDevicePixels="True"
+        <Button x:Name="ComPortConnect" Grid.Row="0" Grid.Column="2" Margin="12 4 4 4" Height="24" SnapsToDevicePixels="True"
                 IsEnabled="{Binding ElementName=ComPortSelector, Path=SelectedIndex, Converter={StaticResource NumberNotEqualConverter}, ConverterParameter=-1}"
                 materialDesign:RippleAssist.IsDisabled="True" Focusable="False" Click="ComPortConnect_Click">
             <Button.Style>
@@ -80,21 +80,24 @@
         <!--#endregion-->
 
         <!--#region Row2 -->
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Vertical" Margin="1 0">
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Vertical" Margin="4 0">
             <ItemsControl ItemsSource="{Binding Channels,Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}"
                     AlternationCount="{Binding Channels.Count, Source={StaticResource LightSerial}, UpdateSourceTrigger=PropertyChanged}">
+                <!--#region ItemsPanel -->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                
+                <!--#endregion-->
+
                 <!--
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentControl" />
                     </ItemsControl.ItemContainerStyle>
                 -->
-                
+
+                <!--#region ItemTemplate -->
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0 0">
@@ -146,6 +149,7 @@
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
+                <!--#endregion-->
             </ItemsControl>
         </StackPanel>
         <!--#endregion-->
@@ -155,7 +159,7 @@
 
     <!--#region Footer -->
     <ctrl:CustomCard.Footer>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="1 4 1 0">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 4 4">
             <!--#region Resources -->
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOnBtnStyle">

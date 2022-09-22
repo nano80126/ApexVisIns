@@ -17,7 +17,7 @@
             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded">
-    <Grid Style="{StaticResource TabGrid}" Background="{StaticResource ColorLightGrayTransparent}">
+    <Grid Height="1080" Background="{StaticResource ColorLightGrayTransparent}">
         <!--#region Layout -->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -64,7 +64,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
+                    <!--<RowDefinition Height="auto" />-->
                 </Grid.RowDefinitions>
                 <!--//-->
                 <Grid.ColumnDefinitions>
@@ -120,11 +120,11 @@
                 <TextBlock Grid.Row="3" Grid.Column="6" Text="自動模式運行時數（累計）" />
                 <TextBox Grid.Row="3" Grid.Column="7" Padding="0 3" Text="{Binding TotalHours, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                <TextBlock Grid.Row="4" Grid.Column="6" Text="量測工件數（累計）" />
-                <TextBox Grid.Row="4" Grid.Column="7" Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <TextBlock Grid.Row="4" Grid.Column="6" Margin="0 8 16 4"  Text="量測工件數（累計）" />
+                <TextBox Grid.Row="4" Grid.Column="7" Margin="0 8 0 4" Padding="0 3" Text="{Binding TotalParts, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
 
-                <TextBlock Grid.Row="5" Grid.Column="6" Margin="0 8 16 4" Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
-                <TextBox Grid.Row="5" Grid.Column="7" Margin="0 8 0 4" Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                <!--<TextBlock Grid.Row="5" Grid.Column="6" Margin="0 8 16 4" Text="閒置時間" Foreground="{StaticResource ColorBlueGrayTranparent}" />
+                <TextBox Grid.Row="5" Grid.Column="7" Margin="0 8 0 4" Padding="0 3" Text="{Binding IdleTime, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />-->
                 <!--#endregion-->
 
                 <!-- Separator -->
@@ -167,6 +167,10 @@
                 <Separator Grid.RowSpan="100" Grid.Column="3" Width="1" Margin="0 4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
                 <ItemsControl Grid.ColumnSpan="100" Grid.RowSpan="100" ItemsSource="{Binding NetworkInfos}">
+                    <!--#region Resources -->
+                    <ItemsControl.Resources />
+                    <!--#endregion-->
+
                     <!--#region ItemsPanel -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -186,9 +190,9 @@
                     -->
                     <!--#endregion-->
 
+                    <!--#region ItemTemplate -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">-->
                             <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
                                 <!--#region Resources -->
                                 <UniformGrid.Resources>
@@ -213,6 +217,9 @@
                                 </UniformGrid.Resources>
                                 <!--#endregion-->
 
+                                <TextBlock />
+                                <TextBox Padding="0 3" Text="{Binding Status, Mode=OneWay}" />
+
                                 <TextBlock Text="名稱" />
                                 <TextBox Padding="0 3" Text="{Binding Name}" />
 
@@ -227,6 +234,7 @@
 
                                 <TextBlock Text="預設閘道" />
                                 <TextBox Padding="0 3" Text="{Binding DefaultGetway}" />
+
                                 <!--<ctrl:OutlineTextBlock Text="{Binding DefaultGetway}" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>-->
 
                                 <!--<Separator Grid.RowSpan="100" Width="1" Background="Red" Height="100"/>-->
@@ -236,6 +244,7 @@
                             </StackPanel>-->
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+                    <!--#endregion-->
                 </ItemsControl>
             </Grid>
         </ctrl:CustomCard>

@@ -4,8 +4,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -13,12 +18,7 @@ using System.Windows.Media;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using OpenCvSharp;
-using System.IO;
-using System.Reflection;
-using System.Net.NetworkInformation;
 
 namespace MCAJawIns
 {
@@ -167,12 +167,13 @@ namespace MCAJawIns
             }
         }
 
-
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 
     /// <summary>
@@ -193,8 +194,14 @@ namespace MCAJawIns
     public class SystemInfo : INotifyPropertyChanged, IDisposable
     {
         #region Private
+        // 刷新 UI 用 Timer
         private System.Timers.Timer _timer;
+        // 閒置計時後用 Timer
+        private System.Timers.Timer _idleTimer;
+        // Disposed 旗標
         private bool _disposed;
+
+        private TcpListener _tcpListener;
 
         //private bool _x64;
         private bool _auto;
@@ -212,6 +219,10 @@ namespace MCAJawIns
         /// 量測總次數
         /// </summary>
         private int _totalParts = 0;
+        /// <summary>
+        /// idle 旗標
+        /// </summary>
+        private bool _idle = false;
         #endregion
 
         #region Properties
@@ -261,7 +272,7 @@ namespace MCAJawIns
         /// 軟體版本
         /// </summary>
         [BsonElement(nameof(SoftVer))]
-        public string SoftVer { get; set; } = "2.0.0";
+        public string SoftVer { get; set; } = "2.1.0";
 
         /// <summary>
         /// 建立日期
@@ -369,6 +380,21 @@ namespace MCAJawIns
         [BsonIgnore]
         [JsonIgnore]
         public int IdleTime => _stopwatch != null ? (int)(_stopwatch.ElapsedMilliseconds / 1000.0) : 0;
+
+        [BsonIgnore]
+        [JsonIgnore]
+        public bool Idle {
+            get => _idle;
+            set
+            {
+                if (value != _idle)
+                {
+                    _idle = value;
+                    OnPropertyChanged();
+                    OnIdle(_idle);
+                }
+            }
+        }
         #endregion
 
         #region Methods
@@ -460,7 +486,7 @@ namespace MCAJawIns
         }
         #endregion
 
-        #region 定時執行 timer
+        #region 定時執行 UI 刷新 Timer
         /// <summary>
         /// 啟動 Timer (刷新UI用)
         /// </summary>
@@ -490,6 +516,7 @@ namespace MCAJawIns
         /// <param name="e"></param>
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            // Debug.WriteLine($"{SystemTime}");
             OnPropertyChanged(nameof(SystemTime));
 
             if (_auto)
@@ -497,8 +524,7 @@ namespace MCAJawIns
                 OnPropertyChanged(nameof(AutoTime));
                 OnPropertyChanged(nameof(TotalAutoTime));
             }
-            OnPropertyChanged(nameof(IdleTime)); // 之後需移除
-                                                 // Debug.WriteLine($"Binding.cs line 443 {DateTime.Now:HH:mm:ss}");
+            // OnPropertyChanged(nameof(IdleTime)); // 之後需移除
         }
 
         /// <summary>
@@ -510,6 +536,62 @@ namespace MCAJawIns
             {
                 _timer.Stop();
             }
+        }
+        #endregion
+
+        #region 閒置計時 Timer
+        public void SetIdleTimer(int seconds)
+        {
+            if (_idleTimer == null)
+            {
+                _idleTimer = new System.Timers.Timer()
+                {
+                    Interval = seconds * 1000,
+                    AutoReset = false
+                };
+
+                _idleTimer.Elapsed += (sender, e) =>
+                {
+                    Idle = true;
+
+                    StartIdleWatch();
+                };
+                _idleTimer.Start();
+            }
+        }
+
+
+        public void ResetIdlTimer()
+        {
+            Idle = false;
+
+            StopIdleWatch();
+
+            if (_idleTimer != null)
+            {
+                _idleTimer.Stop();
+                _idleTimer.Start();
+            }
+        }
+
+
+        public delegate void IdleChangedEventHandler(object sender, IdleChangedEventArgs e);
+
+        public event IdleChangedEventHandler IdleChanged;
+
+        public class IdleChangedEventArgs : EventArgs
+        {
+            public bool Idle { get; }
+
+            public IdleChangedEventArgs(bool idle)
+            {
+                Idle = idle;
+            }
+        }
+
+        protected void OnIdle(bool idle)
+        {
+            IdleChanged?.Invoke(this, new IdleChangedEventArgs(idle));
         }
         #endregion
 
@@ -553,19 +635,11 @@ namespace MCAJawIns
 
     public class NetworkInfo : INotifyPropertyChanged
     {
+        #region Private
         private OperationalStatus _status;
+        #endregion
 
-        public NetworkInfo(OperationalStatus status)
-        {
-            _status = status;
-        }
-
-        public NetworkInfo(string name, OperationalStatus status)
-        {
-            Name = name;
-            _status = status;
-        }
-
+        #region Properties
         public string Name { get; set; }
 
         public string IP { get; set; }
@@ -577,6 +651,18 @@ namespace MCAJawIns
         public string DefaultGetway { get; set; }
 
         public bool Status => _status == OperationalStatus.Up;
+        #endregion
+
+        public NetworkInfo(OperationalStatus status)
+        {
+            _status = status;
+        }
+
+        public NetworkInfo(string name, OperationalStatus status)
+        {
+            Name = name;
+            _status = status;
+        }
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
@@ -604,10 +690,12 @@ namespace MCAJawIns
                     UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
                     GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
 
+
                     Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
                     {
                         IP = $"{unicastIP.Address}",
-                        MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
+                        //MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
+                        MAC = $"{@interface.GetPhysicalAddress()}",
                         SubMask = $"{unicastIP.IPv4Mask}",
                         DefaultGetway = $"{gatewayIP?.Address}"
                     });

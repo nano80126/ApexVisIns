@@ -84,6 +84,9 @@ namespace MCAJawIns.Algorithm
         {
             MainWindow.Dispatcher.Invoke(() =>
             {
+                MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+                _ = SpinWait.SpinUntil(() => false, 30);
+
                 bool ready = cam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
                 if (ready)
@@ -97,8 +100,14 @@ namespace MCAJawIns.Algorithm
                         MainWindow.ImageSource1 = mat.ToImageSource();
                     }
                 }
+            });
 
-                ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+            _ = SpinWait.SpinUntil(() => false, 30);
+
+            MainWindow.Dispatcher.Invoke(() =>
+            {
+                bool ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
                 if (ready)
                 {
@@ -111,9 +120,14 @@ namespace MCAJawIns.Algorithm
                         MainWindow.ImageSource2 = mat.ToImageSource();
                     }
                 }
+            });
 
+            MainWindow.LightCtrls[1].SetAllChannelValue(256, 96);
+            _ = SpinWait.SpinUntil(() => false, 30);
 
-                ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+            MainWindow.Dispatcher.Invoke(() =>
+            {
+                bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
                 if (ready)
                 {
@@ -127,6 +141,8 @@ namespace MCAJawIns.Algorithm
                     }
                 }
             });
+
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
         }
         #endregion
 
@@ -658,7 +674,7 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[5];    // 013R 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -667,14 +683,14 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R, spec.Correction + spec.CorrectionSecret);
                     Debug.WriteLine($"013R: {d_013R:F5}");
                 }
 
                 spec = specList?[6];    // 013L 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -683,7 +699,7 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L, spec.Correction + spec.CorrectionSecret);
                     Debug.WriteLine($"013L: {d_013L:F5}");
                 }
                 #endregion

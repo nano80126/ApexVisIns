@@ -59,8 +59,8 @@ namespace MCAJawIns.Algorithm
             { "有料檢知", new Rect(185, 345, 710, 30) },
             { "有料檢知2", new Rect(185, 345, 710, 30) },
             { "有料檢知3", new Rect(280, 170, 420, 40) },
-            { "粗定位左", new Rect(310, 260, 230, 300) },
-            { "粗定位右", new Rect(540, 260, 230, 300) },
+            { "粗定位左", new Rect(250, 240, 230, 300) },
+            { "粗定位右", new Rect(600, 240, 230, 300) },
             { "治具定位", new Rect(460, 900, 160, 100) },
             { "後開位置", new Rect(320, 575, 440, 40) },
             { "側面定位", new Rect(460, 90, 240, 130) }
@@ -82,6 +82,9 @@ namespace MCAJawIns.Algorithm
 
         public void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
         {
+            MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+            _ = SpinWait.SpinUntil(() => false, 30);
+
             MainWindow.Dispatcher.Invoke(() =>
             {
                 bool ready = cam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
@@ -97,8 +100,14 @@ namespace MCAJawIns.Algorithm
                         MainWindow.ImageSource1 = mat.ToImageSource();
                     }
                 }
+            });
 
-                ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+            _ = SpinWait.SpinUntil(() => false, 30);
+
+            MainWindow.Dispatcher.Invoke(() =>
+            {
+                bool ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
                 if (ready)
                 {
@@ -111,9 +120,14 @@ namespace MCAJawIns.Algorithm
                         MainWindow.ImageSource2 = mat.ToImageSource();
                     }
                 }
+            });
 
+            MainWindow.LightCtrls[1].SetAllChannelValue(312, 256);
+            _ = SpinWait.SpinUntil(() => false, 30);
 
-                ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+            MainWindow.Dispatcher.Invoke(() =>
+            {
+                bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
 
                 if (ready)
                 {
@@ -127,6 +141,8 @@ namespace MCAJawIns.Algorithm
                     }
                 }
             });
+
+            MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
         }
         #endregion
 
@@ -654,11 +670,11 @@ namespace MCAJawIns.Algorithm
 
                 #endregion
 
-                #region 計算 013
-                spec = specList?[5];    // 013R 
+                #region 計算 014
+                spec = specList?[5];    // 014R 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
+                    Cal014DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -667,14 +683,14 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
+                    Cal014DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
                     Debug.WriteLine($"013R: {d_013R:F5}");
                 }
 
-                spec = specList?[6];    // 013L 
+                spec = specList?[6];    // 014L 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
+                    Cal014DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
@@ -683,10 +699,12 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
+                    Cal014DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
                     Debug.WriteLine($"013L: {d_013L:F5}");
                 }
                 #endregion
+
+                return;
 
                 #region 取得影像上方角點 (計算 024 用)
                 /// 
@@ -1000,6 +1018,9 @@ namespace MCAJawIns.Algorithm
             Rect roi = JawROIs["有料檢知"];
 
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out byte threshold);
+            Cv2.Rectangle(src, roi, Scalar.Wheat, 1);
+
+            Debug.WriteLine($"{nameof(threshold)}: {threshold}");
             return threshold is > 50 and < 180;
         }
 
@@ -1020,10 +1041,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetContours(LeftMat, LeftRoi.Location, 75, 150, out Point[][] _, out Point[] LeftCon);
             Methods.GetContours(RightMat, RightROi.Location, 75, 150, out Point[][] _, out Point[] RightCon);
 
-            //Cv2.ImShow($"leftMat", LeftMat);
-            //Cv2.ImShow($"rightMat", RightMat);
-            // Debug.WriteLine($"LeftCon Length: {LeftCon.Length}");
-            // Debug.WriteLine($"RightCon Length: {RightCon.Length}");
+            // Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, RightROi, Scalar.Black, 1);
 
             int maxX_L = LeftCon.Max(c => c.X);
             int maxY_L = LeftCon.Max(c => c.Y);
@@ -1032,8 +1051,8 @@ namespace MCAJawIns.Algorithm
             int maxY_R = RightCon.Max(c => c.Y);
 
             // Debug.WriteLine($"{minX_R} { maxY_R}");
-            LeftPoint = new OpenCvSharp.Point(maxX_L, maxY_L);
-            RightPoint = new OpenCvSharp.Point(minX_R, maxY_R);
+            LeftPoint = new Point(maxX_L, maxY_L);
+            RightPoint = new Point(minX_R, maxY_R);
             // LeftPoint = new OpenCvSharp.Point(0, 0);
             // RightPoint = new OpenCvSharp.Point(0, 0);
 
@@ -1222,8 +1241,8 @@ namespace MCAJawIns.Algorithm
         public void CalFrontDistanceValue(Mat src, Point leftPt, Point rightPt, out double leftX, out double rightX, out double distance, double correction = 0)
         {
             // 計算 roi
-            Rect leftRoi = new(leftPt.X - 35, leftPt.Y - 73, 26, 30);
-            Rect rightRoi = new(rightPt.X + 9, rightPt.Y - 73, 26, 30);
+            Rect leftRoi = new(leftPt.X - 50, leftPt.Y - 91, 30, 32);
+            Rect rightRoi = new(rightPt.X + 20, rightPt.Y - 91, 30, 32);
 
             double sumLength = 0;
             LineSegmentPoint[] lineV;
@@ -1231,8 +1250,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, leftRoi, 75, 150, out Mat leftCanny);
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
-            // Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
-            // Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);
+            //Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 
             // 左
             Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 2, 3);
@@ -1270,10 +1289,10 @@ namespace MCAJawIns.Algorithm
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)baseX + 2, basePt.Y - 45, 20, 60);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 45, 40, 60);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)baseX - 22, basePt.Y - 45, 20, 60);
+                    roi = new Rect((int)baseX - 42, basePt.Y - 45, 40, 60);
                     break;
                 default:
                     roi = new Rect();
@@ -1287,7 +1306,7 @@ namespace MCAJawIns.Algorithm
             // 取得輪廓點
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
-            //Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            //Cv2.Rectangle(src, roi, Scalar.Black, 2);
 
             #region 計算中心值
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
@@ -1302,7 +1321,7 @@ namespace MCAJawIns.Algorithm
             //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
             //}
 
-            Debug.WriteLine($"center: {center} {min} {max} {roiPos}");
+            //Debug.WriteLine($"center: {center} {min} {max} {roiPos}");
 
             #region 尋找轉角點
             // 連接輪廓點
@@ -1383,6 +1402,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             // 取得輪廓點
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
+
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
 
             #region 計算中心值
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
@@ -1484,6 +1505,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
+        [Obsolete("deprecated")]
         public bool Cal013DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
@@ -1559,7 +1581,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
         /// <returns><strong>是否合格</strong></returns>
-        public bool Cal013DistanceValue2(Mat src, Point basePoint, JawPos roiPos, double X, double cY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
+        public bool Cal014DistanceValue2(Mat src, Point basePoint, JawPos roiPos, double X, double cY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
             Rect roi = new Rect();
@@ -1567,10 +1589,10 @@ namespace MCAJawIns.Algorithm
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)X, basePoint.Y - 10, 20, 20);
+                    roi = new Rect((int)X, basePoint.Y - 10, 35, 20);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)X - 19, basePoint.Y - 10, 20, 20);
+                    roi = new Rect((int)X - 34, basePoint.Y - 10, 35, 20);
                     break;
                 default:
                     break;
@@ -1578,6 +1600,8 @@ namespace MCAJawIns.Algorithm
 
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
+
+            Cv2.Rectangle(src, roi, Scalar.White, 1);
 
 #if DEBUG || debug
             Cv2.Rectangle(src, roi, Scalar.Black, 1);

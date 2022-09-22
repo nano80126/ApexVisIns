@@ -155,6 +155,15 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <!--//-->
+            <Style x:Key="TabGridFull" TargetType="{x:Type Grid}">
+                <Setter Property="Height" Value="828" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
+                        <Setter Property="Height" Value="1008" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <!--#endregion-->
         </ResourceDictionary>
     </Application.Resources>

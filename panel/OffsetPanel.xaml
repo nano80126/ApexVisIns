@@ -17,8 +17,7 @@
                  d:DataContext="{d:DesignInstance Type=app:BaslerCam}" 
                  Loaded="CustomCard_Loaded">
     <DockPanel x:Name="Body">
-        <!--<StackPanel Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Orientation="Vertical">-->
-        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="1 0 0 0" Padding="0" FontSize="16">
+        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4 0 0 0" Padding="0" FontSize="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}X: {0,4}, Y: {1,4}">
                     <Binding Path="OffsetX" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="0" />
@@ -26,7 +25,6 @@
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <!--</StackPanel>-->
 
         <!--#region Popupbox -->
         <materialDesign:PopupBox x:Name="OffsetPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" Padding="0" StaysOpen="True" PlacementMode="BottomAndAlignLeftEdges"
@@ -34,11 +32,11 @@
                 IsEnabled="{Binding IsOpen, UpdateSourceTrigger=PropertyChanged, FallbackValue=False}">
             <!--#region Toggle Content -->
             <materialDesign:PopupBox.ToggleContent>
-                <materialDesign:PackIcon Kind="ArrowAll" Foreground="{StaticResource ColorInfo}" Style="{StaticResource GeneralPackIcon}" />
+                <materialDesign:PackIcon Margin="3 3" Kind="ArrowAll" Foreground="{StaticResource ColorInfo}" Style="{StaticResource GeneralPackIcon}" />
             </materialDesign:PopupBox.ToggleContent>
             <!--#endregion-->
 
-            <Grid x:Name="OffsetGrid" HorizontalAlignment="Center" VerticalAlignment="Center"  Background="#eee" MouseDown="Grid_MouseDown">
+            <Grid x:Name="OffsetGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#eee" MouseDown="Grid_MouseDown">
                 <!--#region Resources -->
                 <Grid.Resources>
                     <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -97,23 +95,5 @@
             </Grid>
         </materialDesign:PopupBox>
         <!--#endregion-->
-
-        <Grid Visibility="Collapsed">
-            <RepeatButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="18 2 2 18"
-                    Content="{materialDesign:PackIcon Kind=ArrowLeftBoldOutline, Size=16}" Click="CamLeftMove_Click" />
-
-            <RepeatButton Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" materialDesign:ButtonAssist.CornerRadius="18 18 2 2"
-                    Content="{materialDesign:PackIcon Kind=ArrowTopBoldOutline, Size=16}" Click="CamTopMove_Click" />
-
-            <RepeatButton Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" materialDesign:ButtonAssist.CornerRadius="2 18 18 2"
-                    Content="{materialDesign:PackIcon Kind=ArrowRightBoldOutline, Size=16}" Click="CamRightMove_Click" />
-
-            <RepeatButton Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" materialDesign:ButtonAssist.CornerRadius="2 2 18 18"
-                    Content="{materialDesign:PackIcon Kind=ArrowBottomBoldOutline, Size=16}" Click="CamBottomMove_Click" />
-
-            <Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{materialDesign:PackIcon Kind=Circle, Size=16}"
-                    Click="CamCenterMove_Click" />
-        </Grid>
-        
     </DockPanel>
 </ctrl:CustomCard>
