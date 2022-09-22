@@ -69,7 +69,6 @@ namespace MCAJawIns.Converter
         }
     }
 
-
     /// <summary>
     /// 數字存在在陣列中轉換器
     /// </summary>
@@ -86,7 +85,6 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
-
 
     /// <summary>
     /// 數字 Odd 轉換器
@@ -163,23 +161,43 @@ namespace MCAJawIns.Converter
     [ValueConversion(typeof(double), typeof(double))]
     public class MathDivideConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) / System.Convert.ToDouble(parameter, CultureInfo.CurrentCulture);
+            return System.Convert.ToDouble(value, CultureInfo.CurrentCulture) / System.Convert.ToDouble(parameter ?? 1, CultureInfo.CurrentCulture);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
 
+    /// <summary>
+    /// 數學除法取商數轉換器
+    /// </summary>
     [ValueConversion(typeof(int), typeof(int))]
-    public class MathRemainderConverter : IValueConverter
+    public class MathGetQuotientConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return System.Convert.ToInt32(value, CultureInfo.CurrentCulture) / System.Convert.ToInt32(parameter ?? 1, CultureInfo.CurrentCulture);
+        }
+
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 樹學除法取餘數轉換器
+    /// </summary>
+    [ValueConversion(typeof(int), typeof(int))]
+    public class MathGetRemainderConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return System.Convert.ToInt32(value, CultureInfo.CurrentCulture) % System.Convert.ToInt32(parameter, CultureInfo.CurrentCulture);
+            return System.Convert.ToInt32(value, CultureInfo.CurrentCulture) % System.Convert.ToInt32(parameter ?? 1, CultureInfo.CurrentCulture);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

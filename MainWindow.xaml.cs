@@ -665,7 +665,6 @@ namespace MCAJawIns.CustomProperty
         /// </summary>
         public static readonly DependencyProperty MotorAlarmProperty = DependencyProperty.RegisterAttached("MotorAlarm", typeof(bool), typeof(StatusHelper), new PropertyMetadata(false));
 
-
         /// <summary>
         /// Bit Property
         /// </summary>

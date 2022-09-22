@@ -6,6 +6,7 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:MCAJawIns.content" 
             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:cvt="clr-namespace:MCAJawIns.Converter" 
             xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
 
             mc:Ignorable="d" 
@@ -17,7 +18,7 @@
             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
             Loaded="StackPanel_Loaded"
             Unloaded="StackPanel_Unloaded">
-    <Grid Height="1080" Background="{StaticResource ColorLightGrayTransparent}">
+    <Grid Height="1080">
         <!--#region Layout -->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -151,7 +152,8 @@
         <Separator Grid.Row="1" Margin="8 8" Height="1"/>
 
         <!--#region 網卡資訊-->
-        <ctrl:CustomCard Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8 0" Title="網卡資訊" IconKind="Lan">
+        <ctrl:CustomCard Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="8 0" Title="網卡資訊" IconKind="Lan"
+                Background="{StaticResource ColorLightGrayTransparent}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -161,12 +163,13 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
 
-                <Separator Grid.Row="1" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" Height="1" />
+                <!--<Separator Grid.Row="1" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" Height="1" />-->
+                <!--<TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ctrl:CustomCard}}" Background="Red" HorizontalAlignment="Left" VerticalAlignment="Top"/>-->
 
                 <Separator Grid.RowSpan="100" Grid.Column="1" Width="1" Margin="0 4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 <Separator Grid.RowSpan="100" Grid.Column="3" Width="1" Margin="0 4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
-                <ItemsControl Grid.ColumnSpan="100" Grid.RowSpan="100" ItemsSource="{Binding NetworkInfos}">
+                <ItemsControl Grid.ColumnSpan="100" ItemsSource="{Binding NetworkInfos}" AlternationCount="{Binding NetworkInfos.Count}">
                     <!--#region Resources -->
                     <ItemsControl.Resources />
                     <!--#endregion-->
@@ -174,28 +177,57 @@
                     <!--#region ItemsPanel -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Columns="3" />
+                            <!--<WrapPanel Margin="4 0"/>-->
+                            <Grid Margin="4 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <!--//-->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                            <!--<Separator />-->
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <!--#endregion-->
 
                     <!--#region ItemContainerStyle -->
-                    <!--
+                    
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
-                            <Setter Property="Grid.Column" Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}, 
-                                Converter={StaticResource MathMultiplyConverter}, ConverterParameter=2}" />
+                            <Setter Property="Grid.Row"
+                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetQuotientConverter}, ConverterParameter=3}" />
+                            <Setter Property="Grid.Column"
+                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetRemainderConverter}, ConverterParameter=3}" />
                         </Style>
                     </ItemsControl.ItemContainerStyle>
-                    -->
+                    
                     <!--#endregion-->
 
                     <!--#region ItemTemplate -->
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Top" Columns="2">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                 <!--#region Resources -->
-                                <UniformGrid.Resources>
+                                <Grid.Resources>
+                                    <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource GeneralPackIcon}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Kind" Value="LanDisconnect" />
+                                        <Setter Property="Foreground" Value="{StaticResource ColorError}" />
+                                        <!--//-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                                <Setter Property="Kind" Value="LanConnect" />
+                                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                    <!--//-->
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                         <Setter Property="VerticalAlignment" Value="Center" />
@@ -205,7 +237,6 @@
                                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                                         <Setter Property="VerticalAlignment" Value="Center" />
                                         <Setter Property="VerticalContentAlignment" Value="Center" />
-                                        <Setter Property="Padding" Value="8 3" />
                                         <Setter Property="Margin" Value="0 8" />
                                         <Setter Property="Height" Value="24" />
                                         <Setter Property="Width" Value="150" />
@@ -214,31 +245,57 @@
                                         <Setter Property="Focusable" Value="False" />
                                         <Setter Property="Cursor" Value="Arrow" />
                                     </Style>
-                                </UniformGrid.Resources>
+                                </Grid.Resources>
                                 <!--#endregion-->
 
-                                <TextBlock />
-                                <TextBox Padding="0 3" Text="{Binding Status, Mode=OneWay}" />
+                                <!--#region NewRegion -->
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <!--//-->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <!--#endregion-->
 
-                                <TextBlock Text="名稱" />
-                                <TextBox Padding="0 3" Text="{Binding Name}" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0 4 0 8" Text="狀態" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="名稱" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="MAC" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="IP" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="子網路遮罩" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0 8 0 4" Text="預設閘道" />
 
-                                <TextBlock Text="MAC" />
-                                <TextBox Padding="0 3" Text="{Binding MAC}" />
+                                <!--<TextBox Grid.Row="0" Grid.Column="1" Padding="0 3" Margin="0 4 0 8" Text="{Binding Status, Mode=OneWay}" />-->
 
-                                <TextBlock Text="IP" />
-                                <TextBox Padding="0 3" Text="{Binding IP}" />
-
-                                <TextBlock Text="子網路遮罩" />
-                                <TextBox Padding="0 3" Text="{Binding SubMask}" />
-
-                                <TextBlock Text="預設閘道" />
-                                <TextBox Padding="0 3" Text="{Binding DefaultGetway}" />
+                                <materialDesign:PackIcon Grid.Row="0" Grid.Column="1" Tag="{Binding Status}" Margin="0 4 0 8" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Padding="0 3" Text="{Binding Name}" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Padding="0 3" Text="{Binding MAC}" />
+                                <TextBox Grid.Row="3" Grid.Column="1" Padding="0 3" Text="{Binding IP}" />
+                                <TextBox Grid.Row="4" Grid.Column="1" Padding="0 3" Text="{Binding SubMask}" />
+                                <TextBox Grid.Row="5" Grid.Column="1" Padding="0 3" Margin="0 8 0 4" Text="{Binding DefaultGetway}" />
 
                                 <!--<ctrl:OutlineTextBlock Text="{Binding DefaultGetway}" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>-->
 
-                                <!--<Separator Grid.RowSpan="100" Width="1" Background="Red" Height="100"/>-->
-                            </UniformGrid>
+                                <Separator Grid.Row="6" Grid.ColumnSpan="2" Height="1" Margin="0 4">
+                                    <Separator.Style>
+                                        <Style TargetType="{x:Type Separator}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource NumberGreaterConvert}, ConverterParameter=3}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Separator.Style>
+                                </Separator>
+                            </Grid>
 
                             <!--<Separator Margin="12 0" Width="1" Height="100" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                             </StackPanel>-->

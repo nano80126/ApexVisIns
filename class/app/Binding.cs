@@ -683,22 +683,24 @@ namespace MCAJawIns
         {
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces().OrderBy(x => x.Name).ToArray();
 
-            foreach (NetworkInterface @interface in interfaces)
+            for (int i = 0; i < 6; i++)
             {
-                if (@interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                foreach (NetworkInterface @interface in interfaces)
                 {
-                    UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-                    GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
-
-
-                    Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
+                    if (@interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
                     {
-                        IP = $"{unicastIP.Address}",
-                        //MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
-                        MAC = $"{@interface.GetPhysicalAddress()}",
-                        SubMask = $"{unicastIP.IPv4Mask}",
-                        DefaultGetway = $"{gatewayIP?.Address}"
-                    });
+                        UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                        GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
+
+                        Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
+                        {
+                            IP = $"{unicastIP.Address}",
+                            //MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
+                            MAC = $"{@interface.GetPhysicalAddress()}",
+                            SubMask = $"{unicastIP.IPv4Mask}",
+                            DefaultGetway = $"{gatewayIP?.Address}"
+                        });
+                    }
                 }
             }
         }
