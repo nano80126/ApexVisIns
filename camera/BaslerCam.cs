@@ -18,9 +18,8 @@ namespace MCAJawIns
     /// </summary>
     public class BaslerCamInfo
     {
-        public BaslerCamInfo()
-        {
-        }
+        #region 建構子
+        public BaslerCamInfo() { }
 
         /// <summary>
         /// 建構式
@@ -38,7 +37,9 @@ namespace MCAJawIns
             MAC = mac;
             SerialNumber = serialNumber;
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// 供應商名稱
         /// </summary>
@@ -66,7 +67,8 @@ namespace MCAJawIns
         /// <summary>
         /// 相機 S/N
         /// </summary>
-        public string SerialNumber { get; set; }
+        public string SerialNumber { get; set; } 
+        #endregion
     }
 
     /// <summary>
@@ -75,9 +77,9 @@ namespace MCAJawIns
     /// </summary>
     public class CameraConfigBase : BaslerCamInfo
     {
-        public CameraConfigBase()
-        {
-        }
+        #region 建構子
+        public CameraConfigBase() { }
+        #endregion
 
         public enum TargetFeatureType
         {
@@ -100,10 +102,12 @@ namespace MCAJawIns
             MCA_SIDE = 13,
         }
 
+        #region Properties
         /// <summary>
         /// 目標特徵
         /// </summary>
-        public TargetFeatureType TargetFeature { get; set; }
+        public TargetFeatureType TargetFeature { get; set; } 
+        #endregion
     }
 
 
@@ -113,13 +117,16 @@ namespace MCAJawIns
     /// </summary>
     public class BaslerCam : CustomCam, IDisposable
     {
+        #region Fields
         private bool _disposed;
         private bool _isGrabberOpened;
         private bool _isContinuousGrabbing;
         private bool _isTriggerMode;
         private int _offsetX;
         private int _offsetY;
+        #endregion
 
+        #region 建構子
         /// <summary>
         /// 相機建構子
         /// </summary>
@@ -137,7 +144,9 @@ namespace MCAJawIns
             SerialNumber = serialNumber;
             Camera = new Camera(serialNumber);
         }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Basler 相機
         /// </summary>
@@ -260,16 +269,15 @@ namespace MCAJawIns
                 }
             }
         }
-
         /// <summary>
         /// 當前套用之組態
         /// </summary>
         public BaslerConfig Config { get; set; }
-
         /// <summary>
         /// 組態列表
         /// </summary>
         public ObservableCollection<string> ConfigList { get; set; } = new ObservableCollection<string>();
+        #endregion
 
         /// <summary>
         /// Create camera object, call this function before open camera

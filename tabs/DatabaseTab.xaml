@@ -124,8 +124,8 @@
                     <Button Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" Margin="4 4" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="DateTimeFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
-                            <TextBlock VerticalAlignment="Center" Text="查詢" />
+                            <materialDesign:PackIcon Kind="Search" Height="20" VerticalAlignment="Center" />
+                            <TextBlock VerticalAlignment="Center" Text="查詢" Margin="4 0 0 0" />
                             <!--<TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
                                     Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />-->
                         </StackPanel>
@@ -173,8 +173,8 @@
                     <Button DockPanel.Dock="Bottom" Grid.Row="1" HorizontalAlignment="Right" Margin="4 4" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
                             Click="LotNumberFindBtn_Click">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
-                            <TextBlock VerticalAlignment="Center" Text="查詢" Margin="0" />
+                            <materialDesign:PackIcon Kind="Search" Height="20" VerticalAlignment="Center" />
+                            <TextBlock VerticalAlignment="Center" Text="查詢" Margin="4 0 0 0" />
                             <!--<TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
                                     Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}" />-->
                         </StackPanel>

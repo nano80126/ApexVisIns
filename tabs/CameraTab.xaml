@@ -163,7 +163,7 @@
                                     <Setter.Value>
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="ExclamationBold" />
-                                            <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                            <TextBlock Margin="4 0 0 0" Text="儲存" />
                                         </StackPanel>
                                     </Setter.Value>
                                 </Setter>
@@ -176,7 +176,7 @@
                                             <Setter.Value>
                                                 <StackPanel Orientation="Horizontal">
                                                     <materialDesign:PackIcon Kind="CheckBold" />
-                                                    <TextBlock Margin="8 0 0 0" Text="儲存" />
+                                                    <TextBlock Margin="4 0 0 0" Text="儲存" />
                                                 </StackPanel>
                                             </Setter.Value>
                                         </Setter>

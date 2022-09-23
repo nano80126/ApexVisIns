@@ -37,7 +37,30 @@ namespace MCAJawIns.content
     /// </summary>
     public partial class MCAJaw : StackPanel, INotifyPropertyChanged, IDisposable
     {
-        #region Resources (xaml 內)
+        #region Enumerator
+        /// <summary>
+        /// 當前狀態列舉
+        /// </summary>
+        public enum INS_STATUS
+        {
+            [Description("初始化")]
+            INIT = 0,
+            [Description("準備檢驗")]
+            READY = 1,
+            [Description("檢驗中")]
+            INSPECTING = 2,
+            [Description("錯誤")]
+            ERROR = 3,
+            [Description("閒置")]
+            IDLE = 4,
+            [Description("編輯模式")]
+            DEVELOPMENT = 8,
+            [Description("未知")]
+            UNKNOWN = 9,
+        }
+        #endregion
+
+        #region Resources (defined in .xaml)
         /// <summary>
         /// Jaw 檢驗結果 (綁 Lot)
         /// </summary>
@@ -56,7 +79,7 @@ namespace MCAJawIns.content
         /// JawSpecSetting  // 尺寸啟用與否設定
         #endregion
 
-        #region Variables
+        #region Fields
         /// <summary>
         /// 初始化用 TokenSource
         /// </summary>
@@ -75,42 +98,26 @@ namespace MCAJawIns.content
         /// <summary>
         /// 閒置計時器
         /// </summary>
+        [Obsolete]
         private System.Timers.Timer _idleTimer;
 
         /// <summary>
         /// NG 音效
         /// </summary>
         private readonly SoundPlayer SoundNG = new SoundPlayer(@".\sound\NG.wav");          // 3 短音
-        //private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
-
-        public enum INS_STATUS
-        {
-            [Description("初始化")]
-            INIT = 0,
-            [Description("準備檢驗")]
-            READY = 1,
-            [Description("檢驗中")]
-            INSPECTING = 2,
-            [Description("錯誤")]
-            ERROR = 3,
-            [Description("閒置")]
-            IDLE = 4,
-            [Description("編輯模式")]
-            DEVELOPMENT = 8,
-            [Description("未知")]
-            UNKNOWN = 9,
-        }
+        // private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
 
         private INS_STATUS _status = INS_STATUS.UNKNOWN;
         #endregion
 
         #region Properties
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
-
         public MCAJawS MCAJawS { get; set; }
         public MCAJawM MCAJawM { get; set; }
         public MCAJawL MCAJawL { get; set; }
-
+        /// <summary>
+        /// 啟用之Tab (檢驗用 or 尺寸設定用)
+        /// </summary>
         public int JawTab
         {
             get => _jawTab;
@@ -123,7 +130,9 @@ namespace MCAJawIns.content
                 }
             }
         }
-
+        /// <summary>
+        /// 當前狀態
+        /// </summary>
         public INS_STATUS Status
         {
             get => _status;
@@ -135,7 +144,7 @@ namespace MCAJawIns.content
         }
         #endregion
 
-        #region Path
+        #region Private Path for Initializing
         /// <summary>
         /// 規格路徑
         /// </summary>
@@ -199,6 +208,7 @@ namespace MCAJawIns.content
         /// </summary>
         private bool initialized;
 
+        // // // Public below
         private bool CameraInitialized { get; set; }
         private bool LightCtrlInitilized { get; set; }
         private bool IOCtrlInitialized { get; set; }
@@ -1655,7 +1665,7 @@ namespace MCAJawIns.content
                 SoundNG.Dispose();
             }
             _disposed = true;
-        } 
+        }
         #endregion
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -1670,12 +1680,11 @@ namespace MCAJawIns.content
             // JawSizeSpecList.Groups[0].PropertyChange("Color");
 
             //MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
-            Algorithm.MCAJawM M = new Algorithm.MCAJawM();
 
-            Task.Run(() =>
-            {
-                M.ListJawParam();
-            });
+            //Task.Run(() =>
+            //{
+            //    M.ListJawParam();
+            //});
 
 #if false
             Task<int> t = await Task.Run(() =>

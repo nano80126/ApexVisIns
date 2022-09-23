@@ -109,6 +109,7 @@ MCA Jaw CCD 尺寸量測設備
 	* border, rectangl 使用 SnapToDevicePixels
 
 * [ ] ConfigPanel 新增 Extension config
+	* 新增UserSet 
 
 * [ ] Engineertab.xaml 修正 CustomCard Padding
 
@@ -138,6 +139,13 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] SystemInfo 新增 TCP Listener
 
 * [ ] CameraConfigs 變更機制修正
+
+* [ ] EngineerTab.xaml 保留 SubToolbar
+	* Panel
+		* 一些簡單操作
+		* 儲存圖片
+
+ * [ ] TargetFeatureType in BaslerCam.CameraConfigBase move to namespace
 
 ### Config Logic
 

@@ -34,16 +34,16 @@
 
   <ItemGroup>
     <Compile Remove="algorithm\product\Apex\**" />
-    <Compile Remove="content\Main\**" />
+    <Compile Remove="tabs\Main\**" />
     <Compile Remove="module\**" />
     <EmbeddedResource Remove="algorithm\product\Apex\**" />
-    <EmbeddedResource Remove="content\Main\**" />
+    <EmbeddedResource Remove="tabs\Main\**" />
     <EmbeddedResource Remove="module\**" />
     <None Remove="algorithm\product\Apex\**" />
-    <None Remove="content\Main\**" />
+    <None Remove="tabs\Main\**" />
     <None Remove="module\**" />
     <Page Remove="algorithm\product\Apex\**" />
-    <Page Remove="content\Main\**" />
+    <Page Remove="tabs\Main\**" />
     <Page Remove="module\**" />
   </ItemGroup>
 
@@ -52,9 +52,9 @@
     <Compile Remove="class\INotyfyCollectionChanged.cs" />
     <Compile Remove="class\product\MCA Jaw\JawSizeSpecList.cs" />
     <Compile Remove="class\ShihlinSDE.cs" />
-    <Compile Remove="content\MainTab.xaml.cs" />
-    <Compile Remove="content\ModbusMotorTab.xaml.cs" />
-    <Compile Remove="content\MotionTab.xaml.cs" />
+    <Compile Remove="tabs\MainTab.xaml.cs" />
+    <Compile Remove="tabs\ModbusMotorTab.xaml.cs" />
+    <Compile Remove="tabs\MotionTab.xaml.cs" />
     <Compile Remove="IOWindow.xaml.cs" />
   </ItemGroup>
 
@@ -69,9 +69,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Remove="content\MainTab.xaml" />
-    <Page Remove="content\ModbusMotorTab.xaml" />
-    <Page Remove="content\MotionTab.xaml" />
+    <Page Remove="tabs\MainTab.xaml" />
+    <Page Remove="tabs\ModbusMotorTab.xaml" />
+    <Page Remove="tabs\MotionTab.xaml" />
     <Page Remove="IOWindow.xaml" />
   </ItemGroup>
 

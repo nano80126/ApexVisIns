@@ -653,6 +653,7 @@ namespace MCAJawIns
         public bool Status => _status == OperationalStatus.Up;
         #endregion
 
+        #region 建構子
         public NetworkInfo(OperationalStatus status)
         {
             _status = status;
@@ -662,7 +663,8 @@ namespace MCAJawIns
         {
             Name = name;
             _status = status;
-        }
+        } 
+        #endregion
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
@@ -683,24 +685,21 @@ namespace MCAJawIns
         {
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces().OrderBy(x => x.Name).ToArray();
 
-            for (int i = 0; i < 6; i++)
+            foreach (NetworkInterface @interface in interfaces)
             {
-                foreach (NetworkInterface @interface in interfaces)
+                if (@interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
                 {
-                    if (@interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-                    {
-                        UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-                        GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
+                    UnicastIPAddressInformation unicastIP = @interface.GetIPProperties().UnicastAddresses.FirstOrDefault(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+                    GatewayIPAddressInformation gatewayIP = @interface.GetIPProperties().GatewayAddresses.FirstOrDefault();
 
-                        Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
-                        {
-                            IP = $"{unicastIP.Address}",
-                            //MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
-                            MAC = $"{@interface.GetPhysicalAddress()}",
-                            SubMask = $"{unicastIP.IPv4Mask}",
-                            DefaultGetway = $"{gatewayIP?.Address}"
-                        });
-                    }
+                    Add(new NetworkInfo(@interface.Name, @interface.OperationalStatus)
+                    {
+                        IP = $"{unicastIP.Address}",
+                        //MAC = $"{string.Join("-", Array.ConvertAll(@interface.GetPhysicalAddress().GetAddressBytes(), x => $"{x:X2}"))}",
+                        MAC = $"{@interface.GetPhysicalAddress()}",
+                        SubMask = $"{unicastIP.IPv4Mask}",
+                        DefaultGetway = $"{gatewayIP?.Address}"
+                    });
                 }
             }
         }
@@ -711,8 +710,11 @@ namespace MCAJawIns
     /// </summary>
     public class Crosshair : INotifyPropertyChanged
     {
+        #region Private
         private bool _enable;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Is Crosshair visiable
         /// </summary>
@@ -733,12 +735,15 @@ namespace MCAJawIns
         /// Color
         /// </summary>
         public SolidColorBrush Stroke { get; set; }
+        #endregion
 
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
     }
 
     /// <summary>
@@ -746,10 +751,13 @@ namespace MCAJawIns
     /// </summary>
     public class Indicator : INotifyPropertyChanged
     {
+        #region Private
         private Mat _img;
 
         private Mat _oriImg;
+        #endregion
 
+        #region Properties
         public Mat Image
         {
             get => _img;
@@ -801,7 +809,9 @@ namespace MCAJawIns
         /// Y pos
         /// </summary>
         public int Y { get; private set; }
+        #endregion
 
+        #region Methods
         public void SetPoint(int x, int y)
         {
             X = x;
@@ -831,17 +841,19 @@ namespace MCAJawIns
                 B = _img.At<Vec3b>(y, x)[0];
             }
         }
+        #endregion
 
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        public void PropertyChange()
+        public void PropertyChange(string propertyName = null)
         {
-
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 
     /// <summary>
@@ -849,10 +861,14 @@ namespace MCAJawIns
     /// </summary>
     public class BasicRect : INotifyPropertyChanged
     {
+        #region Private
         private double _x;
         private double _y;
         private double _width;
         private double _height;
+        #endregion
+
+        #region Properties
         public double X
         {
             get => _x;
@@ -901,16 +917,22 @@ namespace MCAJawIns
                 }
             }
         }
+        #endregion
+
+        #region Methods
         public Rect GetRect()
         {
             return new Rect((int)_x, (int)_y, (int)_width, (int)_height);
         }
-        // // // // // //
+        #endregion
+
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 
     /// <summary>
@@ -918,20 +940,17 @@ namespace MCAJawIns
     /// </summary>
     public class AssistRect : BasicRect
     {
-        #region Basic Variable
+        #region Private
         private bool _enable;
         private bool _isLeftMouseDown;
         private bool _isMiddleMouseDown;
-
-        //private double _strokeThickness;
-
-        //private bool _mouseDown;
-        // //
-        public double TempX { get; set; }    // Temp Pos of Mousedown
-        public double TempY { get; set; }    // Temp Pos of Mousedown
-        public double OftX { get; set; }     // Offset Pos of Mousedown
-        public double OftY { get; set; }     // Offset Pos of Mousedown
         #endregion
+
+        #region Properties
+        public double TempX { get; set; }
+        public double TempY { get; set; }
+        public double OftX { get; set; }
+        public double OftY { get; set; }
 
         /// <summary>
         /// 是否啟用
@@ -998,7 +1017,9 @@ namespace MCAJawIns
         /// Rect 面積
         /// </summary>
         public double Area => Width * Height;
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Reset temp point
         /// </summary>
@@ -1014,7 +1035,8 @@ namespace MCAJawIns
         {
             IsLeftMouseDown = false;
             IsMiddleMouseDown = false;
-        }
+        } 
+        #endregion
     }
 
     public class AssistPoints : INotifyPropertyChanged

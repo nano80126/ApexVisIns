@@ -177,7 +177,6 @@
                     <!--#region ItemsPanel -->
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!--<WrapPanel Margin="4 0"/>-->
                             <Grid Margin="4 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
@@ -190,7 +189,6 @@
                                     <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
                             </Grid>
-                            <!--<Separator />-->
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <!--#endregion-->
@@ -200,9 +198,9 @@
                     <ItemsControl.ItemContainerStyle>
                         <Style TargetType="ContentPresenter">
                             <Setter Property="Grid.Row"
-                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetQuotientConverter}, ConverterParameter=3}" />
+                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetRemainderConverter}, ConverterParameter=2}" />
                             <Setter Property="Grid.Column"
-                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetRemainderConverter}, ConverterParameter=3}" />
+                                    Value="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource MathGetQuotientConverter}, ConverterParameter=2}" />
                         </Style>
                     </ItemsControl.ItemContainerStyle>
                     
@@ -288,7 +286,7 @@
                                         <Style TargetType="{x:Type Separator}">
                                             <Setter Property="Visibility" Value="Visible" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource NumberGreaterConvert}, ConverterParameter=3}" Value="True">
+                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource MathGetRemainderConverter}, ConverterParameter=2}" Value="1">
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -297,8 +295,10 @@
                                 </Separator>
                             </Grid>
 
-                            <!--<Separator Margin="12 0" Width="1" Height="100" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                            </StackPanel>-->
+                            <!--
+                                <Separator Margin="12 0" Width="1" Height="100" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                                </StackPanel>
+                            -->
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <!--#endregion-->

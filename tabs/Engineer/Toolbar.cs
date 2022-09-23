@@ -623,7 +623,7 @@ namespace MCAJawIns.content
                     //Debug.WriteLine($"SN:{sn}");
                     if (AssistRect.Area > 0)
                     {
-#if false
+#if false   // for test
                         OpenCvSharp.Rect roi = AssistRect.GetRect();
                         Mat roiMat = new(mat, roi);
                         Cv2.ImShow($"roi", new Mat(mat, roi));
@@ -649,10 +649,14 @@ namespace MCAJawIns.content
                         Cv2.ImShow($"canny", canny); 
 
 #endif
+                    }
+                    else
+                    {
+                        #region MCA Jaw Unit Testing
                         //string sn = cam.Camera.CameraInfo[CameraInfoKey.SerialNumber];
+                        Debug.WriteLine($"+------------------------------------------------------------------------------------------------------+");
                         Debug.WriteLine($"SN: {sn}");
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
-                        //Cv2.ImShow("canny", canny);
 
                         switch (MainWindow.JawType)
                         {
@@ -704,12 +708,7 @@ namespace MCAJawIns.content
                             default:
                                 break;
                         }
-
-#if false
-                        // MainWindow.JawInsSequenceCam1(mat);
-                        // MainWindow.JawInsSequenceCam2(mat);
-                        // MainWindow.JawInsSequenceCam3(mat);  
-#endif
+                        #endregion
                     }
 
                     Indicator.Image = mat;
@@ -897,12 +896,14 @@ namespace MCAJawIns.content
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
                 MainWindow.BaslerCam.Frames = (int)grabResult.ImageNumber;
 
-                //Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
+                Debug.WriteLine($"Start: {DateTime.Now:ss.fff}");
 
                 #region Assist Rect && AssistRect.Area > 0
                 if (AssistRect.Enable && AssistRect.Area > 0)
                 {
                     #region Coding custom ROI Method here
+
+                    #endregion
 
                     #region UI Thread here
                     Dispatcher.Invoke(() =>
@@ -910,22 +911,17 @@ namespace MCAJawIns.content
 
                     });
                     #endregion
-                    #endregion
                 }
                 #endregion
 
-                //Cv2.CvtColor(mat, mat, ColorConversionCodes.GRAY2BGR);
-                //Cv2.Circle(mat, new OpenCvSharp.Point(500, 500), 5, Scalar.Red, 3);
+                // Cv2.CvtColor(mat, mat, ColorConversionCodes.GRAY2BGR);
+                // Cv2.Circle(mat, new OpenCvSharp.Point(500, 500), 5, Scalar.Red, 3);
 
                 MainWindow.Dispatcher.Invoke(() =>
                 {
                     Indicator.Image = mat;
-                    // Debug.WriteLine($"width: {width} maxWindowWidth: {maxWindowWidth}");
-                    // Debug.WriteLine($"1st {step1done}, 2nd {step2done} 3rd {step3done} 4th {step4done}");
-
                 });
                 Debug.WriteLine($"End: {DateTime.Now:ss.fff}");
-                //Debug.WriteLine("------------------------------------------------");
             }
         }
         #endregion

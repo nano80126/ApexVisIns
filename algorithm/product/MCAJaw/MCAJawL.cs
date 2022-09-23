@@ -45,11 +45,13 @@ namespace MCAJawIns.Algorithm
         /// <summary>
         /// Jaw 左右 enum，013、024等演算法所需 param
         /// </summary>
+#if Deprecated
         public enum JawPos
         {
             Left = 1,
             Right = 2,
-        }
+        } 
+#endif
 
         /// <summary>
         /// ROIs
@@ -67,9 +69,11 @@ namespace MCAJawIns.Algorithm
         };
         #endregion
 
-        public MCAJawL() { }
+        #region 建構子
+        public MCAJawL() { } 
+        #endregion
 
-        #region 測試用
+        #region 單元測試 Methods
         /// <summary>
         /// 顯示換算單位
         /// </summary>
@@ -988,7 +992,7 @@ namespace MCAJawIns.Algorithm
         }
         #endregion
 
-        #region 前面相機
+        #region 前面相機 Front
         /// <summary>
         /// 確認是否有工件 (Cam1)
         /// </summary>
@@ -1660,7 +1664,7 @@ namespace MCAJawIns.Algorithm
         }
         #endregion
 
-        #region 下面相機
+        #region 下面相機 Back
         /// <summary>
         /// 確認是否有工件 (Cam2)
         /// </summary>
@@ -1809,7 +1813,7 @@ namespace MCAJawIns.Algorithm
         }
         #endregion
 
-        #region 側面相機
+        #region 側面相機 Side
         /// <summary>
         /// 確認是否有工件 (Cam3)
         /// </summary>
