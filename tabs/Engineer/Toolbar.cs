@@ -11,7 +11,7 @@ using Basler.Pylon;
 using Microsoft.Win32;
 using OpenCvSharp;
 
-namespace MCAJawIns.Tabs
+namespace MCAJawIns.Tab
 {
     public partial class EngineerTab : StackPanel
     {
@@ -564,7 +564,9 @@ namespace MCAJawIns.Tabs
             {
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
+                    // 關閉 Trigger Mode
                     // cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    // 開始拍攝                    
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
                     // 變更 Flag (連續拍攝)
@@ -572,6 +574,7 @@ namespace MCAJawIns.Tabs
                 }
                 else
                 {
+                    // 停止拍攝
                     cam.Camera.StreamGrabber.Stop();
                     // cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 

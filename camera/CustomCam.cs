@@ -6,29 +6,34 @@ namespace MCAJawIns
 {
     internal interface ICustomCam
     {
+        #region Properties
         public bool IsOpen { get; }
         public string ConfigName { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public double ExposureTime { get; set; }
         public double FPS { get; set; }
-
         public int Frames { get; set; }
+        #endregion
+
+        #region Methods
         public void CreateCam(string argument);
         public void CreateCam(int argument);
         public void Open();
-        public void Close();
+        public void Close(); 
+        #endregion
     }
-
 
     public abstract class CustomCam : ICustomCam, INotifyPropertyChanged
     {
+        #region Fields
+        /// <summary>
+        /// Frames
+        /// </summary>
         private int _frames;
+        #endregion
 
-        // // // // // // // 
-        // 相機物件 ()
-        // // // // // // // 
-
+        #region Properties
         /// <summary>
         /// If camera is opened
         /// </summary>
@@ -68,9 +73,11 @@ namespace MCAJawIns
                 }
             }
         }
+        #endregion
 
+        #region Methods
         /// <summary>
-        /// Create camera function (must be override)
+        /// Create camera (must be override)
         /// </summary>
         /// <param name="argument">輸入參數(必須被型態轉換)</param>
         public virtual void CreateCam(string argument)
@@ -85,6 +92,10 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// Create camera (must be override)
+        /// </summary>
+        /// <param name="argument"></param>
         public virtual void CreateCam(int argument)
         {
             try
@@ -104,24 +115,10 @@ namespace MCAJawIns
         /// <summary>
         /// Close Camera
         /// </summary>
-        public abstract void Close();
+        public abstract void Close(); 
+        #endregion
 
-        // <summary>
-        // 手動觸發 Property Changed
-        // </summary>
-        //public virtual void PropertyChange()
-        //{
-        //    OnPropertyChanged();
-        //}
-
-        /// <summary>
-        /// 外部觸發 Property Changed
-        /// </summary>
-        public virtual void PropertyChange(string propertyName = null)
-        {
-            OnPropertyChanged(propertyName);
-        }
-
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// 內部觸發
@@ -131,5 +128,14 @@ namespace MCAJawIns
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        /// <summary>
+        /// 外部觸發 Property Changed
+        /// </summary>
+        public virtual void PropertyChange(string propertyName = null)
+        {
+            OnPropertyChanged(propertyName);
+        }
+        #endregion
     }
 }

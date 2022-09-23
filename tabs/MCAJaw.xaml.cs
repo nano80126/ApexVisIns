@@ -30,7 +30,7 @@ using MongoDB.Driver;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 using MCAJawInfo = MCAJawIns.Mongo.Info;
 
-namespace MCAJawIns.Tabs
+namespace MCAJawIns.Tab
 {
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯
@@ -940,7 +940,7 @@ namespace MCAJawIns.Tabs
                             // SpinWait.SpinUntil(() => false, );
                             switch (dev.TargetFeature)
                             {
-                                case CameraConfigBase.TargetFeatureType.MCA_Front:
+                                case TargetFeatureType.MCA_Front:
                                     if (!MainWindow.BaslerCams[0].IsConnected)
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
@@ -951,7 +951,7 @@ namespace MCAJawIns.Tabs
                                         }
                                     }
                                     break;
-                                case CameraConfigBase.TargetFeatureType.MCA_Bottom:
+                                case TargetFeatureType.MCA_Bottom:
                                     if (!MainWindow.BaslerCams[1].IsConnected)
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
@@ -962,7 +962,7 @@ namespace MCAJawIns.Tabs
                                         }
                                     }
                                     break;
-                                case CameraConfigBase.TargetFeatureType.MCA_SIDE:
+                                case TargetFeatureType.MCA_SIDE:
                                     if (!MainWindow.BaslerCams[2].IsConnected)
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
@@ -973,7 +973,7 @@ namespace MCAJawIns.Tabs
                                         }
                                     }
                                     break;
-                                case CameraConfigBase.TargetFeatureType.Null:
+                                case TargetFeatureType.Null:
                                     MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                     break;
                                 default:

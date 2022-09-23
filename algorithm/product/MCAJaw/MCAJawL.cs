@@ -6,7 +6,7 @@ using System.Media;
 using System.Threading;
 using System.Threading.Tasks;
 using Basler.Pylon;
-using MCAJawIns.Tabs;
+using MCAJawIns.Tab;
 using MCAJawIns.Product;
 using OpenCvSharp;
 

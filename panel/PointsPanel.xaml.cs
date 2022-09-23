@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using MCAJawIns.Tabs;
+using MCAJawIns.Tab;
 using System.Diagnostics;
 
 namespace MCAJawIns.Panel

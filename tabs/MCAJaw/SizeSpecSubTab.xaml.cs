@@ -15,7 +15,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 
-namespace MCAJawIns.Tabs
+namespace MCAJawIns.Tab
 {
     /// <summary>
     /// SpecSettingList.xaml 的互動邏輯

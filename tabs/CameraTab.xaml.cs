@@ -13,13 +13,15 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using Basler.Pylon;
+//using MCAJawIns._Camera;
 using MCAJawIns.Mongo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Cemera = Basler.Pylon.Camera;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 
-namespace MCAJawIns.Tabs
+namespace MCAJawIns.Tab
 {
     /// <summary>
     /// CameraTab.xaml 的互動邏輯
@@ -575,7 +577,7 @@ namespace MCAJawIns.Tabs
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
-        private static void ReadConfig(Camera camera, CameraConfig config)
+        private static void ReadConfig(Basler.Pylon.Camera camera, CameraConfig config)
         {
             try
             {
@@ -672,7 +674,7 @@ namespace MCAJawIns.Tabs
         /// </summary>
         /// <param name="config">來源組態</param>
         /// <param name="camera">目標相機</param>
-        private static void UpdateConfig(CameraConfig config, Camera camera)
+        private static void UpdateConfig(CameraConfig config, Basler.Pylon.Camera camera)
         {
             try
             {

@@ -17,9 +17,9 @@
                  d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
                  Loaded="CustomCard_Loaded">
     <!--#region Resources -->
-    <ctrl:CustomCard.Resources>
+    <!--<ctrl:CustomCard.Resources>
         <app:BaslerConfig x:Key="BaslerConfig" Name="Default" />
-    </ctrl:CustomCard.Resources>
+    </ctrl:CustomCard.Resources>-->
     <!--#endregion-->
 
     <DockPanel x:Name="Body">

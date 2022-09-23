@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Basler.Pylon;
 using OpenCvSharp;
 using System.Windows.Media;
-using MCAJawIns.Tabs;
+using MCAJawIns.Tab;
 using System.Threading;
 
 namespace MCAJawIns
@@ -540,8 +540,9 @@ namespace MCAJawIns
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
                     // 啟動 StreamGrabber 拍攝一張
-                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
-                    // 
+                    //cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByUser);
+                    cam.Camera.StreamGrabber.Start(1, GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
+
                     // cam.Camera.ExecuteSoftwareTrigger();
                     //_ = cam.Camera.StreamGrabber.RetrieveResult(250, TimeoutHandling.ThrowException);
                 }
@@ -571,7 +572,7 @@ namespace MCAJawIns
                 if (!cam.Camera.StreamGrabber.IsGrabbing)
                 {
                     // 關閉 Trigger Mode
-                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
+                    // cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
                     // 開始拍攝
                     cam.Camera.StreamGrabber.Start(GrabStrategy.LatestImages, GrabLoop.ProvidedByStreamGrabber);
 
@@ -582,8 +583,7 @@ namespace MCAJawIns
                 {
                     // 停止開設
                     cam.Camera.StreamGrabber.Stop();
-                    // 開啟 Trigger Mode
-                    cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
+                    //cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.On);
 
                     // 變更 Flag
                     // cam.IsContinuousGrabbing = false;
@@ -706,25 +706,25 @@ namespace MCAJawIns
             {
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                CameraConfigBase.TargetFeatureType targetFeatureType = (CameraConfigBase.TargetFeatureType)e.GrabResult.StreamGrabberUserData;
+                TargetFeatureType targetFeatureType = (TargetFeatureType)e.GrabResult.StreamGrabberUserData;
 
                 switch (targetFeatureType)
                 {
-                    case CameraConfigBase.TargetFeatureType.MCA_Front:
+                    case TargetFeatureType.MCA_Front:
                         //Debug.WriteLine($"{1}");
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource1 = mat.ToImageSource();
                         });
                         break;
-                    case CameraConfigBase.TargetFeatureType.MCA_Bottom:
+                    case TargetFeatureType.MCA_Bottom:
                         //Debug.WriteLine($"{2}");
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource2 = mat.ToImageSource();
                         });
                         break;
-                    case CameraConfigBase.TargetFeatureType.MCA_SIDE:
+                    case TargetFeatureType.MCA_SIDE:
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource3 = mat.ToImageSource();

@@ -1,17 +1,33 @@
-﻿using Basler.Pylon;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Windows.Data;
+using Basler.Pylon;
+//using MCAJawIns._Camera;
 
 namespace MCAJawIns
 {
+    public enum TargetFeatureType
+    {
+        [Description("(NULL)")]
+        Null = 0,
+        [Description("窗戶")]
+        Window = 1,
+        [Description("耳朵")]
+        Ear = 2,
+        [Description("表面 1")]
+        Surface1 = 3,
+        [Description("表面 2")]
+        Surface2 = 4,
+
+        [Description("MCA Jaw 前部攝影機")]
+        MCA_Front = 11,
+        [Description("MCA Jaw 底部攝影機")]
+        MCA_Bottom = 12,
+        [Description("MCA Jaw 側部攝影機")]
+        MCA_SIDE = 13,
+    }
+
     /// <summary>
     /// Basler Camera Information, for camera enumerator
     /// Basler 相機資訊，相機枚舉器使用
@@ -67,7 +83,7 @@ namespace MCAJawIns
         /// <summary>
         /// 相機 S/N
         /// </summary>
-        public string SerialNumber { get; set; } 
+        public string SerialNumber { get; set; }
         #endregion
     }
 
@@ -80,27 +96,6 @@ namespace MCAJawIns
         #region 建構子
         public CameraConfigBase() { }
         #endregion
-
-        public enum TargetFeatureType
-        {
-            [Description("(NULL)")]
-            Null = 0,
-            [Description("窗戶")]
-            Window = 1,
-            [Description("耳朵")]
-            Ear = 2,
-            [Description("表面 1")]
-            Surface1 = 3,
-            [Description("表面 2")]
-            Surface2 = 4,
-
-            [Description("MCA Jaw 前部攝影機")]
-            MCA_Front = 11,
-            [Description("MCA Jaw 底部攝影機")]
-            MCA_Bottom = 12,
-            [Description("MCA Jaw 側部攝影機")]
-            MCA_SIDE = 13,
-        }
 
         #region Properties
         /// <summary>
@@ -130,7 +125,7 @@ namespace MCAJawIns
         /// <summary>
         /// Basler 相機
         /// </summary>
-        public Camera Camera { get; set; }
+        public Basler.Pylon.Camera Camera { get; set; }
 
         /// <summary>
         /// 相機是否連線
@@ -275,7 +270,7 @@ namespace MCAJawIns
         public BaslerCam(string serialNumber)
         {
             SerialNumber = serialNumber;
-            Camera = new Camera(serialNumber);
+            Camera = new Basler.Pylon.Camera(serialNumber);
         }
         #endregion
 
@@ -287,7 +282,7 @@ namespace MCAJawIns
         public override void CreateCam(string argument)
         {
             SerialNumber = argument;
-            Camera = new Camera(argument);
+            Camera = new Basler.Pylon.Camera(argument);
         }
 
         public override void Open()
@@ -516,17 +511,17 @@ namespace MCAJawIns
     public class CameraConfig : BaslerCamInfo, INotifyPropertyChanged
     {
         #region Fields
-        private CameraConfigBase.TargetFeatureType _targetFeature;
+        private TargetFeatureType _targetFeature;
         //
         #region Basic Info
+        private bool _online;
         private string _deviceVersion;
         private string _firmwareVersion;
-        private bool _online;
         #endregion
         //
         #region UserSet
-        private string _userSet;
         private string[] _userSetEnum;
+        private string _userSet;
         private string _userSetRead;
         #endregion
         //
@@ -544,9 +539,6 @@ namespace MCAJawIns
         #endregion
         //
         #region Acquistion Controls
-        private bool _fixedFPS;
-        private double _fps;
-        //
         private string[] _acquisitionModeEnum;
         private string _acquisitionMode;
         private string[] _triggerSelectorEnum;
@@ -561,6 +553,9 @@ namespace MCAJawIns
         private string[] _exposureAutoEnum;
         private string _exposureAuto;
         private double _exposureTime;
+        //
+        private bool _fixedFPS;
+        private double _fps;
         #endregion
         //
         #region Analog Controls
@@ -595,7 +590,32 @@ namespace MCAJawIns
         } 
         #endregion
 
-        #region 是否在線
+        #region Target Feature
+        /// <summary>
+        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
+        /// </summary>
+        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
+        public TargetFeatureType TargetFeature
+        {
+            get => _targetFeature;
+            set
+            {
+                if (value != _targetFeature)
+                {
+                    _targetFeature = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region Properties
+
+        #region Basic Info
+        /// <summary>
+        /// 組態名稱
+        /// </summary>
+        public string Name { get; set; }
         /// <summary>
         /// 相機是否在線
         /// </summary>
@@ -611,28 +631,7 @@ namespace MCAJawIns
                 }
             }
         }
-        #endregion
 
-        #region Target Feature
-        /// <summary>
-        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
-        /// </summary>
-        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
-        public CameraConfigBase.TargetFeatureType TargetFeature
-        {
-            get => _targetFeature;
-            set
-            {
-                if (value != _targetFeature)
-                {
-                    _targetFeature = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        #endregion
-
-        #region 基本相機 Info
         public string DeviceVersion
         {
             get => _deviceVersion;
@@ -660,7 +659,22 @@ namespace MCAJawIns
         }
         #endregion
 
-        #region 基本相機 Config 
+        #region UserSet
+        /// <summary>
+        /// UserSet Enum
+        /// </summary>
+        public string[] UserSetEnum
+        {
+            get => _userSetEnum;
+            set
+            {
+                _userSetEnum = value;
+                OnPropertyChanged(nameof(UserSetEnum));
+            }
+        }
+        /// <summary>
+        /// 欲讀取之 UserSet
+        /// </summary>
         public string UserSet
         {
             get => _userSet;
@@ -674,18 +688,8 @@ namespace MCAJawIns
             }
         }
 
-        public string[] UserSetEnum
-        {
-            get => _userSetEnum;
-            set
-            {
-                _userSetEnum = value;
-                OnPropertyChanged(nameof(UserSetEnum));
-            }
-        }
-
         /// <summary>
-        /// 已讀取
+        /// 已讀取之 UserSet
         /// </summary>
         public string UserSetRead
         {
@@ -698,15 +702,10 @@ namespace MCAJawIns
                     OnPropertyChanged(nameof(UserSetRead));
                 }
             }
-        }
+        } 
+        #endregion
 
-        /// <summary>
-        /// 組態名稱
-        /// </summary>
-        public string Name { get; set; }
-
-        #region AOI Controls (Classify by Basler Pylon)
-
+        #region AOI Controls
         /// <summary>
         /// Sensor 寬度
         /// </summary>
@@ -1007,6 +1006,9 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// Trigger Source
+        /// </summary>
         public string TriggerSource
         {
             get => _triggerSource;
@@ -1015,6 +1017,80 @@ namespace MCAJawIns
                 if (value != _triggerSource)
                 {
                     _triggerSource = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 曝光模式列舉
+        /// </summary>
+        public string[] ExposureModeEnum
+        {
+            get => _exposureModeEnum;
+            set
+            {
+                _exposureModeEnum = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 曝光模式
+        /// </summary>
+        public string ExposureMode
+        {
+            get => _exposureMode;
+            set
+            {
+                if (value != _exposureMode)
+                {
+                    _exposureMode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 自動曝光列舉
+        /// </summary>
+        public string[] ExposureAutoEnum
+        {
+            get => _exposureAutoEnum;
+            set
+            {
+                _exposureAutoEnum = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 自動曝光
+        /// </summary>
+        public string ExposureAuto
+        {
+            get => _exposureAuto;
+            set
+            {
+                if (value != _exposureAuto)
+                {
+                    _exposureAuto = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 曝光時間
+        /// </summary>
+        public double ExposureTime
+        {
+            get => _exposureTime;
+            set
+            {
+                if (value != _exposureTime)
+                {
+                    _exposureTime = value;
                     OnPropertyChanged();
                 }
             }
@@ -1051,76 +1127,7 @@ namespace MCAJawIns
                 }
             }
         }
-
-        /// <summary>
-        /// 曝光模式(名稱待變更)
-        /// </summary>
-        public string[] ExposureModeEnum
-        {
-            get => _exposureModeEnum;
-            set
-            {
-                _exposureModeEnum = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string ExposureMode
-        {
-            get => _exposureMode;
-            set
-            {
-                if (value != _exposureMode)
-                {
-                    _exposureMode = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 自動曝光()
-        /// </summary>
-        public string[] ExposureAutoEnum
-        {
-            get => _exposureAutoEnum;
-            set
-            {
-                _exposureAutoEnum = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string ExposureAuto
-        {
-            get => _exposureAuto;
-            set
-            {
-                if (value != _exposureAuto)
-                {
-                    _exposureAuto = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 曝光時間
-        /// </summary>
-        public double ExposureTime
-        {
-            get => _exposureTime;
-            set
-            {
-                if (value != _exposureTime)
-                {
-                    _exposureTime = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
         #endregion
-
 
         #region Analog Controls
         /// <summary>
@@ -1168,7 +1175,6 @@ namespace MCAJawIns
             }
         }
 
-
         public int BlackLevel
         {
             get => _blackLevel;
@@ -1198,9 +1204,8 @@ namespace MCAJawIns
             }
         }
 
-
         /// <summary>
-        /// Gamma 選擇列舉
+        /// Gamma 選擇器列舉
         /// </summary>
         public string[] GammaSelectorEnum
         {
@@ -1228,7 +1233,6 @@ namespace MCAJawIns
             }
         }
 
-
         /// <summary>
         /// Gamma
         /// </summary>
@@ -1246,28 +1250,6 @@ namespace MCAJawIns
         }
         #endregion
 
-#if false
-        ///// <summary>
-        ///// 相機全名
-        ///// </summary>
-        //public string CameraName { get; set; }
-        ///// <summary>
-        ///// 相機型號 
-        ///// </summary>
-        //public string Model { get; set; }
-        ///// <summary>
-        ///// 相機IP
-        ///// </summary>
-        //public string IP { get; set; }
-        ///// <summary>
-        ///// 相機 MAC
-        ///// </summary>
-        //public string MAC { get; set; }
-        ///// <summary>
-        ///// 相機 S / N
-        ///// </summary>
-        //public string SerialNumber { get; set; }  
-#endif
         #endregion
 
         #region Property Changed Event

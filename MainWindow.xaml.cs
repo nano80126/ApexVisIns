@@ -9,7 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using MaterialDesignThemes.Wpf;
-using MCAJawIns.Tabs;
+using MCAJawIns.Tab;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

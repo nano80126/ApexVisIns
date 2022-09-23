@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Basler.Pylon;
-using MCAJawIns.Tabs;
+using MCAJawIns.Tab;
 
 namespace MCAJawIns.Panel
 {
@@ -16,29 +16,35 @@ namespace MCAJawIns.Panel
     /// </summary>
     public partial class ConfigPanel : Control.CustomCard
     {
-#if false
+        #region Fields
         /// <summary>
-        /// 繼承 主視窗
+        /// Config 路徑
         /// </summary>
-        public MainWindow MainWindow { get; set; }
-#endif
+        private readonly string configsDirectory = @"./configs";
+
+        /// <summary>
+        /// Basler Camera Obj
+        /// </summary>
+        private BaslerCam cam;
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// MainWindow
+        /// </summary>
+        public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
         /// <summary>
         /// 上層視窗 (待確認)
         /// </summary>
         public EngineerTab EngineerTab { get; set; }
-        /// <summary>
-        /// Basler Camera Obj
-        /// </summary>
-        public BaslerCam Cam { get; set; }
 
+#if temporary
         /// <summary>
         /// Basler 組態
         /// </summary>
-        public BaslerConfig BaslerConfig { get; set; }
-        /// <summary>
-        /// Config 路徑
-        /// </summary>
-        private string ConfigsDirectory { get; } = @"./configs";
+        public BaslerConfig BaslerConfig { get; set; } 
+#endif
+        #endregion
 
         public ConfigPanel()
         {
@@ -47,12 +53,14 @@ namespace MCAJawIns.Panel
 
         private void CustomCard_Loaded(object sender, RoutedEventArgs e)
         {
-            Cam = DataContext as BaslerCam;
+            cam = DataContext as BaslerCam;
 
-            if (BaslerConfig == null)
-            {
-                BaslerConfig = FindResource(nameof(BaslerConfig)) as BaslerConfig;
-            }
+#if temporary
+            //if (BaslerConfig == null)
+            //{
+            //    BaslerConfig = FindResource(nameof(BaslerConfig)) as BaslerConfig;
+            //}  
+#endif
         }
 
         /// <summary>
@@ -86,7 +94,7 @@ namespace MCAJawIns.Panel
 
         private void ConfigPopupBox_Opened(object sender, RoutedEventArgs e)
         {
-            Cam = DataContext as BaslerCam;
+            cam = DataContext as BaslerCam;
 
             Initialize_JsonFile();
 
@@ -95,7 +103,7 @@ namespace MCAJawIns.Panel
 
         private void ConfigPopupBox_Closed(object sender, RoutedEventArgs e)
         {
-            if (Cam?.Camera != null) { SyncConfiguration(Cam.Config, Cam); }
+            if (cam?.Camera != null) { SyncConfiguration(cam.Config, cam); }
 
             // 重置 Selected Index
             ConfigSelector.SelectedIndex = -1;
@@ -106,9 +114,9 @@ namespace MCAJawIns.Panel
         /// </summary>
         private void Initialize_JsonFile()
         {
-            if (string.IsNullOrEmpty(Cam?.ModelName)) { return; }
+            if (string.IsNullOrEmpty(cam?.ModelName)) { return; }
 
-            string path = $@"{ConfigsDirectory}/{Cam.ModelName}";
+            string path = $@"{configsDirectory}/{cam.ModelName}";
 
             if (Directory.Exists(path))
             {
@@ -117,9 +125,9 @@ namespace MCAJawIns.Panel
 
                 foreach (string file in files)
                 {
-                    if (!Cam.ConfigList.Contains(file))
+                    if (!cam.ConfigList.Contains(file))
                     {
-                        Cam.ConfigList.Add(file);
+                        cam.ConfigList.Add(file);
                     }
                 }
             }
@@ -149,7 +157,7 @@ namespace MCAJawIns.Panel
 
             if (!string.IsNullOrWhiteSpace(file))
             {
-                string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{file}.json";
+                string path = $@"{configsDirectory}/{cam.ModelName}/{file}.json";
 
                 if (File.Exists(path))
                 {
@@ -159,12 +167,12 @@ namespace MCAJawIns.Panel
                     BaslerConfig config = JsonSerializer.Deserialize<BaslerConfig>(json);
 
                     #region 更新當前 Basler Config
-                    Cam.Config.Name = config.Name;
-                    Cam.Config.Width = config.Width;
-                    Cam.Config.Height = config.Height;
-                    Cam.Config.FPS = config.FPS;
-                    Cam.Config.ExposureTime = config.ExposureTime;
-                    Cam.Config.Save();
+                    cam.Config.Name = config.Name;
+                    cam.Config.Width = config.Width;
+                    cam.Config.Height = config.Height;
+                    cam.Config.FPS = config.FPS;
+                    cam.Config.ExposureTime = config.ExposureTime;
+                    cam.Config.Save();
                     #endregion
                 }
                 else
@@ -176,67 +184,67 @@ namespace MCAJawIns.Panel
 
         private void ConfigSaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{Cam.Config.Name}.json";
+            string path = $@"{configsDirectory}/{cam.ModelName}/{cam.Config.Name}.json";
             bool IsExist = File.Exists(path);
 
-            string jsonStr = JsonSerializer.Serialize(Cam.Config, new JsonSerializerOptions() { WriteIndented = true });
+            string jsonStr = JsonSerializer.Serialize(cam.Config, new JsonSerializerOptions() { WriteIndented = true });
             File.WriteAllText(path, jsonStr);
-            Cam.Config.Save();
+            cam.Config.Save();
 
             if (!IsExist)   // 若原先不存在，則新增
             {
-                Cam.ConfigList.Add(Cam.Config.Name);
+                cam.ConfigList.Add(cam.Config.Name);
             }
         }
 
         private void ConfigWriteBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Cam?.Camera != null)
+            if (cam?.Camera != null)
             {
                 // BaslerCam baslerCam = MainWindow.BaslerCam;
-                Camera camera = Cam.Camera;
+                Camera camera = cam.Camera;
 
                 // BaslerCam.ConfigName = BaslerCam.Config.Name;
-                Cam.ConfigName = Cam.Config.Name;
+                cam.ConfigName = cam.Config.Name;
 
                 // 歸零 offset
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
                 // 嘗試寫入 Width
-                if (!camera.Parameters[PLGigECamera.Width].TrySetValue(Cam.Config.Width))
+                if (!camera.Parameters[PLGigECamera.Width].TrySetValue(cam.Config.Width))
                 {
                     camera.Parameters[PLGigECamera.Width].SetToMaximum();
                 }
-                Cam.Config.Width = Cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                cam.Config.Width = cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
 
                 // 嘗試寫入 Height
-                if (!camera.Parameters[PLGigECamera.Height].TrySetValue(Cam.Config.Height))
+                if (!camera.Parameters[PLGigECamera.Height].TrySetValue(cam.Config.Height))
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();
                 }
-                Cam.Config.Height = Cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
 
                 // Width、Height 已變更, 更新 Offset Max 
-                Cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
-                Cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
+                cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
+                cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
 
                 // ROI 置中
                 camera.Parameters[PLGigECamera.CenterX].SetValue(true);                 // 會鎖定 Offset
                 camera.Parameters[PLGigECamera.CenterY].SetValue(true);                 // 會鎖定 Offset
-                Cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();  // 取得當前 OffsetX
-                Cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();  // 取得當前 OffsetY
+                cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();  // 取得當前 OffsetX
+                cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();  // 取得當前 OffsetY
                 camera.Parameters[PLGigECamera.CenterX].SetValue(false);                // 解鎖 Center
                 camera.Parameters[PLGigECamera.CenterY].SetValue(false);                // 解鎖 Center 
 
                 // 寫入 FPS
-                camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(Cam.Config.FPS);
-                Cam.Config.FPS = Cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(cam.Config.FPS);
+                cam.Config.FPS = cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
 
                 // 寫入曝光時間
-                camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(Cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
-                Cam.Config.ExposureTime = Cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
-                Cam.PropertyChange();
+                camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
+                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+                cam.PropertyChange();
 
                 // 重置 ImageSource，因為 Width & Height 有變更
                 EngineerTab.Indicator.Image = null;
@@ -258,13 +266,13 @@ namespace MCAJawIns.Panel
 
             if (MessageBox.Show("是否確認刪除?", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                string path = $@"{ConfigsDirectory}/{Cam.ModelName}/{file}.json";
+                string path = $@"{configsDirectory}/{cam.ModelName}/{file}.json";
 
                 if (File.Exists(path))
                 {
                     File.Delete(path);
 
-                    _ = Cam.ConfigList.Remove(file);
+                    _ = cam.ConfigList.Remove(file);
                 }
             }
         }

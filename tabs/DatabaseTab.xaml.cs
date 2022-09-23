@@ -15,7 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 
-namespace MCAJawIns.Tabs
+namespace MCAJawIns.Tab
 {
     /// <summary>
     /// DatabaseTab.xaml 的互動邏輯
