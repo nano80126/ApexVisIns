@@ -14,7 +14,7 @@ using MCAJawInfo = MCAJawIns.Mongo.Info;
 using System.Text.Json;
 using System.IO;
 
-namespace MCAJawIns.content
+namespace MCAJawIns.Tabs
 {
     /// <summary>
     /// SystemInfoTab.xaml 的互動邏輯

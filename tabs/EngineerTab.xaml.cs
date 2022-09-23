@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace MCAJawIns.content
+namespace MCAJawIns.Tabs
 {
     /// <summary>
     /// Programming.xaml 的互動邏輯

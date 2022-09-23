@@ -11,7 +11,7 @@ using Basler.Pylon;
 using Microsoft.Win32;
 using OpenCvSharp;
 
-namespace MCAJawIns.content
+namespace MCAJawIns.Tabs
 {
     public partial class EngineerTab : StackPanel
     {

@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Basler.Pylon;
-using MCAJawIns.content;
+using MCAJawIns.Tabs;
 
 namespace MCAJawIns.Panel
 {

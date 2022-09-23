@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System;
-using MCAJawIns.content;
+using MCAJawIns.Tabs;
 using System.Globalization;
 
 namespace MCAJawIns

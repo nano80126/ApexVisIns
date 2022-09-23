@@ -1,11 +1,11 @@
-﻿<StackPanel x:Class="MCAJawIns.content.CameraTab" 
+﻿<StackPanel x:Class="MCAJawIns.Tabs.CameraTab" 
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:app="clr-namespace:MCAJawIns"
-            xmlns:local="clr-namespace:MCAJawIns.content" 
+            xmlns:local="clr-namespace:MCAJawIns.Tabs" 
             xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
 

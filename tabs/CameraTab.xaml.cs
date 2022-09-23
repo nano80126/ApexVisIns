@@ -19,7 +19,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 
-namespace MCAJawIns.content
+namespace MCAJawIns.Tabs
 {
     /// <summary>
     /// CameraTab.xaml 的互動邏輯

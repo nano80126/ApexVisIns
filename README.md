@@ -147,6 +147,8 @@ MCA Jaw CCD 尺寸量測設備
 
  * [ ] TargetFeatureType in BaslerCam.CameraConfigBase move to namespace
 
+ * [ ] 整理 CameraConfig in BaslerCam.cs
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

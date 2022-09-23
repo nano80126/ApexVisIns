@@ -30,7 +30,7 @@ using MongoDB.Driver;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 using MCAJawInfo = MCAJawIns.Mongo.Info;
 
-namespace MCAJawIns.content
+namespace MCAJawIns.Tabs
 {
     /// <summary>
     /// MCAJaw.xaml 的互動邏輯

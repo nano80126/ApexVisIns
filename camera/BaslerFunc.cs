@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Basler.Pylon;
 using OpenCvSharp;
 using System.Windows.Media;
-using MCAJawIns.content;
+using MCAJawIns.Tabs;
 using System.Threading;
 
 namespace MCAJawIns

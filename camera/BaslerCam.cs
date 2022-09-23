@@ -126,26 +126,6 @@ namespace MCAJawIns
         private int _offsetY;
         #endregion
 
-        #region 建構子
-        /// <summary>
-        /// 相機建構子
-        /// </summary>
-        public BaslerCam()
-        {
-            //
-        }
-
-        /// <summary>
-        /// 相機建構子
-        /// </summary>
-        /// <param name="serialNumber">S/N</param>
-        public BaslerCam(string serialNumber)
-        {
-            SerialNumber = serialNumber;
-            Camera = new Camera(serialNumber);
-        }
-        #endregion
-
         #region Properties
         /// <summary>
         /// Basler 相機
@@ -279,6 +259,27 @@ namespace MCAJawIns
         public ObservableCollection<string> ConfigList { get; set; } = new ObservableCollection<string>();
         #endregion
 
+        #region 建構子
+        /// <summary>
+        /// 相機建構子
+        /// </summary>
+        public BaslerCam()
+        {
+            //
+        }
+
+        /// <summary>
+        /// 相機建構子
+        /// </summary>
+        /// <param name="serialNumber">S/N</param>
+        public BaslerCam(string serialNumber)
+        {
+            SerialNumber = serialNumber;
+            Camera = new Camera(serialNumber);
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// Create camera object, call this function before open camera
         /// </summary>
@@ -336,7 +337,8 @@ namespace MCAJawIns
                 Camera = null;
             }
             _disposed = true;
-        }
+        } 
+        #endregion
 
         // 手動觸發 Property Change
         //public void PropertyChange()
@@ -364,27 +366,16 @@ namespace MCAJawIns
     /// </summary>
     public class BaslerConfig : INotifyPropertyChanged
     {
+        #region Fields
         private string _name = string.Empty;
         private int _width;
         private int _height;
         private double _fps;
         private double _exposureTimeAbs;
         private bool _saved;
+        #endregion
 
-        public BaslerConfig()
-        {
-        }
-
-        public BaslerConfig(string name)
-        {
-            this.Name = name;
-        }
-
-        /// <summary>
-        /// 組態列表
-        /// </summary>
-        //public ObservableCollection<string> ConfigList { get; set; } = new ObservableCollection<string>();
-
+        #region Properties
         /// <summary>
         /// 組態名稱
         /// </summary>
@@ -479,26 +470,43 @@ namespace MCAJawIns
                     OnPropertyChanged(nameof(Saved));
                 }
             }
+        } 
+        #endregion
+
+        #region 建構子
+        public BaslerConfig()
+        {
         }
+
+        public BaslerConfig(string name)
+        {
+            this.Name = name;
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// 變更儲存狀態為已儲存
         /// </summary>
         public void Save()
         {
             Saved = true;
-        }
+        } 
+        #endregion
 
         //public void PropertyChange(string propertyName)
         //{
         //    OnPropertyChanged(propertyName);
         //}
 
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 
     /// <summary>
@@ -507,19 +515,35 @@ namespace MCAJawIns
     /// </summary>
     public class CameraConfig : BaslerCamInfo, INotifyPropertyChanged
     {
+        #region Fields
         private CameraConfigBase.TargetFeatureType _targetFeature;
         //
+        #region Basic Info
+        private string _deviceVersion;
+        private string _firmwareVersion;
+        private bool _online;
+        #endregion
+        //
+        #region UserSet
         private string _userSet;
         private string[] _userSetEnum;
         private string _userSetRead;
+        #endregion
         //
+        #region AOI Controls
+        private int _sensorWidth;
+        private int _sensorHeight;
         private int _width;
         private int _height;
         private int _maxWidth;
         private int _maxHeight;
         private int _offsetX;
         private int _offsetY;
+        private bool _centerX;
+        private bool _centerY;
+        #endregion
         //
+        #region Acquistion Controls
         private bool _fixedFPS;
         private double _fps;
         //
@@ -537,14 +561,9 @@ namespace MCAJawIns
         private string[] _exposureAutoEnum;
         private string _exposureAuto;
         private double _exposureTime;
-        private string _deviceVersion;
-        private string _firmwareVersion;
-        private int _sensorWidth;
-        private int _sensorHeight;
-        private bool _centerX;
-        private bool _centerY;
-        private bool _online;
+        #endregion
         //
+        #region Analog Controls
         private string[] _gainAutoEnum;
         private string _gainAuto;
         private int _gain;
@@ -553,8 +572,11 @@ namespace MCAJawIns
         private string[] _gammaSelectorEnum;
         private string _gammaSelector;
         private double _gamma;
-        // 
+        #endregion
+        //  
+        #endregion
 
+        #region 建構子
         /// <summary>
         /// .xaml 使用 (一般不使用)
         /// </summary>
@@ -570,7 +592,8 @@ namespace MCAJawIns
         /// <param name="serialNumber">相機S/N</param>
         public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
-        }
+        } 
+        #endregion
 
         #region 是否在線
         /// <summary>
