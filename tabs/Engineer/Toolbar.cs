@@ -41,7 +41,7 @@ namespace MCAJawIns.Tab
         {
             ToggleButton Toggle = sender as ToggleButton;
 
-            BaslerCamInfo info = CamSelector.SelectedItem as BaslerCamInfo;
+            CameraConfigBase info = CamSelector.SelectedItem as CameraConfigBase;
             int idx = CamSelector.SelectedIndex;
 
             //Toggle.IsChecked = BaslerFunc.Basler_Connect(MainWindow.BaslerCams[idx], info.SerialNumber);

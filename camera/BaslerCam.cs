@@ -8,114 +8,8 @@ using Basler.Pylon;
 namespace MCAJawIns
 {
     /// <summary>
-    /// 相機目標特徵
-    /// </summary>
-    public enum TargetFeatureType
-    {
-        [Description("(NULL)")]
-        Null = 0,
-        [Description("窗戶")]
-        Window = 1,
-        [Description("耳朵")]
-        Ear = 2,
-        [Description("表面 1")]
-        Surface1 = 3,
-        [Description("表面 2")]
-        Surface2 = 4,
-
-        [Description("MCA Jaw 前部攝影機")]
-        MCA_Front = 11,
-        [Description("MCA Jaw 底部攝影機")]
-        MCA_Bottom = 12,
-        [Description("MCA Jaw 側部攝影機")]
-        MCA_SIDE = 13,
-    }
-
-    /// <summary>
-    /// Basler Camera Information, for camera enumerator
-    /// Basler 相機資訊，相機枚舉器使用
-    /// </summary>
-    public class BaslerCamInfo
-    {
-        #region 建構子
-        public BaslerCamInfo() { }
-
-        /// <summary>
-        /// 建構式
-        /// </summary>
-        /// <param name="fullName">相機全名</param>
-        /// <param name="model">相機 model</param>
-        /// <param name="ip">相機 IP</param>
-        /// <param name="mac">相機 mac</param>
-        /// <param name="serialNumber">相機 S/N</param>
-        public BaslerCamInfo(string fullName, string model, string ip, string mac, string serialNumber)
-        {
-            FullName = fullName;
-            Model = model;
-            IP = ip;
-            MAC = mac;
-            SerialNumber = serialNumber;
-        }
-        #endregion
-
-        #region Properties
-        /// <summary>
-        /// 供應商名稱
-        /// </summary>
-        public string VendorName { get; set; }
-        /// <summary>
-        /// 相機全名
-        /// </summary>
-        public string FullName { get; set; }
-        /// <summary>
-        /// 相機 Model
-        /// </summary>
-        public string Model { get; set; }
-        /// <summary>
-        /// 相機類型
-        /// </summary>
-        public string CameraType { get; set; }
-        /// <summary>
-        /// 相機 IP
-        /// </summary>
-        public string IP { get; set; }
-        /// <summary>
-        /// 相機 mac
-        /// </summary>
-        public string MAC { get; set; }
-        /// <summary>
-        /// 相機 S/N
-        /// </summary>
-        public string SerialNumber { get; set; }
-        #endregion
-    }
-
-    /// <summary>
-    /// CameraConfigs 儲存用基底，
-    /// 繼承 BaslerCamInfo，新增Target Feature Type
-    /// </summary>
-    public class CameraConfigBase : BaslerCamInfo
-    {
-        #region 建構子
-        public CameraConfigBase() { }
-
-        public CameraConfigBase(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
-        {
-        }
-        #endregion
-
-        #region Properties
-        /// <summary>
-        /// 目標特徵
-        /// </summary>
-        public virtual TargetFeatureType TargetFeature { get; set; }
-        #endregion
-    }
-
-
-    /// <summary>
-    /// Basler Camera Basic setting
-    /// Basler 相機基本設定
+    /// Basler Camera 物件
+    /// <para>包含 Camera, 狀態, 與基本 AOI 屬性</para>
     /// </summary>
     public class BaslerCam : CustomCam, IDisposable
     {
@@ -132,7 +26,7 @@ namespace MCAJawIns
         /// <summary>
         /// Basler 相機
         /// </summary>
-        public Basler.Pylon.Camera Camera { get; set; }
+        public Camera Camera { get; set; }
 
         /// <summary>
         /// 相機是否連線
@@ -343,28 +237,27 @@ namespace MCAJawIns
         #endregion
 
         // 手動觸發 Property Change
-        //public void PropertyChange()
-        //{
-        //    OnPropertyChanged();
-        //}
+        // public void PropertyChange()
+        // {
+        //     OnPropertyChanged();
+        // }
 
-        //public void PropertyChange(string propertyName)
-        //{
-        //    OnPropertyChanged(propertyName);
-        //}
+        // public void PropertyChange(string propertyName)
+        // {
+        //     OnPropertyChanged(propertyName);
+        // }
 
-        //public event PropertyChangedEventHandler PropertyChanged;
+        // public event PropertyChangedEventHandler PropertyChanged;
 
-        //private void OnPropertyChanged(string propertyName = null)
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
+        // private void OnPropertyChanged(string propertyName = null)
+        // {
+        //     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // }
     }
-
 
     /// <summary>
     /// Basler 組態,
-    /// ConfigPanel 使用 (EngineerTab 內)
+    /// <para>Config Panel 使用</para>
     /// </summary>
     public class BaslerConfig : INotifyPropertyChanged
     {
@@ -496,10 +389,10 @@ namespace MCAJawIns
         }
         #endregion
 
-        //public void PropertyChange(string propertyName)
-        //{
-        //    OnPropertyChanged(propertyName);
-        //}
+        // public void PropertyChange(string propertyName)
+        // {
+        //     OnPropertyChanged(propertyName);
+        // }
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
@@ -512,13 +405,136 @@ namespace MCAJawIns
     }
 
     /// <summary>
-    /// Camera 組態, 較為 Detail, 
-    /// CameraTab 內使用
+    /// 相機目標特徵
     /// </summary>
-    public class CameraConfig : CameraConfigBase, INotifyPropertyChanged
+    public enum TargetFeature
+    {
+        [Description("(NULL)")]
+        Null = 0,
+        [Description("窗戶")]
+        Window = 1,
+        [Description("耳朵")]
+        Ear = 2,
+        [Description("表面 1")]
+        Surface1 = 3,
+        [Description("表面 2")]
+        Surface2 = 4,
+
+        [Description("MCA Jaw 前部攝影機")]
+        MCA_Front = 11,
+        [Description("MCA Jaw 底部攝影機")]
+        MCA_Bottom = 12,
+        [Description("MCA Jaw 側部攝影機")]
+        MCA_SIDE = 13,
+    }
+
+    /// <summary>
+    /// Basler Camera Information, for camera enumerator
+    /// Basler 相機資訊，相機枚舉器使用
+    /// </summary>
+    public class CameraConfigBase
+    {
+        #region 建構子
+        public CameraConfigBase() { }
+
+        /// <summary>
+        /// 建構式
+        /// </summary>
+        /// <param name="fullName">相機全名</param>
+        /// <param name="model">相機 model</param>
+        /// <param name="ip">相機 IP</param>
+        /// <param name="mac">相機 mac</param>
+        /// <param name="serialNumber">相機 S/N</param>
+        public CameraConfigBase(string fullName, string model, string ip, string mac, string serialNumber)
+        {
+            FullName = fullName;
+            Model = model;
+            IP = ip;
+            MAC = mac;
+            SerialNumber = serialNumber;
+        }
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// 供應商名稱
+        /// </summary>
+        public virtual string VendorName { get; set; }
+        /// <summary>
+        /// 相機全名
+        /// </summary>
+        public virtual string FullName { get; set; }
+        /// <summary>
+        /// 相機 Model
+        /// </summary>
+        public virtual string Model { get; set; }
+        /// <summary>
+        /// 相機類型
+        /// </summary>
+        public virtual string CameraType { get; set; }
+        /// <summary>
+        /// 相機 IP
+        /// </summary>
+        public virtual string IP { get; set; }
+        /// <summary>
+        /// 相機 mac
+        /// </summary>
+        public virtual string MAC { get; set; }
+        /// <summary>
+        /// 相機 S/N
+        /// </summary>
+        public virtual string SerialNumber { get; set; }
+        #endregion
+    }
+
+    /// <summary>
+    /// CameraConfigs 儲存用基底
+    /// <para>繼承 Basler Camera 基本屬性，並加上 Target Feature Type</para>
+    /// </summary>
+    public class CameraConfigBaseWithTarget : CameraConfigBase
+    {
+        #region 建構子
+        public CameraConfigBaseWithTarget() { }
+
+        public CameraConfigBaseWithTarget(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        {
+        }
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// 目標特徵
+        /// <para>綁定到相機 UserData</para>
+        /// </summary>
+        public virtual TargetFeature TargetFeature { get; set; }
+        #endregion
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler BasicPropertyChanged;
+        protected void OnBasicPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            System.Diagnostics.Debug.WriteLine($"{propertyName} BaslerCam.cs line: 516 ");
+            BasicPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void BasicPropertyChange(string propertyName = null)
+        {
+            BasicPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// Camera 組態，CameraTab 內使用
+    /// <para>Basic Properties</para>
+    /// <para>AOI Controls</para>
+    /// <para>Acquistion Controls</para>
+    /// <para>Analog Controls</para>
+    /// </summary>
+    public class CameraConfig : CameraConfigBaseWithTarget, INotifyPropertyChanged
     {
         #region Fields
-        private TargetFeatureType _targetFeature;
+        //private TargetFeature _targetFeature;
         //
         #region Basic Info
         private bool _online;
@@ -597,18 +613,42 @@ namespace MCAJawIns
         }
         #endregion
 
-        #region Target Feature
-        /// <summary>
-        /// 相機目標特徵，綁定到相機 UserData
-        /// </summary>
-        public override TargetFeatureType TargetFeature
+        #region Base Properties
+        //public override TargetFeature TargetFeature
+        //{
+        //    get => _targetFeature;
+        //    set
+        //    {
+        //        if (value != _targetFeature)
+        //        {
+        //            _targetFeature = value;
+        //            OnPropertyChanged();
+        //        }
+        //    }
+        //}
+        public override TargetFeature TargetFeature
         {
-            get => _targetFeature;
+            get => base.TargetFeature;
             set
             {
-                if (value != _targetFeature)
+                if (value != base.TargetFeature)
                 {
-                    _targetFeature = value;
+                    base.TargetFeature = value;
+                    OnBasicPropertyChanged();
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public override string IP
+        {
+            get => base.IP;
+            set
+            {
+                if (value != base.IP)
+                {
+                    base.IP = value;
+                    OnBasicPropertyChanged();
                     OnPropertyChanged();
                 }
             }
@@ -617,7 +657,10 @@ namespace MCAJawIns
 
         #region Properties
 
+
         #region Basic Info
+        //public override string IP { get => base.IP; set => base.IP = value; }
+
         /// <summary>
         /// 相機是否在線
         /// </summary>

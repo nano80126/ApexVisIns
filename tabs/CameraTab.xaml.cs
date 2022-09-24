@@ -159,22 +159,18 @@ namespace MCAJawIns.Tab
 
                     if (cfg != null)
                     {
-                        CameraConfigBase[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
-
-                        // foreach (CameraConfigBase item in cameras)
-                        // {
-                        //      Debug.WriteLine($"{item.SerialNumber} {item.Model} {item.VendorName}");
-                        // }
+                        // 資料庫儲存之相機
+                        CameraConfigBaseWithTarget[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseWithTarget>(x.ToBsonDocument())).ToArray();
 
                         // 目前有連線的相機
-                        BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+                        CameraConfigBase[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
 
                         // JSON FILE 儲存之 CameraConfig
                         CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
 
                         if (cameras.Length > cameraConfig.Length)
                         {
-                            foreach (CameraConfigBase d in cameras)
+                            foreach (CameraConfigBaseWithTarget d in cameras)
                             {
                                 if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
                                 {
@@ -218,17 +214,17 @@ namespace MCAJawIns.Tab
                     if (jsonStr != string.Empty)
                     {
                         // 反序列化，載入JSON FILE
-                        CameraConfigBase[] cameras = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                        CameraConfigBaseWithTarget[] cameras = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
 
                         // 目前有連線的相機
-                        BaslerCamInfo[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
+                        CameraConfigBase[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
 
                         // JSON FILE 儲存之 CameraConfig
                         CameraConfig[] cameraConfig = MainWindow?.CameraEnumer.CameraConfigs.ToArray();
 
                         if (cameras.Length > cameraConfig.Length)
                         {
-                            foreach (CameraConfigBase d in cameras)
+                            foreach (CameraConfigBaseWithTarget d in cameras)
                             {
                                 if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
                                 {
@@ -278,7 +274,7 @@ namespace MCAJawIns.Tab
         /// <param name="e"></param>
         private void CameraAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (CameraSelector.SelectedItem is BaslerCamInfo info)
+            if (CameraSelector.SelectedItem is CameraConfigBase info)
             {
                 ObservableCollection<CameraConfig> cameraConfigs = MainWindow.CameraEnumer.CameraConfigs;
 
@@ -404,7 +400,7 @@ namespace MCAJawIns.Tab
         {
             string path = $@"{Directory.GetCurrentDirectory()}\{camerasDirectory}\{camerasPath}";
 
-            CameraConfigBase[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBase()
+            CameraConfigBaseWithTarget[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBaseWithTarget()
             {
                 VendorName = item.VendorName,
                 FullName = item.FullName,
@@ -436,7 +432,7 @@ namespace MCAJawIns.Tab
             try
             {
                 BsonArray bsonArray = new BsonArray(infos.Length);
-                foreach (CameraConfigBase item in infos)
+                foreach (CameraConfigBaseWithTarget item in infos)
                 {
                     _ = bsonArray.Add(item.ToBsonDocument());
                 }
@@ -584,12 +580,14 @@ namespace MCAJawIns.Tab
                 config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
 
                 // 更新 IP
-                string ip = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
-                if (ip != config.IP)
-                {
-                    config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
-                    config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
-                }
+                config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                //string ip = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                //if (ip != config.IP)
+                //{
+                //    config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                //    config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
+                //    // config.OnBasicPropertyChange(nameof.confi);
+                //}
 
                 #region UserSet
                 config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();

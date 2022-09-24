@@ -117,9 +117,9 @@ MCA Jaw CCD 尺寸量測設備
 					=>	MainUISubTab.xaml
 					=>	SizeSpecSubTab.xaml
 
-* [ ] 刪除量測用的 TextBlock 和 Binding
+* [x] 刪除量測用的 TextBlock 和 Binding
 
-* [ ] SizeSpecSubTab 調整 UI
+* [x] SizeSpecSubTab 調整 UI
 
 * [x] 確認 JawResultGroup.SizeSpecList 已被取代且移除
 
@@ -128,11 +128,11 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] 盡量在命名空間下宣告 enum
 
-* [ ] Set MainWindow value when each Tab/Panel initializing
+* [x] Set MainWindow value when each Tab/Panel initializing
 
 * [ ] 測試 IdleTimer 內置 SystemInfo
 
-* [ ] 開始檢測、節批 Padding 調整
+* [x] 開始檢測、節批 Padding 調整
 
 * [ ] 主控版更換為 CustomCard
 
@@ -146,17 +146,27 @@ MCA Jaw CCD 尺寸量測設備
 		* 儲存圖片
 
  * [ ] TargetFeatureType in BaslerCam.CameraConfigBase move to namespace
+	* 待確認功能正常
 
  * [x] 整理 CameraConfig in BaslerCam.cs
 
  * [ ] 刪除 ConfigPanel.xmal.cs 內的 BaslerConfig
+	* 有標示 temporary
  
  * [ ] 重新釐清 Camera 相關各 Class
 
  * [ ] 確認變更 TargetFeatureType 功能
 
- * [ ] CameraConfigBase 新增 Event;
- 
+ * [ ] CameraConfigBaseWithTarget 新增 Event;
+	* 待確認功能正常
+	
+ * [ ] 測試 CameraTab IP、Target 變更後儲存狀態
+
+ * [ ] DatabaseTab.xaml UI 調整未完成
+
+ * [ ] CameraTab.xaml 新增 LENS 功能
+	* CameraConfigBase 置入 Lens 類別一併儲存
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

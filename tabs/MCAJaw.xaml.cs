@@ -857,7 +857,7 @@ namespace MCAJawIns.Tab
                 try
                 {
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
-                    CameraConfigBase[] configs = Array.Empty<CameraConfigBase>();
+                    CameraConfigBaseWithTarget[] configs = Array.Empty<CameraConfigBaseWithTarget>();
 
                     // 載入相機組態
                     if (MongoAccess?.Connected == true)
@@ -868,7 +868,7 @@ namespace MCAJawIns.Tab
                         if (cfg != null)
                         {
                             // 反序列化
-                            configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBase>(x.ToBsonDocument())).ToArray();
+                            configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseWithTarget>(x.ToBsonDocument())).ToArray();
                         }
                         else
                         {
@@ -880,7 +880,7 @@ namespace MCAJawIns.Tab
                                 if (jsonStr != string.Empty)
                                 {
                                     // 反序列化
-                                    configs = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                                    configs = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
                                 }
                                 else
                                 {
@@ -897,7 +897,7 @@ namespace MCAJawIns.Tab
                         if (jsonStr != string.Empty)
                         {
                             // 反序列化
-                            configs = JsonSerializer.Deserialize<CameraConfigBase[]>(jsonStr);
+                            configs = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
                         }
                         else
                         {
@@ -926,7 +926,7 @@ namespace MCAJawIns.Tab
                     if (!SpinWait.SpinUntil(() => MainWindow.CameraEnumer.InitFlag == LongLifeWorker.InitFlags.Finished, 3000)) { throw new TimeoutException(); }
 
                     // 已連線之 Camera
-                    List<BaslerCamInfo> cams = MainWindow.CameraEnumer.CamsSource.ToList();
+                    List<CameraConfigBase> cams = MainWindow.CameraEnumer.CamsSource.ToList();
 
                     // 排序 Devices
                     Array.Sort(configs, (a, b) => a.TargetFeature - b.TargetFeature);
@@ -940,7 +940,7 @@ namespace MCAJawIns.Tab
                             // SpinWait.SpinUntil(() => false, );
                             switch (dev.TargetFeature)
                             {
-                                case TargetFeatureType.MCA_Front:
+                                case TargetFeature.MCA_Front:
                                     if (!MainWindow.BaslerCams[0].IsConnected)
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
@@ -951,7 +951,7 @@ namespace MCAJawIns.Tab
                                         }
                                     }
                                     break;
-                                case TargetFeatureType.MCA_Bottom:
+                                case TargetFeature.MCA_Bottom:
                                     if (!MainWindow.BaslerCams[1].IsConnected)
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
@@ -962,7 +962,7 @@ namespace MCAJawIns.Tab
                                         }
                                     }
                                     break;
-                                case TargetFeatureType.MCA_SIDE:
+                                case TargetFeature.MCA_SIDE:
                                     if (!MainWindow.BaslerCams[2].IsConnected)
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
@@ -973,7 +973,7 @@ namespace MCAJawIns.Tab
                                         }
                                     }
                                     break;
-                                case TargetFeatureType.Null:
+                                case TargetFeature.Null:
                                     MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵未設置");
                                     break;
                                 default:

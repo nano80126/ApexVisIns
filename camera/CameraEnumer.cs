@@ -26,7 +26,7 @@ namespace MCAJawIns
         /// <summary>
         /// 目前連線之Camera Source
         /// </summary>
-        public ObservableCollection<BaslerCamInfo> CamsSource { get; set; } = new ObservableCollection<BaslerCamInfo>();
+        public ObservableCollection<CameraConfigBase> CamsSource { get; set; } = new ObservableCollection<CameraConfigBase>();
         /// <summary>
         /// JSON FILE 儲存之CONFIG
         /// </summary>
@@ -56,7 +56,7 @@ namespace MCAJawIns
         /// 新增相機至 CamsSource
         /// </summary>
         /// <param name="info"></param>
-        private void AddCamsSource(BaslerCamInfo info)
+        private void AddCamsSource(CameraConfigBase info)
         {
             lock (_camsSourceLock)
             {
@@ -67,7 +67,7 @@ namespace MCAJawIns
         /// 從 CamsSource 移除指定相機
         /// </summary>
         /// <param name="info"></param>
-        private void RemoveCamsSource(BaslerCamInfo info)
+        private void RemoveCamsSource(CameraConfigBase info)
         {
             lock (_camsSourceLock)
             {
@@ -186,13 +186,15 @@ namespace MCAJawIns
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     CameraConfig newItem = e.NewItems[0] as CameraConfig;
                     //System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
-                    newItem.PropertyChanged += Item_PropertyChanged;
+                    //newItem.PropertyChanged += Item_PropertyChanged;
+                    newItem.BasicPropertyChanged += Item_BasicPropertyChanged;
                     CameraCofingSaved = false;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
                     CameraConfig oldItem = e.OldItems[0] as CameraConfig;
                     //System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
-                    oldItem.PropertyChanged -= Item_PropertyChanged;
+                    //oldItem.PropertyChanged -= Item_PropertyChanged;
+                    oldItem.BasicPropertyChanged -= Item_BasicPropertyChanged;
                     CameraCofingSaved = false;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
@@ -203,7 +205,7 @@ namespace MCAJawIns
             }
         }
 
-        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Item_BasicPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
             CameraCofingSaved = false;
@@ -211,12 +213,12 @@ namespace MCAJawIns
 
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            List<BaslerCamInfo> list;
+            List<CameraConfigBase> list;
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     // Get CamsSource 
-                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+                    list = (sender as ObservableCollection<CameraConfigBase>).ToList();
                     for (int i = 0; i < CameraConfigs.Count; i++)
                     {
                         if (list.Any(cam => cam.SerialNumber == CameraConfigs[i].SerialNumber))
@@ -228,7 +230,7 @@ namespace MCAJawIns
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
                     // Get CamsSource
-                    list = (sender as ObservableCollection<BaslerCamInfo>).ToList();
+                    list = (sender as ObservableCollection<CameraConfigBase>).ToList();
 
                     for (int i = 0; i < CameraConfigs.Count; i++)
                     {
@@ -278,11 +280,11 @@ namespace MCAJawIns
                 {
                     if (!CamsSource.Any(item => item.SerialNumber == info[CameraInfoKey.SerialNumber]))
                     {
-                        BaslerCamInfo camInfo = new(info[CameraInfoKey.FriendlyName], info[CameraInfoKey.ModelName], info[CameraInfoKey.DeviceIpAddress], info[CameraInfoKey.DeviceMacAddress], info[CameraInfoKey.SerialNumber])
+                        CameraConfigBase camInfo = new(info[CameraInfoKey.FriendlyName], info[CameraInfoKey.ModelName], info[CameraInfoKey.DeviceIpAddress], info[CameraInfoKey.DeviceMacAddress], info[CameraInfoKey.SerialNumber])
                         {
                             VendorName = info[CameraInfoKey.VendorName],
                             CameraType = info[CameraInfoKey.DeviceType],
-                            //DeviceVersion = info[CameraInfoKey.DeviceVersion],
+                            // DeviceVersion = info[CameraInfoKey.DeviceVersion],
                         };
                         AddCamsSource(camInfo);
 

@@ -706,25 +706,23 @@ namespace MCAJawIns
             {
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
-                TargetFeatureType targetFeatureType = (TargetFeatureType)e.GrabResult.StreamGrabberUserData;
+                TargetFeature targetFeature = (TargetFeature)e.GrabResult.StreamGrabberUserData;
 
-                switch (targetFeatureType)
+                switch (targetFeature)
                 {
-                    case TargetFeatureType.MCA_Front:
-                        //Debug.WriteLine($"{1}");
+                    case TargetFeature.MCA_Front:
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource1 = mat.ToImageSource();
                         });
                         break;
-                    case TargetFeatureType.MCA_Bottom:
-                        //Debug.WriteLine($"{2}");
+                    case TargetFeature.MCA_Bottom:
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource2 = mat.ToImageSource();
                         });
                         break;
-                    case TargetFeatureType.MCA_SIDE:
+                    case TargetFeature.MCA_SIDE:
                         Dispatcher.Invoke(() =>
                         {
                             ImageSource3 = mat.ToImageSource();

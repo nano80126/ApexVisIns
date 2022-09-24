@@ -356,7 +356,7 @@
                         <StackPanel.Resources>
                             <ObjectDataProvider x:Key="DataFromEunm" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                 <ObjectDataProvider.MethodParameters>
-                                    <x:Type TypeName="app:TargetFeatureType" />
+                                    <x:Type TypeName="app:TargetFeature" />
                                 </ObjectDataProvider.MethodParameters>
                             </ObjectDataProvider>
                         </StackPanel.Resources>
