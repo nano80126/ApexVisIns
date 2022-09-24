@@ -7,6 +7,9 @@ using Basler.Pylon;
 
 namespace MCAJawIns
 {
+    /// <summary>
+    /// 相機目標特徵
+    /// </summary>
     public enum TargetFeatureType
     {
         [Description("(NULL)")]
@@ -95,13 +98,17 @@ namespace MCAJawIns
     {
         #region 建構子
         public CameraConfigBase() { }
+
+        public CameraConfigBase(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        {
+        }
         #endregion
 
         #region Properties
         /// <summary>
         /// 目標特徵
         /// </summary>
-        public TargetFeatureType TargetFeature { get; set; } 
+        public virtual TargetFeatureType TargetFeature { get; set; }
         #endregion
     }
 
@@ -270,7 +277,7 @@ namespace MCAJawIns
         public BaslerCam(string serialNumber)
         {
             SerialNumber = serialNumber;
-            Camera = new Basler.Pylon.Camera(serialNumber);
+            Camera = new Camera(serialNumber);
         }
         #endregion
 
@@ -332,7 +339,7 @@ namespace MCAJawIns
                 Camera = null;
             }
             _disposed = true;
-        } 
+        }
         #endregion
 
         // 手動觸發 Property Change
@@ -465,7 +472,7 @@ namespace MCAJawIns
                     OnPropertyChanged(nameof(Saved));
                 }
             }
-        } 
+        }
         #endregion
 
         #region 建構子
@@ -486,7 +493,7 @@ namespace MCAJawIns
         public void Save()
         {
             Saved = true;
-        } 
+        }
         #endregion
 
         //public void PropertyChange(string propertyName)
@@ -508,7 +515,7 @@ namespace MCAJawIns
     /// Camera 組態, 較為 Detail, 
     /// CameraTab 內使用
     /// </summary>
-    public class CameraConfig : BaslerCamInfo, INotifyPropertyChanged
+    public class CameraConfig : CameraConfigBase, INotifyPropertyChanged
     {
         #region Fields
         private TargetFeatureType _targetFeature;
@@ -587,15 +594,14 @@ namespace MCAJawIns
         /// <param name="serialNumber">相機S/N</param>
         public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
-        } 
+        }
         #endregion
 
         #region Target Feature
         /// <summary>
-        /// 相機 Character (之後可能綁定到 StreamGrabber UserData)
+        /// 相機目標特徵，綁定到相機 UserData
         /// </summary>
-        //[JsonConverter(typeof(DeviceConfigBase.TargetFeatureType))]
-        public TargetFeatureType TargetFeature
+        public override TargetFeatureType TargetFeature
         {
             get => _targetFeature;
             set
@@ -612,10 +618,6 @@ namespace MCAJawIns
         #region Properties
 
         #region Basic Info
-        /// <summary>
-        /// 組態名稱
-        /// </summary>
-        public string Name { get; set; }
         /// <summary>
         /// 相機是否在線
         /// </summary>
@@ -702,7 +704,7 @@ namespace MCAJawIns
                     OnPropertyChanged(nameof(UserSetRead));
                 }
             }
-        } 
+        }
         #endregion
 
         #region AOI Controls
@@ -1249,6 +1251,10 @@ namespace MCAJawIns
             }
         }
         #endregion
+
+        #endregion
+
+        #region MyRegion
 
         #endregion
 

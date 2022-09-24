@@ -16,12 +16,13 @@ namespace MCAJawIns
     /// </summary>
     public class CameraEnumer : LongLifeWorker, INotifyPropertyChanged
     {
-        #region private
+        #region Fields
         private readonly object _camsSourceLock = new();
         private readonly object _cameraConfigsLock = new();
-        private bool _cameraConfigSaved; 
+        private bool _cameraConfigSaved;
         #endregion
 
+        #region Properties
         /// <summary>
         /// 目前連線之Camera Source
         /// </summary>
@@ -43,6 +44,7 @@ namespace MCAJawIns
                 }
             }
         }
+        #endregion
 
         public CameraEnumer()
         {
@@ -327,10 +329,12 @@ namespace MCAJawIns
             base.Dispose(disposing);
         }
 
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

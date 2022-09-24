@@ -311,16 +311,62 @@
                             <DockPanel Background="Transparent" MouseDown="DockPanel_MouseDown">
                                 <!--Panel Header-->
                                 <DockPanel x:Name="Header" DockPanel.Dock="Top">
-                                    <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom"/>
+                                    <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom" />
                                     <!--  -->
-                                    <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                    <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
                                     <!--  -->
-                                    <TextBlock Text="{x:Null}"/>
+                                    <TextBlock Text="{x:Null}" />
                                 </DockPanel>
                                 <!-- Seperator -->
-                                <Separator DockPanel.Dock="Top" Margin="0 8"/>
+                                <Separator DockPanel.Dock="Top" Margin="0 8" />
                                 <!--Panel Body-->
                                 <Grid x:Name="Body" DockPanel.Dock="Top">
+                                    <!--#region Resources -->
+                                    <Grid.Resources>
+                                        <Style x:Key="MainPanelTextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="TextAlignment" Value="Center" />
+                                            <Setter Property="Height" Value="28" />
+                                            <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}}"
+                                                        Value="Maximized">
+                                                    <Setter Property="Height" Value="32" />
+                                                    <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                        </Style>
+                                        <!--//-->
+                                        <Style x:Key="MainPanelButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <Setter Property="Height" Value="28" />
+                                            <Setter Property="Padding" Value="16 0" />
+                                            <Setter Property="FontSize" Value="{StaticResource BasicFont}" />
+                                            <Setter Property="FontWeight" Value="SemiBold" />
+                                            <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="5" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}}"
+                                                        Value="Maximized">
+                                                    <Setter Property="Height" Value="32" />
+                                                    <Setter Property="FontSize" Value="{StaticResource BasicFont-lg}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Style.Resources>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                    <Setter Property="Padding" Value="0 2 0 0" />
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                </Style>
+                                            </Style.Resources>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <!--#endregion-->
+
                                     <!--#region Layout -->
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto" />
@@ -340,8 +386,8 @@
                                     <!--#region 1st row  -->
                                     <!-- Control Panel, 1st row, 1st col, 檢驗狀態-->
                                     <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="1" CornerRadius="10" Margin="0 0 8 0" SnapsToDevicePixels="True">
-                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
-                                                Padding="0 2 0 0" FontSize="{StaticResource Title-xl}" FontWeight="Bold" 
+                                        <TextBlock x:Name="StatusLabel" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Padding="0 2 0 0"
+                                                FontSize="{StaticResource Title-xl}" FontWeight="Bold"
                                                 Text="{Binding Status, RelativeSource={RelativeSource AncestorType=local:MCAJaw, Mode=FindAncestor, AncestorLevel=1}, Converter={StaticResource EnumDescriptionConverter}}"
                                                 Foreground="{Binding Status,RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:MCAJaw,AncestorLevel=1}, Converter={StaticResource MCAJawStatusColorConverter}}" />
                                     </Border>
@@ -358,22 +404,21 @@
                                             <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
                                         <!--//-->
-                                        <TextBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" VerticalContentAlignment="Center"
-                                                Margin="0 0 0 0" Padding="8 3" Height="32" materialDesign:TextFieldAssist.PrefixText="Lot" FontSize="{StaticResource Header}"
-                                                materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False" TextAlignment="Center"
+                                        <TextBox Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Margin="0 0 0 0" Padding="8 0"
+                                                materialDesign:TextFieldAssist.PrefixText="Lot" materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False"
                                                 Text="{Binding Path=LotNumber, Source={StaticResource JawInspection}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                                                Style="{StaticResource MainPanelTextBox}" />
                                         <!--//-->
-                                        <Button Grid.Row="0" Grid.Column="1" Padding="8 0" Margin="8 0 0 0" Height="32" FontWeight="SemiBold" Focusable="False"
-                                                SnapsToDevicePixels="True" materialDesign:ButtonAssist.CornerRadius="5" Click="LotNumberCheckButton_Click">
+                                        <Button Grid.Row="0" Grid.Column="1" Margin="8 0 0 0" Padding="8 0" Focusable="False" SnapsToDevicePixels="True"
+                                                Click="LotNumberCheckButton_Click">
                                             <Button.Style>
-                                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MainPanelButton}">
                                                     <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
                                                     <Setter Property="BorderBrush" Value="{StaticResource ColorOrange}" />
                                                     <Setter Property="Content">
                                                         <Setter.Value>
                                                             <StackPanel Orientation="Horizontal">
-                                                                <TextBlock VerticalAlignment="Center" Padding="0 2 0 0" Text="確認" FontSize="{StaticResource BasicFont-lg}" />
+                                                                <TextBlock Text="確認" />
                                                                 <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="ExclamationBold" />
                                                             </StackPanel>
                                                         </Setter.Value>
@@ -388,7 +433,7 @@
                                                             <Setter Property="Content">
                                                                 <Setter.Value>
                                                                     <StackPanel Orientation="Horizontal">
-                                                                        <TextBlock VerticalAlignment="Center" Padding="0 2 0 0" Text="確認" FontSize="{StaticResource BasicFont-lg}" />
+                                                                        <TextBlock Text="確認" />
                                                                         <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="CheckBold" />
                                                                     </StackPanel>
                                                                 </Setter.Value>
@@ -397,30 +442,13 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
-                                            <!--//-->
-                                            <!--<StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="確認" FontSize="{StaticResource BasicFont-lg}" />
-                                                <materialDesign:PackIcon VerticalAlignment="Center" Margin="4 0 0 0">
-                                                    <materialDesign:PackIcon.Style>
-                                                        <Style TargetType="materialDesign:PackIcon">
-                                                            <Setter Property="Kind" Value="ExclamationBold" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger
-                                                                        Binding="{Binding LotNumberChecked, Source={StaticResource JawInspection}, UpdateSourceTrigger=PropertyChanged}"
-                                                                        Value="True">
-                                                                    <Setter Property="Kind" Value="CheckBold" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </materialDesign:PackIcon.Style>
-                                                </materialDesign:PackIcon>
-                                            </StackPanel>-->
                                         </Button>
 
-                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Margin="0 12 0 0"
-                                                Padding="0 2 0 0" Height="32" FontWeight="SemiBold" SnapsToDevicePixels="True" FontSize="{StaticResource BasicFont-lg}"
-                                                materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}" Content="歸零檢測數量"
-                                                Click="ResetCount_Click" Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}" />
+                                        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 12 0 0" SnapsToDevicePixels="True"
+                                                materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MainPanelButton}" Click="ResetCount_Click"
+                                                Foreground="{StaticResource ColorIndigo}" BorderBrush="{StaticResource ColorIndigo}">
+                                            <TextBlock Text="歸零檢測數量" />
+                                        </Button>
                                     </Grid>
                                     <!--#endregion-->
 
@@ -825,15 +853,12 @@
                                     <!--#endregion-->
 
                                     <!--#region 3rd row -->
-                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Left" VerticalContentAlignment="Center"
-                                            Height="30" FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
-                                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="TriggerInspection_Click">
-                                            <!--IsEnabled="{Binding Status, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}, 
-                                            Converter={StaticResource NumberEqualConverter}, ConverterParameter=1}"-->
+                                    <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MainPanelButton}"
+                                            Click="TriggerInspection_Click">
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                                 <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"
-                                                         Converter="{StaticResource NumberInArrayConverter}" >
+                                                        Converter="{StaticResource NumberInArrayConverter}">
                                                     <Binding.ConverterParameter>
                                                         <x:Array Type="sys:Int32">
                                                             <sys:Int32>1</sys:Int32>
@@ -846,26 +871,60 @@
                                         </Button.IsEnabled>
 
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="開始檢測" Margin="0 0 8 0" />
-                                            <materialDesign:PackIcon Kind="FootPrint" VerticalAlignment="Center" Height="20" />
+                                            <TextBlock Text="開始檢測" />
+                                            <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="FootPrint" />
                                         </StackPanel>
                                     </Button>
 
-                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="30"
-                                            FontSize="{StaticResource BasicFont-lg}" materialDesign:ButtonAssist.CornerRadius="5"
-                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    <!--<Button x:Name="TriggerIns1" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                                            Height="32" materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            Click="TriggerInspection_Click">
+                                        <Button.IsEnabled>
+                                            <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                                <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"
+                                                        Converter="{StaticResource NumberInArrayConverter}">
+                                                    <Binding.ConverterParameter>
+                                                        <x:Array Type="sys:Int32">
+                                                            <sys:Int32>1</sys:Int32>
+                                                            <sys:Int32>4</sys:Int32>                                     
+                                                        </x:Array>
+                                                    </Binding.ConverterParameter>
+                                                </Binding>
+                                                <Binding Path="LotNumberChecked" Source="{StaticResource JawInspection}" UpdateSourceTrigger="PropertyChanged" />
+                                            </MultiBinding>
+                                        </Button.IsEnabled>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" Padding="0 2 0 0" Text="開始檢測" FontSize="{StaticResource BasicFont-lg}" FontWeight="SemiBold" />
+                                            <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="FootPrint" />
+                                        </StackPanel>
+                                    </Button>-->
+
+                                    <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Style="{StaticResource MainPanelButton}"
                                             IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
                                             BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="結批" Margin="0 0 8 0" />
-                                            <materialDesign:PackIcon Kind="DatabaseImport" VerticalAlignment="Center" Height="20" />
+                                            <TextBlock Text="結批" />
+                                            <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
                                         </StackPanel>
                                     </Button>
+
+                                    
+                                    <!--<Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="32"
+                                            materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
+                                            BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Padding="0 2 0 0" Text="結批" FontSize="{StaticResource BasicFont-lg}" FontWeight="SemiBold" />
+                                            <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
+                                        </StackPanel>
+                                    </Button>-->
+                                    
                                     <!--#endregion-->
                                 </Grid>
                             </DockPanel>
                         </materialDesign:Card>
-                    </Border>
+                    </Border>                              
                     <!--#endregion-->
 
                     <!--#region Camera 1 -->
@@ -878,7 +937,7 @@
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <!--Image 1-->
-                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorLightGrayTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
                                         <Setter Property="Height" Value="240" />
@@ -917,7 +976,7 @@
                                 <RowDefinition Height="1*" />
                             </Grid.RowDefinitions>
                             <!--Image 2-->
-                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorLightGrayTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
                                         <Setter Property="Height" Value="240" />
@@ -958,7 +1017,7 @@
                                 <RowDefinition Height="1*" />
                             </Grid.RowDefinitions>
                             <!--Image 3-->
-                            <Border Grid.Row="0" Background="{StaticResource ColorInfoTransparent}">
+                            <Border Grid.Row="0" Background="{StaticResource ColorLightGrayTransparent}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
                                         <Setter Property="Height" Value="160" />

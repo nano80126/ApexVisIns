@@ -18,7 +18,6 @@ using MCAJawIns.Mongo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using Cemera = Basler.Pylon.Camera;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 
 namespace MCAJawIns.Tab
@@ -31,7 +30,7 @@ namespace MCAJawIns.Tab
         #region Resources (xaml 內)
         #endregion
 
-        #region Varibles
+        #region Fields
         /// <summary>
         /// Cameras for CameraTab, only useing in this tab. 
         /// </summary>
@@ -70,11 +69,11 @@ namespace MCAJawIns.Tab
         /// <summary>
         /// 相機組態目錄, Camera Configs Directory
         /// </summary>
-        private string CamerasDirectory { get; } = @"cameras";
+        private readonly string camerasDirectory = @"cameras";
         /// <summary>
         /// 相機組態檔名稱, Camara Configs File Name
         /// </summary>
-        private string CamerasPath { get; } = @"camera.json";
+        private readonly string camerasPath = @"camera.json";
         #endregion
 
         #region Flags
@@ -126,7 +125,7 @@ namespace MCAJawIns.Tab
         /// </summary>
         private void InitCamerasConfigDirectory()
         {
-            string directory = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}";
+            string directory = $@"{Directory.GetCurrentDirectory()}\{camerasDirectory}";
             //string path = $@"{directory}\{CamerasPath}";
 
             if (!Directory.Exists(directory))
@@ -209,7 +208,7 @@ namespace MCAJawIns.Tab
             else
             {
                 #region 從 JSON 檔讀取
-                string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+                string path = $@"{Directory.GetCurrentDirectory()}\{camerasDirectory}\{camerasPath}";
 
                 if (File.Exists(path))
                 {
@@ -403,7 +402,7 @@ namespace MCAJawIns.Tab
         /// <param name="e"></param>
         private void CameraConfigSave_Click(object sender, RoutedEventArgs e)
         {
-            string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
+            string path = $@"{Directory.GetCurrentDirectory()}\{camerasDirectory}\{camerasPath}";
 
             CameraConfigBase[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBase()
             {
@@ -577,25 +576,31 @@ namespace MCAJawIns.Tab
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
-        private static void ReadConfig(Basler.Pylon.Camera camera, CameraConfig config)
+        private static void ReadConfig(Camera camera, CameraConfig config)
         {
             try
             {
                 config.DeviceVersion = camera.Parameters[PLGigECamera.DeviceVersion].GetValue();
                 config.FirmwareVersion = camera.Parameters[PLGigECamera.DeviceFirmwareVersion].GetValue();
-                //config.IP = camera.Parameters[CameraInfoKey]
-                // 更新 IP
-                config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
-                config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
-                                                          //Debug.WriteLine($"{config.DeviceVersion} {config.FirmwareVersion}");
 
-                // UserSet
+                // 更新 IP
+                string ip = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                if (ip != config.IP)
+                {
+                    config.IP = camera.CameraInfo[CameraInfoKey.DeviceIpAddress];
+                    config.PropertyChange(nameof(config.IP)); // 由於 IP 在 BaslerCamInfo 裡，內部不會觸發 IP PropertyChanged
+                }
+
+                #region UserSet
                 config.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
                 config.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+                #endregion
 
                 // // // // // // // // // // // // // // // // // // // // // // // //
                 // int sensorW = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
                 // int sensorH = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
+                // // // // // // // // // // // // // // // // // // // // // // // //
+
                 #region AOI Control
                 config.SensorWidth = (int)camera.Parameters[PLGigECamera.SensorWidth].GetValue();
                 config.SensorHeight = (int)camera.Parameters[PLGigECamera.SensorHeight].GetValue();
@@ -674,7 +679,7 @@ namespace MCAJawIns.Tab
         /// </summary>
         /// <param name="config">來源組態</param>
         /// <param name="camera">目標相機</param>
-        private static void UpdateConfig(CameraConfig config, Basler.Pylon.Camera camera)
+        private static void UpdateConfig(CameraConfig config, Camera camera)
         {
             try
             {
