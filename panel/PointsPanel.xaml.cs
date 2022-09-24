@@ -25,9 +25,11 @@ namespace MCAJawIns.Panel
     /// </summary>
     public partial class PointsPanel : Control.CustomCard
     {
+        #region Properties
         public EngineerTab EngineerTab { get; set; }
 
         public AssistPoints AssistPoints { get; set; }
+        #endregion
 
         public PointsPanel()
         {

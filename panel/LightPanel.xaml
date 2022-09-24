@@ -162,12 +162,16 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 4 4">
             <!--#region Resources -->
             <StackPanel.Resources>
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOnBtnStyle">
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
                     <Setter Property="HorizontalAlignment" Value="Center" />
                     <Setter Property="Height" Value="24" />
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="MinWidth" Value="60" />
-                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+                    <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="12" />
+                </Style>
+                <!--//-->
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}" x:Key="LightOnBtnStyle">
                     <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
                     <Style.Triggers>
                         <Trigger Property="IsPressed" Value="True">
@@ -176,11 +180,7 @@
                     </Style.Triggers>
                 </Style>
                 <!--//-->
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}" x:Key="LightOffBtnStyle">
-                    <Setter Property="Height" Value="24" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="MinWidth" Value="60" />
-                    <Setter Property="BorderThickness" Value="0" />
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}" x:Key="LightOffBtnStyle">
                     <Setter Property="Foreground" Value="{StaticResource ColorOrange}" />
                     <Style.Triggers>
                         <Trigger Property="IsPressed" Value="True">
@@ -191,20 +191,15 @@
             </StackPanel.Resources>
             <!--#endregion-->
 
-            <Button x:Name="BulbOnBtn" Grid.Row="4" Grid.Column="2" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="12" Focusable="False"
-                    IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOnBtn_Click" Style="{StaticResource LightOnBtnStyle}">
+            <Button x:Name="BulbOnBtn" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOnBtn_Click"
+                    Style="{StaticResource LightOnBtnStyle}">
                 <materialDesign:PackIcon Kind="LightbulbOutline" Width="24" Height="20" />
             </Button>
 
-            <Button x:Name="BulbOffBtn" Grid.Row="4" Grid.Column="0" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="12" Focusable="False"
-                    IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOffBtn_Click" Style="{StaticResource LightOffBtnStyle}">
+            <Button x:Name="BulbOffBtn" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" Click="BulbOffBtn_Click"
+                    Style="{StaticResource LightOffBtnStyle}">
                 <materialDesign:PackIcon Kind="LightbulbOffOutline" Width="24" Height="20" />
             </Button>
-
-            <!--<Button x:Name="BulbOffBtn2" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" materialDesign:RippleAssist.IsDisabled="True"
-                    materialDesign:ButtonAssist.CornerRadius="16" Focusable="False" IsEnabled="{Binding IsComOpen, Source={StaticResource LightSerial}}" MinWidth="60"
-                    Click="BulbOffBtn_Click" Style="{StaticResource LightOffBtnStyle}" Content="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
-            </Button>-->
         </StackPanel>
     </ctrl:CustomCard.Footer>
     <!--#endregion-->

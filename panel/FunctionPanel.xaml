@@ -1,0 +1,39 @@
+﻿<ctrl:CustomCard x:Class="MCAJawIns.Panel.FunctionPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:ctrl="clr-namespace:MCAJawIns.Control" mc:Ignorable="d" d:DesignHeight="500"
+        d:DesignWidth="300" Title="功能面板" SubTitle="{x:Null}" IconKind="FunctionVariant" Style="{StaticResource MaterialDesignCustomCard}"
+        d:DataContext="{d:DesignInstance Type={x:Null}}" Loaded="CustomCard_Loaded">
+    <StackPanel>
+        <TextBlock Margin="4 4" FontSize="{StaticResource BasicFont-lg}" FontWeight="Bold" Text="保留" Foreground="{StaticResource ColorLightGrayTransparent}" />
+    </StackPanel>
+
+    <!--#region Footer -->
+    <ctrl:CustomCard.Footer>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4 4">
+            <!--#region Resources -->
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="Height" Value="24" />
+                    <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+                    <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="12" />
+
+                    <Style.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <!--#endregion-->
+
+            <Button Focusable="False">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Image" />
+                    <TextBlock Margin="8 0 0 0" Text="儲存圖片" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </ctrl:CustomCard.Footer>
+    <!--#endregion-->
+</ctrl:CustomCard>
