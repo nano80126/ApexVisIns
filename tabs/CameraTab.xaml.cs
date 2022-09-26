@@ -32,11 +32,12 @@ namespace MCAJawIns.Tab
 
         #region Fields
         /// <summary>
-        /// Cameras for CameraTab, only useing in this tab. 
+        /// Cameras for CameraTab, only using in this tab. 
         /// </summary>
         private readonly List<BaslerCam> _camerasList = new();
         /// <summary>
-        /// Index of DeivceCam in use
+        /// Index of selected camera config
+        /// <para>已選擇之的相機組態 Index</para>
         /// </summary>
         private int _devInUse = -1;
         private int _cameraFuncTab;
@@ -567,8 +568,8 @@ namespace MCAJawIns.Tab
         }
 
         /// <summary>
-        /// 讀取 Config,
-        /// 從相機讀取 Config
+        /// Raed config from camera,
+        /// <para>從相機讀取組態</para>
         /// </summary>
         /// <param name="camera">來源相機</param>
         /// <param name="config">目標組態</param>
@@ -672,8 +673,8 @@ namespace MCAJawIns.Tab
         }
 
         /// <summary>
-        /// 更新 Config
-        /// Config 寫入 Camera
+        /// Update config of camera
+        /// <para>更新相機組態</para>
         /// </summary>
         /// <param name="config">來源組態</param>
         /// <param name="camera">目標相機</param>
@@ -732,11 +733,6 @@ namespace MCAJawIns.Tab
         }
 
         /// <summary>
-        /// 待刪除
-        /// </summary>
-        private static void SaveConfig() { }
-
-        /// <summary>
         /// 讀取 UserSet
         /// </summary>
         /// <param name="sender"></param>
@@ -791,7 +787,8 @@ namespace MCAJawIns.Tab
         }
 
         /// <summary>
-        /// 寫入 UserSet (主要儲存至相機)
+        /// Write config to UserSet and save UserSet
+        /// 寫入組態進 UserSet 並儲存 UserSet
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -803,7 +800,6 @@ namespace MCAJawIns.Tab
                 if (config == null) { throw new CameraException("未選擇相機或相機未連線"); }
                 //Camera camera = MainWindow.BaslerCam.Camera;
                 Camera camera = _camerasList[_devInUse].Camera;
-
 
                 // 更新 Config
                 UpdateConfig(config, camera);

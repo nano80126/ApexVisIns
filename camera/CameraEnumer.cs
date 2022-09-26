@@ -46,10 +46,12 @@ namespace MCAJawIns
         }
         #endregion
 
+        #region 建構子
         public CameraEnumer()
         {
-            CameraConfigs.CollectionChanged += CameraConfigs_CollectionChanged;
-        }
+            //CameraConfigs.CollectionChanged += CameraConfigs_CollectionChanged;
+        } 
+        #endregion
 
         #region CamsSource 操作
         /// <summary>
@@ -172,43 +174,8 @@ namespace MCAJawIns
             BindingOperations.EnableCollectionSynchronization(CamsSource, _camsSourceLock);
             BindingOperations.EnableCollectionSynchronization(CameraConfigs, _cameraConfigsLock);
             CamsSource.CollectionChanged += CamsSource_CollectionChanged;
+            CameraConfigs.CollectionChanged += CameraConfigs_CollectionChanged;
             base.WorkerStart();
-        }
-
-        private void CameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            // // // // // // 
-            //System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems} CameraEnumer.cs line 179");
-            // // // // // // 
-
-            switch (e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    CameraConfig newItem = e.NewItems[0] as CameraConfig;
-                    //System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
-                    //newItem.PropertyChanged += Item_PropertyChanged;
-                    newItem.BasicPropertyChanged += Item_BasicPropertyChanged;
-                    CameraCofingSaved = false;
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    CameraConfig oldItem = e.OldItems[0] as CameraConfig;
-                    //System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
-                    //oldItem.PropertyChanged -= Item_PropertyChanged;
-                    oldItem.BasicPropertyChanged -= Item_BasicPropertyChanged;
-                    CameraCofingSaved = false;
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                default:
-                    break;
-            }
-        }
-
-        private void Item_BasicPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine($"{e.PropertyName}");
-            CameraCofingSaved = false;
         }
 
         private void CamsSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -248,6 +215,41 @@ namespace MCAJawIns
             // throw new NotImplementedException();
         }
 
+        private void CameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // // // // // // 
+            //System.Diagnostics.Debug.WriteLine($"{e.Action}; {e.NewItems}; {e.OldItems} CameraEnumer.cs line 179");
+            // // // // // // 
+
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    CameraConfig newItem = e.NewItems[0] as CameraConfig;
+                    //System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
+                    //newItem.PropertyChanged += Item_PropertyChanged;
+                    newItem.BasicPropertyChanged += Item_BasicPropertyChanged;
+                    CameraCofingSaved = false;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    CameraConfig oldItem = e.OldItems[0] as CameraConfig;
+                    //System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
+                    //oldItem.PropertyChanged -= Item_PropertyChanged;
+                    oldItem.BasicPropertyChanged -= Item_BasicPropertyChanged;
+                    CameraCofingSaved = false;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                default:
+                    break;
+            }
+        }
+
+        private void Item_BasicPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            CameraCofingSaved = false;
+        }
+
         /// <summary>
         /// 工作結束
         /// </summary>
@@ -256,6 +258,7 @@ namespace MCAJawIns
             BindingOperations.DisableCollectionSynchronization(CamsSource);
             BindingOperations.DisableCollectionSynchronization(CameraConfigs);
             CamsSource.CollectionChanged -= CamsSource_CollectionChanged;
+            CameraConfigs.CollectionChanged -= CameraConfigs_CollectionChanged;
             base.WorkerEnd();
         }
         /// <summary>

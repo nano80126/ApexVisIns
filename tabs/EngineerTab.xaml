@@ -544,7 +544,7 @@
                         Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, UpdateSourceTrigger=PropertyChanged}" />
 
                 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 12 0 0" Tag="待刪除" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 12 0 0" Tag="待刪除" Visibility="Visible">
                     <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" Text="角度範圍" FontSize="16" FontWeight="Bold" />
 
                     <TextBox x:Name="FromText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />

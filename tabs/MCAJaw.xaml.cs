@@ -1,4 +1,4 @@
-﻿#define UNITTEST
+﻿#define UNITTEST1
 
 using System;
 using System.Collections.Generic;
@@ -104,8 +104,12 @@ namespace MCAJawIns.Tab
         /// <summary>
         /// NG 音效
         /// </summary>
+        [Obsolete]
         private readonly SoundPlayer SoundNG = new SoundPlayer(@".\sound\NG.wav");          // 3 短音
         // private readonly SoundPlayer SoundAlarm = new SoundPlayer(@".\sound\Alarm.wav");    // 4 極短音
+
+        private MediaPlayer PlayerNG;
+        private MediaPlayer PlayerAlarm;
 
         private INS_STATUS _status = INS_STATUS.UNKNOWN;
         #endregion
@@ -274,9 +278,10 @@ namespace MCAJawIns.Tab
                     case JawTypes.L:
                         MCAJawL = new();
                         break;
+                    default:
+                        // 保留
+                        break;
                 }
-
-                Debug.WriteLine($"{MCAJawS};{MCAJawM};{MCAJawM?.GetType()};{MCAJawL?.GetType()}");
             }
 
 #if false
@@ -483,23 +488,27 @@ namespace MCAJawIns.Tab
                             case InitFlags.OK:
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
+                                InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設之尺寸規格設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
+                                InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_AP_INFO_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用初始設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
+                                InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED | InitFlags.LOAD_AP_INFO_FAILED:
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設設定與初始值");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
+                                InitMediaPlayer();
                                 break;
                             default:
                                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
@@ -511,7 +520,6 @@ namespace MCAJawIns.Tab
                         initializing = false;
                         initialized = true;
                     }, token);
-
 
 
                 if (DateTime.Now > new DateTime(2022, 10, 1))
@@ -946,7 +954,7 @@ namespace MCAJawIns.Tab
                                         BaslerCam1 = MainWindow.BaslerCams[0];
                                         if (MainWindow.Basler_Connect(BaslerCam1, dev.SerialNumber, dev.TargetFeature, ct))
                                         {
-                                            _ = SpinWait.SpinUntil(() => false, 25);
+                                            _ = SpinWait.SpinUntil(() => false, 50);
                                             MainWindow.MsgInformer.AdvanceProgressValue(17);
                                         }
                                     }
@@ -957,7 +965,7 @@ namespace MCAJawIns.Tab
                                         BaslerCam2 = MainWindow.BaslerCams[1];
                                         if (MainWindow.Basler_Connect(BaslerCam2, dev.SerialNumber, dev.TargetFeature, ct))
                                         {
-                                            _ = SpinWait.SpinUntil(() => false, 50);
+                                            _ = SpinWait.SpinUntil(() => false, 100);
                                             MainWindow.MsgInformer.AdvanceProgressValue(17);
                                         }
                                     }
@@ -968,7 +976,7 @@ namespace MCAJawIns.Tab
                                         BaslerCam3 = MainWindow.BaslerCams[2];
                                         if (MainWindow.Basler_Connect(BaslerCam3, dev.SerialNumber, dev.TargetFeature, ct))
                                         {
-                                            _ = SpinWait.SpinUntil(() => false, 75);
+                                            _ = SpinWait.SpinUntil(() => false, 150);
                                             MainWindow.MsgInformer.AdvanceProgressValue(17);
                                         }
                                     }
@@ -1140,6 +1148,27 @@ namespace MCAJawIns.Tab
             // Debug.WriteLine($"{e.DI0Raising} {e.DI0Falling}");
             // Debug.WriteLine($"{e.DI3Raising} {e.DI3Falling}");
         }
+
+        /// <summary>
+        /// 初始化音效撥放器 (不需用Task)
+        /// </summary>
+        private void InitMediaPlayer()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                PlayerNG = new MediaPlayer()
+                {
+                    Volume = 100
+                };
+                PlayerNG.Open(new Uri(Path.GetFullPath(@".\sound\NG.mp3")));
+
+                PlayerAlarm = new MediaPlayer()
+                {
+                    Volume = 100
+                };
+                PlayerAlarm.Open(new Uri(Path.GetFullPath(@".\sound\Alarm.mp3")));
+            });
+        }
         #endregion
 
         #region 初始化 SpecList
@@ -1255,7 +1284,7 @@ namespace MCAJawIns.Tab
                     else
                     {
                         // 初始化尺寸規格
-                        InitSizeSpec();
+                        InitSizeSpec(MainWindow.JawType);
 
                         // 回傳 false
                         return false;
@@ -1264,7 +1293,7 @@ namespace MCAJawIns.Tab
                 else // 若規格列表不存在
                 {
                     // 初始化尺寸規格
-                    InitSizeSpec();
+                    InitSizeSpec(MainWindow.JawType);
 
                     // 回傳 false
                     return false;
@@ -1343,18 +1372,57 @@ namespace MCAJawIns.Tab
 
         /// <summary>
         /// 初始化尺寸規格設定
+        /// <para>※※※ 使用小Jaw的尺寸當成key，否則需要更改MCAJaw.xaml</para>
         /// </summary>
-        private void InitSizeSpec()
+        private void InitSizeSpec(JawTypes type)
         {
+            Debug.WriteLine($"{type.GetType()}: {type}");
             string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
-            string[] items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
-            double[] center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
-            double[] lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
-            double[] upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+            string[] items = Array.Empty<string>();
+            double[] center = Array.Empty<double>();
+            double[] lowerc = Array.Empty<double>(); ;
+            double[] upperc = Array.Empty<double>(); ;
+
+            switch (type)
+            {
+                #region Jaw S
+                case JawTypes.S:
+                    items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+                    center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+                    lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+                    upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+                    break;
+                #endregion
+                #region Jaw M
+                case JawTypes.M:
+                    items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+                    center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+                    lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+                    upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+                    break;
+                #endregion
+                #region Jaw L
+                case JawTypes.L:
+                    items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+                    center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+                    lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+                    upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+                    break;
+                #endregion
+                default:
+                    break;
+            }
+
+#if false
+            items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+            center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+            lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+            upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 }; 
+#endif
             // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            double[] correc = new double[center.Length];
+            double[] correc = new double[keys.Length];
             Array.Fill(correc, 0);
-            double[] correc2 = new double[center.Length];
+            double[] correc2 = new double[keys.Length];
             Array.Fill(correc2, 0);
 
             JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
@@ -1365,7 +1433,6 @@ namespace MCAJawIns.Tab
                 {
                     // 加入尺寸規格表
                     // id = 0 means auto increase by source count
-                    // JawSizeSpecList.Source.Add(new JawSpecSetting(id, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]));
                     JawSpecSetting newItem = new JawSpecSetting(0, true, keys[i], items[i], center[i], lowerc[i], upperc[i], correc[i], correc2[i]);
                     JawSizeSpecList.AddNew(newItem);
                     // 加入批號檢驗結果 (初始化)
@@ -1514,7 +1581,7 @@ namespace MCAJawIns.Tab
             #endregion
 #else
             #region Production
-            if (Status != INS_STATUS.READY) { return; }
+            if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
             DateTime t1 = DateTime.Now;
 
             // 清空當下 Collection
@@ -1522,7 +1589,7 @@ namespace MCAJawIns.Tab
             JawResultGroup.Collection2.Clear();
             JawResultGroup.Collection3.Clear();
 
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
 
             Status = INS_STATUS.INSPECTING;
 
@@ -1530,7 +1597,19 @@ namespace MCAJawIns.Tab
             Task.Run(() =>
             {
                 JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
-                MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
+                switch (MainWindow.JawType)
+                {
+                    case JawTypes.S:
+                        MainWindow.MCAJaw.MCAJawS.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                        break;
+                    case JawTypes.M:
+                        MainWindow.MCAJaw.MCAJawM.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                        break;
+                    case JawTypes.L:
+                        MainWindow.MCAJaw.MCAJawL.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                        break;
+                }
                 return _jawFullSpecIns;
             }).ContinueWith(t =>
             {
@@ -1549,8 +1628,24 @@ namespace MCAJawIns.Tab
                 Status = INS_STATUS.READY;
 
                 Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
-
-                if (!data.OK) { SoundNG.Play(); }
+                // 檢驗失敗，發出 Alarm
+                if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        PlayerAlarm.Position = TimeSpan.FromSeconds(0);
+                        PlayerAlarm.Play();
+                    });
+                }
+                // 檢驗工件 NG，發出 NG 音效
+                if (!data.OK)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        PlayerNG.Position = TimeSpan.FromSeconds(0);
+                        PlayerNG.Play();
+                    });
+                }
 
                 return data.OK;
             });
@@ -1662,12 +1757,15 @@ namespace MCAJawIns.Tab
 
             if (disposing)
             {
-                SoundNG.Dispose();
+                PlayerNG.Close();
+                PlayerAlarm.Close();
+                // SoundNG.Dispose();
             }
             _disposed = true;
         }
         #endregion
 
+        #region 測試區
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
@@ -1685,6 +1783,22 @@ namespace MCAJawIns.Tab
             //{
             //    M.ListJawParam();
             //});
+
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            //MediaPlayer.Open(new Uri(Path.GetFullPath(@".\sound\NG.mp3")));
+            //MediaPlayer.Position = TimeSpan.FromSeconds(0);
+            //MediaPlayer.Play();
+
+            MediaPlayer player = new MediaPlayer();
+            player.Open(new Uri(Path.GetFullPath(@".\sound\Alarm.wav")));
+            player.Position = TimeSpan.FromSeconds(0);
+            player.Play();
+            //SoundNG.Play();
+            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+            //MediaPlayer.Open(new Uri(Path.GetFullPath(@".\sound\Alarm.wav")));
+            //MediaPlayer.Position = TimeSpan.FromSeconds(0);
+            //MediaPlayer.Play();
 
 #if false
             Task<int> t = await Task.Run(() =>
@@ -1736,7 +1850,8 @@ namespace MCAJawIns.Tab
 
             Debug.WriteLine($"Task {t.Id} {t.Result}"); 
 #endif
-        }
+        } 
+        #endregion
     }
 
     #region MCA Jaw Config Definition

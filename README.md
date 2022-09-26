@@ -167,6 +167,11 @@ MCA Jaw CCD 尺寸量測設備
  * [ ] CameraTab.xaml 新增 LENS 功能
 	* CameraConfigBase 置入 Lens 類別一併儲存
 
+* [ ] SoundPlayer 音會斷掉
+	* HDMI 線問題 ? 
+
+* [ ] 音效播放移動到 MCAJaw.xaml.cs
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

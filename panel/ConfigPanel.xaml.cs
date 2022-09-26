@@ -211,6 +211,7 @@ namespace MCAJawIns.Panel
                 camera.Parameters[PLGigECamera.OffsetX].SetToMinimum();
                 camera.Parameters[PLGigECamera.OffsetY].SetToMinimum();
 
+                #region 寫入 Width & Height
                 // 嘗試寫入 Width
                 if (!camera.Parameters[PLGigECamera.Width].TrySetValue(cam.Config.Width))
                 {
@@ -223,27 +224,32 @@ namespace MCAJawIns.Panel
                 {
                     camera.Parameters[PLGigECamera.Height].SetToMaximum();
                 }
-                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
+                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue(); 
 
                 // Width、Height 已變更, 更新 Offset Max 
                 cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
                 cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
+                #endregion
 
-                // ROI 置中
+                #region ROI 置中
                 camera.Parameters[PLGigECamera.CenterX].SetValue(true);                 // 會鎖定 Offset
                 camera.Parameters[PLGigECamera.CenterY].SetValue(true);                 // 會鎖定 Offset
                 cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();  // 取得當前 OffsetX
                 cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();  // 取得當前 OffsetY
                 camera.Parameters[PLGigECamera.CenterX].SetValue(false);                // 解鎖 Center
-                camera.Parameters[PLGigECamera.CenterY].SetValue(false);                // 解鎖 Center 
+                camera.Parameters[PLGigECamera.CenterY].SetValue(false);                // 解鎖 Center  
+                #endregion
 
-                // 寫入 FPS
+                #region 寫入 FPS
                 camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].SetValue(cam.Config.FPS);
                 cam.Config.FPS = cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                #endregion
 
-                // 寫入曝光時間
+                #region 寫入曝光時間
                 camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
-                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue(); 
+                #endregion
+
                 cam.PropertyChange();
 
                 // 重置 ImageSource，因為 Width & Height 有變更

@@ -94,6 +94,7 @@ namespace MCAJawIns
         /// <param name="cam2">相機 2</param>
         /// <param name="cam3">相機 3</param>
         /// <param name="jawFullSpecIns">檢驗結果物件</param>
+        [Obsolete]
         public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
         {
             // 0. 各項物件、變數初始化

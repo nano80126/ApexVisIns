@@ -302,12 +302,12 @@ namespace MCAJawIns.Tab
                                 int x = (int)(r * Math.Cos(-Math.PI * angle / 180));
                                 int y = (int)(r * Math.Sin(-Math.PI * angle / 180));
 
-                                #region 畫圖
+                                #region Draw Chart Lines
                                 gray = b[c + (y * width) + x];
                                 if (r == 0) { grayLast = gray; }
 
                                 //if (angle % 90 == 0)
-                                if (fromAngle < angle && angle < toAngle)
+                                if (fromAngle <= angle && angle <= toAngle)
                                 {
                                     Cv2.Line(chart, r + 25, chart.Height - grayLast - 25, r + 25, chart.Height - gray - 25, Scalar.Red, 1);
                                 }
@@ -320,7 +320,7 @@ namespace MCAJawIns.Tab
                                     if (r > 10)
                                     {
                                         // 中心點 + y + x
-                                        b[c + (y * width) + x] = 0;
+                                        //b[c + (y * width) + x] = 0;
                                     }
                                 }
 
@@ -330,7 +330,8 @@ namespace MCAJawIns.Tab
                                 grayLast = gray;
                             }
 
-                            if (fromAngle < angle && angle < toAngle)
+                            #region Draw Chart Axis and Text
+                            if (fromAngle <= angle && angle <= toAngle)
                             // if (angle % 90 == 0)
                             {
                                 #region Draw Axis
@@ -353,7 +354,8 @@ namespace MCAJawIns.Tab
 
                                 Cv2.ImShow($"Chart {angle}", chart);
                                 Cv2.MoveWindow($"Chart {angle}", 50 + angle, angle + 40);
-                            }
+                            } 
+                            #endregion
                         }
 
                         // 中心上黑點
@@ -689,14 +691,17 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24214359":
-                                        // MainWindow.MCAJaw.MCAJawM.CheckPartCam1(mat);
+                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam1(mat, out byte th1);
                                         MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam1(mat);
                                         break;
                                     case "24413078":
-                                        MainWindow.MCAJaw.MCAJawM.CheckPartCam2(mat);
+                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam2(mat, out byte th2);
+                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam2(mat);
                                         break;
-                                    case "40168095":
-                                        MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat);
+                                    case "40168495":
+                                        //bool partExist = 
+                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat, out byte th3);
+                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam3(mat);
                                         break;
                                     default:
                                         break;

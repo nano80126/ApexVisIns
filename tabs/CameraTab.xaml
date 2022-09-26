@@ -449,8 +449,8 @@
                                     </ComboBox>
                                     <!--//-->
                                     <StackPanel x:Name="UserSetActionPanel" Orientation="Horizontal" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
-                                        <!--讀取 UserSet-->
-                                        <Button Height="auto" Content="讀取" Click="ReadUserSet_Click">
+                                        <!--指定 UserSet 設為預設 -->
+                                        <Button Height="auto" Content="設為預設" Click="SetDefaultUserSet_Click">
                                             <!--IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                                             <Button.IsEnabled>
                                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">
@@ -463,8 +463,8 @@
                                                 </MultiBinding>
                                             </Button.IsEnabled>
                                         </Button>
-                                        <!--指定 UserSet 設為預設 -->
-                                        <Button Height="auto" Content="設為預設" Click="SetDefaultUserSet_Click">
+                                        <!--讀取 UserSet-->
+                                        <Button Height="auto" Content="讀取" Click="ReadUserSet_Click">
                                             <!--IsEnabled="{Binding IsOpen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
                                             <Button.IsEnabled>
                                                 <MultiBinding Converter="{StaticResource BooleanAndGate}">

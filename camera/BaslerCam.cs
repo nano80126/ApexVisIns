@@ -513,7 +513,6 @@ namespace MCAJawIns
         public event PropertyChangedEventHandler BasicPropertyChanged;
         protected void OnBasicPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            System.Diagnostics.Debug.WriteLine($"{propertyName} BaslerCam.cs line: 516 ");
             BasicPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
