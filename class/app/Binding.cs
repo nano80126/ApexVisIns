@@ -102,6 +102,7 @@ namespace MCAJawIns
         }
         #endregion
 
+        #region ImageSources
         /// <summary>
         /// 相機影像 1
         /// </summary>
@@ -153,6 +154,7 @@ namespace MCAJawIns
                 OnPropertyChanged();
             }
         }
+        #endregion
 
         /// <summary>
         /// 灰階 Chart
@@ -174,21 +176,6 @@ namespace MCAJawIns
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-    }
-
-    /// <summary>
-    /// 權限等級
-    /// </summary>
-    public class AuthLevel1
-    {
-        [BsonId]
-        public ObjectId ObjID { get; set; }
-
-        [BsonElement(nameof(Password))]
-        public string Password { get; set; }
-
-        [BsonElement(nameof(Level))]
-        public int Level { get; set; }
     }
 
     public class SystemInfo : INotifyPropertyChanged, IDisposable

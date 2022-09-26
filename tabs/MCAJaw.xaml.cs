@@ -779,10 +779,6 @@ namespace MCAJawIns.Tab
                         MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
 
 #if InsertAuth          // 新增使用者、組態
-                        MongoAccess.InsertOne("Configs", new MCAJawConfig()
-                        {
-                            DataReserveMonths = 6,
-                        });
 
                         AuthLevel[] authLevels = new AuthLevel[] {
                             new AuthLevel() { Password = "intai", Level = 1 },

@@ -6,6 +6,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:app="clr-namespace:MCAJawIns"
             xmlns:panel="clr-namespace:MCAJawIns.Panel" 
+            xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
             
             mc:Ignorable="d" 
             d:DesignHeight="900" 
@@ -543,17 +544,15 @@
                 <panel:PointsPanel x:Name="PointsPanel" Background="LightCyan" DataContext="{StaticResource AssistPoints}"
                         Visibility="{Binding Enable, Converter={StaticResource BooleanToVisibility}, UpdateSourceTrigger=PropertyChanged}" />
 
-                
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 12 0 0" Tag="待刪除" Visibility="Visible">
-                    <TextBlock Margin="0 0 12 0" VerticalAlignment="Center" Text="角度範圍" FontSize="16" FontWeight="Bold" />
+                <ctrl:CustomCard Title="角度設定" IconKind="AngleAcute" Visibility="Visible">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Tag="待刪除">
+                        <!--<TextBlock Margin="0 0 12 0" VerticalAlignment="Center" Text="角度範圍" FontSize="16" FontWeight="Bold" />-->
 
-                    <TextBox x:Name="FromText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-                    <materialDesign:PackIcon Kind="Tilde" Margin="8 0" VerticalAlignment="Center" Width="30" Height="26" />
-                    <TextBox x:Name="ToText" Padding="0 3" MinWidth="80" TextAlignment="Center" Text="90" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-                </StackPanel>
-
-                <TextBlock Margin="0 -26 0 0" Padding="0 3 0 0" VerticalAlignment="Stretch" TextAlignment="Center" FontSize="16" Text="這邊待刪除"
-                        Background="{StaticResource ColorWarningTransparent}" Visibility="Collapsed" />
+                        <TextBox x:Name="FromText" Margin="4 4" Padding="8 3" MinWidth="80" TextAlignment="Center" Text="0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <materialDesign:PackIcon VerticalAlignment="Center" Margin="8 0" Width="28" Height="24" Kind="Tilde" />
+                        <TextBox x:Name="ToText" Margin="4 4" Padding="8 3" MinWidth="80" TextAlignment="Center" Text="90" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    </StackPanel>
+                </ctrl:CustomCard>
             </StackPanel>
             <!--//-->
             <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 1" Orientation="Vertical" VerticalAlignment="Bottom" Width="300" Background="{x:Null}">

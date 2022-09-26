@@ -171,6 +171,9 @@ MCA Jaw CCD 尺寸量測設備
 	* HDMI 線問題 ? 
 
 * [ ] 音效播放移動到 MCAJaw.xaml.cs
+	* 待確認功能正常
+
+* [ ] SystemInfo 測試TCP Listener
 
 ### Config Logic
 

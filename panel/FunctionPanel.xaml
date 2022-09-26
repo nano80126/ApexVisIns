@@ -27,7 +27,7 @@
             </StackPanel.Resources>
             <!--#endregion-->
 
-            <Button Focusable="False">
+            <Button Focusable="False" Click="SaveImage_Click">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Image" />
                     <TextBlock Margin="8 0 0 0" Text="儲存圖片" />

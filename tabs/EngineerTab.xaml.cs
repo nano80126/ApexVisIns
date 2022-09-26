@@ -130,6 +130,7 @@ namespace MCAJawIns.Tab
         {
             ConfigPanel.EngineerTab = this;
             LightPanel.EngineerTab = this;
+            FunctionPanel.EngineerTab = this;
             // DigitalIOPanel.EngineerTab = this;
         }
 

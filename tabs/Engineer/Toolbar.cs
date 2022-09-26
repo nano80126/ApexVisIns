@@ -187,15 +187,6 @@ namespace MCAJawIns.Tab
             }
         }
 
-        private void RestoreImage_Click(object sender, RoutedEventArgs e)
-        {
-            Cv2.DestroyAllWindows();
-
-            Mat dis = Indicator.Image;
-            dis?.Dispose();
-            Indicator.Image = Indicator.OriImage?.Clone();
-        }
-
         private void DealImage_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
@@ -262,7 +253,7 @@ namespace MCAJawIns.Tab
 
                 // origin image width
                 int width = mat.Width;
-                Debug.WriteLine($"{center}");
+                Debug.WriteLine($"{nameof(center)}: {center}");
                 Mat roiMat = new Mat(mat, roi);
 
 
@@ -280,23 +271,22 @@ namespace MCAJawIns.Tab
                     {
                         byte* b = roiMat.DataPointer;
 
-                        // 指標圓中心 idx
+                        // 圓中心指標idx
                         int c = (pt.Y * width) + pt.X;
+
+                        #region 
+#if false
+
+                        // from angle1 to angle2 
                         for (int angle = fromAngle; angle <= toAngle; angle += 5)
                         {
-                            Debug.WriteLine($"{angle}");
-
-                            // if (angle == 0 || angle == 30)
-                            // {
-                            // r step = 0.5
-
                             Mat chart = new Mat(new OpenCvSharp.Size(roiMat.Width / 2 + 50, 280 + 50), MatType.CV_8UC3, Scalar.White);
+                            // 當前迴圈 gray
                             byte gray = 0;
+                            // 上次迴圈 gray
                             byte grayLast = 0;
 
-                            // byte grayArr[] = new byte[roiMat.Width / 2];
-                            // byte lastGray = 0;
-
+                            // radius
                             for (int r = 0; r <= roiMat.Width / 2; r++)
                             {
                                 int x = (int)(r * Math.Cos(-Math.PI * angle / 180));
@@ -307,10 +297,10 @@ namespace MCAJawIns.Tab
                                 if (r == 0) { grayLast = gray; }
 
                                 //if (angle % 90 == 0)
-                                if (fromAngle <= angle && angle <= toAngle)
-                                {
-                                    Cv2.Line(chart, r + 25, chart.Height - grayLast - 25, r + 25, chart.Height - gray - 25, Scalar.Red, 1);
-                                }
+                                //if (fromAngle <= angle && angle <= toAngle)
+                                //{
+                                //}
+                                Cv2.Line(chart, r + 25, chart.Height - grayLast - 25, r + 25, chart.Height - gray - 25, Scalar.Red, 1);
                                 #endregion
 
                                 // 畫標記線
@@ -354,7 +344,74 @@ namespace MCAJawIns.Tab
 
                                 Cv2.ImShow($"Chart {angle}", chart);
                                 Cv2.MoveWindow($"Chart {angle}", 50 + angle, angle + 40);
-                            } 
+                            }
+                            #endregion
+                        }  
+#endif
+                        #endregion
+
+                        // radius
+                        for (int r = roiMat.Width / 3; r <= roiMat.Width / 2; r += 10)
+                        {
+                            Mat chart2 = new Mat(new OpenCvSharp.Size(((toAngle - fromAngle) * 2) + 50, 280 + 50), MatType.CV_8UC3, Scalar.White);
+
+                            // 當前迴圈 gray
+                            byte gray = 0;
+                            // 上次迴圈 gray
+                            byte grayLast = 0;
+
+
+                            for (double angle = fromAngle; angle <= toAngle; angle += 0.5)
+                            {
+                                int x = (int)Math.Round(r * Math.Cos(-Math.PI * angle / 180), 0);
+                                int y = (int)Math.Round(r * Math.Sin(-Math.PI * angle / 180), 0);
+
+
+                                #region Draw Chart Lines
+                                gray = b[c + (y * width) + x];
+                                if (angle == fromAngle) { grayLast = gray; }
+
+
+                                //if (fromAngle <= angle && )
+                                Cv2.Line(chart2, (int)((angle * 2) + 25), chart2.Height - grayLast - 25, (int)((angle * 2) + 25), chart2.Height - gray - 25, Scalar.Red, 1);
+                                #endregion
+
+
+                                if (true)
+                                {
+                                    b[c + (y * width) + x] = 0;
+                                }
+
+                                grayLast = gray;
+                            }
+
+
+                            #region Draw Chart Axis and Text
+
+                            Cv2.Line(chart2, 0 + 25, chart2.Height, 0 + 25, 0,Scalar.Black, 1);
+                            for (int x = 25; x < chart2.Width; x += 10)
+                            {
+                                Cv2.Line(chart2, x, chart2.Height - 25 - 3, x, chart2.Height - 25 + 3, Scalar.Black, 1);
+
+                                //Debug.WriteLine($"{x * 0.5}");
+                                if ((x - 25) * 0.5 % 90 == 0)
+                                {
+                                    Cv2.PutText(chart2, $"{(x - 25) * 0.5} ", new OpenCvSharp.Point(x, chart2.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                                }
+                            }
+
+                            Cv2.Line(chart2, 0, chart2.Height - 25, chart2.Width, chart2.Height - 25, Scalar.Black, 1);
+                            for (int y = chart2.Height - 25; y > 0; y -= 10)
+                            {
+                                Cv2.Line(chart2, 0 + 25 - 3, y, 0 + 25 + 3, y, Scalar.Black, 1);
+                            }
+
+
+                            Cv2.PutText(chart2, "Angle", new OpenCvSharp.Point(chart2.Width - 50, chart2.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                            Cv2.PutText(chart2, "gray", new OpenCvSharp.Point(30, 25), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+
+                            Cv2.ImShow($"{nameof(chart2)} {r}", chart2);
+                            Cv2.MoveWindow($"{nameof(chart2)} {r}", 10 + r, 20 + r);
                             #endregion
                         }
 
@@ -379,6 +436,15 @@ namespace MCAJawIns.Tab
             // Indicator.Image = mat;
 
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+        }
+
+        private void RestoreImage_Click(object sender, RoutedEventArgs e)
+        {
+            Cv2.DestroyAllWindows();
+
+            Mat dis = Indicator.Image;
+            dis?.Dispose();
+            Indicator.Image = Indicator.OriImage?.Clone();
         }
 
         private void SaveImage_Click(object sender, RoutedEventArgs e)
