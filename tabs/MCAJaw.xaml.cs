@@ -1372,7 +1372,6 @@ namespace MCAJawIns.Tab
         /// </summary>
         private void InitSizeSpec(JawTypes type)
         {
-            Debug.WriteLine($"{type.GetType()}: {type}");
             string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
             string[] items = Array.Empty<string>();
             double[] center = Array.Empty<double>();
@@ -1453,6 +1452,13 @@ namespace MCAJawIns.Tab
                 JawInspection.CheckLotNumber();
                 // 該批設為未儲存
                 JawInspection.SetLotInserted(false);
+                // 清除 Focus
+                DockPanel_MouseDown(null, null);
+            }
+            else
+            {
+                // 批號 TextBox Focus
+                _ = LotText.Focus();
             }
         }
 
@@ -1610,20 +1616,12 @@ namespace MCAJawIns.Tab
             }).ContinueWith(t =>
             {
                 // 判斷是否插入資料庫
-                //if (true)
-                //{
                 JawMeasurements data = t.Result;
                 data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
                 data.DateTime = DateTime.Now;
-                MongoAccess.InsertOne("Measurements", data);
-                //string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-                //Debug.WriteLine(json);
+                //MongoAccess.InsertOne("Measurements", data);
+                //MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
 
-                //return data.OK;
-                //}
-                Status = INS_STATUS.READY;
-
-                Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
                 // 檢驗失敗，發出 Alarm
                 if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
                 {
@@ -1633,6 +1631,13 @@ namespace MCAJawIns.Tab
                         PlayerAlarm.Play();
                     });
                 }
+                // 檢驗成功，插入資料庫
+                else
+                {
+                    MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+                }
+
+
                 // 檢驗工件 NG，發出 NG 音效
                 if (!data.OK)
                 {
@@ -1642,6 +1647,11 @@ namespace MCAJawIns.Tab
                         PlayerNG.Play();
                     });
                 }
+
+                // 變更狀態為準備檢驗
+                Status = INS_STATUS.READY;
+
+                Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
 
                 return data.OK;
             });
@@ -1654,7 +1664,7 @@ namespace MCAJawIns.Tab
             if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             {
                 // 給予新 ID
-                JawInspection.ObjID = new MongoDB.Bson.ObjectId();
+                JawInspection.ObjID = new ObjectId();
                 // 刷新時間
                 JawInspection.DateTime = DateTime.Now;
                 // 插入資料庫

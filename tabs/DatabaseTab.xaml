@@ -19,18 +19,13 @@
     <Grid Style="{StaticResource TabGrid}">
         <!--#region Layout -->
         <Grid.RowDefinitions>
-            <!--1st-->
             <RowDefinition Height="1*" />
-            <!--2nd-->
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <!--//-->
         <Grid.ColumnDefinitions>
-            <!--1st-->
             <ColumnDefinition Width="auto" />
-            <!--Separator-->
             <ColumnDefinition Width="auto" />
-            <!--2nd-->
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <!--#endregion-->
@@ -86,7 +81,7 @@
                         </Style>
                     </Grid.Resources>
                     <!--#endregion-->
-                    
+
                     <!--#region Layout -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -100,7 +95,7 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <!--#endregion-->
-                    
+
                     <!--#region Content -->
                     <ListBox x:Name="ShortCutDatePicker" Grid.Row="0" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="4 4" Padding="0 0"
                             Cursor="Hand" Background="{StaticResource ColorInfo}" Foreground="{StaticResource ColorWhite}"
@@ -133,34 +128,6 @@
                     <!--#endregion-->
                 </Grid>
             </ctrl:CustomCard>
-            <!--#endregion-->
-
-            <!--#region 批號查詢 (舊) -->
-            <materialDesign:Card Style="{StaticResource PanelTopCard}" Padding="6 8" VerticalAlignment="Top" Background="Linen" Visibility="Collapsed">
-                <DockPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <DockPanel x:Name="LotNumberHeader" DockPanel.Dock="Top">
-                        <materialDesign:PackIcon Kind="Barcode" Width="30" Height="26" />
-                        <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="批號查詢" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
-                    </DockPanel>
-                    <!--//-->
-                    <Separator DockPanel.Dock="Top" Margin="0 8" />
-                    <!--//-->
-
-                    <TextBox x:Name="LotNumberText2" DockPanel.Dock="Top" Padding="8 3"
-                            materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card,AncestorLevel=1}}"
-                            materialDesign:HintAssist.Hint="批號" TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                             Text="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}, Mode=OneWay}"/>
-
-                    <Button DockPanel.Dock="Bottom" Margin="0 8 0 0" Height="24" Click="LotNumberFindBtn_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Search" Width="24" Height="20" VerticalAlignment="Center" />
-                            <TextBlock VerticalAlignment="Center" Text="查詢" />
-                            <!--<TextBlock Margin="8 0 0 0" VerticalAlignment="Center"
-                                    Text="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Button, Mode=FindAncestor}, Mode=OneWay}" />-->
-                        </StackPanel>
-                    </Button>
-                </DockPanel>
-            </materialDesign:Card>
             <!--#endregion-->
 
             <!--#region 批號查詢 -->
@@ -199,7 +166,7 @@
             </StackPanel.Resources>
             <!--#endregion-->
 
-            <!--#region 資料保留時間設定 -->
+            <!--#region 資料保留時間設定 (待刪除) -->
             <materialDesign:Card Style="{StaticResource PanelBottomCard}" Padding="6 8" VerticalAlignment="Top" Background="LightCyan" Visibility="Collapsed">
                 <!--#region Resources -->
                 <materialDesign:Card.Resources>
@@ -278,64 +245,41 @@
 
         <!--#region Column 3, width = 1249 -->
         <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="10" Orientation="Vertical" Background="{x:Null}">
-            <materialDesign:Card x:Name="HistoryCard" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="6 8" Style="{StaticResource PanelTopCard}"
-                    Background="WhiteSmoke">
-                <StackPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <!--
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
-                        <ComboBox x:Name="DefectFilterCombobox" DockPanel.Dock="Left" HorizontalAlignment="Right" Padding="8 3" Cursor="Hand" MinWidth="180" 
-                                  materialDesign:HintAssist.Hint="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight, Mode=OneWay}"
-                                  Style="{StaticResource MaterialDesignOutlinedComboBox}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding}"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <Button Margin="12 0 0 0" HorizontalAlignment="Right" Height="24" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="{StaticResource ColorInfo}"
-                                Foreground="{StaticResource ColorInfo}" Click="FilterButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FilterOutline" Width="24" Height="20" VerticalAlignment="Center"/>
-                                <TextBlock VerticalAlignment="Center" Text="過濾"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>-->
+            <ctrl:CustomCard IconKind="FormatListBulleted" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="WhiteSmoke">
+                <!--#region Style -->
+                <ctrl:CustomCard.Style>
+                    <Style TargetType="{x:Type ctrl:CustomCard}" BasedOn="{StaticResource {x:Type ctrl:CustomCard}}">
+                        <Setter Property="Title" Value="批次檢驗紀錄" />
+                        <Style.Triggers>
+                            <DataTrigger
+                                    Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}"
+                                    Value="0">
+                                <Setter Property="Title" Value="{x:Null}" />
+                                <Setter Property="ShowIcon" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ctrl:CustomCard.Style>
+                <!--#endregion-->
 
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
-                    <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
-                    
-                    <!--//-->
-                    <TextBlock x:Name="LotHeader" Margin="0 9 0 0" FontSize="16" FontWeight="Bold">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="批次檢驗紀錄" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
-                                        <Setter Property="Text" Value="{x:Null}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <Separator Margin="0 6" />
-                    <!--//-->
-
+                <StackPanel Background="Transparent">
                     <!--#region 批號紀錄 -->
-                    <DataGrid x:Name="LotDataGrid" Margin="0" MaxHeight="200" Height="200" Background="Transparent"
-                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
-                              ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                    <DataGrid Margin="4 4 4 0" Height="200" MaxHeight="200" Background="Transparent" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
+                            CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="8 4" materialDesign:DataGridAssist.ColumnHeaderPadding="8 4 8 5"
+                            ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <!--#region Style -->
                         <DataGrid.Style>
                             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
-                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    <DataTrigger
+                                            Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}"
+                                            Value="0">
+                                        <Setter Property="Visibility" Value="Hidden" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.Style>
+                        <!--#endregion-->
 
                         <!--#region Resources -->
                         <DataGrid.Resources>
@@ -452,47 +396,47 @@
                     <!--#endregion-->
 
                     <!--#region 檢驗紀錄 DataGrid -->
-                    <!--<TextBlock x:Name="RecordHeader1" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>-->
-                    <DockPanel Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverter}, 
+                    <DockPanel Margin="4 8 4 0" Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverter}, 
                         ConverterParameter={x:Static sys:String.Empty}, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBlock x:Name="RecordHeader" DockPanel.Dock="Left" Margin="0 12 0 0" VerticalAlignment="Bottom" FontSize="16" FontWeight="Bold"
+                        <TextBlock x:Name="RecordHeader" DockPanel.Dock="Left" Margin="0 0" VerticalAlignment="Bottom" FontSize="{StaticResource BasicFont}" FontWeight="Bold"
                                 Text="{Binding SelectedLotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}" />
 
-                        <Button Padding="12 0" Height="19" DockPanel.Dock="Right" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                        <Button DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0" Padding="12 0" Height="24"
                                 materialDesign:ButtonAssist.CornerRadius="10" Style="{StaticResource MaterialDesignFlatButton}" Click="ExportCSV_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="輸出 .CSV" FontSize="14" />
-                                <materialDesign:PackIcon Kind="FileExport" Margin="8 0 0 0" />
+                                <materialDesign:PackIcon Kind="FileExport" Height="20" VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center" Margin="4 0 0 0" Text="輸出 .CSV" />
                             </StackPanel>
                         </Button>
-                        <!--<TextBlock x:Name="RecordHeader1" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" 
-                                   Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}"/>-->
                     </DockPanel>
                     <!--//-->
-                    <Separator Margin="0 6"/>
+                    <Separator Margin="4 8 4 0" />
                     <!--//-->
-                    <DataGrid CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}"
-                              AutoGenerateColumns="False" CanUserReorderColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
-                              ItemsSource="{Binding JawFullSpecInsCol, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                    <DataGrid Margin="4 8 4 4" CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}" AutoGenerateColumns="False"
+                            CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="8 4" materialDesign:DataGridAssist.ColumnHeaderPadding="8 4 8 5"
+                            ItemsSource="{Binding JawFullSpecInsCol, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <!--#region Style -->
                         <DataGrid.Style>
                             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
-                                <!--780 - 305-->
-                                <Setter Property="MaxHeight" Value="479"/>
-                                <Setter Property="Visibility" Value="Visible"/>
+                                <!--780 - 304 -->
+                                <Setter Property="MaxHeight" Value="472" />
+                                <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                        <!--960 - 305-->
-                                        <Setter Property="MaxHeight" Value="659"/>
+                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
+                                            Value="Maximized">
+                                        <!--960 - 304-->
+                                        <Setter Property="MaxHeight" Value="652" />
                                     </DataTrigger>
 
-                                    <DataTrigger Binding="{Binding JawFullSpecInsCol.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" 
-                                                 Value="0">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    <DataTrigger
+                                            Binding="{Binding JawFullSpecInsCol.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}"
+                                            Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.Style>
+                        <!--#endregion-->
 
                         <!--#region Resources -->
                         <DataGrid.Resources>
@@ -523,7 +467,8 @@
                             <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                 <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="0 3" />
+                                <Setter Property="Margin" Value="0 0" />
+                                <!--<Setter Property="Background" Value="Red" />-->
                             </Style>
                         </DataGrid.Resources>
                         <!--#endregion-->
@@ -637,7 +582,7 @@
                     </DataGrid>
                     <!--#endregion-->
                 </StackPanel>
-            </materialDesign:Card>
+            </ctrl:CustomCard>
         </StackPanel>
         <!--#endregion-->
     </Grid>
