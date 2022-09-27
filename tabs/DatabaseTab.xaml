@@ -19,18 +19,13 @@
     <Grid Style="{StaticResource TabGrid}">
         <!--#region Layout -->
         <Grid.RowDefinitions>
-            <!--1st-->
             <RowDefinition Height="1*" />
-            <!--2nd-->
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <!--//-->
         <Grid.ColumnDefinitions>
-            <!--1st-->
             <ColumnDefinition Width="auto" />
-            <!--Separator-->
             <ColumnDefinition Width="auto" />
-            <!--2nd-->
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <!--#endregion-->
@@ -86,7 +81,7 @@
                         </Style>
                     </Grid.Resources>
                     <!--#endregion-->
-                    
+
                     <!--#region Layout -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -100,7 +95,7 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <!--#endregion-->
-                    
+
                     <!--#region Content -->
                     <ListBox x:Name="ShortCutDatePicker" Grid.Row="0" Grid.ColumnSpan="100" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="4 4" Padding="0 0"
                             Cursor="Hand" Background="{StaticResource ColorInfo}" Foreground="{StaticResource ColorWhite}"
@@ -157,7 +152,7 @@
         </StackPanel>
 
         <!--//-->
-        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" Width="300" VerticalAlignment="Bottom" Background="{x:Null}" >
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" Width="300" VerticalAlignment="Bottom" Background="{x:Null}">
             <!--#region Resources -->
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
@@ -256,7 +251,9 @@
                     <Style TargetType="{x:Type ctrl:CustomCard}" BasedOn="{StaticResource {x:Type ctrl:CustomCard}}">
                         <Setter Property="Title" Value="批次檢驗紀錄" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
+                            <DataTrigger
+                                    Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}"
+                                    Value="0">
                                 <Setter Property="Title" Value="{x:Null}" />
                                 <Setter Property="ShowIcon" Value="False" />
                             </DataTrigger>
@@ -270,6 +267,7 @@
                     <DataGrid Margin="4 4 4 0" Height="200" MaxHeight="200" Background="Transparent" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
                             CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="8 4" materialDesign:DataGridAssist.ColumnHeaderPadding="8 4 8 5"
                             ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <!--#region Style -->
                         <DataGrid.Style>
                             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
                                 <Style.Triggers>
@@ -281,6 +279,7 @@
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.Style>
+                        <!--#endregion-->
 
                         <!--#region Resources -->
                         <DataGrid.Resources>
@@ -411,21 +410,22 @@
                         </Button>
                     </DockPanel>
                     <!--//-->
-                    <Separator Margin="0 8" />
+                    <Separator Margin="4 8 4 0" />
                     <!--//-->
-                    <DataGrid CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}" AutoGenerateColumns="False"
+                    <DataGrid Margin="4 8 4 4" CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}" AutoGenerateColumns="False"
                             CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="8 4" materialDesign:DataGridAssist.ColumnHeaderPadding="8 4 8 5"
                             ItemsSource="{Binding JawFullSpecInsCol, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
+                        <!--#region Style -->
                         <DataGrid.Style>
                             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
                                 <!--780 - 304 -->
-                                <Setter Property="MaxHeight" Value="476" />
+                                <Setter Property="MaxHeight" Value="472" />
                                 <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}"
                                             Value="Maximized">
                                         <!--960 - 304-->
-                                        <Setter Property="MaxHeight" Value="656" />
+                                        <Setter Property="MaxHeight" Value="652" />
                                     </DataTrigger>
 
                                     <DataTrigger
@@ -436,6 +436,7 @@
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.Style>
+                        <!--#endregion-->
 
                         <!--#region Resources -->
                         <DataGrid.Resources>
@@ -582,351 +583,6 @@
                     <!--#endregion-->
                 </StackPanel>
             </ctrl:CustomCard>
-            
-            <materialDesign:Card x:Name="HistoryCard1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="6 8" Style="{StaticResource PanelTopCard}"
-                    Background="{StaticResource ColorError}" Visibility="Collapsed">
-                <StackPanel Background="Transparent" Margin="2 0" MouseDown="DockPanel_MouseDown">
-                    <!--#region 量測用 TextBlock -->
-                    <!--
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=2}, Mode=OneWay}" />
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=materialDesign:Card, AncestorLevel=1}, Mode=OneWay}" />
-                        <TextBlock Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel, AncestorLevel=1}, Mode=OneWay}" />
-                    -->
-                    <!--#endregion-->
-
-                    <!--//-->
-                    <TextBlock x:Name="LotHeader2" Margin="0 9 0 0" FontSize="16" FontWeight="Bold">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="批次檢驗紀錄" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
-                                        <Setter Property="Text" Value="{x:Null}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <Separator Margin="0 6" />
-                    <!--//-->
-
-                    <!--#region 批號紀錄 -->
-                    <DataGrid x:Name="LotDataGrid2" Margin="0" MaxHeight="200" Height="200" Background="Transparent"
-                              CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False" CanUserReorderColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
-                              ItemsSource="{Binding JawInspections, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
-                        <DataGrid.Style>
-                            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding JawInspections.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" Value="0">
-                                        <Setter Property="Visibility" Value="Hidden"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.Style>
-
-                        <!--#region Resources -->
-                        <DataGrid.Resources>
-                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
-                                <Setter Property="Background" Value="{StaticResource ColorPurpleTransparent}" />
-                                <Setter Property="BorderBrush" Value="{StaticResource ColorPurpleTransparent}" />
-                            </Style>
-
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                                <Setter Property="FontFamily" Value="微軟正黑體" />
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Style>
-
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridSuccessColumeHeader">
-                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
-                            </Style>
-
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridErrorColumeHeader">
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}" />
-                            </Style>
-
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </DataGrid.Resources>
-                        <!--#endregion-->
-
-                        <!--#region Content -->
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="批號" MinWidth="120" CanUserResize="False" IsReadOnly="True" Binding="{Binding LotNumber}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--查詢按鈕, MinWidth = 80 + 16 (padding)-->
-                            <DataGridTemplateColumn MinWidth="96" CanUserResize="False" IsReadOnly="True">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="HorizontalAlignment" Value="Right" />
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
-
-                                <DataGridTemplateColumn.Header>
-                                    <TextBlock HorizontalAlignment="Right" Text="動作" TextAlignment="Center" Width="80" />
-                                </DataGridTemplateColumn.Header>
-
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button HorizontalAlignment="Right" Content="查詢" Width="80" Foreground="{StaticResource ColorInfo}"
-                                                materialDesign:ButtonAssist.CornerRadius="15" Style="{StaticResource MaterialDesignFlatButton}"
-                                                Click="SearchResultsByLotNumber_Click" CommandParameter="{Binding LotNumber}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTextColumn Header="時間" MinWidth="120" IsReadOnly="True"
-                                    Binding="{Binding DateTime, StringFormat={}{0:MM/dd/yy HH:mm}, Converter={StaticResource DateTimeToLocalConverter}}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="良品" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[good].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridSuccessColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                            <!--//-->
-                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088R].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088L].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.176].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008R].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008L].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013R].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013L].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024R].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024L].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[back].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[bfDiff].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contour].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourR].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourL].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                        </DataGrid.Columns>
-                        <!--#endregion-->
-                    </DataGrid>
-                    <!--#endregion-->
-
-                    <!--#region 檢驗紀錄 DataGrid -->
-                    <!--<TextBlock x:Name="RecordHeader1" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" Text="{x:Null}"/>-->
-                    <DockPanel Visibility="{Binding SelectedLotNumber, Converter={StaticResource StringEqualToVisibilityInverter}, 
-                        ConverterParameter={x:Static sys:String.Empty}, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBlock DockPanel.Dock="Left" Margin="0 12 0 0" VerticalAlignment="Bottom" FontSize="16" FontWeight="Bold"
-                                Text="{Binding SelectedLotNumber, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}" />
-
-                        <Button Padding="12 0" Height="19" DockPanel.Dock="Right" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                                materialDesign:ButtonAssist.CornerRadius="10" Style="{StaticResource MaterialDesignFlatButton}" Click="ExportCSV_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="輸出 .CSV" FontSize="14" />
-                                <materialDesign:PackIcon Kind="FileExport" Margin="8 0 0 0" />
-                            </StackPanel>
-                        </Button>
-                        <!--<TextBlock x:Name="RecordHeader1" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0 12 0 0" FontSize="16" FontWeight="Bold" 
-                                   Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualHeight}"/>-->
-                    </DockPanel>
-                    <!--//-->
-                    <Separator Margin="0 6"/>
-                    <!--//-->
-                    <DataGrid CanUserSortColumns="False" CanUserAddRows="False" Background="{StaticResource ColorLightGrayTransparent}"
-                              AutoGenerateColumns="False" CanUserReorderColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="8 5" materialDesign:DataGridAssist.ColumnHeaderPadding="8 5"
-                              ItemsSource="{Binding JawFullSpecInsCol, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}">
-                        <DataGrid.Style>
-                            <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource MaterialDesignDataGrid}">
-                                <!--780 - 305-->
-                                <Setter Property="MaxHeight" Value="479"/>
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1}}" Value="Maximized">
-                                        <!--960 - 305-->
-                                        <Setter Property="MaxHeight" Value="659"/>
-                                    </DataTrigger>
-
-                                    <DataTrigger Binding="{Binding JawFullSpecInsCol.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:DatabaseTab, AncestorLevel=1}}" 
-                                                 Value="0">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.Style>
-
-                        <!--#region Resources -->
-                        <DataGrid.Resources>
-                            <Style TargetType="ScrollBar" BasedOn="{StaticResource CustomScrollBar}">
-                                <Setter Property="Background" Value="{StaticResource ColorPrimaryTransparent}" />
-                                <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}" />
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" x:Key="TextRightDataGridColumeHeader">
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                                <Setter Property="FontFamily" Value="微軟正黑體" />
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextCenterDataGridColumeHeader">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridSuccessColumeHeader">
-                                <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource TextRightDataGridColumeHeader}" x:Key="TextRightDataGridErrorColumeHeader">
-                                <Setter Property="Foreground" Value="{StaticResource ColorError}" />
-                            </Style>
-                            <!--//-->
-                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}" x:Key="DataGridAlignRighTextColume">
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Margin" Value="0 3" />
-                            </Style>
-                        </DataGrid.Resources>
-                        <!--#endregion-->
-
-                        <!--#region Content -->
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="時間" MinWidth="80" IsReadOnly="True" CanUserResize="False"
-                                    Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}, Converter={StaticResource DateTimeToLocalConverter}}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <DataGridTemplateColumn Header="OK / NG" MinWidth="80" IsReadOnly="True" CanUserResize="False"
-                                    HeaderStyle="{StaticResource TextCenterDataGridColumeHeader}">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <materialDesign:PackIcon Width="24" Height="20" Tag="{Binding OK}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <materialDesign:PackIcon.Style>
-                                                <Style TargetType="materialDesign:PackIcon">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Mode=Self}}" Value="True">
-                                                            <Setter Property="Kind" Value="Cube" />
-                                                            <Setter Property="Foreground" Value="{StaticResource ColorSuccess}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                    <Setter Property="Kind" Value="CubeOff" />
-                                                    <Setter Property="Foreground" Value="{StaticResource ColorError}" />
-                                                </Style>
-                                            </materialDesign:PackIcon.Style>
-                                        </materialDesign:PackIcon>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <!--//-->
-                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088R}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                            <!--//-->
-                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088L}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.176}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008R}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008L}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013R}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013L}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024R}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024L}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=back}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="前開" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=front}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=bfDiff}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--// -->
-                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                            <!--//-->
-                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contourR}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                            <!--//-->
-                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contourL}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                            <!--//-->
-                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True"
-                                    Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=flatness}"
-                                    HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
-                        </DataGrid.Columns>
-                        <!--#endregion-->
-                    </DataGrid>
-                    <!--#endregion-->
-                </StackPanel>
-            </materialDesign:Card>
         </StackPanel>
         <!--#endregion-->
     </Grid>
