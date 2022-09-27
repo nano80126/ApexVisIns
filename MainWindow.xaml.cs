@@ -299,6 +299,8 @@ namespace MCAJawIns
             SystemInfoTab.SystemInfo.SetStartTime();
             // 設定是否為自動模式
             SystemInfoTab.SystemInfo.SetMode(InitMode == InitModes.AUTO);
+            // 啟動 TcpListener
+            SystemInfoTab.SystemInfo.SetTcpListener();
             #endregion
         }
 

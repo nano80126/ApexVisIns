@@ -5,6 +5,10 @@
         d:DataContext="{d:DesignInstance Type={x:Null}}" Loaded="CustomCard_Loaded">
     <StackPanel>
         <TextBlock Margin="4 4" FontSize="{StaticResource BasicFont-lg}" FontWeight="Bold" Text="保留" Foreground="{StaticResource ColorLightGrayTransparent}" />
+
+        <Button Margin="4 4" Content="連線" Style="{StaticResource MaterialDesignOutlinedButton}" Click="Connect_Click" />
+
+        <Button Margin="4 4" Content="發送" Style="{StaticResource MaterialDesignOutlinedButton}" Click="Send_Click"/>
     </StackPanel>
 
     <!--#region Footer -->

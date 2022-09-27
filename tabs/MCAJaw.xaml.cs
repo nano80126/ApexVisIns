@@ -96,12 +96,6 @@ namespace MCAJawIns.Tab
         private int _jawTab;
 
         /// <summary>
-        /// 閒置計時器
-        /// </summary>
-        [Obsolete]
-        private System.Timers.Timer _idleTimer;
-
-        /// <summary>
         /// NG 音效
         /// </summary>
         [Obsolete]
@@ -1774,37 +1768,14 @@ namespace MCAJawIns.Tab
         #region 測試區
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //JawResultGroup.Collection1.Add(new JawSpec("ABC", 0.5, 0.3, 0.7, 0.65));
-            //JawResultGroup.Collection2.Add(new JawSpec("DEF", 0.8, 0.3, 1.3, 0.65));
-            //JawResultGroup.Collection3.Add(new JawSpec("DDD", 0.005, 0.003, 0.007, 0.0075));
-
-            // JawSizeSpecList.Groups[1].Color = Brushes.Transparent;
-            // JawSizeSpecList.Groups[2].Color = Brushes.Transparent;
-            // JawSizeSpecList.Groups[3].Color = Brushes.Transparent;
-            // JawSizeSpecList.Groups[0].PropertyChange("Color");
-
-            //MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
-
-            //Task.Run(() =>
-            //{
-            //    M.ListJawParam();
-            //});
-
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-            //MediaPlayer.Open(new Uri(Path.GetFullPath(@".\sound\NG.mp3")));
-            //MediaPlayer.Position = TimeSpan.FromSeconds(0);
-            //MediaPlayer.Play();
-
+#if false
             MediaPlayer player = new MediaPlayer();
             player.Open(new Uri(Path.GetFullPath(@".\sound\Alarm.wav")));
             player.Position = TimeSpan.FromSeconds(0);
-            player.Play();
-            //SoundNG.Play();
-            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+            player.Play(); 
+#endif
 
-            //MediaPlayer.Open(new Uri(Path.GetFullPath(@".\sound\Alarm.wav")));
-            //MediaPlayer.Position = TimeSpan.FromSeconds(0);
-            //MediaPlayer.Play();
+            MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
 
 #if false
             Task<int> t = await Task.Run(() =>

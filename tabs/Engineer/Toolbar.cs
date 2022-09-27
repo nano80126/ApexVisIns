@@ -391,12 +391,17 @@ namespace MCAJawIns.Tab
                             Cv2.Line(chart2, 0 + 25, chart2.Height, 0 + 25, 0,Scalar.Black, 1);
                             for (int x = 25; x < chart2.Width; x += 10)
                             {
-                                Cv2.Line(chart2, x, chart2.Height - 25 - 3, x, chart2.Height - 25 + 3, Scalar.Black, 1);
+                                //Cv2.Line(chart2, x, chart2.Height - 25 - 3, x, chart2.Height - 25 + 3, Scalar.Black, 1);
 
-                                //Debug.WriteLine($"{x * 0.5}");
+                                // Debug.WriteLine($"{x * 0.5}");
                                 if ((x - 25) * 0.5 % 90 == 0)
                                 {
-                                    Cv2.PutText(chart2, $"{(x - 25) * 0.5} ", new OpenCvSharp.Point(x, chart2.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                                    Cv2.Line(chart2, x, chart2.Height - 25 - 6, x, chart2.Height - 25 + 6, Scalar.Blue, 1);
+                                    Cv2.PutText(chart2, $"{(x - 25) * 0.5} ", new OpenCvSharp.Point(x - 15, chart2.Height - 5), HersheyFonts.HersheySimplex, 0.5, Scalar.DarkBlue, 1);
+                                }
+                                else
+                                {
+                                    Cv2.Line(chart2, x, chart2.Height - 25 - 3, x, chart2.Height - 25 + 3, Scalar.Gray, 1);
                                 }
                             }
 
@@ -407,11 +412,11 @@ namespace MCAJawIns.Tab
                             }
 
 
-                            Cv2.PutText(chart2, "Angle", new OpenCvSharp.Point(chart2.Width - 50, chart2.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
+                            Cv2.PutText(chart2, "Angle", new OpenCvSharp.Point(chart2.Width - 25 - 45, chart2.Height - 25 - 10), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
                             Cv2.PutText(chart2, "gray", new OpenCvSharp.Point(30, 25), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
 
                             Cv2.ImShow($"{nameof(chart2)} {r}", chart2);
-                            Cv2.MoveWindow($"{nameof(chart2)} {r}", 10 + r, 20 + r);
+                            Cv2.MoveWindow($"{nameof(chart2)} {r}", 10 + r, 20 + (r / 2));
                             #endregion
                         }
 

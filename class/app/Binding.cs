@@ -188,7 +188,9 @@ namespace MCAJawIns
         // Disposed 旗標
         private bool _disposed;
 
+        private TcpClient _tcpClient;
         private TcpListener _tcpListener;
+        private CancellationTokenSource _cancellationTokenSource;
 
         //private bool _x64;
         private bool _auto;
@@ -385,6 +387,89 @@ namespace MCAJawIns
         #endregion
 
         #region Methods
+        /// <summary>
+        /// 設定 Tcp Listener
+        /// </summary>
+        public void SetTcpListener()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            Task.Factory.StartNew(() =>
+            {
+                _tcpListener = new TcpListener(System.Net.IPAddress.Parse("0.0.0.0"), 8016);
+                _tcpListener.Start();
+                byte[] bytes = new byte[256];
+
+                while (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    Debug.WriteLine($"Wait for a connection...");
+
+                    // 等待有 client 連線 
+                    SpinWait.SpinUntil(() => _tcpListener.Pending() || _cancellationTokenSource.IsCancellationRequested);
+                    // 若工作被 Cancel，跳出迴圈
+                    if (_cancellationTokenSource.IsCancellationRequested) { break; }
+
+                    // 接受 client 連線
+                    _tcpClient = _tcpListener.AcceptTcpClient();
+                    Debug.WriteLine("Connected!");
+
+                    // 取得 NetworkStream
+                    NetworkStream networkStream = _tcpClient.GetStream();
+
+                    int i;
+
+                    // (i = networkStream.Read(bytes, 0, bytes.Length)).;
+                    try
+                    {
+                        #region 這部分要重寫
+                        // 等待 DataAvailable 或終止 listener
+                        SpinWait.SpinUntil(() => networkStream.DataAvailable || _cancellationTokenSource.IsCancellationRequested);
+                        // 若工作被 Cancel，跳出迴圈
+                        if (_cancellationTokenSource.IsCancellationRequested)
+                        {
+                            networkStream.Close();
+                            _tcpClient.Close();
+                            break;
+                        }
+
+                        Debug.WriteLine($"Data can be read");
+
+                        while ((i = networkStream.Read(bytes, 0, bytes.Length)) != 0)
+                        {
+                            string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
+                            Debug.WriteLine($"Data: {data} {i}");
+
+                            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
+                            byte[] msg = System.Text.Encoding.UTF8.GetBytes(TotalAutoTime);
+                            networkStream.Write(msg, 0, msg.Length);
+                            Debug.WriteLine($"Send msg: {msg}");
+                        } 
+                        #endregion
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"{ex.Message}");
+                        // throw;
+                    }
+
+                    networkStream.Close();
+                    _tcpClient.Close();
+                }
+                _tcpListener.Stop();
+
+                Debug.WriteLine($"End Server");
+            }, TaskCreationOptions.LongRunning);
+        }
+
+        public void EndTcpListener()
+        {
+            //_cancellationTokenSource 不為 null 且尚未要求 cancel
+            if (_cancellationTokenSource?.IsCancellationRequested == false)
+            {
+                _cancellationTokenSource.Cancel();
+            }
+        }
+
         /// <summary>
         /// 設定 自動/編輯 模式
         /// </summary>
