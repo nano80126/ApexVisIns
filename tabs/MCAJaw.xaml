@@ -114,16 +114,19 @@
                 <!--//-->
                 <Separator Margin="12 4" />
 
-                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>
+                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
 
-                <!--<Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
+                <!--
+                <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
                         Style="{StaticResource MaterialDesignToolButton}" Click="SingleGrab_Click"/>
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="連續拍攝" Foreground="{StaticResource ColorSuccess}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StartContinuousGrab_Click"/>
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="停止拍攝" Foreground="{StaticResource ColorInfo}"
                         Style="{StaticResource MaterialDesignToolButton}" Click="StopContinuousGrab_Click"/>
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="觸發拍照" Foreground="{StaticResource ColorPrimary}"
-                        Style="{StaticResource MaterialDesignToolButton}" Click="CameraTrigger_Click"/>-->
+                        Style="{StaticResource MaterialDesignToolButton}" Click="CameraTrigger_Click"/>
+                -->
+                
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -404,7 +407,7 @@
                                             <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
                                         <!--//-->
-                                        <TextBox Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Margin="0 0 0 0" Padding="8 0"
+                                        <TextBox x:Name="LotText" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" Margin="0 0 0 0" Padding="8 0"
                                                 materialDesign:TextFieldAssist.PrefixText="Lot" materialDesign:HintAssist.Hint="Lot" materialDesign:HintAssist.IsFloating="False"
                                                 Text="{Binding Path=LotNumber, Source={StaticResource JawInspection}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 Style="{StaticResource MainPanelTextBox}" />
@@ -854,7 +857,8 @@
 
                                     <!--#region 3rd row -->
                                     <Button x:Name="TriggerIns" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MainPanelButton}"
-                                            Click="TriggerInspection_Click">
+                                            Click="TriggerInspection_Click"
+                                            Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Converter={StaticResource BooleanToVisibility}}">
                                         <Button.IsEnabled>
                                             <MultiBinding Converter="{StaticResource BooleanAndGate}">
                                                 <Binding Path="Status" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:MCAJaw, AncestorLevel=1}"

@@ -513,5 +513,12 @@ namespace MCAJawIns.Tab
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //HistoryCard.Visibility = HistoryCard.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+
+            //HistoryCard1.Visibility = HistoryCard.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
     }
 }

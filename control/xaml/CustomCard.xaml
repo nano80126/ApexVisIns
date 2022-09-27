@@ -24,12 +24,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:CustomCard}">
+                    <!--#region Resources -->
                     <ControlTemplate.Resources>
                         <cvt:ObjectNotNullConverter x:Key="ObjectNotNullConverter" />
                         <cvt:ObjectNotNullToVisibility x:Key="ObjectNotNullToVisibility" />
                         <cvt:BooleanOrToVisibility x:Key="BooleanOrToVisibility" />
                         <cvt:BooleanToVisibility x:Key="BooleanToVisibility" />
+                        <cvt:BooleanToVisibility x:Key="BooleanToVisibility2" FalseValue="Hidden" />
                     </ControlTemplate.Resources>
+                    <!--#endregion-->
 
                     <materialDesign:Card Padding="{TemplateBinding Padding}" FontFamily="{TemplateBinding FontFamily}"
                             materialDesign:ShadowAssist.ShadowDepth="{TemplateBinding materialDesign:ShadowAssist.ShadowDepth}" Foreground="{TemplateBinding Foreground}"
@@ -38,7 +41,8 @@
                             <DockPanel x:Name="Header" DockPanel.Dock="Top" Margin="4 0" Focusable="True"
                                     Visibility="{TemplateBinding ShowHeader, Converter={StaticResource BooleanToVisibility}}">
                                 <!--<materialDesign:PackIcon Kind="{Binding IconKind, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" Width="30" Height="26"/>-->
-                                <materialDesign:PackIcon DockPanel.Dock="Left" Kind="{TemplateBinding IconKind}" Width="30" Height="26" />
+                                <materialDesign:PackIcon DockPanel.Dock="Left" Width="30" Height="26" Kind="{TemplateBinding IconKind}"
+                                        Visibility="{TemplateBinding ShowIcon, Converter={StaticResource BooleanToVisibility2}}" />
                                 <TextBlock DockPanel.Dock="Left" Text="{TemplateBinding Title}" Style="{StaticResource HeaderStyle}" />
 
                                 <TextBlock DockPanel.Dock="Right" FontSize="16" Foreground="{StaticResource ColorSecondary}" Text="{TemplateBinding SubTitle}"
@@ -74,13 +78,12 @@
                         </DockPanel>
                     </materialDesign:Card>
 
-                    <ControlTemplate.Triggers>
-                        <!--
+                    <ControlTemplate.Triggers />
+                    <!--
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="Red"/>
                         </Trigger>
-                        -->
-                    </ControlTemplate.Triggers>
+                    -->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
