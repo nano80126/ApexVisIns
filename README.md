@@ -175,6 +175,12 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] SystemInfo 測試TCP Listener
 
+* [ ] Migrate to the latest version of MaterialDesign 4.6.1
+
+* [ ] Migrate to the latest version of OpenCVSharp
+
+* [ ] Check why ToolbarTray has default padding 3
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

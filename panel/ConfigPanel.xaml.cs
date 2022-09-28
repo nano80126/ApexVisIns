@@ -282,5 +282,15 @@ namespace MCAJawIns.Panel
                 }
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string jsonStr = JsonSerializer.Serialize(cam, new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            });
+
+            Debug.WriteLine($"{jsonStr}");
+        }
     }
 }

@@ -47,18 +47,7 @@ namespace MCAJawIns.Algorithm
         public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
-        #region 演算法使用
-#if Deprecated
-        /// <summary>
-        /// Jaw 左右 enum，013、024等演算法所需 param
-        /// </summary>
-        public enum JawPos
-        {
-            Left = 1,
-            Right = 2,
-        } 
-#endif
-
+        #region 演算法使用 ROIs
         /// <summary>
         /// ROIs
         /// </summary>
@@ -1476,7 +1465,8 @@ namespace MCAJawIns.Algorithm
         }
 
         /// <summary>
-        /// 計算 0.008 牙齒厚度 (左右分開呼叫)
+        /// 計算 0.008 牙齒厚度
+        /// <para>左右分開呼叫</para>
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
@@ -1593,7 +1583,8 @@ namespace MCAJawIns.Algorithm
         }
 
         /// <summary>
-        /// 計算 0.013 距離 (左右分開呼叫)
+        /// 計算 0.013 距離 (牙齒寬度)
+        /// <para>左右分開呼叫</para>
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>

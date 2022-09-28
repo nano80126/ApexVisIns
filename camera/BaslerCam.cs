@@ -20,6 +20,8 @@ namespace MCAJawIns
         private bool _isTriggerMode;
         private int _offsetX;
         private int _offsetY;
+
+        private string[] _userSetEnum;
         #endregion
 
         #region Properties
@@ -145,6 +147,20 @@ namespace MCAJawIns
                 }
             }
         }
+
+        /// <summary>
+        /// UserSet 列舉
+        /// </summary>
+        public string[] UserSetEnum
+        {
+            get => _userSetEnum;
+            set
+            {
+                _userSetEnum = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// 當前套用之組態
         /// </summary>
@@ -593,25 +609,6 @@ namespace MCAJawIns
         //  
         #endregion
 
-        #region 建構子
-        /// <summary>
-        /// .xaml 使用 (一般不使用)
-        /// </summary>
-        public CameraConfig() { }
-
-        /// <summary>
-        /// 正式建構子
-        /// </summary>
-        /// <param name="fullName">相機全名</param>
-        /// <param name="model">相機型號</param>
-        /// <param name="ip">相機IP</param>
-        /// <param name="mac">相機MAC</param>
-        /// <param name="serialNumber">相機S/N</param>
-        public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
-        {
-        }
-        #endregion
-
         #region Base Properties
         //public override TargetFeature TargetFeature
         //{
@@ -656,9 +653,8 @@ namespace MCAJawIns
 
         #region Properties
 
-
         #region Basic Info
-        //public override string IP { get => base.IP; set => base.IP = value; }
+        // public override string IP { get => base.IP; set => base.IP = value; }
 
         /// <summary>
         /// 相機是否在線
@@ -1296,8 +1292,23 @@ namespace MCAJawIns
 
         #endregion
 
-        #region MyRegion
+        #region 建構子
+        /// <summary>
+        /// .xaml 使用 (一般不使用)
+        /// </summary>
+        public CameraConfig() { }
 
+        /// <summary>
+        /// 正式建構子
+        /// </summary>
+        /// <param name="fullName">相機全名</param>
+        /// <param name="model">相機型號</param>
+        /// <param name="ip">相機IP</param>
+        /// <param name="mac">相機MAC</param>
+        /// <param name="serialNumber">相機S/N</param>
+        public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        {
+        }
         #endregion
 
         #region Property Changed Event
