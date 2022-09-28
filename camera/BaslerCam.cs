@@ -21,7 +21,7 @@ namespace MCAJawIns
         private int _offsetX;
         private int _offsetY;
 
-        private string[] _userSetEnum;
+        private string[] _userSetEnum = new string[] { "112321131", "321321322", "12313213", "UserSet1", "UserSet2", "UserSet3" };
         #endregion
 
         #region Properties

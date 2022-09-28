@@ -1,18 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using MongoDB;
-using MongoDB.Driver;
 using MongoDB.Bson;
-using MCAJawIns.Mongo;
-using System.Net.NetworkInformation;
-
-using MCAJawInfo = MCAJawIns.Mongo.Info;
-using System.Text.Json;
-using System.IO;
 
 namespace MCAJawIns.Tab
 {

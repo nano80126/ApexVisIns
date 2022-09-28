@@ -1630,6 +1630,7 @@ namespace MCAJawIns.Tab
                 // 檢驗成功，插入資料庫
                 else
                 {
+                    MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
                     MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
                 }
 
@@ -1777,7 +1778,14 @@ namespace MCAJawIns.Tab
             player.Play(); 
 #endif
 
-            MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
+            // MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
+
+            Task.Run(() =>
+            {
+                MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
+                int parts = MainWindow.SystemInfoTab.SystemInfo.TotalParts;
+                Debug.WriteLine($"{parts}");
+            });
 
 #if false
             Task<int> t = await Task.Run(() =>

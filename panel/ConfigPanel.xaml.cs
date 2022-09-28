@@ -292,5 +292,17 @@ namespace MCAJawIns.Panel
 
             Debug.WriteLine($"{jsonStr}");
         }
+
+        private void UserSetLoad_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine($"123");
+        }
+
+        private void UserSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Debug.WriteLine($"{e.AddedItems[0]}");
+            //Debug.WriteLine($"{e.RemovedItems?[0]}");
+            Debug.WriteLine($"{(sender as ListBox).SelectedItem}");
+        }
     }
 }

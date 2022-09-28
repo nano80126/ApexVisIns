@@ -461,6 +461,9 @@ namespace MCAJawIns
             }, TaskCreationOptions.LongRunning);
         }
 
+        /// <summary>
+        /// 終止Tcp Listener
+        /// </summary>
         public void EndTcpListener()
         {
             //_cancellationTokenSource 不為 null 且尚未要求 cancel
@@ -477,6 +480,7 @@ namespace MCAJawIns
         {
             _auto = auto;
         }
+
         /// <summary>
         /// 設定 Mongo 版本
         /// </summary>
@@ -494,6 +498,7 @@ namespace MCAJawIns
         {
             _startTime = DateTime.Now;
         }
+
         /// <summary>
         /// 設定 Total Auto Time
         /// </summary>
@@ -501,8 +506,18 @@ namespace MCAJawIns
         {
             _totalAutoTime = seconds;
         }
+
         /// <summary>
-        /// 開始計算閒置時間
+        /// 量測工件計數 +1
+        /// </summary>
+        public void PlusTotalParts()
+        {
+            _totalParts += 1;
+            OnPropertyChanged(nameof(TotalParts));
+        }
+
+        /// <summary>
+        /// 開始閒置時間計時器
         /// </summary>
         public void StartIdleWatch()
         {
@@ -516,8 +531,9 @@ namespace MCAJawIns
                 _stopwatch.Start();
             }
         }
+
         /// <summary>
-        /// 停止計算閒置時間
+        /// 停止閒置時間計時器
         /// </summary>
         public void StopIdleWatch()
         {
@@ -526,6 +542,7 @@ namespace MCAJawIns
                 _stopwatch.Stop();
             }
         }
+
         /// <summary>
         /// 取得 自動運行時間 (秒)
         /// </summary>
@@ -541,6 +558,7 @@ namespace MCAJawIns
                 return 0;
             }
         }
+
         /// <summary>
         /// 取得 累計自動運行時間 (秒)
         /// </summary>

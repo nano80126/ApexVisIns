@@ -58,7 +58,7 @@
                 </materialDesign:PopupBox.ToggleContent>
                 <!--#endregion-->
 
-                <Grid x:Name="ConfigGrid" Width="320" Background="#eee" MouseDown="Grid_MouseDown">
+                <Grid x:Name="ConfigGrid" Width="304" Background="#eee" MouseDown="Grid_MouseDown">
                     <!--#region Resources -->
                     <Grid.Resources>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
@@ -112,8 +112,8 @@
 
                     <!--#region UserSet -->
                     <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8 4">
-                        <ListBox ItemsSource="{Binding UserSetEnum}" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignToolToggleFlatListBox}" Padding="0" Margin="0"
-                                materialDesign:ListBoxAssist.IsToggle="False" SelectedItem="UserSet2" Background="{StaticResource ColorInfoTransparent}">
+                        <ListBox ItemsSource="{Binding UserSetEnum}" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignChoiceChipListBox}" Padding="0" Margin="0"
+                                materialDesign:ListBoxAssist.IsToggle="False" SelectedItem="{x:Null}" SelectionChanged="UserSet_SelectionChanged">
                             <!--#region ItemsPanel -->
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -124,17 +124,29 @@
 
                             <!--#region ContainerStyle -->
                             <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="Padding" Value="16 4" />
-                                    <Setter Property="Width" Value="152" />
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
+                                    <Setter Property="Margin" Value="0 4" />
+                                    <Setter Property="Padding" Value="8 4" />
+                                    <Setter Property="Width" Value="96" />
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                    <Setter Property="Cursor" Value="Hand" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                             <!--#endregion-->
 
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock TextAlignment="Center" Text="{Binding}" />
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}" >
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

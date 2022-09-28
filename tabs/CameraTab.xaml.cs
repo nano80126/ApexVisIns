@@ -13,7 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using Basler.Pylon;
-//using MCAJawIns._Camera;
+// using MCAJawIns._Camera;
 using MCAJawIns.Mongo;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
