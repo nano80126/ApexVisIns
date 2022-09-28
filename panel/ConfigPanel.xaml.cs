@@ -78,7 +78,7 @@ namespace MCAJawIns.Panel
                 FallbackValue = false,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             };
-            _ = ConfigDelBtn.SetBinding(IsEnabledProperty, binding);
+            _ = ConfigDelBtn?.SetBinding(IsEnabledProperty, binding);
         }
 
         private void Textbox_GotFocus(object sender, RoutedEventArgs e)
@@ -283,6 +283,7 @@ namespace MCAJawIns.Panel
             }
         }
 
+        [Obsolete]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string jsonStr = JsonSerializer.Serialize(cam, new JsonSerializerOptions()
@@ -293,6 +294,7 @@ namespace MCAJawIns.Panel
             Debug.WriteLine($"{jsonStr}");
         }
 
+        [Obsolete]
         private void UserSetLoad_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine($"123");
@@ -300,9 +302,40 @@ namespace MCAJawIns.Panel
 
         private void UserSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine($"{e.AddedItems[0]}");
-            //Debug.WriteLine($"{e.RemovedItems?[0]}");
-            Debug.WriteLine($"{(sender as ListBox).SelectedItem}");
+            string userSet = (sender as ListBox).SelectedItem as string;
+
+#if WaitForTest
+            if (cam.UserSet != userSet)
+            {
+                Camera camera = cam.Camera;
+
+                // 載入 UserSet
+                camera.Parameters[PLGigECamera.UserSetSelector].SetValue(userSet);
+                camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+                // Width, Height
+                cam.Config.Width = cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                // OffsetMax, Offset
+                cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
+                cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
+                cam.OffsetX = (int)camera.Parameters[PLGigECamera.OffsetX].GetValue();
+                cam.OffsetY = (int)camera.Parameters[PLGigECamera.OffsetY].GetValue();
+                // FPS, Exposure
+                cam.Config.FPS = cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
+                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
+
+                cam.PropertyChange();
+
+                // Reset Image
+                EngineerTab.Indicator.Image = null;
+
+                // Reset ZoomRatio
+                EngineerTab.ZoomRatio = 100;
+            } 
+#endif
+
+            Debug.WriteLine($"{userSet} {cam.UserSet} {userSet == cam.UserSet}");
+            // Debug.WriteLine($"{e.AddedItems[0]}");
         }
     }
 }

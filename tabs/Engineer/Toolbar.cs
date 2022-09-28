@@ -829,6 +829,7 @@ namespace MCAJawIns.Tab
             Cam.ModelName = modelName;
 
             Cam.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
+            Cam.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
 
             Cam.WidthMax = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
             Cam.HeightMax = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();

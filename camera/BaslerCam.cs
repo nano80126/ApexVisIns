@@ -22,6 +22,7 @@ namespace MCAJawIns
         private int _offsetY;
 
         private string[] _userSetEnum = new string[] { "112321131", "321321322", "12313213", "UserSet1", "UserSet2", "UserSet3" };
+        private string _userSet;
         #endregion
 
         #region Properties
@@ -158,6 +159,22 @@ namespace MCAJawIns
             {
                 _userSetEnum = value;
                 OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// 當前 UserSet
+        /// </summary>
+        public string UserSet
+        {
+            get => _userSet;
+            set
+            {
+                if (value != _userSet)
+                {
+                    _userSet = value;
+                    OnPropertyChanged();
+                }
             }
         }
 

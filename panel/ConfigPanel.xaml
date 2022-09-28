@@ -9,16 +9,15 @@
                  
                  mc:Ignorable="d" 
                  d:DesignHeight="500" 
-                 d:DesignWidth="300"
+                 d:DesignWidth="300" 
                  Title="組態"
-                 SubTitle="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}"
-                 IconKind="FileCogOutline"
+                 SubTitle="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}" 
+                 IconKind="FileCogOutline" 
                  Style="{StaticResource {x:Type ctrl:CustomCard}}"
-                 d:DataContext="{d:DesignInstance Type=app:BaslerCam}"
+                 d:DataContext="{d:DesignInstance Type=app:BaslerCam}" 
                  Loaded="CustomCard_Loaded">
-    <StackPanel>
-        <DockPanel x:Name="Body">
-            <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4 0 0 0" Padding="0" TextAlignment="Center" FontSize="16">
+    <DockPanel x:Name="Body">
+        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4 0 0 0" Padding="0" TextAlignment="Center" FontSize="16">
             <!-- Resolution -->
             <Run>
                 <Run.Text>
@@ -37,213 +36,230 @@
                     <Binding Path="FPS" StringFormat=", FPS: {0,5:F1}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" FallbackValue="{x:Null}" />
                 </Run.Text>
             </Run>
-            </TextBlock>
+        </TextBlock>
 
-            <materialDesign:PopupBox x:Name="ConfigPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0 0" Padding="0 0" StaysOpen="True"
-                    PlacementMode="BottomAndAlignLeftEdges" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                    Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed" IsPopupOpen="False">
-                <materialDesign:PopupBox.IsEnabled>
-                    <MultiBinding Converter="{StaticResource BooleanAndGate}">
-                        <Binding Path="IsOpen" FallbackValue="False" />
-                        <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" />
-                    </MultiBinding>
-                </materialDesign:PopupBox.IsEnabled>
+        <materialDesign:PopupBox x:Name="ConfigPopupBox" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="0 0" Padding="0 0" StaysOpen="True"
+                PlacementMode="BottomAndAlignLeftEdges" materialDesign:RippleAssist.IsDisabled="True" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                Opened="ConfigPopupBox_Opened" Closed="ConfigPopupBox_Closed" IsPopupOpen="False">
+            <materialDesign:PopupBox.IsEnabled>
+                <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                    <Binding Path="IsOpen" FallbackValue="False" />
+                    <Binding Path="IsGrabbing" Converter="{StaticResource BooleanInverter}" FallbackValue="False" />
+                </MultiBinding>
+            </materialDesign:PopupBox.IsEnabled>
 
-                <!--#region PopupBox.ToggleContent -->
-                <materialDesign:PopupBox.ToggleContent>
-                    <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}" Margin="3 3">
-                        <materialDesign:PackIcon Kind="CameraOutline" Width="28" Height="24" Foreground="{StaticResource ColorInfo}" />
-                        <materialDesign:PackIcon Kind="Edit" Canvas.Right="-1" Canvas.Bottom="-1" Foreground="{StaticResource ColorSuccess}" />
-                    </Canvas>
-                </materialDesign:PopupBox.ToggleContent>
+            <!--#region PopupBox.ToggleContent -->
+            <materialDesign:PopupBox.ToggleContent>
+                <Canvas Focusable="False" Style="{StaticResource ComplexPackIcon}" Margin="3 3">
+                    <materialDesign:PackIcon Kind="CameraOutline" Width="28" Height="24" Foreground="{StaticResource ColorInfo}" />
+                    <materialDesign:PackIcon Kind="Edit" Canvas.Right="-1" Canvas.Bottom="-1" Foreground="{StaticResource ColorSuccess}" />
+                </Canvas>
+            </materialDesign:PopupBox.ToggleContent>
+            <!--#endregion-->
+
+            <Grid x:Name="ConfigGrid" Width="320" Background="#eee" MouseDown="Grid_MouseDown">
+                <!--#region Resources -->
+                <Grid.Resources>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="8 0 0 0" />
+                        <Setter Property="Padding" Value="0 0" />
+                        <!--<Setter Property="Background" Value="Red" />-->
+                    </Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+                        <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2" />
+                        <Setter Property="TextAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="8 8" />
+                        <Setter Property="Width" Value="80" />
+                    </Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+                        <Setter Property="Margin" Value="8 8 0 8" />
+                        <Setter Property="Padding" Value="8 3" />
+                        <Setter Property="MaxDropDownHeight" Value="200" />
+                    </Style>
+                </Grid.Resources>
                 <!--#endregion-->
 
-                <Grid x:Name="ConfigGrid" Width="304" Background="#eee" MouseDown="Grid_MouseDown">
-                    <!--#region Resources -->
-                    <Grid.Resources>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
-                            <Setter Property="HorizontalAlignment" Value="Left" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Margin" Value="8 0 0 0" />
-                            <Setter Property="Padding" Value="0 0" />
-                            <!--<Setter Property="Background" Value="Red" />-->
-                        </Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                            <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2" />
-                            <Setter Property="TextAlignment" Value="Center" />
-                            <Setter Property="Margin" Value="8 8" />
-                            <Setter Property="Width" Value="80" />
-                        </Style>
-                        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
-                            <Setter Property="Margin" Value="8 8 0 8" />
-                            <Setter Property="Padding" Value="8 3" />
-                            <Setter Property="MaxDropDownHeight" Value="200" />
-                        </Style>
-                    </Grid.Resources>
-                    <!--#endregion-->
+                <!--#region Layout -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <!--//-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <!--#endregion-->
 
-                    <!--#region Layout -->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <!--//-->
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <!--#endregion-->
+                <!--#region Content -->
+                <!-- Header -->
+                <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="8 8 8 0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="Configuration" />
 
-                    <!--#region Content -->
-                    <!-- Header -->
-                    <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="8 8 8 0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="Configuration" />
-                   
-                    <Separator Grid.Row="1" Grid.ColumnSpan="2" Margin="8 8 8 4" Height="1" Background="Black" />
+                <Separator Grid.Row="1" Grid.ColumnSpan="2" Margin="8 8 8 4" Height="1" Background="Black" />
 
-                    <!--#region UserSet -->
-                    <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8 4">
-                        <ListBox ItemsSource="{Binding UserSetEnum}" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignChoiceChipListBox}" Padding="0" Margin="0"
-                                materialDesign:ListBoxAssist.IsToggle="False" SelectedItem="{x:Null}" SelectionChanged="UserSet_SelectionChanged">
-                            <!--#region ItemsPanel -->
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <!--#endregion-->
-
-                            <!--#region ContainerStyle -->
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignToolToggleListBoxItem}">
-                                    <Setter Property="Margin" Value="0 4" />
-                                    <Setter Property="Padding" Value="8 4" />
-                                    <Setter Property="Width" Value="96" />
-                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                    <Setter Property="Cursor" Value="Hand" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <!--#endregion-->
-
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock HorizontalAlignment="Center" Text="{Binding}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="{x:Type TextBlock}" >
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseCaptured" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </WrapPanel>
-                    <!--#endregion-->
-
-                    <Separator Grid.Row="3" Grid.ColumnSpan="2" Margin="8 4 8 4" Height="1" Background="Black" />
-
-                    <!--#region Custom Config -->
-                    <!-- Config Selector -->
-                    <ComboBox x:Name="ConfigSelector" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Margin="8 4 8 8" MinWidth="135" FontWeight="SemiBold"
-                            materialDesign:HintAssist.Hint="Config" materialDesign:ComboBoxAssist.ShowSelectedItem="True"
-                            materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
-                            SelectedIndex="-1" SelectionChanged="ConfigSelector_SelectionChanged" ItemsSource="{Binding Path=ConfigList, Mode=OneWay}">
-                        <ComboBox.Resources>
-                            <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}" />
-                        </ComboBox.Resources>
-                        <!--//-->
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0">
-                                    <TextBlock Text="{Binding}" Cursor="Hand" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <Button x:Name="ConfigDelBtn" Grid.Row="4" Grid.Column="1" Margin="8 4 8 8" Height="auto" SnapsToDevicePixels="True" Foreground="{StaticResource ColorOrange}"
-                            Style="{StaticResource MaterialDesignFlatButton}" Content="刪除" Click="ConfigDelBtn_Click" />
-
-                    <!-- 影像寬度, Width -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Width" />
-                    <TextBox x:Name="ConfigWidth" Grid.Row="5" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
-                            Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
-                    <!-- 影像高度, Height -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Height" />
-                    <TextBox x:Name="ConfigHeight" Grid.Row="6" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
-                            Text="{Binding Path=Config.Height, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
-                    <!-- 張數, FPS -->
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="FPS" />
-                    <TextBox x:Name="ConfigFPS" Grid.Row="7" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText=""
-                            Text="{Binding Path=Config.FPS, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
-                    <!-- 曝光時間, Exposure time -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Exposure Time" />
-                    <TextBox x:Name="ConfigExposureTime" Grid.Row="8" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
-                            Text="{Binding Path=Config.ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
-                    <!--materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"-->
-                    <!-- 組態名稱, Config name -->
-                    <TextBox x:Name="ConfigName" Grid.Row="9" Grid.ColumnSpan="2" Width="auto" Margin="8 8 8 4" Padding="0 3" materialDesign:HintAssist.Hint="Configuration Name"
-                            materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid,AncestorLevel=1}, Path=Background}"
-                            Text="{Binding Path=Config.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
-                    <!--#endregion-->
-                    
-                    <!-- Separator -->
-                    <Separator Grid.Row="10" Grid.ColumnSpan="2" Margin="8 4 8 8" Height="1" Background="Black" />
-
-                    <!--#region Footer -->
-                    <!-- Actions -->
-                    <DockPanel Grid.Row="11" Grid.ColumnSpan="2" Margin="8 0 8 8">
-                        <!--#region Resources -->
-                        <DockPanel.Resources>
-                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                                <Setter Property="Padding" Value="16 4" />
-                                <Setter Property="Height" Value="24" />
-                                <Setter Property="SnapsToDevicePixels" Value="True" />
-                            </Style>
-                        </DockPanel.Resources>
+                <!--#region UserSet -->
+                <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8 0">
+                    <ListBox HorizontalAlignment="Left" materialDesign:ListBoxAssist.IsToggle="False" Style="{StaticResource MaterialDesignListBox}"
+                            ItemsSource="{Binding UserSetEnum}" SelectedItem="{Binding UserSet}" AlternationCount="{Binding UserSetEnum.Length}"
+                            SelectionChanged="UserSet_SelectionChanged">
+                        <!--#region ItemsPanel -->
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
                         <!--#endregion-->
 
-                        <materialDesign:Badged DataContext="{Binding}" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
-                            <materialDesign:Badged.Style>
-                                <Style TargetType="materialDesign:Badged">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Config.Saved}" Value="False">
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=Check}" />
-                                </Style>
-                            </materialDesign:Badged.Style>
+                        <!--#region ContainerStyle -->
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Margin" Value="0 4" />
+                                <Setter Property="Width" Value="96" />
+                                <Setter Property="Height" Value="24" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="4" BorderThickness="0" Background="{StaticResource ColorLightGrayTransparent}" SnapsToDevicePixels="True">
+                                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16 4" TextAlignment="Center" Text="{Binding}" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!--//-->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding (ListBox.AlternationIndex), RelativeSource={RelativeSource Mode=Self}, 
+                                        Converter={StaticResource MathGetRemainderConverter}, ConverterParameter=3}" Value="1">
+                                        <Setter Property="Margin" Value="8 4" />
+                                    </DataTrigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border CornerRadius="4" BorderThickness="0" Background="{StaticResource ColorSuccessTransparent}" SnapsToDevicePixels="True">
+                                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16 4" TextAlignment="Center" Text="{Binding}" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <!--#endregion-->
 
-                            <Button x:Name="ConfigSaveBtn" DockPanel.Dock="Left" Content="儲存" Foreground="{StaticResource ColorPrimary}" Click="ConfigSaveBtn_Click" />
-                        </materialDesign:Badged>
+                        <!--<ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  BorderBrush="Transparent" BorderThickness="1" CornerRadius="5">
+                                    <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Text="{Binding}" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>-->
+                    </ListBox>
+                </WrapPanel>
+                <!--#endregion-->
 
-                        <Button x:Name="ConfigCancelBtn" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
-                                Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" Foreground="{StaticResource ColorError}" />
+                <Separator Grid.Row="3" Grid.ColumnSpan="2" Margin="8 4 8 4" Height="1" Background="Black" />
 
-                        <Button x:Name="ConfigWriteBtn" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="寫入"
-                                Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}" Foreground="{StaticResource ColorSuccess}" Click="ConfigWriteBtn_Click" />
-                    </DockPanel>
+                <!--#region Custom Config -->
+                <!-- Config Selector -->
+                <ComboBox x:Name="ConfigSelector" Grid.Row="4" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Margin="8 4 8 8" MinWidth="135" FontWeight="SemiBold"
+                        materialDesign:HintAssist.Hint="Config" materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                        materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}, Path=Background}"
+                        SelectedIndex="-1" SelectionChanged="ConfigSelector_SelectionChanged" ItemsSource="{Binding Path=ConfigList, Mode=OneWay}">
+                    <ComboBox.Resources>
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewerSuccess}" />
+                    </ComboBox.Resources>
+                    <!--//-->
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0">
+                                <TextBlock Text="{Binding}" Cursor="Hand" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button x:Name="ConfigDelBtn" Grid.Row="4" Grid.Column="1" Margin="8 4 8 8" Height="auto" SnapsToDevicePixels="True" Foreground="{StaticResource ColorOrange}"
+                        Style="{StaticResource MaterialDesignFlatButton}" Content="刪除" Click="ConfigDelBtn_Click" />
+
+                <!-- 影像寬度, Width -->
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Width" />
+                <TextBox x:Name="ConfigWidth" Grid.Row="5" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
+                        Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
+                <!-- 影像高度, Height -->
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Height" />
+                <TextBox x:Name="ConfigHeight" Grid.Row="6" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
+                        Text="{Binding Path=Config.Height, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
+                <!-- 張數, FPS -->
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="FPS" />
+                <TextBox x:Name="ConfigFPS" Grid.Row="7" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText=""
+                        Text="{Binding Path=Config.FPS, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
+                <!-- 曝光時間, Exposure time -->
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Exposure Time" />
+                <TextBox x:Name="ConfigExposureTime" Grid.Row="8" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
+                        Text="{Binding Path=Config.ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
+                <!--materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"-->
+                <!-- 組態名稱, Config name -->
+                <TextBox x:Name="ConfigName" Grid.Row="9" Grid.ColumnSpan="2" Width="auto" Margin="8 8 8 4" Padding="0 3" materialDesign:HintAssist.Hint="Configuration Name"
+                        materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid,AncestorLevel=1}, Path=Background}"
+                        Text="{Binding Path=Config.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
+                <!--#endregion-->
+
+                <!-- Separator -->
+                <Separator Grid.Row="10" Grid.ColumnSpan="2" Margin="8 4 8 8" Height="1" Background="Black" />
+
+                <!--#region Footer -->
+                <!-- Actions -->
+                <DockPanel Grid.Row="11" Grid.ColumnSpan="2" Margin="8 0 8 8">
+                    <!--#region Resources -->
+                    <DockPanel.Resources>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Setter Property="Padding" Value="16 4" />
+                            <Setter Property="Height" Value="24" />
+                            <Setter Property="SnapsToDevicePixels" Value="True" />
+                        </Style>
+                    </DockPanel.Resources>
                     <!--#endregion-->
-                    
-                    <!--#endregion-->
-                    <!--</StackPanel>-->
-                </Grid>
-            </materialDesign:PopupBox>
-        </DockPanel>
 
-        <Button Margin="0 8 0 0 " Height="24"  Style="{StaticResource MaterialDesignOutlinedButton}" Content="Test" Click="Button_Click" />
-    </StackPanel>
+                    <materialDesign:Badged DataContext="{Binding}" d:DataContext="{d:DesignInstance Type=app:BaslerCam}">
+                        <materialDesign:Badged.Style>
+                            <Style TargetType="materialDesign:Badged">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Config.Saved}" Value="False">
+                                        <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=ContentSaveCogOutline}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Badge" Value="{materialDesign:PackIcon Kind=Check}" />
+                            </Style>
+                        </materialDesign:Badged.Style>
+
+                        <Button x:Name="ConfigSaveBtn" DockPanel.Dock="Left" Content="儲存" Foreground="{StaticResource ColorPrimary}" Click="ConfigSaveBtn_Click" />
+                    </materialDesign:Badged>
+
+                    <Button x:Name="ConfigCancelBtn" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}"
+                            Foreground="{StaticResource ColorError}" />
+
+                    <Button x:Name="ConfigWriteBtn" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="寫入" Command="{x:Static materialDesign:PopupBox.ClosePopupCommand}"
+                            Foreground="{StaticResource ColorSuccess}" Click="ConfigWriteBtn_Click" />
+                </DockPanel>
+                <!--#endregion-->
+
+                <!--#endregion-->
+                <!--</StackPanel>-->
+            </Grid>
+        </materialDesign:PopupBox>
+    </DockPanel>
+
 </ctrl:CustomCard>
