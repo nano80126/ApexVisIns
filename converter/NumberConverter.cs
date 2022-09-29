@@ -94,7 +94,7 @@ namespace MCAJawIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool IsNum = int.TryParse(value.ToString(), out int number);
+            bool IsNum = int.TryParse(value?.ToString(), out int number);
             return IsNum && number % 2 == 1;
         }
 

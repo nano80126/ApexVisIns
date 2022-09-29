@@ -8,14 +8,24 @@
                  xmlns:ctrl="clr-namespace:MCAJawIns.Control" 
                  
                  mc:Ignorable="d" 
-                 d:DesignHeight="500" 
-                 d:DesignWidth="300" 
+                 d:DesignHeight="500" d:DesignWidth="300" 
                  Title="組態"
-                 SubTitle="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}" 
                  IconKind="FileCogOutline" 
-                 Style="{StaticResource {x:Type ctrl:CustomCard}}"
                  d:DataContext="{d:DesignInstance Type=app:BaslerCam}" 
                  Loaded="CustomCard_Loaded">
+    <!--#region Style -->
+    <ctrl:CustomCard.Style>
+        <Style TargetType="{x:Type ctrl:CustomCard}" BasedOn="{StaticResource {x:Type ctrl:CustomCard}}">
+            <Setter Property="SubTitle" Value="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ConfigName, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+                    <Setter Property="SubTitle" Value="{Binding UserSet, UpdateSourceTrigger=PropertyChanged}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ctrl:CustomCard.Style>
+    <!--#endregion-->
+
     <DockPanel x:Name="Body">
         <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4 0 0 0" Padding="0" TextAlignment="Center" FontSize="16">
             <!-- Resolution -->
@@ -57,7 +67,7 @@
             </materialDesign:PopupBox.ToggleContent>
             <!--#endregion-->
 
-            <Grid x:Name="ConfigGrid" Width="320" Background="#eee" MouseDown="Grid_MouseDown">
+            <Grid x:Name="ConfigGrid" Width="356" Background="#eee" MouseDown="Grid_MouseDown">
                 <!--#region Resources -->
                 <Grid.Resources>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
@@ -68,10 +78,10 @@
                         <!--<Setter Property="Background" Value="Red" />-->
                     </Style>
                     <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
-                        <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="2" />
+                        <Setter Property="materialDesign:TextFieldAssist.TextFieldCornerRadius" Value="4" />
                         <Setter Property="TextAlignment" Value="Center" />
                         <Setter Property="Margin" Value="8 8" />
-                        <Setter Property="Width" Value="80" />
+                        <!--<Setter Property="Width" Value="80" />-->
                     </Style>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
                         <Setter Property="Margin" Value="8 8 0 8" />
@@ -98,8 +108,8 @@
                 </Grid.RowDefinitions>
                 <!--//-->
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
                 <!--#endregion-->
 
@@ -112,7 +122,7 @@
                 <!--#region UserSet -->
                 <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8 0">
                     <ListBox HorizontalAlignment="Left" materialDesign:ListBoxAssist.IsToggle="False" Style="{StaticResource MaterialDesignListBox}"
-                            ItemsSource="{Binding UserSetEnum}" SelectedItem="{Binding UserSet}" AlternationCount="{Binding UserSetEnum.Length}"
+                            ItemsSource="{Binding UserSetEnum}" SelectedItem="{Binding UserSet, Mode=OneWay}" AlternationCount="{Binding UserSetEnum.Length}"
                             SelectionChanged="UserSet_SelectionChanged">
                         <!--#region ItemsPanel -->
                         <ListBox.ItemsPanel>
@@ -126,7 +136,7 @@
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Margin" Value="0 4" />
-                                <Setter Property="Width" Value="96" />
+                                <Setter Property="Width" Value="108" />
                                 <Setter Property="Height" Value="24" />
                                 <Setter Property="Cursor" Value="Hand" />
                                 <Setter Property="Template">
@@ -196,19 +206,19 @@
 
                 <!-- 影像寬度, Width -->
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Width" />
-                <TextBox x:Name="ConfigWidth" Grid.Row="5" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
+                <TextBox x:Name="ConfigWidth" Grid.Row="5" Grid.Column="1" Padding="8 3" materialDesign:TextFieldAssist.SuffixText="px"
                         Text="{Binding Path=Config.Width, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!-- 影像高度, Height -->
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Height" />
-                <TextBox x:Name="ConfigHeight" Grid.Row="6" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="px"
+                <TextBox x:Name="ConfigHeight" Grid.Row="6" Grid.Column="1" Padding="8 3" materialDesign:TextFieldAssist.SuffixText="px"
                         Text="{Binding Path=Config.Height, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!-- 張數, FPS -->
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="FPS" />
-                <TextBox x:Name="ConfigFPS" Grid.Row="7" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText=""
+                <TextBox x:Name="ConfigFPS" xml:space="preserve" Grid.Row="7" Grid.Column="1" Padding="8 3" materialDesign:TextFieldAssist.SuffixText=""
                         Text="{Binding Path=Config.FPS, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!-- 曝光時間, Exposure time -->
                 <TextBlock Grid.Row="8" Grid.Column="0" Text="Exposure Time" />
-                <TextBox x:Name="ConfigExposureTime" Grid.Row="8" Grid.Column="1" Padding="0 3" materialDesign:TextFieldAssist.SuffixText="ms"
+                <TextBox x:Name="ConfigExposureTime" Grid.Row="8" Grid.Column="1" Padding="8 3" materialDesign:TextFieldAssist.SuffixText="ms"
                         Text="{Binding Path=Config.ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!--materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"-->
                 <!-- 組態名稱, Config name -->
@@ -261,5 +271,4 @@
             </Grid>
         </materialDesign:PopupBox>
     </DockPanel>
-
 </ctrl:CustomCard>

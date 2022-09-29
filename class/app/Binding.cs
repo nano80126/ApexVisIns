@@ -1131,16 +1131,12 @@ namespace MCAJawIns
 
     public class AssistPoints : INotifyPropertyChanged
     {
-        #region Private
+        #region fields
         private bool _enable;
         private bool _isMouseDown;
         #endregion
 
-        public AssistPoints()
-        {
-            Source = new ObservableCollection<AssistPoint>();
-        }
-
+        #region Properties
         /// <summary>
         /// 點集合
         /// </summary>
@@ -1176,15 +1172,25 @@ namespace MCAJawIns
                     OnPropertyChanged();
                 }
             }
-        }
+        } 
+        #endregion
 
+        #region 建構子
+        public AssistPoints()
+        {
+            Source = new ObservableCollection<AssistPoint>();
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// 重置滑鼠按鍵
         /// </summary>
         public void ResetMouse()
         {
             IsMouseDown = false;
-        }
+        } 
+        #endregion
 
         #region Property Change Event
         public event PropertyChangedEventHandler PropertyChanged;
@@ -1201,23 +1207,12 @@ namespace MCAJawIns
     /// </summary>
     public class AssistPoint : INotifyPropertyChanged
     {
-        #region Basic Variable
+        #region Fields
         private double _x;
         private double _y;
         #endregion
 
-        public AssistPoint(double x, double y, byte r, byte g, byte b, double strokeThickness = 1)
-        {
-            X = x;
-            Y = y;
-            // Stroke = stroke;
-            R = r;
-            G = g;
-            B = b;
-
-            StrokeThickness = strokeThickness;
-        }
-
+        #region Properties
         /// <summary>
         /// Point X
         /// </summary>
@@ -1280,7 +1275,23 @@ namespace MCAJawIns
         }
 
         public double StrokeThickness { get; set; }
+        #endregion
 
+        #region 建構子
+        public AssistPoint(double x, double y, byte r, byte g, byte b, double strokeThickness = 1)
+        {
+            X = x;
+            Y = y;
+            // Stroke = stroke;
+            R = r;
+            G = g;
+            B = b;
+
+            StrokeThickness = strokeThickness;
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// 設置 point
         /// </summary>
@@ -1291,14 +1302,17 @@ namespace MCAJawIns
             _x = x;
             _y = y;
             OnPropertyChanged();
-        }
+        } 
+        #endregion
 
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
     }
 
     public class MsgInformer : INotifyPropertyChanged

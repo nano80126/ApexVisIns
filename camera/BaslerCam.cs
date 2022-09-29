@@ -168,14 +168,6 @@ namespace MCAJawIns
         public string UserSet
         {
             get => _userSet;
-            set
-            {
-                if (value != _userSet)
-                {
-                    _userSet = value;
-                    OnPropertyChanged();
-                }
-            }
         }
 
         /// <summary>
@@ -217,6 +209,16 @@ namespace MCAJawIns
         {
             SerialNumber = argument;
             Camera = new Basler.Pylon.Camera(argument);
+        }
+
+        /// <summary>
+        /// 設定 UserSet
+        /// </summary>
+        /// <param name="userSet"></param>
+        public void SetUserSet(string userSet)
+        {
+            _userSet = userSet;
+            //OnPropertyChanged(nameof(UserSet));
         }
 
         public override void Open()

@@ -87,4 +87,22 @@ namespace MCAJawIns.Control
             set => SetValue(ScrollViewerHeightProperty, value);
         }
     }
+
+    public class InsResultsView : DependencyObject
+    {
+        public static readonly DependencyProperty HideTextProperty =
+            DependencyProperty.RegisterAttached("HideText", typeof(bool), typeof(InsResultsView), new PropertyMetadata(false));
+
+        public static void SetHideText(DependencyObject target, bool value)
+        {
+            target.SetValue(HideTextProperty, value);
+        }
+
+        public static bool GetHideText(DependencyObject target)
+        {
+            return (bool)target.GetValue(HideTextProperty);
+        }
+    }
 }
+
+

@@ -17,6 +17,7 @@ using MCAJawInfo = MCAJawIns.Mongo.Info;
 using System.IO;
 using MongoDB.Bson;
 using MCAJawIns.Mongo;
+using System.Collections.ObjectModel;
 
 namespace MCAJawIns
 {
@@ -273,19 +274,20 @@ namespace MCAJawIns
 
             // SpinWait.SpinUntil(() => false, 1000);
             // CreateIOWindow();
-#if false
-            ObservableCollection<int> observablaCollection = new ObservableCollection<int>();
-            for (int i = 0; i < 10; i++)
-            {
-                observablaCollection.Add(i);
-            }
-            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
-            observablaCollection.Move(0, observablaCollection.Count() - 1);
-            Debug.WriteLine($"{string.Join(",", observablaCollection)}");
 
-            int idx = observablaCollection.LastIndex();
-            Debug.WriteLine($"{idx}"); 
+#if FORTEST
+            ObservableCollection<int> s = new ObservableCollection<int>();
+
+            for (int i = 0; i < 20; i++)
+            {
+                s.Add(i);
+            }
+
+            Debug.WriteLine($"{string.Join(",", s)}");
+            int removeed = s.ToList().RemoveAll(x => x % 2 == 0);
+            Debug.WriteLine($"{string.Join(",", s)} {removeed}"); 
 #endif
+
 
             // AppTabControl.Items[]
 

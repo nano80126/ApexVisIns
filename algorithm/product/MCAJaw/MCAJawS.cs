@@ -403,7 +403,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 ok
                         bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
                         isNG = !ok;
@@ -431,7 +431,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection2[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -457,7 +457,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -509,7 +509,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection3[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -2441,11 +2441,28 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
                         // 著色
-                        b[(srcWidth * tmpY) + i] = 0;
-                        b[(srcWidth * (tmpY + 1)) + i] = 0;
-                        b[(srcWidth * (tmpY + 2)) + i] = 0;
-                        b[(srcWidth * (tmpY - 1)) + i] = 0;
-                        b[(srcWidth * (tmpY - 2)) + i] = 0;
+                        if (i == roiMat.Width / 2)
+                        {
+                            b[(srcWidth * tmpY) + i] = 255;
+                            b[(srcWidth * (tmpY + 1)) + i] = 255;
+                            b[(srcWidth * (tmpY + 2)) + i] = 255;
+                            b[(srcWidth * (tmpY + 3)) + i] = 255;
+                            b[(srcWidth * (tmpY + 4)) + i] = 255;
+                            b[(srcWidth * (tmpY + 5)) + i] = 255;
+                            b[(srcWidth * (tmpY - 1)) + i] = 255;
+                            b[(srcWidth * (tmpY - 2)) + i] = 255;
+                            b[(srcWidth * (tmpY - 3)) + i] = 255;
+                            b[(srcWidth * (tmpY - 4)) + i] = 255;
+                            b[(srcWidth * (tmpY - 5)) + i] = 255;
+                        }
+                        else
+                        {
+                            b[(srcWidth * tmpY) + i] = 0;
+                            b[(srcWidth * (tmpY + 1)) + i] = 0;
+                            b[(srcWidth * (tmpY + 2)) + i] = 0;
+                            b[(srcWidth * (tmpY - 1)) + i] = 0;
+                            b[(srcWidth * (tmpY - 2)) + i] = 0;
+                        }
 #endif
                     }
                     else { listY.Add(listY[^1]); }

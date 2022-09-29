@@ -20,7 +20,14 @@ namespace MCAJawIns.Product
     /// </summary>
     public class JawSpec : SpecBase
     {
+        #region Fields
         private double _result;
+        private SolidColorBrush _background;
+        //private SolidColorBrush _background = new SolidColorBrush(Colors.Transparent);
+        private JawSpecGroups _group;
+        private bool _showGroupResult;
+        private bool _groupOK;
+        #endregion
 
         /// <summary>
         /// 
@@ -29,33 +36,45 @@ namespace MCAJawIns.Product
         /// <param name="cl">規格中心</param>
         /// <param name="lcl">管制下限</param>
         /// <param name="ucl">管制上限</param>
+        [Obsolete]
         public JawSpec(string item, double cl, double lcl, double ucl)
         {
             Item = item;
             CenterSpec = cl;
-            //LowerSpecLimit = lsl;
-            //UpperSpecLimit = usl;
             LowerCtrlLimit = lcl;
             UpperCtrlLimit = ucl;
         }
 
         /// <summary>
-        /// 
+        /// Jaw 尺寸量測結果儲存用物件 (一般)
         /// </summary>
         /// <param name="item">項目</param>
         /// <param name="cl">規格中心</param>
         /// <param name="lcl">管制下限</param>
         /// <param name="ucl">管制上限</param>
         /// <param name="result">量測值</param>
-        public JawSpec(string item, double cl, double lcl, double ucl, double result)
+        public JawSpec(string item, double cl, double lcl, double ucl, double result, JawSpecGroups group = JawSpecGroups.None)
         {
             Item = item;
             CenterSpec = cl;
-            // LowerSpecLimit = lsl;
-            // UpperSpecLimit = usl;
             LowerCtrlLimit = lcl;
             UpperCtrlLimit = ucl;
             Result = result;
+            _group = group;
+        }
+
+        /// <summary>
+        /// Jaw 尺寸量測結果儲存用物件 (群組)
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name=""></param>
+        public JawSpec(string item, SolidColorBrush background, bool groupOk, JawSpecGroups group)
+        {
+            Item = item;
+            Background = background;
+            _groupOK = groupOk;
+            _group = group;
+            _showGroupResult = true;
         }
 
         /// <summary>
@@ -67,6 +86,7 @@ namespace MCAJawIns.Product
         /// <param name="usl">規格上限</param>
         /// <param name="lcl">管制下限</param>
         /// <param name="ucl">管制上限</param>
+        [Obsolete]
         public JawSpec(string item, double cl, double lsl, double usl, double lcl, double ucl)
         {
             Item = item;
@@ -92,17 +112,57 @@ namespace MCAJawIns.Product
             }
         }
 
+        #region 群組專用
+        public JawSpecGroups Group
+        {
+            get => _group;
+            set
+            {
+                if (value != _group)
+                {
+                    _group = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public SolidColorBrush Background
+        {
+            get => _background;
+            set
+            {
+                _background = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [Description("是否為群組")]
+        public bool IsGroup
+        {
+            get => _group != JawSpecGroups.None;
+        }
+
+        #endregion
+
         /// <summary>
         /// 檢測結果
         /// </summary>
         [Description("檢驗結果")]
-        public bool OK => (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
+        public bool OK
+        {
+            get
+            {
+                return _showGroupResult ?
+                    _groupOK :
+                    (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
+            }
+        }
     }
 
     public enum JawSpecGroups
     {
         [Description("未分組")]
-        NONE = 0,
+        None = 0,
         [Description("群組 1")]
         Group1 = 1,
         [Description("群組 2")]
@@ -124,7 +184,7 @@ namespace MCAJawIns.Product
         private double _correction;
         private bool _enable;
         private double _correctionSecret;
-        private JawSpecGroups _group = JawSpecGroups.NONE;
+        private JawSpecGroups _group = JawSpecGroups.None;
 
         public JawSpecSetting() { }
 
@@ -445,7 +505,7 @@ namespace MCAJawIns.Product
 
             foreach (JawSpecGroups group in Enum.GetValues<JawSpecGroups>())
             {
-                if (group != JawSpecGroups.NONE)
+                if (group != JawSpecGroups.None)
                 {
                     JawSpecGroupSetting jaw = new JawSpecGroupSetting(group, string.Empty, Brushes.Transparent);
                     jaw.PropertyChanged += SpecGroup_PropertyChanged;

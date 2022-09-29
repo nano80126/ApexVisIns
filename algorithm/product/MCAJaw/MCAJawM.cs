@@ -170,6 +170,7 @@ namespace MCAJawIns.Algorithm
                 //List<JawSpecSetting> specList = MCAJaw.JawResultGroup.SizeSpecList.ToList();
                 MCAJaw MCAJaw = MainWindow.MCAJaw;
                 List<JawSpecSetting> specList = MCAJaw.JawSizeSpecList.Source.ToList();
+                List<JawSpecGroupSetting> specGroupList = MCAJaw.JawSizeSpecList.Groups.ToList();
                 JawSpecSetting spec;
                 // 有無料
                 bool partExist = false;
@@ -190,6 +191,8 @@ namespace MCAJawIns.Algorithm
                 Dictionary<string, List<double>> cam1results = new();
                 Dictionary<string, List<double>> cam2results = new();
                 Dictionary<string, List<double>> cam3results = new();
+
+                List<JawSpec> cam1groupResult = new();
                 #endregion
 
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 以下觸發拍照且計算各項量測值
@@ -363,11 +366,14 @@ namespace MCAJawIns.Algorithm
                 #region Camera 1 結果 (前開)
                 foreach (string key in cam1results.Keys)
                 {
-                    //Debug.WriteLine($"{key} {cam1results[key].Count}");
+                    JawSpecGroups group = specList.Find(x => x.Key == key)?.Group ?? JawSpecGroups.None;
+                    // Debug.WriteLine($"{key}");
+                    // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
+                    //
                     double avg = 0;
 
                     // 過濾輪廓度極值
-                    if (key is "輪廓度R" or "輪廓度L" or "輪廓度")
+                    if (key is "contour" or "contourR" or "contourL")
                     {
                         double max = cam1results[key].Max();
                         double min = cam1results[key].Min();
@@ -394,16 +400,23 @@ namespace MCAJawIns.Algorithm
                         avg = cam1results[key].Average();
                     }
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == key);
-                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    if (group == JawSpecGroups.None)
+                    {
+                        // 非 group 直接新增
+                        MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    }
+                    else
+                    {
+                        cam1groupResult.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group));
+                    }
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 ok
                         bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
                         isNG = !ok;
@@ -412,26 +425,27 @@ namespace MCAJawIns.Algorithm
                     // 資料庫物件新增
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
 
-                    if (key == "前開") { d_front = avg; }
+                    if (key == "front") { d_front = avg; }
                 }
                 #endregion
 
                 #region Camera 2 結果 (後開)
                 foreach (string key in cam2results.Keys)
                 {
-                    //Debug.WriteLine($"{key} {cam2results[key].Count}");
+                    // Debug.WriteLine($"{key}");
+                    Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == key);
-                    MCAJaw.JawResultGroup.Collection2.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    MCAJaw.JawResultGroup.Collection2.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection2[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -440,13 +454,13 @@ namespace MCAJawIns.Algorithm
                     // 資料庫物件新增
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, avg); }
 
-                    if (key == "後開") { d_back = avg; }
+                    if (key == "back") { d_back = avg; }
                 }
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
                 //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
-                spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == "開度差");
+                spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == "bfDiff");
                 if (spec.Enable)
                 {
                     double bfDiff = Math.Abs(d_front - d_back);
@@ -457,7 +471,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -470,15 +484,40 @@ namespace MCAJawIns.Algorithm
                 //MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
                 //MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
                 MCAJaw.JawResultGroup.Collection1.Move(0, MCAJaw.JawResultGroup.Collection1.LastIndex());
+                #endregion
 
+                #region 群組結果
+                //IEnumerable<JawSpec> arr = MCAJaw.JawResultGroup.Collection1.Where(x => x.IsGroup);
+                IEnumerable<IGrouping<JawSpecGroups, JawSpec>> groups = cam1groupResult.GroupBy(x => x.Group);
+
+                foreach (IGrouping<JawSpecGroups, JawSpec> group in groups)
+                {
+                    JawSpecGroupSetting specGroup = specGroupList.Find(x => x.GroupName == group.Key);
+                    
+                    Debug.WriteLine($"Count: {group.Count()}");
+
+                    foreach (JawSpec item2 in group)
+                    {
+                        Debug.WriteLine($"{item2.Group} {item2.OK}");
+                    }
+
+                    bool groupOk = group.All(x => x.OK);
+
+                    Debug.WriteLine($"GroupOK: {groupOk} {group.Key} {group.Key.GetType()}");
+
+                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, groupOk, group.Key));
+                }
+
+                // Debug.WriteLine($"{arr.Count()}");
+                // Debug.WriteLine($"{MCAJaw.JawResultGroup.Collection1.Count}");
                 #endregion
 
                 #region Camera 3 結果
                 // 若平直度未檢測到，播放警告
                 if (cam3results.Keys.Count == 0) { SoundAlarm.Play(); }
-                foreach (string item in cam3results.Keys)
+                foreach (string key in cam3results.Keys)
                 {
-                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[item])}");
+                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[key])}");
 
 #if false
                     Dictionary<double, int> dict = new Dictionary<double, int>();
@@ -498,10 +537,10 @@ namespace MCAJawIns.Algorithm
                     // Debug.WriteLine($"{dict.Values.Max()}");
                     // Debug.WriteLine($"{string.Join(",", dict)}");
 
-                    double avg = cam3results[item].Average();
+                    double avg = cam3results[key].Average();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Item == item);
-                    MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再+1
@@ -509,7 +548,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection3[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -585,8 +624,8 @@ namespace MCAJawIns.Algorithm
                 {
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_front);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_front);
                     }
                 }
                 #endregion
@@ -619,8 +658,8 @@ namespace MCAJawIns.Algorithm
                     double c_005 = (Math.Abs((subContourPts[0].Y + subContourPts[1].Y) / 2 - (subContourPts[2].Y + subContourPts[3].Y) / 2) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005);
                     }
                 }
                 else if (results == null)
@@ -636,8 +675,8 @@ namespace MCAJawIns.Algorithm
                     double c_005R = (Math.Abs(subContourPts[0].Y - subContourPts[1].Y) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005R);
                     }
                 }
                 else if (results == null)
@@ -653,8 +692,8 @@ namespace MCAJawIns.Algorithm
                     double c_005L = (Math.Abs(subContourPts[2].Y - subContourPts[3].Y) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005L);
                     }
                 }
                 else if (results == null)
@@ -672,8 +711,8 @@ namespace MCAJawIns.Algorithm
                     Cal014DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_014R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_014R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_014R);
                     }
                 }
                 else if (results == null)
@@ -688,8 +727,8 @@ namespace MCAJawIns.Algorithm
                     Cal014DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_014L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_014L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_014L);
                     }
                 }
                 else if (results == null)
@@ -726,8 +765,8 @@ namespace MCAJawIns.Algorithm
 
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_024R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_024R);
                     }
                 }
                 else if (results == null)
@@ -748,8 +787,8 @@ namespace MCAJawIns.Algorithm
 
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_024L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_024L);
                     }
                 }
                 else if (results == null)
@@ -769,8 +808,8 @@ namespace MCAJawIns.Algorithm
                     Cal014ThinknessValue(src, baseL, LX, out double LX008, out double d_008R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_008R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_008R);
                     }
                 }
                 else if (results == null)
@@ -787,8 +826,8 @@ namespace MCAJawIns.Algorithm
                     Cal014ThinknessValue(src, baseR, RX, out double RX008, out double d_008L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_008L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_008L);
                     }
                 }
                 else if (results == null)
@@ -895,8 +934,8 @@ namespace MCAJawIns.Algorithm
                     {
                         lock (results)
                         {
-                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                            results[spec.Item].Add(d_back);
+                            if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                            results[spec.Key].Add(d_back);
                         }
                     }
                 }
@@ -911,8 +950,8 @@ namespace MCAJawIns.Algorithm
                     Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_088R);
                     }
                 }
                 else if (results == null)
@@ -931,8 +970,8 @@ namespace MCAJawIns.Algorithm
                     Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_088L);
                     }
                 }
                 else if (results == null)
@@ -948,8 +987,8 @@ namespace MCAJawIns.Algorithm
                 {
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088R + d_088L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_088R + d_088L);
                     }
                 }
                 #endregion
@@ -991,8 +1030,8 @@ namespace MCAJawIns.Algorithm
                     Cal007FlatnessValue4(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(f_007);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(f_007);
                     }
                 }
                 else if (results == null)
@@ -2406,7 +2445,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 590 or >= 650 && i < roiMat.Width)
+                if (i is < 1465 or >= 1595  && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2441,14 +2480,41 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
                         // 著色
-                        b[(srcWidth * tmpY) + i] = 0;
-                        b[(srcWidth * (tmpY + 1)) + i] = 0;
-                        b[(srcWidth * (tmpY + 2)) + i] = 0;
-                        b[(srcWidth * (tmpY - 1)) + i] = 0;
-                        b[(srcWidth * (tmpY - 2)) + i] = 0;
+                        if (i == roiMat.Width / 2)
+                        {
+                            b[(srcWidth * tmpY) + i] = 255;
+                            b[(srcWidth * (tmpY + 1)) + i] = 255;
+                            b[(srcWidth * (tmpY + 2)) + i] = 255;
+                            b[(srcWidth * (tmpY + 3)) + i] = 255;
+                            b[(srcWidth * (tmpY + 4)) + i] = 255;
+                            b[(srcWidth * (tmpY + 5)) + i] = 255;
+                            b[(srcWidth * (tmpY - 1)) + i] = 255;
+                            b[(srcWidth * (tmpY - 2)) + i] = 255;
+                            b[(srcWidth * (tmpY - 3)) + i] = 255;
+                            b[(srcWidth * (tmpY - 4)) + i] = 255;
+                            b[(srcWidth * (tmpY - 5)) + i] = 255;
+                        }
+                        else
+                        {
+                            b[(srcWidth * tmpY) + i] = 0;
+                            b[(srcWidth * (tmpY + 1)) + i] = 0;
+                            b[(srcWidth * (tmpY + 2)) + i] = 0;
+                            b[(srcWidth * (tmpY - 1)) + i] = 0;
+                            b[(srcWidth * (tmpY - 2)) + i] = 0;
+                        }
 #endif
                     }
-                    else { listY.Add(listY[^1]); }
+                    else {
+                        listY.Add(listY[^1]);
+#if DEBUG || debug
+
+                        b[(srcWidth * tmpY) + i] = 255;
+                        b[(srcWidth * (tmpY + 1)) + i] = 255;
+                        b[(srcWidth * (tmpY + 2)) + i] = 255;
+                        b[(srcWidth * (tmpY - 1)) + i] = 255;
+                        b[(srcWidth * (tmpY - 2)) + i] = 255;
+#endif
+                    }
 
                     if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
                 }

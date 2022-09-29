@@ -6,6 +6,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:local="clr-namespace:MCAJawIns.Control"
             xmlns:pd="clr-namespace:MCAJawIns.Product"
+            
             mc:Ignorable="d" 
             d:DesignHeight="450" 
             d:DesignWidth="800"
@@ -128,6 +129,10 @@
                                                     Value="Maximized">
                                                 <Setter Property="FontSize" Value="{StaticResource Header-lg}" />
                                             </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding (local:InsResultsView.HideText), RelativeSource={RelativeSource Mode=Self}}" Value="True">
+                                                <Setter Property="Foreground" Value="Transparent" />
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                     <!--//-->
@@ -158,16 +163,56 @@
                                 <!--#endregion-->
 
                                 <!-- Backgroud -->
-                                <Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                <!--<Rectangle Grid.ColumnSpan="100" Tag="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}" />-->
+                                <Rectangle Grid.ColumnSpan="100">
+                                    <Rectangle.Style>
+                                        <Style TargetType="{x:Type Rectangle}">
+                                            <Setter Property="Fill" Value="{Binding Background}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource BooleanAndGate}">
+                                                            <!--Not group-->
+                                                            <Binding Path="IsGroup" Converter="{StaticResource BooleanInverter}" />
+                                                            <!--AlternationIndex is odd-->
+                                                            <Binding Path="(ItemsControl.AlternationIndex)" RelativeSource="{RelativeSource Mode=TemplatedParent}"
+                                                                    Converter="{StaticResource NumberIsOddConverter}" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+                                                    <Setter Property="Fill" Value="{StaticResource ColorInfoTransparent}" />
+                                                    <Setter Property="Opacity" Value="0.3" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Rectangle.Style>
+                                </Rectangle>
 
                                 <!--<TextBlock Grid.Column="0" Padding="8 0 0 0" VerticalAlignment="Center" 
                                 Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}"/>-->
                                 <TextBlock Grid.Column="0" Margin="0 0 12 0" Padding="8 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Center"
                                         Text="{Binding Item, StringFormat={}{0:D4}}" />
-                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding CenterSpec}" />
-                                <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}" />
-                                <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}" />
-                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result, StringFormat={}{0:0.00000}}" />
+
+                                <TextBlock Grid.Column="1" Padding="8 0 0 0" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Setter Property="Text" Value="{Binding CenterSpec}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsGroup}" Value="True">
+                                                    <Setter Property="Grid.ColumnSpan" Value="4" />
+                                                    <Setter Property="TextAlignment" Value="Center" />
+                                                    <Setter Property="Text" Value="{Binding CenterSpec, StringFormat={}{0} 項不良}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="2" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding LowerCtrlLimit}"
+                                        local:InsResultsView.HideText="{Binding IsGroup}" />
+                                <TextBlock Grid.Column="3" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding UpperCtrlLimit}"
+                                        local:InsResultsView.HideText="{Binding IsGroup}" />
+                                <TextBlock Grid.Column="4" Padding="8 0 0 0" VerticalAlignment="Center" Text="{Binding Result, StringFormat={}{0:0.00000}}"
+                                        local:InsResultsView.HideText="{Binding IsGroup}" />
 
                                 <materialDesign:Chip HorizontalAlignment="Stretch" Tag="{Binding OK}" Style="{StaticResource ResultMark}" IsEnabled="False" Grid.Column="5"
                                         Margin="12 3">

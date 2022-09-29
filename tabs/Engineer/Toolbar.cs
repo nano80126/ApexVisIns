@@ -488,12 +488,10 @@ namespace MCAJawIns.Tab
 
                 // 開啟相機
                 cam.Open();
-                //cam.PropertyChange();
             }
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-                //throw;
             }
             return cam.IsOpen;
         }
@@ -502,7 +500,9 @@ namespace MCAJawIns.Tab
         {
             try
             {
+                // 清空 ConfigList
                 cam.ConfigList.Clear();
+                // 關閉相機
                 cam.Close();
 
                 // GC 回收
@@ -512,7 +512,6 @@ namespace MCAJawIns.Tab
             catch (Exception ex)
             {
                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, ex.Message);
-                //throw;
             }
             return false;
         }
@@ -829,7 +828,8 @@ namespace MCAJawIns.Tab
             Cam.ModelName = modelName;
 
             Cam.UserSetEnum = camera.Parameters[PLGigECamera.UserSetSelector].GetAllValues().ToArray();
-            Cam.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+            //Cam.UserSet = camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
+            Cam.SetUserSet(null);
 
             Cam.WidthMax = (int)camera.Parameters[PLGigECamera.WidthMax].GetValue();
             Cam.HeightMax = (int)camera.Parameters[PLGigECamera.HeightMax].GetValue();
@@ -897,7 +897,7 @@ namespace MCAJawIns.Tab
             Cam.Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
 
             // 待變更 // 用來標示相機用途等 ...
-            Cam.Camera.StreamGrabber.UserData = "abc";
+            Cam.Camera.StreamGrabber.UserData = "TEST";
             #endregion
 
             // 觸發 PropertyChange
@@ -934,7 +934,6 @@ namespace MCAJawIns.Tab
         private void Camera_CameraClosed(object sender, EventArgs e)
         {
             BaslerCam Cam = MainWindow.BaslerCam;
-            Cam.Camera.Parameters[PLGigECamera.TriggerMode].SetValue(PLGigECamera.TriggerMode.Off);
             Cam.PropertyChange();
 
             //MainWindow.ImageSource = null;
@@ -942,7 +941,7 @@ namespace MCAJawIns.Tab
             Indicator.Image = null;
 
             // 啟動 Camera Enumerator
-            MainWindow.CameraEnumer.WorkerStart();
+            MainWindow.CameraEnumer.WorkerResume();
         }
         #endregion
 

@@ -87,7 +87,7 @@ namespace MCAJawIns
             }
             else
             {
-                throw new ApplicationException("Worker is running");
+                throw new InvalidOperationException($"Worker is running, status: {Worker.Status}");
             }
         }
 

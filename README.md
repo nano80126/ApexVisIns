@@ -160,17 +160,17 @@ MCA Jaw CCD 尺寸量測設備
  * [ ] CameraConfigBaseWithTarget 新增 Event;
 	* 待確認功能正常
 	
- * [ ] 測試 CameraTab IP、Target 變更後儲存狀態
+ * [x] 測試 CameraTab IP、Target 變更後儲存狀態
 
- * [ ] DatabaseTab.xaml UI 調整未完成
+ * [ ] DatabaseTab.xaml UI 調整未完成.
 
  * [ ] CameraTab.xaml 新增 LENS 功能
 	* CameraConfigBase 置入 Lens 類別一併儲存
 
-* [ ] SoundPlayer 音會斷掉
+* [x] SoundPlayer 音會斷掉
 	* HDMI 線問題 ? 
 
-* [ ] 音效播放移動到 MCAJaw.xaml.cs
+* [x] 音效播放移動到 MCAJaw.xaml.cs
 	* 待確認功能正常
 
 * [ ] SystemInfo 測試TCP Listener
@@ -180,6 +180,20 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] Migrate to the latest version of OpenCVSharp
 
 * [ ] Check why ToolbarTray has default padding 3
+
+* [ ] ConfigPanel 新增載入 UserSet 功能
+
+* [ ] 整理 MsgInformer
+
+* [ ] 群組化功能
+	* 新增不良數量
+	* cam1 完成
+	* cam2 未完成
+
+* [ ] MCAJawS .Item => .Key
+	* 逐行確認
+
+* [ ] DatabaseTab.xaml Header 需要修改
 
 ### Config Logic
 

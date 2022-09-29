@@ -247,9 +247,10 @@ namespace MCAJawIns.Panel
 
                 #region 寫入曝光時間
                 camera.Parameters[PLGigECamera.ExposureTimeAbs].SetValue(cam.Config.ExposureTime);   // 10000 is default exposure time of acA2040
-                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue(); 
+                cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
                 #endregion
 
+                cam.SetUserSet(null);
                 cam.PropertyChange();
 
                 // 重置 ImageSource，因為 Width & Height 有變更
@@ -304,7 +305,8 @@ namespace MCAJawIns.Panel
         {
             string userSet = (sender as ListBox).SelectedItem as string;
 
-#if WaitForTest
+            Debug.WriteLine($"{userSet} {cam.UserSet}");
+
             if (cam.UserSet != userSet)
             {
                 Camera camera = cam.Camera;
@@ -314,7 +316,7 @@ namespace MCAJawIns.Panel
                 camera.Parameters[PLGigECamera.UserSetLoad].Execute();
                 // Width, Height
                 cam.Config.Width = cam.Width = (int)camera.Parameters[PLGigECamera.Width].GetValue();
-                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Width].GetValue();
+                cam.Config.Height = cam.Height = (int)camera.Parameters[PLGigECamera.Height].GetValue();
                 // OffsetMax, Offset
                 cam.OffsetXMax = (int)camera.Parameters[PLGigECamera.OffsetX].GetMaximum();
                 cam.OffsetYMax = (int)camera.Parameters[PLGigECamera.OffsetY].GetMaximum();
@@ -324,6 +326,9 @@ namespace MCAJawIns.Panel
                 cam.Config.FPS = cam.FPS = camera.Parameters[PLGigECamera.AcquisitionFrameRateAbs].GetValue();
                 cam.Config.ExposureTime = cam.ExposureTime = camera.Parameters[PLGigECamera.ExposureTimeAbs].GetValue();
 
+                cam.Config.Name = cam.ConfigName = null;
+
+                cam.SetUserSet(userSet);
                 cam.PropertyChange();
 
                 // Reset Image
@@ -331,11 +336,7 @@ namespace MCAJawIns.Panel
 
                 // Reset ZoomRatio
                 EngineerTab.ZoomRatio = 100;
-            } 
-#endif
-
-            Debug.WriteLine($"{userSet} {cam.UserSet} {userSet == cam.UserSet}");
-            // Debug.WriteLine($"{e.AddedItems[0]}");
+            }
         }
     }
 }
