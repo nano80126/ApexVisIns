@@ -114,7 +114,7 @@
                 <!--//-->
                 <Separator Margin="12 4" />
 
-                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
+                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>
 
                 <!--
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 

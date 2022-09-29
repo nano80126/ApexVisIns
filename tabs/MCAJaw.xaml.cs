@@ -1780,12 +1780,28 @@ namespace MCAJawIns.Tab
 
             // MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
 
-            Task.Run(() =>
-            {
-                MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
-                int parts = MainWindow.SystemInfoTab.SystemInfo.TotalParts;
-                Debug.WriteLine($"{parts}");
-            });
+            //Task.Run(() =>
+            //{
+            //    MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
+            //    int parts = MainWindow.SystemInfoTab.SystemInfo.TotalParts;
+            //    Debug.WriteLine($"{parts}");
+            //});
+
+            JawResultGroup.Collection1.Clear();
+            JawResultGroup.Collection2.Clear();
+            JawResultGroup.Collection3.Clear();
+
+
+            JawResultGroup.Collection1.Add(new JawSpec("item1", 20, 10, 30, 22));
+            JawResultGroup.Collection1.Add(new JawSpec("item2", 10, 5, 15, 17));
+            JawResultGroup.Collection1.Add(new JawSpec("Group1", new SolidColorBrush(Colors.DarkCyan), 0, JawSpecGroups.Group1));
+
+            JawResultGroup.Collection2.Add(new JawSpec("item3", 25, 20, 33, 27));
+            JawResultGroup.Collection2.Add(new JawSpec("item4", 32, 28, 36, 33));
+
+            JawResultGroup.Collection3.Add(new JawSpec("item5", 55, 52, 57, 56));
+
+
 
 #if false
             Task<int> t = await Task.Run(() =>
@@ -1837,7 +1853,7 @@ namespace MCAJawIns.Tab
 
             Debug.WriteLine($"Task {t.Id} {t.Result}"); 
 #endif
-        } 
+        }
         #endregion
     }
 

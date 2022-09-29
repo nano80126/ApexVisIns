@@ -22,13 +22,62 @@ namespace MCAJawIns.Product
     {
         #region Fields
         private double _result;
-        private SolidColorBrush _background;
+        //private SolidColorBrush _background;
         //private SolidColorBrush _background = new SolidColorBrush(Colors.Transparent);
-        private JawSpecGroups _group;
-        private bool _showGroupResult;
+        //private JawSpecGroups _group;
+        private bool _isGroupElement;
+        [Obsolete]
         private bool _groupOK;
+        private int _ngCount;
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// 檢測數值
+        /// </summary>
+        [Description("檢驗數值")]
+        public double Result
+        {
+            get => _result;
+            set
+            {
+                _result = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(OK));
+            }
+        }
+
+        #region 群組專用
+        [Description("群組")]
+        public JawSpecGroups Group { get; private set; }
+
+        [Description("群組背景")]
+        public SolidColorBrush Background { get; private set; }
+   
+
+        [Description("是否為群組")]
+        public bool IsGroup
+        {
+            get => Group != JawSpecGroups.None;
+        }
+        #endregion
+
+        /// <summary>
+        /// 檢測結果
+        /// </summary>
+        [Description("檢驗結果")]
+        public bool OK
+        {
+            get
+            {
+                return _isGroupElement ?
+                    _ngCount == 0 :
+                    (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
+            }
+        }
+        #endregion
+
+        #region 建構子
         /// <summary>
         /// 
         /// </summary>
@@ -53,6 +102,7 @@ namespace MCAJawIns.Product
         /// <param name="lcl">管制下限</param>
         /// <param name="ucl">管制上限</param>
         /// <param name="result">量測值</param>
+        /// <param name="group">群組</param>
         public JawSpec(string item, double cl, double lcl, double ucl, double result, JawSpecGroups group = JawSpecGroups.None)
         {
             Item = item;
@@ -60,21 +110,24 @@ namespace MCAJawIns.Product
             LowerCtrlLimit = lcl;
             UpperCtrlLimit = ucl;
             Result = result;
-            _group = group;
+            Group = group;
         }
 
         /// <summary>
         /// Jaw 尺寸量測結果儲存用物件 (群組)
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name=""></param>
-        public JawSpec(string item, SolidColorBrush background, bool groupOk, JawSpecGroups group)
+        /// <param name="item">項目名稱</param>
+        /// <param name="background">背景顏色</param>
+        /// <param name="groupOk">群組結果</param>
+        /// <param name="group">群組</param>
+        public JawSpec(string item, SolidColorBrush background, int ngCount, JawSpecGroups group)
         {
             Item = item;
             Background = background;
-            _groupOK = groupOk;
-            _group = group;
-            _showGroupResult = true;
+            //_groupOK = groupOk;
+            _ngCount = ngCount;
+            Group = group;
+            _isGroupElement = true;
         }
 
         /// <summary>
@@ -95,68 +148,8 @@ namespace MCAJawIns.Product
             UpperSpecLimit = usl;
             LowerCtrlLimit = lcl;
             UpperCtrlLimit = ucl;
-        }
-
-        /// <summary>
-        /// 檢測數值
-        /// </summary>
-        [Description("檢驗數值")]
-        public double Result
-        {
-            get => _result;
-            set
-            {
-                _result = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(OK));
-            }
-        }
-
-        #region 群組專用
-        public JawSpecGroups Group
-        {
-            get => _group;
-            set
-            {
-                if (value != _group)
-                {
-                    _group = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public SolidColorBrush Background
-        {
-            get => _background;
-            set
-            {
-                _background = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [Description("是否為群組")]
-        public bool IsGroup
-        {
-            get => _group != JawSpecGroups.None;
-        }
-
+        } 
         #endregion
-
-        /// <summary>
-        /// 檢測結果
-        /// </summary>
-        [Description("檢驗結果")]
-        public bool OK
-        {
-            get
-            {
-                return _showGroupResult ?
-                    _groupOK :
-                    (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
-            }
-        }
     }
 
     public enum JawSpecGroups

@@ -367,8 +367,6 @@ namespace MCAJawIns.Algorithm
                 foreach (string key in cam1results.Keys)
                 {
                     JawSpecGroups group = specList.Find(x => x.Key == key)?.Group ?? JawSpecGroups.None;
-                    // Debug.WriteLine($"{key}");
-                    // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = 0;
 
@@ -403,7 +401,7 @@ namespace MCAJawIns.Algorithm
                     spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
                     if (group == JawSpecGroups.None)
                     {
-                        // 非 group 直接新增
+                        // 若非 Group，直接新增
                         MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     }
                     else
@@ -432,7 +430,6 @@ namespace MCAJawIns.Algorithm
                 #region Camera 2 結果 (後開)
                 foreach (string key in cam2results.Keys)
                 {
-                    // Debug.WriteLine($"{key}");
                     Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
@@ -489,23 +486,12 @@ namespace MCAJawIns.Algorithm
                 #region 群組結果
                 //IEnumerable<JawSpec> arr = MCAJaw.JawResultGroup.Collection1.Where(x => x.IsGroup);
                 IEnumerable<IGrouping<JawSpecGroups, JawSpec>> groups = cam1groupResult.GroupBy(x => x.Group);
-
                 foreach (IGrouping<JawSpecGroups, JawSpec> group in groups)
                 {
                     JawSpecGroupSetting specGroup = specGroupList.Find(x => x.GroupName == group.Key);
-                    
-                    Debug.WriteLine($"Count: {group.Count()}");
-
-                    foreach (JawSpec item2 in group)
-                    {
-                        Debug.WriteLine($"{item2.Group} {item2.OK}");
-                    }
-
-                    bool groupOk = group.All(x => x.OK);
-
-                    Debug.WriteLine($"GroupOK: {groupOk} {group.Key} {group.Key.GetType()}");
-
-                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, groupOk, group.Key));
+                    int ngCount = group.Count(x => !x.OK);
+                    Debug.WriteLine($"GroupOK: {ngCount} {group.Key} {group.Key.GetType()}");
+                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, ngCount, group.Key));
                 }
 
                 // Debug.WriteLine($"{arr.Count()}");
@@ -2445,7 +2431,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 1465 or >= 1595  && i < roiMat.Width)
+                if (i is < 1465 or >= 1595 && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2456,11 +2442,6 @@ namespace MCAJawIns.Algorithm
                         grayArr[j] = avg;
                         int k = j - 1;
                         if (j == 0) { continue; }
-
-                        //if (i == roiMat.Width / 2)
-                        //{
-                        //    Debug.WriteLine($"{j} {grayArr[j]} {grayArr[k]} {grayArr[j] - grayArr[k]}tmpY: {tmpY}");
-                        //}
 
                         if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
                         {
@@ -2504,7 +2485,8 @@ namespace MCAJawIns.Algorithm
                         }
 #endif
                     }
-                    else {
+                    else
+                    {
                         listY.Add(listY[^1]);
 #if DEBUG || debug
 
