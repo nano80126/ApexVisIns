@@ -372,8 +372,6 @@
                                         <Setter Property="Kind" Value="AccountLock"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                <!--<Setter Property="Foreground" Value="{StaticResource ColorSuccess}"/>
-                                                <Setter Property="Kind" Value="AccountCheck"/>-->
                                                 <Setter Property="Visibility" Value="Hidden"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -437,7 +435,23 @@
                     </StackPanel>
                 </Border>
             </materialDesign:DialogHost>
-            <!--#endregion-->
+
+            <materialDesign:DialogHost Grid.Row="1" VerticalAlignment="Stretch" Width="1600" OverlayBackground="{StaticResource ColorInfo}" DialogTheme="Inherit">
+                <materialDesign:DialogHost.DialogContent>
+                    <Grid Width="300" Height="300" Background="{StaticResource ColorErrorTransparent}">
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Content="Close" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                    </Grid>
+                </materialDesign:DialogHost.DialogContent>
+
+                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Content="Open" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"/>
+            </materialDesign:DialogHost>
+
+            <!--<Button Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Open" Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" CommandTarget="{Binding ElementName=LoginDialog}" />
+            --><!--#endregion-->
+            
             <!--//-->
             <!--#region FooterBar -->
             <DockPanel DockPanel.Dock="Bottom"
@@ -628,7 +642,7 @@
                 </materialDesign:PopupBox>
                 <!--#endregion-->
 
-                <!--內部資料，Binding 進MsgInformer-->
+                <!--內部資料，Binding 進 MsgInformer-->
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <StackPanel.Style>
                         <Style TargetType="StackPanel">
@@ -657,27 +671,6 @@
                     <TextBlock x:Name="MainProgressText" Margin="8 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource ColorBrown}"
                                Text="{Binding Value, ElementName=MainProgress, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0:0} %}"/>
                     <!--#endregion-->
-
-                    <!--<ProgressBar x:Name="MainProgress" Margin="8 0 0 0"  Height="6" BorderThickness="0" BorderBrush="Gray"
-                                 materialDesign:TransitionAssist.DisableTransitions="True" 
-                                 HorizontalAlignment="Left" Foreground="{StaticResource ColorBrown}" Background="{StaticResource ColorBrownTransparent}" 
-                                 Minimum="0" Maximum="100" Width="250" 
-                                 Value="{Binding ProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, NotifyOnTargetUpdated=True}">
-                        <ProgressBar.Style>
-                            <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
-                                <Style.Triggers>
-                                    <EventTrigger RoutedEvent="Binding.TargetUpdated">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Value" BeginTime="0:0:0" Duration="0:0:2" From="0" To="50">
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ProgressBar.Style>
-                    </ProgressBar>-->
                 </StackPanel>
             </DockPanel>
             <!--#endregion-->

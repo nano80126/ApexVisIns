@@ -298,11 +298,11 @@ namespace MCAJawIns
 
             #region 初始化
             // 設定啟動時間
-            SystemInfoTab.SystemInfo.SetStartTime();
+            SystemInfoTab?.SystemInfo.SetStartTime();
             // 設定是否為自動模式
-            SystemInfoTab.SystemInfo.SetMode(InitMode == InitModes.AUTO);
+            SystemInfoTab?.SystemInfo?.SetMode(InitMode == InitModes.AUTO);
             // 啟動 TcpListener
-            SystemInfoTab.SystemInfo.SetTcpListener();
+            SystemInfoTab?.SystemInfo?.SetTcpListener();
             #endregion
         }
 
@@ -339,6 +339,7 @@ namespace MCAJawIns
         /// </summary>
         private void LoadTabItems()
         {
+#if false
             for (int i = 0; i < AppTabControl.Items.Count; i++)
             {
                 TabItem tabItem = (TabItem)AppTabControl.Items[i];
@@ -401,7 +402,8 @@ namespace MCAJawIns
                     default:
                         break;
                 }
-            }
+            } 
+#endif
         }
 
         #region Footer Progress & Message
@@ -512,20 +514,20 @@ namespace MCAJawIns
         /// <param name="e"></param>
         private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DebugMode)
-            {
-                //LoginFlag = true;
-                AuthLevel = 9;
-                e.Handled = true;
-            }
-            else
-            {
-                // 若已登入，不做任何反應
-                if (LoginFlag)
-                {
-                    e.Handled = true;
-                }
-            }
+            //if (DebugMode)
+            //{
+            //    // oginFlag = true;
+            //    AuthLevel = 9;
+            //    e.Handled = true;
+            //}
+            //else
+            //{
+            //    // 若已登入，不做任何反應
+            //    if (LoginFlag)
+            //    {
+            //        e.Handled = true;
+            //    }
+            //}
         }
 
         private void LoginDialog_KeyUp(object sender, KeyEventArgs e)

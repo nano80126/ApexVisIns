@@ -27,9 +27,9 @@ namespace MCAJawIns.Control
     /// <summary>
     /// SpecListView.xaml 的互動邏輯
     /// </summary>
-    public partial class SpecListView : StackPanel
+    public partial class InsResultsView : StackPanel
     {
-        public SpecListView()
+        public InsResultsView()
         {
             InitializeComponent();
         }
@@ -47,16 +47,16 @@ namespace MCAJawIns.Control
 
 
         public static readonly DependencyProperty AutoCreateHeaderProperty = 
-            DependencyProperty.RegisterAttached(nameof(AutoCreateHeader), typeof(bool), typeof(SpecListView), new PropertyMetadata(false));
+            DependencyProperty.RegisterAttached(nameof(AutoCreateHeader), typeof(bool), typeof(InsResultsView), new PropertyMetadata(false));
 
         public static readonly DependencyProperty ItemsSourceProperty = 
-            DependencyProperty.RegisterAttached(nameof(ItemsSource), typeof(IEnumerable), typeof(SpecListView), new PropertyMetadata(null));
+            DependencyProperty.RegisterAttached(nameof(ItemsSource), typeof(IEnumerable), typeof(InsResultsView), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ScrollViewerStyleProperty = 
-            DependencyProperty.RegisterAttached(nameof(ScrollViewerStyle), typeof(Style), typeof(SpecListView), new PropertyMetadata(default(Style)));
+            DependencyProperty.RegisterAttached(nameof(ScrollViewerStyle), typeof(Style), typeof(InsResultsView), new PropertyMetadata(default(Style)));
 
         public static readonly DependencyProperty ScrollViewerHeightProperty =
-            DependencyProperty.RegisterAttached(nameof(ScrollViewerHeight), typeof(double), typeof(SpecListView), new PropertyMetadata(double.NaN));
+            DependencyProperty.RegisterAttached(nameof(ScrollViewerHeight), typeof(double), typeof(InsResultsView), new PropertyMetadata(double.NaN));
 
 
         [Description("自動生成 Header")]
@@ -88,10 +88,10 @@ namespace MCAJawIns.Control
         }
     }
 
-    public class InsResultsView : DependencyObject
+    public class InsResultsViewAssist : DependencyObject
     {
         public static readonly DependencyProperty HideTextProperty =
-            DependencyProperty.RegisterAttached("HideText", typeof(bool), typeof(InsResultsView), new PropertyMetadata(false));
+            DependencyProperty.RegisterAttached("HideText", typeof(bool), typeof(InsResultsViewAssist), new PropertyMetadata(false));
 
         public static void SetHideText(DependencyObject target, bool value)
         {

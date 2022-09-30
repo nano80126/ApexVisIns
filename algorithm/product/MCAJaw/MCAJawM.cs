@@ -193,6 +193,7 @@ namespace MCAJawIns.Algorithm
                 Dictionary<string, List<double>> cam3results = new();
 
                 List<JawSpec> cam1groupResult = new();
+                List<JawSpec> cam2groupResult = new();
                 #endregion
 
                 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 以下觸發拍照且計算各項量測值
@@ -397,23 +398,26 @@ namespace MCAJawIns.Algorithm
                     {
                         avg = cam1results[key].Average();
                     }
-                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    // spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    // 若使用 Item 會有 bug (Item 不為唯一值)
+                    spec = specList.First(s => s.Key == key);
+                    JawSpec jawSpec = new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
                     if (group == JawSpecGroups.None)
                     {
-                        // 若非 Group，直接新增
-                        MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                        // 若非 Group 直接新增進 Collection
+                        MCAJaw.JawResultGroup.Collection1.Add(jawSpec);
                     }
                     else
                     {
-                        cam1groupResult.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group));
+                        // 否則，插入 group 列表
+                        cam1groupResult.Add(jawSpec);
                     }
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 ok
-                        bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
+                        bool ok = jawSpec.OK;
                         // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
@@ -430,18 +434,29 @@ namespace MCAJawIns.Algorithm
                 #region Camera 2 結果 (後開)
                 foreach (string key in cam2results.Keys)
                 {
-                    Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
+                    JawSpecGroups group = specList.Find(x => x.Key == key)?.Group ?? JawSpecGroups.None;
+                    // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
-                    MCAJaw.JawResultGroup.Collection2.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
+                    spec = specList.First(s => s.Key == key);
+                    JawSpec jawSpec = new(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
+                    if (group == JawSpecGroups.None)
+                    {
+                        // 若非 Group 直接新增進 Collection
+                        MCAJaw.JawResultGroup.Collection2.Add(jawSpec);
+                    }
+                    else
+                    {
+                        // 否則，插入 group 列表
+                        cam2groupResult.Add(jawSpec);
+                    }
 
                     // 先判斷是否已為 NG，若已計為NG則數量不再 +1
                     if (!isNG)
                     {
                         // 判斷是否 OK
-                        bool ok = MCAJaw.JawResultGroup.Collection2[^1].OK;
+                        bool ok = jawSpec.OK;
                         // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
@@ -456,13 +471,21 @@ namespace MCAJawIns.Algorithm
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
-                //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
-                spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == "bfDiff");
+                // spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == "bfDiff");
+                spec = specList.First(s => s.Key == "bfDiff");
                 if (spec.Enable)
                 {
                     double bfDiff = Math.Abs(d_front - d_back);
-                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
-                    //MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection1[^1].OK ? 0 : 1;    // 保留
+                    if (spec.Group == JawSpecGroups.None)
+                    {
+                        // 若非 Group 直接新增進 Collection
+                        MCAJaw.JawResultGroup.Collection1.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff));
+                    }
+                    else
+                    {
+                        // 否則，插入 group 列表
+                        cam1groupResult.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, bfDiff, spec.Group));
+                    }
 
                     if (!isNG)
                     {
@@ -478,24 +501,27 @@ namespace MCAJawIns.Algorithm
                     if (jawFullSpecIns != null) { jawFullSpecIns.Results.Add(spec.Key, bfDiff); }
                 }
 
-                //MCAJaw.JawSpecGroup.Collection1.Add(MCAJaw.JawSpecGroup.Collection1[0]);
-                //MCAJaw.JawSpecGroup.Collection1.RemoveAt(0);
                 MCAJaw.JawResultGroup.Collection1.Move(0, MCAJaw.JawResultGroup.Collection1.LastIndex());
                 #endregion
 
-                #region 群組結果
+                #region 加入群組結果
                 //IEnumerable<JawSpec> arr = MCAJaw.JawResultGroup.Collection1.Where(x => x.IsGroup);
-                IEnumerable<IGrouping<JawSpecGroups, JawSpec>> groups = cam1groupResult.GroupBy(x => x.Group);
-                foreach (IGrouping<JawSpecGroups, JawSpec> group in groups)
+                IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] groupArr = new IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] {
+                    cam1groupResult.GroupBy(x => x.Group),
+                    cam2groupResult.GroupBy(x => x.Group)
+                };
+                for (int i = 0; i < groupArr.Length; i++)
                 {
-                    JawSpecGroupSetting specGroup = specGroupList.Find(x => x.GroupName == group.Key);
-                    int ngCount = group.Count(x => !x.OK);
-                    Debug.WriteLine($"GroupOK: {ngCount} {group.Key} {group.Key.GetType()}");
-                    MCAJaw.JawResultGroup.Collection1.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, ngCount, group.Key));
+                    IEnumerable<IGrouping<JawSpecGroups, JawSpec>> groups = groupArr[i];
+                    foreach (IGrouping<JawSpecGroups, JawSpec> group in groups)
+                    {
+                        JawSpecGroupSetting specGroup = specGroupList.Find(x => x.GroupName == group.Key);
+                        int ngCount = group.Count(x => !x.OK);
+                        Debug.WriteLine($"GroupOK: {ngCount} {group.Key} {group.Key.GetType()}");
+                        if (i == 0) { MCAJaw.JawResultGroup.Collection1.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, ngCount, group.Key)); }
+                        else { MCAJaw.JawResultGroup.Collection2.Add(new JawSpec($"{specGroup.Content}", specGroup.Color, ngCount, group.Key)); }
+                    }
                 }
-
-                // Debug.WriteLine($"{arr.Count()}");
-                // Debug.WriteLine($"{MCAJaw.JawResultGroup.Collection1.Count}");
                 #endregion
 
                 #region Camera 3 結果
@@ -520,12 +546,9 @@ namespace MCAJawIns.Algorithm
                     } 
 #endif
 
-                    // Debug.WriteLine($"{dict.Values.Max()}");
-                    // Debug.WriteLine($"{string.Join(",", dict)}");
-
                     double avg = cam3results[key].Average();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    spec = specList.First(s => s.Key == key);
                     MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 
@@ -547,6 +570,22 @@ namespace MCAJawIns.Algorithm
 
                 // 判斷是否為良品
                 MCAJaw.JawInspection.LotResults["good"].Count += MCAJaw.JawResultGroup.Col1Result && MCAJaw.JawResultGroup.Col2Result && MCAJaw.JawResultGroup.Col3Result ? 1 : 0;
+                #endregion
+
+                #region 物件回收
+                cam1results.Clear();
+                cam2results.Clear();
+                cam3results.Clear();
+
+                cam1groupResult.Clear();
+                cam1groupResult = null;
+                cam2groupResult.Clear();
+                cam2groupResult = null;
+
+                specList.Clear();
+                specList = null;
+                specGroupList.Clear();
+                specGroupList = null;
                 #endregion
             }
             catch (OpenCVException ex)
@@ -2411,8 +2450,8 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
-            // 使用完刪除
-            DateTime t1 = DateTime.Now;
+            //// 使用完刪除
+            //DateTime t1 = DateTime.Now;
             // ROI
             Rect roi = new(150, (int)(baseDatumY + 60), 1920, 45);
             // 
@@ -2554,7 +2593,7 @@ namespace MCAJawIns.Algorithm
             Cv2.Rectangle(src, roi, Scalar.Gray, 1);
 
             Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
-            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+            //Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif
 
             return false;

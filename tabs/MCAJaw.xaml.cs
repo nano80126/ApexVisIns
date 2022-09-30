@@ -1410,6 +1410,7 @@ namespace MCAJawIns.Tab
             lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
             upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 }; 
 #endif
+
             // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             double[] correc = new double[keys.Length];
             Array.Fill(correc, 0);
@@ -1579,78 +1580,90 @@ namespace MCAJawIns.Tab
             #endregion
 #else
             #region Production
-            if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
-            DateTime t1 = DateTime.Now;
-
-            // 清空當下 Collection
-            JawResultGroup.Collection1.Clear();
-            JawResultGroup.Collection2.Clear();
-            JawResultGroup.Collection3.Clear();
-
-            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-
-            Status = INS_STATUS.INSPECTING;
-
-            //bool b = await
-            Task.Run(() =>
+            (sender as Button).IsEnabled = false;
+            Task.Run(async () =>
             {
-                JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
-                // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
-                switch (MainWindow.JawType)
+                for (int i = 0; i < 150; i++)
                 {
-                    case JawTypes.S:
-                        MainWindow.MCAJaw.MCAJawS.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                        break;
-                    case JawTypes.M:
-                        MainWindow.MCAJaw.MCAJawM.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                        break;
-                    case JawTypes.L:
-                        MainWindow.MCAJaw.MCAJawL.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                        break;
+                    if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
+                    DateTime t1 = DateTime.Now;
+
+                    Status = INS_STATUS.INSPECTING;
+
+                    // 清空當下 Collection
+                    JawResultGroup.Collection1.Clear();
+                    JawResultGroup.Collection2.Clear();
+                    JawResultGroup.Collection3.Clear();
+
+                    // bool b = await
+                    await Task.Run(() =>
+                    {
+                        JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
+                        // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
+                        switch (MainWindow.JawType)
+                        {
+                            case JawTypes.S:
+                                MainWindow.MCAJaw.MCAJawS.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                                break;
+                            case JawTypes.M:
+                                MainWindow.MCAJaw.MCAJawM.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                                break;
+                            case JawTypes.L:
+                                MainWindow.MCAJaw.MCAJawL.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                                break;
+                        }
+                        return _jawFullSpecIns;
+                    }).ContinueWith(t =>
+                    {
+                        // 判斷是否插入資料庫
+                        JawMeasurements data = t.Result;
+                        data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
+                        data.DateTime = DateTime.Now;
+                        //MongoAccess.InsertOne("Measurements", data);
+                        //MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+
+                        // 檢驗失敗，發出 Alarm
+                        if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                PlayerAlarm.Position = TimeSpan.FromSeconds(0);
+                                PlayerAlarm.Play();
+                            });
+                        }
+                        // 檢驗成功，插入資料庫
+                        else
+                        {
+                            MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
+                            MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+                        }
+
+                        // 檢驗工件 NG，發出 NG 音效
+                        if (!data.OK)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                PlayerNG.Position = TimeSpan.FromSeconds(0);
+                                PlayerNG.Play();
+                            });
+                        }
+
+                        // 變更狀態為準備檢驗
+                        Status = INS_STATUS.READY;
+
+                        Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
+
+                        return data.OK;
+                    });
+
+                    SpinWait.SpinUntil(() => false, 3000);
                 }
-                return _jawFullSpecIns;
             }).ContinueWith(t =>
             {
-                // 判斷是否插入資料庫
-                JawMeasurements data = t.Result;
-                data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
-                data.DateTime = DateTime.Now;
-                //MongoAccess.InsertOne("Measurements", data);
-                //MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
-
-                // 檢驗失敗，發出 Alarm
-                if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
+                Dispatcher.Invoke(() =>
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        PlayerAlarm.Position = TimeSpan.FromSeconds(0);
-                        PlayerAlarm.Play();
-                    });
-                }
-                // 檢驗成功，插入資料庫
-                else
-                {
-                    MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
-                    MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
-                }
-
-
-                // 檢驗工件 NG，發出 NG 音效
-                if (!data.OK)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        PlayerNG.Position = TimeSpan.FromSeconds(0);
-                        PlayerNG.Play();
-                    });
-                }
-
-                // 變更狀態為準備檢驗
-                Status = INS_STATUS.READY;
-
-                Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
-
-                return data.OK;
+                    (sender as Button).IsEnabled = true;
+                });
             });
             #endregion
 #endif

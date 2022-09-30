@@ -195,6 +195,8 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] DatabaseTab.xaml Header 需要修改
 
+* [ ] PopupBox Animation Lag
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

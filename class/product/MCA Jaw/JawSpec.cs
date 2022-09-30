@@ -28,7 +28,6 @@ namespace MCAJawIns.Product
         private bool _isGroupElement;
         [Obsolete]
         private bool _groupOK;
-        private int _ngCount;
         #endregion
 
         #region Properties
@@ -54,6 +53,8 @@ namespace MCAJawIns.Product
         [Description("群組背景")]
         public SolidColorBrush Background { get; private set; }
    
+        [Description("群組內 NG 計數")]
+        public int NgCount { get; private set; }
 
         [Description("是否為群組")]
         public bool IsGroup
@@ -71,7 +72,7 @@ namespace MCAJawIns.Product
             get
             {
                 return _isGroupElement ?
-                    _ngCount == 0 :
+                    NgCount == 0 :
                     (double.IsNaN(LowerCtrlLimit) && double.IsNaN(UpperCtrlLimit)) || (LowerCtrlLimit <= Result && Result <= UpperCtrlLimit);
             }
         }
@@ -125,7 +126,7 @@ namespace MCAJawIns.Product
             Item = item;
             Background = background;
             //_groupOK = groupOk;
-            _ngCount = ngCount;
+            NgCount = ngCount;
             Group = group;
             _isGroupElement = true;
         }
@@ -173,60 +174,15 @@ namespace MCAJawIns.Product
     /// </summary>
     public class JawSpecSetting : SpecBase
     {
+        #region Fields
         private string _note;
         private double _correction;
         private bool _enable;
         private double _correctionSecret;
         private JawSpecGroups _group = JawSpecGroups.None;
+        #endregion
 
-        public JawSpecSetting() { }
-
-        /// <summary>
-        /// 建構子
-        /// </summary>
-        /// <param name="id">ID</param>
-        /// <param name="enable">是否啟用</param>
-        /// <param name="key">Dictionary Key</param>
-        /// <param name="item">Item Name</param>
-        /// <param name="cl">規格中心</param>
-        /// <param name="lcl">管制下限</param>
-        /// <param name="ucl">管制上限</param>
-        /// <param name="correction">校正值 1</param>
-        /// <param name="correction2">校正值 2 (開發者專用)</param>
-        /// <param name="note">備註</param>
-        public JawSpecSetting(int id, bool enable, string key, string item, double cl, double lcl, double ucl, double correction, double correction2 = 0, string note = null)
-        {
-            ID = id;
-            Enable = enable;
-
-            Key = key;
-            Item = item;
-            CenterSpec = cl;
-            LowerCtrlLimit = lcl;
-            UpperCtrlLimit = ucl;
-            Correction = correction;
-            CorrectionSecret = correction2;
-            Note = note ?? string.Empty;
-        }
-
-        /// <summary>
-        /// 檢驗群組，同一群組
-        /// </summary>
-        //public enum SpecInsGroup {
-        //    [Description("未分組")]
-        //    NONE = 0,
-        //    [Description("群組 1")]
-        //    Group1 = 1,
-        //    [Description("群組 2")]
-        //    Group2 = 2,
-        //    [Description("群組 3")]
-        //    Group3 = 3,
-        //    [Description("群組 4")]
-        //    Group4 = 4,
-        //    [Description("群組 5")]
-        //    Group5 = 5
-        //};
-
+        #region Properties
         [Description("群組")]
         public JawSpecGroups Group
         {
@@ -306,6 +262,55 @@ namespace MCAJawIns.Product
                 }
             }
         }
+        #endregion
+
+        public JawSpecSetting() { }
+
+        /// <summary>
+        /// 建構子
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <param name="enable">是否啟用</param>
+        /// <param name="key">Dictionary Key</param>
+        /// <param name="item">Item Name</param>
+        /// <param name="cl">規格中心</param>
+        /// <param name="lcl">管制下限</param>
+        /// <param name="ucl">管制上限</param>
+        /// <param name="correction">校正值 1</param>
+        /// <param name="correction2">校正值 2 (開發者專用)</param>
+        /// <param name="note">備註</param>
+        public JawSpecSetting(int id, bool enable, string key, string item, double cl, double lcl, double ucl, double correction, double correction2 = 0, string note = null)
+        {
+            ID = id;
+            Enable = enable;
+
+            Key = key;
+            Item = item;
+            CenterSpec = cl;
+            LowerCtrlLimit = lcl;
+            UpperCtrlLimit = ucl;
+            Correction = correction;
+            CorrectionSecret = correction2;
+            Note = note ?? string.Empty;
+        }
+
+        /// <summary>
+        /// 檢驗群組，同一群組
+        /// </summary>
+        //public enum SpecInsGroup {
+        //    [Description("未分組")]
+        //    NONE = 0,
+        //    [Description("群組 1")]
+        //    Group1 = 1,
+        //    [Description("群組 2")]
+        //    Group2 = 2,
+        //    [Description("群組 3")]
+        //    Group3 = 3,
+        //    [Description("群組 4")]
+        //    Group4 = 4,
+        //    [Description("群組 5")]
+        //    Group5 = 5
+        //};
     }
 
     /// <summary>
@@ -313,7 +318,7 @@ namespace MCAJawIns.Product
     /// </summary>
     public class JawSpecGroupSetting : INotifyPropertyChanged
     {
-        #region private
+        #region Fields
         private string _content = string.Empty;
         private SolidColorBrush _color = Brushes.Transparent;
         #endregion

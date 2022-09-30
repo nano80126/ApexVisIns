@@ -962,10 +962,10 @@
                             </Border>
                             
                             <!--量測結果列表 1-->
-                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
+                            <ctrl:InsResultsView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection1, Source={StaticResource SpecGroup}}">
-                            </ctrl:SpecListView>
+                            </ctrl:InsResultsView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
@@ -1001,10 +1001,10 @@
                             </Border>
 
                             <!-- 量測結果列表 2-->
-                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
+                            <ctrl:InsResultsView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection2, Source={StaticResource SpecGroup}}">
-                            </ctrl:SpecListView>
+                            </ctrl:InsResultsView>
                         </Grid>
                     </GroupBox>
                     <!--#endregion-->
@@ -1042,7 +1042,7 @@
                             </Border>
 
                             <!--量測結果列表 3-->
-                            <ctrl:SpecListView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
+                            <ctrl:InsResultsView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Stretch"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
                                     ItemsSource="{Binding Collection3, Source={StaticResource SpecGroup}}">
                                 <!--
@@ -1057,7 +1057,7 @@
                                     </Style>
                                 </ctrl:SpecListView.Style>
                                 -->
-                            </ctrl:SpecListView>
+                            </ctrl:InsResultsView>
                         </Grid>
                         <!--</StackPanel>-->
                     </GroupBox>
