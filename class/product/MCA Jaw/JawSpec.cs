@@ -25,9 +25,7 @@ namespace MCAJawIns.Product
         //private SolidColorBrush _background;
         //private SolidColorBrush _background = new SolidColorBrush(Colors.Transparent);
         //private JawSpecGroups _group;
-        private bool _isGroupElement;
-        [Obsolete]
-        private bool _groupOK;
+        private readonly bool _isGroupElement;
         #endregion
 
         #region Properties
@@ -125,7 +123,6 @@ namespace MCAJawIns.Product
         {
             Item = item;
             Background = background;
-            //_groupOK = groupOk;
             NgCount = ngCount;
             Group = group;
             _isGroupElement = true;

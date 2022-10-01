@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
@@ -188,8 +189,14 @@ namespace MCAJawIns
         // Disposed 旗標
         private bool _disposed;
 
-        private TcpClient _tcpClient;
+        //private TcpClient _tcpClient;
+        [Obsolete]
         private TcpListener _tcpListener;
+        // Socker for tcp server
+        private Socket _socket;
+        // Socket list of tcp clients connected
+        private List<Socket> _clients = new List<Socket>();
+        // Socket Task CancellationTokeSource
         private CancellationTokenSource _cancellationTokenSource;
 
         //private bool _x64;
@@ -387,9 +394,83 @@ namespace MCAJawIns
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// 設定 Socket Server
+        /// </summary>
+        public void SetSocketServer()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            Task.Factory.StartNew(() =>
+            {
+                IPAddress ip = IPAddress.Any;
+                IPEndPoint point = new IPEndPoint(ip, 8016);
+
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket.Bind(point);
+                // max pending connection
+                _socket.Listen(5);
+
+                while (!_cancellationTokenSource.IsCancellationRequested)
+                {
+                    // 等待有新連線 pending()
+                    SpinWait.SpinUntil(() => _socket.Poll(250, SelectMode.SelectRead) || _cancellationTokenSource.IsCancellationRequested);
+                    if (_cancellationTokenSource.IsCancellationRequested) break;
+
+                    Socket client = _socket.Accept();
+                    _clients.Add(client);
+
+                    Task.Run(() =>
+                    {
+                        byte[] bytes = new byte[256];
+                        while (!_cancellationTokenSource.IsCancellationRequested)
+                        {
+                            try
+                            {
+                                // 1. 有新資料 2. 連線已關閉 3. 工作被取消 ex. 10分鐘沒有新資料
+                                if (SpinWait.SpinUntil(() => client.Poll(100, SelectMode.SelectRead) || _cancellationTokenSource.IsCancellationRequested, 10 * 1000))
+                                {
+                                    if (_cancellationTokenSource.IsCancellationRequested) { break; }
+
+                                    int i = client.Receive(bytes);
+                                    // 遠端 client 關閉連線
+                                    if (i == 0) { break; }
+                                    string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
+                                    Debug.WriteLine($"{data} {i}");
+
+                                    byte[] msg = System.Text.Encoding.UTF8.GetBytes($"{DateTime.Now:HH:mm:ss.fff}");
+                                    client.Send(msg, msg.Length, SocketFlags.None);
+                                }
+                                else { break; }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.Message);
+                            }
+                        }
+                    }).ContinueWith(t =>
+                    {
+                        client.Shutdown(SocketShutdown.Both);
+                        client.Close();
+                        _clients.Remove(client);
+                        client.Dispose();
+                    });
+                }
+
+                return _socket;
+            }, TaskCreationOptions.LongRunning).ContinueWith(t =>
+            {
+                t.Result.Close();
+                t.Result.Dispose();
+                Debug.WriteLine($"Server socket task status: {t.Status}");
+            });
+        }
+      
+
         /// <summary>
         /// 設定 Tcp Listener
         /// </summary>
+        [Obsolete]
         public void SetTcpListener()
         {
             _cancellationTokenSource = new CancellationTokenSource();
@@ -401,62 +482,99 @@ namespace MCAJawIns
 
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    Debug.WriteLine($"Wait for a connection...");
+                    Debug.WriteLine($"Wait for a new connection...");
 
-                    // 等待有 client 連線 
+                    // 等待有 client 連線 || 工作被取消
                     SpinWait.SpinUntil(() => _tcpListener.Pending() || _cancellationTokenSource.IsCancellationRequested);
                     // 若工作被 Cancel，跳出迴圈
                     if (_cancellationTokenSource.IsCancellationRequested) { break; }
 
                     // 接受 client 連線
-                    _tcpClient = _tcpListener.AcceptTcpClient();
-                    Debug.WriteLine("Connected!");
+                    TcpClient tcpClient = _tcpListener.AcceptTcpClient();
 
-                    // 取得 NetworkStream
-                    NetworkStream networkStream = _tcpClient.GetStream();
-
-                    int i;
-
-                    // (i = networkStream.Read(bytes, 0, bytes.Length)).;
-                    try
+                    Task.Run(() =>
                     {
-                        #region 這部分要重寫
-                        // 等待 DataAvailable 或終止 listener
-                        SpinWait.SpinUntil(() => networkStream.DataAvailable || _cancellationTokenSource.IsCancellationRequested);
-                        // 若工作被 Cancel，跳出迴圈
-                        if (_cancellationTokenSource.IsCancellationRequested)
+                        Debug.WriteLine("Connected!");
+
+                        Debug.WriteLine($"{tcpClient.Client.RemoteEndPoint} {tcpClient.Client.LocalEndPoint} {tcpClient.Client.Handle} {Task.CurrentId}");
+
+                        // 取得 NetworkStream
+                        NetworkStream networkStream = tcpClient.GetStream();
+
+                        // (i = networkStream.Read(bytes, 0, bytes.Length)).;
+                        try
                         {
-                            networkStream.Close();
-                            _tcpClient.Close();
-                            break;
+                            #region 這部分要重寫
+#if false
+                        //while (_tcpClient.Connected)
+                        //{
+                        //    Debug.WriteLine($"waiting1");
+
+                        //    // 等待 DataAvailable || 工作被取消
+                        //    SpinWait.SpinUntil(() => networkStream.DataAvailable ||  _cancellationTokenSource.IsCancellationRequested, 1000);
+                        //    // 若工作被 Cancel，關閉 NetworkStream 與 Client 並跳出迴圈
+                        //    if (_cancellationTokenSource.IsCancellationRequested)
+                        //    {
+                        //        networkStream.Close();
+                        //        _tcpClient.Close();
+                        //        break;
+                        //    }
+
+                        //    Debug.WriteLine($"waiting2");
+
+                        //    int i = networkStream.Read(bytes, 0, bytes.Length);
+                        //    string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
+                        //    Debug.WriteLine($"Data: {data} {_tcpClient.Connected} {i} {networkStream.CanRead}");
+                        //}  
+#endif
+
+                            //while (!_cancellationTokenSource.IsCancellationRequested)
+                            //{
+                            //    // 等待 DataAvailabel || 工作被取消；或太久沒有資料傳遞，關閉此連線
+                            //    if (SpinWait.SpinUntil(() => networkStream.DataAvailable || _cancellationTokenSource.IsCancellationRequested, 30 * 1000))
+                            //    {
+                            //        if (_cancellationTokenSource.IsCancellationRequested) { break; }
+                            //        i = networkStream.Read(bytes, 0, bytes.Length);
+                            //        if (i == 0) { break; }
+                            //        string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
+                            //        Debug.WriteLine($"Data: {data}, i: {i}");
+                            //    }
+                            //    else
+                            //    {
+                            //        break;
+                            //    }
+                            //}
+
+                            //while ((i = networkStream.Read(bytes, 0, bytes.Length)) != 0)
+                            //{
+                            //    string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
+                            //    Debug.WriteLine($"Data: {data}, i: {i}");
+                            //}
+
+                            #endregion
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"EX: {ex.Message}");
                         }
 
-                        Debug.WriteLine($"Data can be read");
+                        networkStream.Close();
+                        networkStream.Dispose();
 
-                        while ((i = networkStream.Read(bytes, 0, bytes.Length)) != 0)
-                        {
-                            string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
-                            Debug.WriteLine($"Data: {data} {i}");
-
-                            //Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
-
-                            byte[] msg = System.Text.Encoding.UTF8.GetBytes(TotalAutoTime);
-                            networkStream.Write(msg, 0, msg.Length);
-                            Debug.WriteLine($"Send msg: {msg}");
-                        } 
-                        #endregion
-                    }
-                    catch (Exception ex)
+                        return tcpClient;
+                    }).ContinueWith(t =>
                     {
-                        Debug.WriteLine($"{ex.Message}");
-                        // throw;
-                    }
+                        Debug.WriteLine(t.Result.Connected);
+                        Debug.WriteLine(t.Status);
 
-                    networkStream.Close();
-                    _tcpClient.Close();
+
+
+                        t.Result.Close();
+                        t.Dispose();
+                    });
                 }
-                _tcpListener.Stop();
 
+                _tcpListener.Stop();
                 Debug.WriteLine($"End Server");
             }, TaskCreationOptions.LongRunning);
         }

@@ -1791,7 +1791,7 @@ namespace MCAJawIns.Tab
             player.Play(); 
 #endif
 
-            // MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
+            MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
 
             //Task.Run(() =>
             //{
@@ -1800,19 +1800,19 @@ namespace MCAJawIns.Tab
             //    Debug.WriteLine($"{parts}");
             //});
 
-            JawResultGroup.Collection1.Clear();
-            JawResultGroup.Collection2.Clear();
-            JawResultGroup.Collection3.Clear();
+            //JawResultGroup.Collection1.Clear();
+            //JawResultGroup.Collection2.Clear();
+            //JawResultGroup.Collection3.Clear();
 
 
-            JawResultGroup.Collection1.Add(new JawSpec("item1", 20, 10, 30, 22));
-            JawResultGroup.Collection1.Add(new JawSpec("item2", 10, 5, 15, 17));
-            JawResultGroup.Collection1.Add(new JawSpec("Group1", new SolidColorBrush(Colors.DarkCyan), 0, JawSpecGroups.Group1));
+            //JawResultGroup.Collection1.Add(new JawSpec("item1", 20, 10, 30, 22));
+            //JawResultGroup.Collection1.Add(new JawSpec("item2", 10, 5, 15, 17));
+            //JawResultGroup.Collection1.Add(new JawSpec("Group1", new SolidColorBrush(Colors.DarkCyan), 0, JawSpecGroups.Group1));
 
-            JawResultGroup.Collection2.Add(new JawSpec("item3", 25, 20, 33, 27));
-            JawResultGroup.Collection2.Add(new JawSpec("item4", 32, 28, 36, 33));
+            //JawResultGroup.Collection2.Add(new JawSpec("item3", 25, 20, 33, 27));
+            //JawResultGroup.Collection2.Add(new JawSpec("item4", 32, 28, 36, 33));
 
-            JawResultGroup.Collection3.Add(new JawSpec("item5", 55, 52, 57, 56));
+            //JawResultGroup.Collection3.Add(new JawSpec("item5", 55, 52, 57, 56));
 
 
 

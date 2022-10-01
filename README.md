@@ -181,11 +181,11 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] Check why ToolbarTray has default padding 3
 
-* [ ] ConfigPanel 新增載入 UserSet 功能
+* [x] ConfigPanel 新增載入 UserSet 功能
 
 * [ ] 整理 MsgInformer
 
-* [ ] 群組化功能
+* [x] 群組化功能
 	* 新增不良數量
 	* cam1 完成
 	* cam2 未完成
@@ -195,7 +195,9 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] DatabaseTab.xaml Header 需要修改
 
-* [ ] PopupBox Animation Lag
+* [x] PopupBox Animation Lag
+
+* [ ] Test Socket in Systeminfo 
 
 ### Config Logic
 
