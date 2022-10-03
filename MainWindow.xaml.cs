@@ -19,6 +19,8 @@ using MongoDB.Bson;
 using MCAJawIns.Mongo;
 using System.Collections.ObjectModel;
 
+using SystemInfo;
+
 namespace MCAJawIns
 {
     #region Enumerator
@@ -305,6 +307,10 @@ namespace MCAJawIns
             //SystemInfoTab?.SystemInfo.SetTcpListener();
             SystemInfoTab?.SystemInfo.SetSocketServer();
             #endregion
+
+
+            //Class1 class1 = new Class1();
+            
         }
 
         /// <summary>
