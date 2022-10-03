@@ -436,7 +436,7 @@ namespace MCAJawIns
                                     // 遠端 client 關閉連線
                                     if (i == 0) { break; }
                                     string data = System.Text.Encoding.UTF8.GetString(bytes, 0, i);
-                                    Debug.WriteLine($"{data} {i}");
+                                    Debug.WriteLine($"{data}");
 
                                     byte[] msg = System.Text.Encoding.UTF8.GetBytes($"{DateTime.Now:HH:mm:ss.fff}");
                                     client.Send(msg, msg.Length, SocketFlags.None);
@@ -465,7 +465,6 @@ namespace MCAJawIns
                 Debug.WriteLine($"Server socket task status: {t.Status}");
             });
         }
-      
 
         /// <summary>
         /// 設定 Tcp Listener
@@ -1435,7 +1434,7 @@ namespace MCAJawIns
 
     public class MsgInformer : INotifyPropertyChanged
     {
-        #region LockObject
+        #region Fields
         /// <summary>
         /// Info Collection Lock
         /// </summary>
@@ -1444,9 +1443,7 @@ namespace MCAJawIns
         /// Error Collection Lock
         /// </summary>
         private readonly object _errCollLock = new();
-        #endregion
-
-        #region Varibles
+      
         private int _progress;
         private int _lastProgressValue;
 
@@ -1458,7 +1455,7 @@ namespace MCAJawIns
         private readonly List<Action> ProgressAnimation = new();
         #endregion
 
-
+        #region Properties
         /// <summary>
         /// 當前 Progress Value
         /// </summary>
@@ -1475,38 +1472,38 @@ namespace MCAJawIns
             }
         }
 
-#if false // Deprecated
         /// <summary>
-        /// 目標 Progress Value
+        /// 未讀取 error 數量
         /// </summary>
-        public int TargetProgressValue
-        {
-            get => _targetProgressValue;
-            set
-            {
-                Debug.WriteLine($"TargetProgressChanged  Value: {value} TargetValue: {_targetProgressValue}      Binding.cs line 641 {DateTime.Now:mm:ss.fff}");
+        public int NewError { get; private set; }
 
-                if (value > _targetProgressValue)
-                {
-                    // 計算時間 1 % = 25 ms
-                    TimeSpan timeSpan = TimeSpan.FromMilliseconds((value - _targetProgressValue) * 25);
-                    // 更新 TargetProgressValue
-                    _targetProgressValue = value;
-                    //
-                    // 插入工作序列
-                    ProgressAnimation.Add(() =>
-                    {
-                        OnProgressValueChanged(_progress, value, timeSpan);
-                        _ = SpinWait.SpinUntil(() => CancellationTokenSource.IsCancellationRequested, timeSpan);
-                        // 等待動畫結束後更新
-                        ProgressValue = value;
-                    });
-                }
-                OnPropertyChanged();
-            }
-        } 
-#endif
+        /// <summary>
+        /// Error message count
+        /// </summary>
+        public int ErrorCount => ErrSource.Count;
 
+        /// <summary>
+        /// 未讀取 info 數量
+        /// </summary>
+        public int NewInfo { get; private set; }
+
+        /// <summary>
+        /// Info message count
+        /// </summary>
+        public int InfoCount => InfoSource.Count;
+
+        /// <summary>
+        /// Info Stack Source
+        /// </summary>
+        public ObservableStack<Message> InfoSource { get; set; } = new ObservableStack<Message>();
+
+        /// <summary>
+        /// Error Stack Source
+        /// </summary>
+        public ObservableStack<Message> ErrSource { get; set; } = new ObservableStack<Message>();
+        #endregion
+
+        #region Methods
         /// <summary>
         /// 啟用 ProgressBar
         /// </summary>
@@ -1566,21 +1563,23 @@ namespace MCAJawIns
             });
         }
 
+        /// <summary>
+        /// 啟用 Collection Binding
+        /// </summary>
         public void EnableCollectionBinding()
         {
             BindingOperations.EnableCollectionSynchronization(InfoSource, _infoCollLock);
             BindingOperations.EnableCollectionSynchronization(ErrSource, _errCollLock);
         }
 
+        /// <summary>
+        /// 停用 Collection Binding
+        /// </summary>
         public void DisableCollectionBinding()
         {
             BindingOperations.DisableCollectionSynchronization(InfoSource);
             BindingOperations.DisableCollectionSynchronization(ErrSource);
         }
-
-        public int NewError { get; private set; }
-
-        public int ErrorCount => ErrSource.Count;
 
         /// <summary>
         /// 新增 Warnging
@@ -1635,15 +1634,14 @@ namespace MCAJawIns
             OnPropertyChanged(nameof(NewError));
         }
 
+        /// <summary>
+        /// Reset new error
+        /// </summary>
         public void ResetErrorCount()
         {
             NewError = 0;
             OnPropertyChanged(nameof(NewError));
         }
-
-        public int NewInfo { get; private set; }
-
-        public int InfoCount => InfoSource.Count;
 
         /// <summary>
         /// 新增 Success 訊息
@@ -1698,20 +1696,14 @@ namespace MCAJawIns
         }
 
         /// <summary>
-        /// 
+        /// Reset new info
         /// </summary>
         public void ResetInfoCount()
         {
             NewInfo = 0;
             OnPropertyChanged(nameof(NewInfo));
-        }
-
-        /// <summary>
-        /// Stack Source of Message
-        /// </summary>
-        public ObservableStack<Message> InfoSource { get; set; } = new ObservableStack<Message>();
-
-        public ObservableStack<Message> ErrSource { get; set; } = new ObservableStack<Message>();
+        } 
+        #endregion
 
         /// <summary>
         /// Message 訊息
@@ -1816,7 +1808,7 @@ namespace MCAJawIns
             }
         }
 
-        #region ProgressValueChanged
+        #region Progress Value Changed
         /// <summary>
         /// 進度表 ChangedEventHandler
         /// </summary>
@@ -1850,7 +1842,7 @@ namespace MCAJawIns
         }
         #endregion
 
-        #region PropertyChanged
+        #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

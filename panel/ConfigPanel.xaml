@@ -222,7 +222,7 @@
                         Text="{Binding Path=Config.ExposureTime, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!--materialDesign:TextFieldAssist.TextBoxViewMargin="10 0"-->
                 <!-- 組態名稱, Config name -->
-                <TextBox x:Name="ConfigName" Grid.Row="9" Grid.ColumnSpan="2" Width="auto" Margin="8 8 8 4" Padding="0 3" materialDesign:HintAssist.Hint="Configuration Name"
+                <TextBox x:Name="ConfigName" Grid.Row="9" Grid.ColumnSpan="2" Width="auto" Margin="8 8 8 4" Padding="8 3" materialDesign:HintAssist.Hint="Configuration Name"
                         materialDesign:HintAssist.Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid,AncestorLevel=1}, Path=Background}"
                         Text="{Binding Path=Config.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="Textbox_GotFocus" />
                 <!--#endregion-->

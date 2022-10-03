@@ -505,7 +505,6 @@ namespace MCAJawIns.Algorithm
                 #endregion
 
                 #region 加入群組結果
-                //IEnumerable<JawSpec> arr = MCAJaw.JawResultGroup.Collection1.Where(x => x.IsGroup);
                 IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] groupArr = new IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] {
                     cam1groupResult.GroupBy(x => x.Group),
                     cam2groupResult.GroupBy(x => x.Group)

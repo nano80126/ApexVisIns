@@ -740,15 +740,18 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24214356":    // 前相機
-                                        MainWindow.CheckPartCam1(mat);
+                                        //MainWindow.CheckPartCam1(mat);
+                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam1(mat, out byte th1);
                                         // MainWindow.JawInsSequenceCam1(mat);
                                         break;
                                     case "24214384":    // 下相機
-                                        MainWindow.CheckPartCam2(mat);
+                                        //MainWindow.CheckPartCam2(mat);
+                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam2(mat, out byte th2);
                                         //MainWindow.JawInsSequenceCam2(mat);
                                         break;
                                     case "24115540":    // 側相機
-                                        MainWindow.CheckPartCam3(mat);
+                                        //MainWindow.CheckPartCam3(mat);
+                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam3(mat, out byte th3);
                                         //MainWindow.JawInsSequenceCam3(mat);
                                         break;
                                     default:
@@ -769,7 +772,6 @@ namespace MCAJawIns.Tab
                                         MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam2(mat);
                                         break;
                                     case "40168495":
-                                        //bool partExist = 
                                         //MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat, out byte th3);
                                         MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam3(mat);
                                         break;
@@ -780,7 +782,18 @@ namespace MCAJawIns.Tab
                             #endregion
                             #region Jaw L
                             case JawTypes.L:
-
+                                switch (sn)
+                                {
+                                    case "24413077":
+                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam1(mat, out byte th1);
+                                        break;
+                                    case "24413099":
+                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam2(mat, out byte th2);
+                                        break;
+                                    case "40168508":
+                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam3(mat, out byte th3);
+                                        break;
+                                }
                                 break;
                             #endregion
                             default:
@@ -934,6 +947,7 @@ namespace MCAJawIns.Tab
         private void Camera_CameraClosed(object sender, EventArgs e)
         {
             BaslerCam Cam = MainWindow.BaslerCam;
+            Cam.Config.Name = Cam.ConfigName = null;
             Cam.PropertyChange();
 
             //MainWindow.ImageSource = null;
