@@ -307,10 +307,6 @@ namespace MCAJawIns
             //SystemInfoTab?.SystemInfo.SetTcpListener();
             SystemInfoTab?.SystemInfo.SetSocketServer();
             #endregion
-
-
-            //Class1 class1 = new Class1();
-            
         }
 
         /// <summary>
