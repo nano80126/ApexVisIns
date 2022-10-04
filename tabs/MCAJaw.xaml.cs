@@ -1348,20 +1348,25 @@ namespace MCAJawIns.Tab
             }
         }
 
-        private void ResetCount_Click(object sender, RoutedEventArgs e)
+        private async void ResetCount_Click(object sender, RoutedEventArgs e)
         {
             if (JawInspection.LotNumberChecked && !JawInspection.LotInserted)
             {
-                if (MessageBox.Show("該批資料尚未儲存，是否確定歸零數量？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
+                // Debug Mode or Check Dialog
+                bool result = MainWindow.DebugMode || (bool)await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog");
 
-            // JawInspection.ObjID = new MongoDB.Bson.ObjectId();
-            foreach (string key in JawInspection.LotResults.Keys)
-            {
-                JawInspection.LotResults[key].Count = 0;
+                if (result)
+                {
+                    foreach (string key in JawInspection.LotResults.Keys)
+                    {
+                        JawInspection.LotResults[key].Count = 0;
+                    }
+                }
+
+                //if (MessageBox.Show("該批資料尚未儲存，是否確定歸零數量？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                //{
+                //    return;
+                //}
             }
         }
 

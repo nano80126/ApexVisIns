@@ -449,15 +449,37 @@
 
                                         <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 12 0 0" SnapsToDevicePixels="True"
                                                 materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MainPanelButton}" Foreground="{StaticResource ColorIndigo}"
-                                                BorderBrush="{StaticResource ColorIndigo}" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                                                CommandTarget="{Binding LoginDialog, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=app:MainWindow, AncestorLevel=1}}">
-
+                                                BorderBrush="{StaticResource ColorIndigo}" Click="ResetCount_Click">
+                                            <!--#region CommandParameter -->
                                             <Button.CommandParameter>
-                                                <TextBlock Text="歸零檢測數量" />
+                                                <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
+                                                    <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 12" FontSize="{StaticResource Header}"
+                                                            TextWrapping="WrapWithOverflow">
+                                                        <materialDesign:PackIcon Height="24" Width="24" Margin="0 0 8 0" Kind="AlertCircleOutline"
+                                                                Foreground="{StaticResource ColorWarning}" />
+                                                        <Run Text="該批資料尚未儲存，是否確定歸零數量？" />
+                                                    </TextBlock>
+
+
+                                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                            BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                        <Button.CommandParameter>
+                                                            <sys:Boolean>False</sys:Boolean>
+                                                        </Button.CommandParameter>
+                                                    </Button>
+
+                                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定"
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                            BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                        <Button.CommandParameter>
+                                                            <sys:Boolean>True</sys:Boolean>
+                                                        </Button.CommandParameter>
+                                                    </Button>
+                                                </DockPanel>
                                             </Button.CommandParameter>
+                                            <!--#endregion-->
                                             <TextBlock Text="歸零檢測數量" />
-                                            <!--Click="ResetCount_Click"-->
-                                            <!--CommandTarget="{Binding , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"-->
                                         </Button>
                                     </Grid>
                                     <!--#endregion-->

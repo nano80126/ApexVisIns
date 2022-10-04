@@ -210,9 +210,7 @@ namespace MCAJawIns
 
             // InitializePanels();
 
-            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             LoadTabItems();
-            // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
 
         /// <summary>
@@ -462,20 +460,12 @@ namespace MCAJawIns
                 // 預設管理者密碼
                 if (LoginPassword.Password == Password)
                 {
-                    //LoginFlag = true;
                     AuthLevel = 9;
-                    //IOWindow?.PropertyChange(nameof(LoginFlag));
-                    //LoginPasswordHint.Text = string.Empty;
-                    //LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
                 }
                 else if (PasswordDict.TryGetValue(LoginPassword.Password, out int level))
                 {
-                    //LoginFlag = true;
                     AuthLevel = level;
-                    //
-                    //LoginPasswordHint.Text = string.Empty;
-                    //LoginPasswordHint.Visibility = Visibility.Hidden;
                     LoginDialog.IsOpen = false;
                 }
                 else
@@ -498,6 +488,11 @@ namespace MCAJawIns
             LoginPassword.Password = string.Empty;
             LoginPasswordHint.Text = string.Empty;
             LoginPasswordHint.Visibility = Visibility.Hidden;
+
+            //Debug.WriteLine(eventArgs.);
+
+            //Debug.WriteLine(eventArgs.Session.Close());
+            Debug.WriteLine(eventArgs.Parameter);
         }
 
         /// <summary>
@@ -507,20 +502,20 @@ namespace MCAJawIns
         /// <param name="e"></param>
         private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (DebugMode)
-            {
-                // oginFlag = true;
-                AuthLevel = 9;
-                e.Handled = true;
-            }
-            else
-            {
-                // 若已登入，不做任何反應
-                if (LoginFlag)
-                {
-                    e.Handled = true;
-                }
-            }
+            //if (DebugMode)
+            //{
+            //    // oginFlag = true;
+            //    AuthLevel = 9;
+            //    e.Handled = true;
+            //}
+            //else
+            //{
+            //    // 若已登入，不做任何反應
+            //    if (LoginFlag)
+            //    {
+            //        e.Handled = true;
+            //    }
+            //}
         }
 
         private void LoginDialog_KeyUp(object sender, KeyEventArgs e)

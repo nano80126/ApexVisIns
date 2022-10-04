@@ -25,6 +25,10 @@
         Closed="Window_Closed"
         Topmost="False"
         Title="MainWindow" Width="1600" Height="900">
+    <!--<Window.DataContext>
+        <local:MainWindowVeiwMode></local:MainWindowVeiwMode>
+    </Window.DataContext>-->
+
     <!--#region Resources -->
     <Window.Resources>
         <!--#region Appbar -->
@@ -299,12 +303,42 @@
                     <Button x:Name="UserLogin" Width="48" Height="48" Margin="0 0 0 8" Padding="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             materialDesign:RippleAssist.IsDisabled="True" Focusable="False" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                             CommandTarget="{Binding ElementName=LoginDialog}" Style="{StaticResource MaterialDesignToolButton}" PreviewMouseDown="UserLogin_PreviewMouseDown">
-                        <materialDesign:PackIcon Width="30" Height="26" ToolTip="登入" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12">
+                        <!--#region CommandParameter -->
+                        <Button.CommandParameter>
+                            <DockPanel MinWidth="320" Margin="16" MouseDown="Panels_MouseDown" Background="Transparent">
+                                <TextBlock DockPanel.Dock="Top" Text="LOGIN" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                                <Separator DockPanel.Dock="Top" Margin="0 12" />
+
+                                <!--#region 密碼 & Hint -->
+                                <PasswordBox x:Name="LoginPassword" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password"
+                                        materialDesign:HintAssist.Foreground="{StaticResource ColorInfo}" Padding="8 3" Height="24" FontWeight="Bold"
+                                        BorderBrush="{StaticResource ColorInfo}" CaretBrush="{StaticResource ColorInfoTransparent}"
+                                        Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
+                                </PasswordBox>
+
+                                <TextBlock x:Name="LoginPasswordHint" DockPanel.Dock="Top" HorizontalAlignment="Right" FontWeight="SemiBold" Padding="8 0" Margin="0 -18 0 0"
+                                        FontSize="12" Foreground="{StaticResource ColorErrorTransparent}" />
+                                <!--#endregion-->
+
+                                <Button x:Name="LoginBtn" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="8 12 8 0" Width="120"
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="Login" Content="OK" BorderThickness="0"
+                                        materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="16" Foreground="{StaticResource ColorSuccess}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" Focusable="False" PreviewMouseDown="LoginBtn_PreviewMouseDown" />
+                                <!--PreviewMouseDown="LoginBtn_PreviewMouseDown"-->
+
+                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="8 12 8 0" Width="120"
+                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="LoginCancel" Content="CANCEL" BorderThickness="0"
+                                        materialDesign:RippleAssist.IsDisabled="True" materialDesign:ButtonAssist.CornerRadius="16" Focusable="False"
+                                        Foreground="{StaticResource ColorWarning}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                            </DockPanel>
+                        </Button.CommandParameter>
+                        <!--#endregion-->
+
+                        <!--#region Content -->
+                        <materialDesign:PackIcon Width="30" Height="26" ToolTip="登入" ToolTipService.Placement="Right" ToolTipService.HorizontalOffset="12"
+                                Foreground="{StaticResource ColorWhiteTransparent}" Background="Transparent" Kind="AccountLock">
                             <materialDesign:PackIcon.Style>
                                 <Style TargetType="materialDesign:PackIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource ColorWhiteTransparent}" />
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="Kind" Value="AccountLock" />
                                     <Style.Triggers>
                                         <DataTrigger
                                                 Binding="{Binding LoginFlag, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Window,AncestorLevel=1}, UpdateSourceTrigger=PropertyChanged}"
@@ -315,9 +349,8 @@
                                 </Style>
                             </materialDesign:PackIcon.Style>
                         </materialDesign:PackIcon>
+                        <!--#endregion-->
                     </Button>
-
-                    <!--<Button Width="300" Height="300" Content="{Binding ElementName=LoginBtn.}" />-->
                     <!--#endregion-->
 
                     <!--#region PopupBox -->
@@ -379,37 +412,12 @@
             <!--#endregion-->
 
             <!--#region Dialog，考慮建立物件來 Binding -->
-            <materialDesign:DialogHost x:Name="LoginDialog" x:FieldModifier="public" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
+            <materialDesign:DialogHost Grid.Row="1" x:Name="LoginDialog" Identifier="MainDialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False"
                     OverlayBackground="{DynamicResource ColorBlueGrayTranparent}" KeyUp="LoginDialog_KeyUp" DialogTheme="Dark" DialogOpened="DialogHost_DialogOpened"
                     DialogClosing="DialogHost_DialogClosing">
                 <!--#region DialogContent -->
-                <materialDesign:DialogHost.DialogContent>
-                    <DockPanel MinWidth="320" Margin="16" MouseDown="Panels_MouseDown" Background="Transparent">
-                        <TextBlock DockPanel.Dock="Top" Text="LOGIN" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-                        <Separator DockPanel.Dock="Top" Margin="0 12" />
-
-                        <!--#region 密碼 & Hint -->
-                        <PasswordBox x:Name="LoginPassword" DockPanel.Dock="Top" materialDesign:HintAssist.Hint="password"
-                                materialDesign:HintAssist.Foreground="{StaticResource ColorInfo}" Padding="8 3" Height="24" FontWeight="Bold"
-                                BorderBrush="{StaticResource ColorInfo}" CaretBrush="{StaticResource ColorInfoTransparent}"
-                                Style="{StaticResource MaterialDesignOutlinedPasswordBox}">
-                        </PasswordBox>
-
-                        <TextBlock x:Name="LoginPasswordHint" DockPanel.Dock="Top" HorizontalAlignment="Right" FontWeight="SemiBold" Padding="8 0" Margin="0 -18 0 0" FontSize="12"
-                                Foreground="{StaticResource ColorErrorTransparent}" />
-                        <!--#endregion-->
-
-                        <Button x:Name="LoginBtn" DockPanel.Dock="Left" Margin="8 12 8 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="OK"
-                                HorizontalAlignment="Left" Width="120" BorderThickness="0" materialDesign:RippleAssist.IsDisabled="True"
-                                materialDesign:ButtonAssist.CornerRadius="16" Foreground="{StaticResource ColorSuccess}" Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Focusable="False" PreviewMouseDown="LoginBtn_PreviewMouseDown" />
-
-                        <Button DockPanel.Dock="Right" Margin="8 12 8 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Content="CANCEL"
-                                HorizontalAlignment="Right" Width="120" BorderThickness="0" materialDesign:RippleAssist.IsDisabled="True"
-                                materialDesign:ButtonAssist.CornerRadius="16" Focusable="False" Foreground="{StaticResource ColorWarning}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}" />
-                    </DockPanel>
-                </materialDesign:DialogHost.DialogContent>
+                <!--<materialDesign:DialogHost.DialogContent>
+                </materialDesign:DialogHost.DialogContent>-->
                 <!--#endregion-->
             </materialDesign:DialogHost>
             <!--#endregion-->
@@ -492,17 +500,6 @@
                         <!--//-->
                         <Button x:Name="MessageClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="MessageClearBtn_Click" Focusable="False" Foreground="Gray"
                                 Style="{StaticResource MaterialDesignFlatButton}">
-                            <!--
-                            <Button.Style>
-                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{x:Null}"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            -->
                             <materialDesign:PackIcon Kind="TrashCan" Width="30" Height="26" />
                         </Button>
                     </StackPanel>
