@@ -18,7 +18,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using Basler.Pylon;
 using MCAJawIns.Algorithm;
 using MCAJawIns.Mongo;
@@ -27,6 +26,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using SystemInfo;
 using MCAJawConfig = MCAJawIns.Mongo.Config;
 using MCAJawInfo = MCAJawIns.Mongo.Info;
 
@@ -325,8 +325,6 @@ namespace MCAJawIns.Tab
 
                         if (!MongoAccess.Connected) { return InitFlags.INIT_DATABASE_FAILED; }
 
-                        // Debug.WriteLine($"start {DateTime.Now:ss.fff}");
-
                         // 初始化其他外設且等待完成
                         Task.WhenAll(
                             InitCamera(token),
@@ -362,13 +360,6 @@ namespace MCAJawIns.Tab
                             token.ThrowIfCancellationRequested();
                         }
 
-#if false
-                        Debug.WriteLine($"{t.Result == InitFlags.INIT_DATABASE_FAILED}");
-                        Debug.WriteLine($"{(t.Result | InitFlags.INIT_TIMEOUT_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
-                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) == InitFlags.INIT_DATABASE_FAILED}");
-                        Debug.WriteLine($"{(t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED}"); 
-#endif
-
                         if ((t.Result & InitFlags.INIT_DATABASE_FAILED) != InitFlags.INIT_DATABASE_FAILED)
                         {
                             // 載入自動模式時間與檢驗數量
@@ -379,14 +370,15 @@ namespace MCAJawIns.Tab
 
                             if (info != null)
                             {
-                                string timeString = (string)info.Data[nameof(SystemInfo.TotalAutoTime)];
+                                string timeString = (string)info.Data[nameof(Env.TotalAutoTime)];
                                 string[] split = timeString.Split(':');
 
                                 TimeSpan timeSpan = new TimeSpan(int.Parse(split[0], CultureInfo.CurrentCulture),
                                     int.Parse(split[1], CultureInfo.CurrentCulture),
                                     int.Parse(split[2], CultureInfo.CurrentCulture));
 
-                                MainWindow.SystemInfoTab.SystemInfo.SetTotalAutoTime((int)timeSpan.TotalSeconds);
+                                MainWindow.SystemInfoTab.Env.SetTotalAutoTime((int)timeSpan.TotalSeconds);
+                                MainWindow.SystemInfoTab.Env.SetTotalParts((int)info.Data[nameof(Env.TotalParts)]);
                             }
                             else
                             {
@@ -433,7 +425,7 @@ namespace MCAJawIns.Tab
                             {
                                 BaslerCam cam = MainWindow.BaslerCams[i];
 
-                                #region 載入 UserSet1
+                                #region 載入 UserSet => 大、中、小
                                 if (!cam.IsGrabbing)
                                 {
                                     // 這邊要防呆
@@ -514,109 +506,6 @@ namespace MCAJawIns.Tab
                         initializing = false;
                         initialized = true;
                     }, token);
-
-
-                if (DateTime.Now > new DateTime(2022, 10, 1))
-                {
-                    throw new Exception($"delete old code now, LINE: 495");
-                }
-#if false   // 暫時保留
-                await Task.WhenAll(
-                     InitCamera(token),
-                     InitLightCtrl(token),
-                     InitIOCtrl(token),
-                     InitMongoDB(token))
-                     .ContinueWith(t =>
-                     {
-                        // 終止初始化，狀態變更為閒置
-                        if (token.IsCancellationRequested)
-                         {
-                            //StatusLabel.Text = "閒置";
-                            Status = INS_STATUS.UNKNOWN;
-                             token.ThrowIfCancellationRequested();
-                         }
-
-                        // 等待進度條滿，超過 5 秒則 Timeout
-                        if (!SpinWait.SpinUntil(() => MainWindow.MsgInformer.ProgressValue >= 100, 5 * 1000))
-                         {
-                            // 硬體初始化失敗
-                            return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
-                         }
-
-                         return MainWindow.InitFlags.OK;
-                     }, token)
-                     .ContinueWith(t =>
-                     {
-                        // 終止初始化，狀態變更為閒置
-                        if (token.IsCancellationRequested)
-                         {
-                            //StatusLabel.Text = "閒置";
-                            Status = INS_STATUS.UNKNOWN;
-                             token.ThrowIfCancellationRequested();
-                         }
-
-                        // 啟動 StreamGrabber & Triiger Mode 
-                        if (t.Result == MainWindow.InitFlags.OK)
-                         {
-                            // 相機開啟 Grabber
-                            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
-                             {
-                                 BaslerCam cam = MainWindow.BaslerCams[i];
-                #region 載入 UserSet1
-                                if (!cam.IsGrabbing)
-                                 {
-                                    // 這邊要防呆
-                                    cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
-                                     cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
-
-                                     MainWindow.Basler_StartStreamGrabber(cam);
-                                 }
-                #endregion
-                            }
-
-                             if (!MainWindow.BaslerCams.All(cam => cam.IsTriggerMode))
-                             {
-                                // 開啟 Trigger Mode 失敗
-                                return MainWindow.InitFlags.INIT_HARDWARE_FAILED;
-                             }
-
-                #region 確認相機鏡頭蓋取下
-                            foreach (BaslerCam cam in MainWindow.BaslerCams)
-                             {
-                                 OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
-                                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
-                                 Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out byte threshold);
-
-                                 mat.Dispose();
-                                 otsu.Dispose();
-
-                                 if (50 < threshold)
-                                 {
-                                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機鏡頭蓋未取下或有遮蔽物");
-                                 }
-                             }
-                #endregion
-                        }
-                         else
-                         {
-                             return t.Result;
-                         }
-
-                         return MainWindow.InitFlags.OK;
-                     })
-                     .ContinueWith(t =>
-                     {
-                         if (t.Result != MainWindow.InitFlags.OK)
-                         {
-                             MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {1}");
-                         }
-                         else
-                         {
-                             _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
-                         }
-                         initialzing = false;
-                     }, token); 
-#endif
             }
             catch (OperationCanceledException cancell)
             {
@@ -770,7 +659,7 @@ namespace MCAJawIns.Tab
                         // 取得 Mongo 版本
                         string version = MongoAccess.GetVersion();
                         // 設定 Mongo 版本
-                        MainWindow.SystemInfoTab.SystemInfo.SetMongoVersion(version);
+                        MainWindow.SystemInfoTab.Env.SetMongoVersion(version);
 
 #if InsertAuth          // 新增使用者、組態
 
@@ -1474,7 +1363,6 @@ namespace MCAJawIns.Tab
             {
                 JawInspection.LotResults[key].Count = 0;
             }
-            //JawInspection.SetLotInserted(false);
         }
 
         private void MinusButton_Click(object sender, RoutedEventArgs e)
@@ -1634,7 +1522,7 @@ namespace MCAJawIns.Tab
                         // 檢驗成功，插入資料庫
                         else
                         {
-                            MainWindow.SystemInfoTab.SystemInfo.PlusTotalParts();
+                            MainWindow.SystemInfoTab.Env.PlusTotalParts();
                             MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
                         }
 
@@ -1694,9 +1582,9 @@ namespace MCAJawIns.Tab
         /// <param name="seconds">閒置幾秒後切換狀態</param>
         private void SetIdleTimer(int seconds)
         {
-            MainWindow.SystemInfoTab.SystemInfo.IdleChanged += SystemInfo_StatusIdle;
-            MainWindow.SystemInfoTab.SystemInfo.SetIdleTimer(seconds);
-#if false
+            MainWindow.SystemInfoTab.Env.IdleChanged += SystemInfo_StatusIdle;
+            MainWindow.SystemInfoTab.Env.SetIdleTimer(seconds);
+#if deprecated
             //Debug.WriteLine($"{DateTime.Now:HH:mm:ss}");
             if (_idleTimer == null)
             {
@@ -1718,9 +1606,8 @@ namespace MCAJawIns.Tab
 #endif
         }
 
-        private void SystemInfo_StatusIdle(object sender, SystemInfo.IdleChangedEventArgs e)
+        private void SystemInfo_StatusIdle(object sender, Env.IdleChangedEventArgs e)
         {
-            Debug.WriteLine($"On Idle {e.Idle} line: 1576");
             if (e.Idle)
             {
                 Status = INS_STATUS.IDLE;
@@ -1733,8 +1620,8 @@ namespace MCAJawIns.Tab
 
         private void ResetIdleTimer()
         {
-            MainWindow.SystemInfoTab.SystemInfo.ResetIdlTimer();
-#if false
+            MainWindow.SystemInfoTab.Env.ResetIdlTimer();
+#if deprecated
             // 變更狀態為 Ready
             Status = INS_STATUS.READY;
             // 停止計時 Idle
@@ -1791,7 +1678,8 @@ namespace MCAJawIns.Tab
             player.Play(); 
 #endif
 
-            MainWindow.SystemInfoTab.SystemInfo.EndTcpListener();
+            MainWindow.SystemInfoTab.Env.EndSocketServer();
+
 
             //Task.Run(() =>
             //{

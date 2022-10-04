@@ -316,6 +316,8 @@
                             </materialDesign:PackIcon.Style>
                         </materialDesign:PackIcon>
                     </Button>
+
+                    <!--<Button Width="300" Height="300" Content="{Binding ElementName=LoginBtn.}" />-->
                     <!--#endregion-->
 
                     <!--#region PopupBox -->
@@ -377,7 +379,7 @@
             <!--#endregion-->
 
             <!--#region Dialog，考慮建立物件來 Binding -->
-            <materialDesign:DialogHost x:Name="LoginDialog" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False"
+            <materialDesign:DialogHost x:Name="LoginDialog" x:FieldModifier="public" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False" 
                     OverlayBackground="{DynamicResource ColorBlueGrayTranparent}" KeyUp="LoginDialog_KeyUp" DialogTheme="Dark" DialogOpened="DialogHost_DialogOpened"
                     DialogClosing="DialogHost_DialogClosing">
                 <!--#region DialogContent -->

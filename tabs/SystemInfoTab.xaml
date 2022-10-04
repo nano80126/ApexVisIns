@@ -30,7 +30,7 @@
         <!--#region 系統資訊-->
         <ctrl:CustomCard HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8 8 8 0" Title="系統資訊" IconKind="InformationOutline" MinWidth="1200"
                 Background="{StaticResource ColorAccentTransparent}">
-            <Grid DataContext="{Binding SystemInfo}">
+            <Grid DataContext="{Binding Env}">
                 <!--#region Resources -->
                 <Grid.Resources>
                     <Style TargetType="{x:Type TextBlock}">

@@ -179,6 +179,7 @@ namespace MCAJawIns
         #endregion
     }
 
+    [Obsolete]
     public class SystemInfo : INotifyPropertyChanged, IDisposable
     {
         #region Private
@@ -840,6 +841,12 @@ namespace MCAJawIns
         #endregion
     }
 
+
+#if false
+    /// <summary>
+    /// 網卡資訊
+    /// </summary>
+    [Obsolete]
     public class NetworkInfo : INotifyPropertyChanged
     {
         #region Private
@@ -870,7 +877,7 @@ namespace MCAJawIns
         {
             Name = name;
             _status = status;
-        } 
+        }
         #endregion
 
         #region Property Changed Event
@@ -886,6 +893,7 @@ namespace MCAJawIns
     /// <summary>
     /// 網卡資訊集合
     /// </summary>
+    [Obsolete]
     public class NetWorkInfoCollection : ObservableCollection<NetworkInfo>
     {
         public NetWorkInfoCollection() : base()
@@ -910,7 +918,8 @@ namespace MCAJawIns
                 }
             }
         }
-    }
+    } 
+#endif
 
     /// <summary>
     /// Crosshair

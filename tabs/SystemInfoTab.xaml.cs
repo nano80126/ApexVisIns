@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using SystemInfo;
 using MongoDB.Bson;
 
 namespace MCAJawIns.Tab
@@ -26,7 +27,7 @@ namespace MCAJawIns.Tab
         /// </summary>
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
-        public SystemInfo SystemInfo { get; set; } = new SystemInfo();
+        public Env Env { get; set; } = new Env();
 
         public NetWorkInfoCollection NetworkInfos { get; set; } = new NetWorkInfoCollection();
         #endregion
@@ -71,7 +72,7 @@ namespace MCAJawIns.Tab
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            SystemInfo.DisableTimer();
+            Env.DisableTimer();
         }
 
         private void GetSystemInfomation()
@@ -81,10 +82,10 @@ namespace MCAJawIns.Tab
             //SystemInfo.PID = Environment.ProcessId;
             //SystemInfo.DotNetVer = $"{Environment.Version}";
 
-            SystemInfo.PropertyChange();
+            Env.PropertyChange();
 
             // if (inited && IsLoaded) { SystemInfo.EnableTimer(); }
-            SystemInfo.EnableTimer();
+            Env.EnableTimer();
         }
 
         /// <summary>
@@ -103,6 +104,7 @@ namespace MCAJawIns.Tab
 
         #region Property Changed Event
         public event PropertyChangedEventHandler PropertyChanged;
+
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -116,9 +118,9 @@ namespace MCAJawIns.Tab
             // SystemInfo.GetAutoTimeInSeconds(); 
             //int seconds = SystemInfo.GetTotalAutoTimeTnSeconds();
             //Debug.WriteLine($"Seconds: {seconds}");
-            Debug.WriteLine($"{SystemInfo.ToBsonDocument()}");
+            Debug.WriteLine($"{Env.ToBsonDocument()}");
 
-            string jsonStr = JsonSerializer.Serialize(SystemInfo, new JsonSerializerOptions
+            string jsonStr = JsonSerializer.Serialize(Env, new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,

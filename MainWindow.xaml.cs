@@ -18,7 +18,6 @@ using System.IO;
 using MongoDB.Bson;
 using MCAJawIns.Mongo;
 using System.Collections.ObjectModel;
-
 using SystemInfo;
 
 namespace MCAJawIns
@@ -277,19 +276,12 @@ namespace MCAJawIns
             // SpinWait.SpinUntil(() => false, 1000);
             // CreateIOWindow();
 
-#if FORTEST
-            ObservableCollection<int> s = new ObservableCollection<int>();
-
-            for (int i = 0; i < 20; i++)
-            {
-                s.Add(i);
-            }
-
-            Debug.WriteLine($"{string.Join(",", s)}");
-            int removeed = s.ToList().RemoveAll(x => x % 2 == 0);
-            Debug.WriteLine($"{string.Join(",", s)} {removeed}"); 
-#endif
-
+            // using Env env = new Env();
+            // string jsonStr = System.Text.Json.JsonSerializer.Serialize(env, new JsonSerializerOptions
+            // {
+            //     WriteIndented = true
+            // });
+            // Debug.WriteLine(jsonStr);
 
             // AppTabControl.Items[]
 
@@ -300,12 +292,12 @@ namespace MCAJawIns
 
             #region 初始化
             // 設定啟動時間
-            SystemInfoTab?.SystemInfo.SetStartTime();
+            SystemInfoTab?.Env.SetStartTime();
             // 設定是否為自動模式
-            SystemInfoTab?.SystemInfo.SetMode(InitMode == InitModes.AUTO);
+            SystemInfoTab?.Env.SetMode(InitMode == InitModes.AUTO);
             // 啟動 TcpListener
-            //SystemInfoTab?.SystemInfo.SetTcpListener();
-            SystemInfoTab?.SystemInfo.SetSocketServer();
+            // SystemInfoTab?.SystemInfo.SetTcpListener();
+            SystemInfoTab?.Env.SetSocketServer();
             #endregion
         }
 
@@ -562,6 +554,14 @@ namespace MCAJawIns
         /// <param name="e"></param>
         private void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
+            if (MCAJaw.JawInspection.LotNumberChecked && !MCAJaw.JawInspection.LotInserted)
+            {
+                if (MessageBox.Show("該批資料尚未儲存，是否確定結束程式？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             // 關閉所有相機
             if (BaslerCams != null)
             {
@@ -604,7 +604,6 @@ namespace MCAJawIns
                 }
             }
 
-
             // 與資料庫斷線
             if (MongoAccess != null && MongoAccess.Connected)
             {
@@ -614,7 +613,7 @@ namespace MCAJawIns
                     MCAJawInfo info = new MCAJawInfo()
                     {
                         Type = MCAJawInfo.InfoTypes.System,
-                        Data = SystemInfoTab.SystemInfo.ToBsonDocument(),
+                        Data = SystemInfoTab.Env.ToBsonDocument(),
                         UpdateTime = DateTime.Now,
                         InsertTime = DateTime.Now,
                     };
