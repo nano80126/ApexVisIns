@@ -114,7 +114,7 @@
                 <!--//-->
                 <Separator Margin="12 4" />
 
-                <Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>
+                <!--<Button Content="測試" Click="Button_Click" Style="{StaticResource MaterialDesignToolButton}" Visibility="Visible"/>-->
 
                 <!--
                 <Button Margin="0 0 12 0" VerticalAlignment="Center" Content="單張擷取" Foreground="{StaticResource ColorTeal}" 
@@ -318,7 +318,7 @@
                                     <!--  -->
                                     <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
                                     <!--  -->
-                                    <TextBlock Text="{x:Null}" />
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding SystemInfoTab.Env.SystemTime, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}" />
                                 </DockPanel>
                                 <!-- Seperator -->
                                 <Separator DockPanel.Dock="Top" Margin="0 8" />

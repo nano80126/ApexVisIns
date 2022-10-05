@@ -661,14 +661,14 @@ namespace MCAJawIns.Tab
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.Env.SetMongoVersion(version);
 
-#if InsertAuth          // 新增使用者、組態
+#if insertAuth          // 新增使用者、組態
 
                         AuthLevel[] authLevels = new AuthLevel[] {
                             new AuthLevel() { Password = "intai", Level = 1 },
                             new AuthLevel() { Password = "qc", Level = 2 },
                             new AuthLevel() { Password = "eng", Level = 5 },
                         };
-                        MongoAccess.InsertMany("Auth", authLevels);
+                        MongoAccess.InsertMany(nameof(JawCollection.Auth), authLevels);
 #endif
 
                         // 載入使用者權限
@@ -1481,11 +1481,11 @@ namespace MCAJawIns.Tab
             #endregion
 #else
             #region Production
-            (sender as Button).IsEnabled = false;
-            Task.Run(async () =>
-            {
-                for (int i = 0; i < 150; i++)
-                {
+            //(sender as Button).IsEnabled = false;
+            //Task.Run(async () =>
+            //{
+            //    for (int i = 0; i < 150; i++)
+            //    {
                     if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
                     DateTime t1 = DateTime.Now;
 
@@ -1497,7 +1497,7 @@ namespace MCAJawIns.Tab
                     JawResultGroup.Collection3.Clear();
 
                     // bool b = await
-                    await Task.Run(() =>
+                    Task.Run(() =>
                     {
                         JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
                         // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
@@ -1557,15 +1557,15 @@ namespace MCAJawIns.Tab
                         return data.OK;
                     });
 
-                    SpinWait.SpinUntil(() => false, 3000);
-                }
-            }).ContinueWith(t =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    (sender as Button).IsEnabled = true;
-                });
-            });
+                    //SpinWait.SpinUntil(() => false, 3000);
+                //}
+            //}).ContinueWith(t =>
+            //{
+            //    Dispatcher.Invoke(() =>
+            //    {
+            //        (sender as Button).IsEnabled = true;
+            //    });
+            //});
             #endregion
 #endif
         }

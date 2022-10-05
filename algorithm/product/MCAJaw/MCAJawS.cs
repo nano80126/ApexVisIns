@@ -439,9 +439,9 @@ namespace MCAJawIns.Algorithm
                     //
                     double avg = cam2results[key].Min();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    spec = specList.First(s => s.Key == key);
                     JawSpec jawSpec = new(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
-                    if (group != JawSpecGroups.None)
+                    if (group == JawSpecGroups.None)
                     {
                         // 若非 Group 直接新增進 Collection
                         MCAJaw.JawResultGroup.Collection2.Add(jawSpec);
@@ -456,7 +456,7 @@ namespace MCAJawIns.Algorithm
                     if (!isNG)
                     {
                         // 判斷是否 OK
-                        bool ok = MCAJaw.JawResultGroup.Collection2[^1].OK;
+                        bool ok = jawSpec.OK;
                         // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
