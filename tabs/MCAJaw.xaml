@@ -10,6 +10,7 @@
             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
             xmlns:ctProperty="clr-namespace:MCAJawIns.CustomProperty" 
             xmlns:pd="clr-namespace:MCAJawIns.Product"
+            xmlns:Sysinfo="clr-namespace:SystemInfo;assembly=SystemInfo"
 
             d:DataContext="{d:DesignInstance Type=local:MCAJaw}" 
             mc:Ignorable="d"
@@ -221,7 +222,7 @@
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <Canvas ToolTip="Camera 1">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
-                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1"  Style="{StaticResource CamStatus}"
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
@@ -235,7 +236,7 @@
                         <!--//-->
                         <Canvas ToolTip="Camera 3">
                             <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="0" Width="24" Height="24" />
-                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1"  Style="{StaticResource CamStatus}"
+                            <materialDesign:PackIcon Canvas.Right="-1" Canvas.Bottom="-1" Style="{StaticResource CamStatus}"
                                     ctProperty:StatusHelper.Connected="{Binding [1].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
                                     ctProperty:StatusHelper.IsGrabbing="{Binding [1].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}" />
                         </Canvas>
@@ -243,30 +244,15 @@
                 </Border>
                 <!--#endregion-->
 
-                <!--#region NewRegion -->
-                <!--<Border FlowDirection="LeftToRight" >
-                    <StackPanel Orientation="Horizontal">
-                        <ItemsControl ItemsSource="{StaticResource BaslerCams}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Canvas ToolTip="Camera 3">
-                                        <materialDesign:PackIcon Kind="VideoOutline" Canvas.Left="2" Canvas.Top="1" Width="26" Height="24"/>
-                                        <materialDesign:PackIcon Style="{StaticResource CamStatus}"
-                                                ctProperty:StatusHelper.Connected="{Binding [0].IsOpen, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"
-                                                ctProperty:StatusHelper.IsGrabbing="{Binding [0].IsGrabbing, Source={StaticResource BaslerCams}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=False}"/>
-                                    </Canvas>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>-->
+                <!--#region Time -->
+                <!--<TextBlock VerticalAlignment="Center" FontSize="{StaticResource Header-xl}" FlowDirection="LeftToRight"
+                        DataContext="{Binding SystemInfoTab.Env, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                        d:DataContext="{d:DesignInstance Type={x:Type Sysinfo:Env}}">
+                    <Run Text="{Binding SystemDate, Mode=OneWay}" />
+                    <Run Text="{Binding SystemTime, Mode=OneWay}" />
+                </TextBlock>-->
                 <!--#endregion-->
+
             </ToolBar>
         </ToolBarTray>
         <!--#endregion-->
@@ -316,9 +302,16 @@
                                 <DockPanel x:Name="Header" DockPanel.Dock="Top">
                                     <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom" />
                                     <!--  -->
-                                    <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="18" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
+                                    <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="{StaticResource Title-sm}" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
                                     <!--  -->
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding SystemInfoTab.Env.SystemTime, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}" />
+                                    <!--<TextBlock Text="{x:Null}" />-->
+                                    <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="{StaticResource Header-xl}"
+                                            FontWeight="Normal"
+                                            DataContext="{Binding SystemInfoTab.Env, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
+                                            d:DataContext="{d:DesignInstance Type={x:Type Sysinfo:Env}}">
+                                        <Run Text="{Binding SystemDate, Mode=OneWay, StringFormat={}{0} }" />
+                                        <Run Text="{Binding SystemTime, Mode=OneWay}" />
+                                    </TextBlock>
                                 </DockPanel>
                                 <!-- Seperator -->
                                 <Separator DockPanel.Dock="Top" Margin="0 8" />
@@ -453,12 +446,12 @@
                                             <!--#region CommandParameter -->
                                             <Button.CommandParameter>
                                                 <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
-                                                    <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 12" FontSize="{StaticResource Header}"
-                                                            TextWrapping="WrapWithOverflow">
-                                                        <materialDesign:PackIcon Height="24" Width="24" Margin="0 0 8 0" Kind="AlertCircleOutline"
+                                                    <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 0 0 12">
+                                                        <materialDesign:PackIcon VerticalAlignment="Center" Height="28" Width="28" Margin="0 0 8 0" Kind="AlertCircleOutline"
                                                                 Foreground="{StaticResource ColorWarning}" />
-                                                        <Run Text="該批資料尚未儲存，是否確定歸零數量？" />
-                                                    </TextBlock>
+                                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="{StaticResource Header}" Text="該批資料尚未儲存，是否確定歸零數量？" 
+                                                                   TextWrapping="WrapWithOverflow" Width="260" />
+                                                    </WrapPanel>
 
                                                     <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
                                                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
@@ -908,7 +901,8 @@
                                         </StackPanel>
                                     </Button>
 
-                                    <!--<Button x:Name="TriggerIns1" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                                    <!--
+                                    <Button x:Name="TriggerIns1" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                                             Height="32" materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}"
                                             Click="TriggerInspection_Click">
                                         <Button.IsEnabled>
@@ -930,19 +924,48 @@
                                             <TextBlock VerticalAlignment="Center" Padding="0 2 0 0" Text="開始檢測" FontSize="{StaticResource BasicFont-lg}" FontWeight="SemiBold" />
                                             <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="FootPrint" />
                                         </StackPanel>
-                                    </Button>-->
+                                    </Button>
+                                    -->
 
                                     <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Style="{StaticResource MainPanelButton}"
                                             IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
                                             BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
+                                        <!--#region CommandParameter -->
+                                        <Button.CommandParameter>
+                                            <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
+                                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 0 12">
+                                                    <materialDesign:PackIcon VerticalAlignment="Center" Height="28" Width="28" Margin="0 0 8 0" Kind="InfoCircleOutline"
+                                                            Foreground="{StaticResource ColorInfo}" />
+                                                    <TextBlock VerticalAlignment="Center" FontSize="{StaticResource Header}" TextWrapping="WrapWithOverflow" Text="是否確認寫入資料庫？" />
+                                                </StackPanel>
+
+                                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
+                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                        BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                    <Button.CommandParameter>
+                                                        <sys:Boolean>False</sys:Boolean>
+                                                    </Button.CommandParameter>
+                                                </Button>
+
+                                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定"
+                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                        BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                    <Button.CommandParameter>
+                                                        <sys:Boolean>True</sys:Boolean>
+                                                    </Button.CommandParameter>
+                                                </Button>
+                                            </DockPanel>
+                                        </Button.CommandParameter>
+                                        <!--#endregion-->
+
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="結批" />
                                             <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
                                         </StackPanel>
                                     </Button>
 
-                                    
-                                    <!--<Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="32"
+                                    <!--
+                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="32"
                                             materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}"
                                             IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
                                             BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
@@ -950,13 +973,14 @@
                                             <TextBlock Padding="0 2 0 0" Text="結批" FontSize="{StaticResource BasicFont-lg}" FontWeight="SemiBold" />
                                             <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
                                         </StackPanel>
-                                    </Button>-->
-                                    
+                                    </Button>
+                                    -->
+
                                     <!--#endregion-->
                                 </Grid>
                             </DockPanel>
                         </materialDesign:Card>
-                    </Border>                              
+                    </Border>
                     <!--#endregion-->
 
                     <!--#region Camera 1 -->
@@ -988,7 +1012,7 @@
                                             Source="{Binding ImageSource1, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                 </Viewbox>
                             </Border>
-                            
+
                             <!--量測結果列表 1-->
                             <ctrl:InsResultsView Grid.Row="1" AutoCreateHeader="True" Margin="0 4 0 0" VerticalAlignment="Top"
                                     ScrollViewerStyle="{StaticResource ScrollViewerPrimary}" Focusable="False"
@@ -1042,7 +1066,7 @@
                             FontSize="{StaticResource Header}" FontWeight="SemiBold" materialDesign:ColorZoneAssist.Mode="Custom"
                             materialDesign:ColorZoneAssist.Background="{StaticResource ColorDeepPurple}" materialDesign:ColorZoneAssist.Foreground="WhiteSmoke"
                             Background="Transparent">
-                            <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
+                        <!--<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">-->
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0 -4 0 0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
@@ -1091,14 +1115,13 @@
                     </GroupBox>
                     <!--#endregion-->
 
-                    <!--<Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorErrorTransparent}"/>
-                    <Border Grid.Row="0" Grid.Column="2" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorSuccessTransparent}"/>
-                    <Border Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorPrimaryTransparent}"/>-->
-
+                    <!--
+                        <Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorErrorTransparent}"/>
+                        <Border Grid.Row="0" Grid.Column="2" BorderThickness="1 0 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorSuccessTransparent}"/>
+                        <Border Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="{StaticResource ColorGrayTransparent}" Background="{StaticResource ColorPrimaryTransparent}"/>
+                    -->
                 </Grid>
             </Border>
-
-
         </TabItem>
         <!--#endregion-->
 

@@ -1362,12 +1362,6 @@ namespace MCAJawIns.Tab
                         JawInspection.LotResults[key].Count = 0;
                     }
                 }
-#if false
-                //if (MessageBox.Show("該批資料尚未儲存，是否確定歸零數量？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                //{
-                //    return;
-                //}  
-#endif
             }
             else
             {
@@ -1570,20 +1564,25 @@ namespace MCAJawIns.Tab
 #endif
         }
 
-        private void FinishLot_Click(object sender, RoutedEventArgs e)
+        private async void FinishLot_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+            if ((bool)await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog"))
             {
+                // if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                // {
                 // 給予新 ID
                 JawInspection.ObjID = new ObjectId();
                 // 刷新時間
                 JawInspection.DateTime = DateTime.Now;
                 // 插入資料庫
-                //MongoAccess.InsertOne("Lots", JawInspection);
+                // MongoAccess.InsertOne("Lots", JawInspection);
                 // Upsert 資料庫
-                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Eq("LotNumber", JawInspection.LotNumber);
-                UpdateDefinition<JawInspection> update = Builders<JawInspection>.Update.Set("DateTime", JawInspection.DateTime).Set("LotResults", JawInspection.LotResults);
-                MongoAccess.UpsertOne("Lots", filter, update);
+                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Eq(nameof(JawInspection.LotNumber), JawInspection.LotNumber);
+                UpdateDefinition<JawInspection> update = Builders<JawInspection>.Update
+                    .Set(nameof(JawInspection.DateTime), JawInspection.DateTime)
+                    .Set(nameof(JawInspection.LotResults), JawInspection.LotResults);
+
+                MongoAccess.UpsertOne(nameof(JawCollection.Lots), filter, update);
                 // 標記這批已插入資料庫
                 JawInspection.SetLotInserted(true);
             }

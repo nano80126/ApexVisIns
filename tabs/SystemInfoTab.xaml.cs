@@ -72,7 +72,7 @@ namespace MCAJawIns.Tab
 
         private void StackPanel_Unloaded(object sender, RoutedEventArgs e)
         {
-            Env.DisableTimer();
+            //Env.DisableTimer();
         }
 
         private void GetSystemInfomation()

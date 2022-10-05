@@ -403,11 +403,11 @@
                                 <!--#region CommandParameter -->
                                 <Button.CommandParameter>
                                     <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
-                                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 12" FontSize="{StaticResource Header}"
-                                                TextWrapping="WrapWithOverflow">
-                                            <materialDesign:PackIcon Width="24" Height="24" Margin="0 0 8 0" Kind="AlertCircleOutline" Foreground="{StaticResource ColorWarning}" />
-                                            <Run Text="該批資料尚未結批，是否確定結束程式？" />
-                                        </TextBlock>
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 0 12">
+                                            <materialDesign:PackIcon VerticalAlignment="Center" Width="28" Height="28" Margin="0 0 8 0" Kind="AlertCircleOutline"
+                                                    Foreground="{StaticResource ColorWarning}" />
+                                            <TextBlock FontSize="{StaticResource Header}" Text="該批資料尚未結批，是否確定結束程式？" TextWrapping="WrapWithOverflow" Width="260" />
+                                        </StackPanel>
 
                                         <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
                                                 Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"

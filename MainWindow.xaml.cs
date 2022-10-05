@@ -296,6 +296,8 @@ namespace MCAJawIns
             // 啟動 TcpListener
             // SystemInfoTab?.SystemInfo.SetTcpListener();
             SystemInfoTab?.Env.SetSocketServer();
+            // 啟動 Timer
+            SystemInfoTab?.Env.EnableTimer();
             #endregion
         }
 
@@ -489,10 +491,8 @@ namespace MCAJawIns
             LoginPasswordHint.Text = string.Empty;
             LoginPasswordHint.Visibility = Visibility.Hidden;
 
-            //Debug.WriteLine(eventArgs.);
-
-            //Debug.WriteLine(eventArgs.Session.Close());
-            Debug.WriteLine(eventArgs.Parameter);
+            // Debug.WriteLine(eventArgs.Session.Close());
+            // Debug.WriteLine(eventArgs.Parameter);
         }
 
         /// <summary>
