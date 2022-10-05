@@ -502,20 +502,19 @@ namespace MCAJawIns
         /// <param name="e"></param>
         private void UserLogin_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            //if (DebugMode)
-            //{
-            //    // oginFlag = true;
-            //    AuthLevel = 9;
-            //    e.Handled = true;
-            //}
-            //else
-            //{
-            //    // 若已登入，不做任何反應
-            //    if (LoginFlag)
-            //    {
-            //        e.Handled = true;
-            //    }
-            //}
+            if (DebugMode)
+            {
+                AuthLevel = 9;
+                e.Handled = true;
+            }
+            else
+            {
+                // 若已登入，不做任何反應
+                if (LoginFlag)
+                {
+                    e.Handled = true;
+                }
+            }
         }
 
         private void LoginDialog_KeyUp(object sender, KeyEventArgs e)
@@ -547,81 +546,89 @@ namespace MCAJawIns
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppFullClose_Click(object sender, RoutedEventArgs e)
+        private async void AppFullClose_Click(object sender, RoutedEventArgs e)
         {
+            bool prompt = true;
+
             if (MCAJaw.JawInspection.LotNumberChecked && !MCAJaw.JawInspection.LotInserted)
             {
-                if (MessageBox.Show("該批資料尚未儲存，是否確定結束程式？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                {
-                    return;
-                }
+                prompt = DebugMode || (bool)await DialogHost.Show((sender as Button).CommandParameter, "MainDialog");
             }
 
-            // 關閉所有相機
-            if (BaslerCams != null)
+            // if (MessageBox.Show("該批資料尚未儲存，是否確定結束程式？", "警告", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+            // {
+            //      return;
+            // }
+
+            if (prompt)
             {
-                foreach (BaslerCam cam in BaslerCams)
+                // 關閉所有相機 (自動模式)
+                if (BaslerCams != null)
                 {
-                    if (cam.IsOpen)
+                    foreach (BaslerCam cam in BaslerCams)
                     {
-                        // 若 Grabber 開啟中，關閉 Grabber
-                        if (cam.IsGrabbing)
+                        if (cam.IsOpen)
                         {
-                            Basler_StopStreamGrabber(cam);
+                            // 若 Grabber 開啟中，關閉 Grabber
+                            if (cam.IsGrabbing)
+                            {
+                                Basler_StopStreamGrabber(cam);
+                            }
+                            cam.Close();
                         }
-                        cam.Close();
                     }
                 }
-            }
 
-            if (BaslerCam != null)
-            {
-                if (BaslerCam.IsOpen)
+                // 關閉相機 (編輯模式)
+                if (BaslerCam != null)
                 {
-                    if (BaslerCam.IsGrabbing)
+                    if (BaslerCam.IsOpen)
                     {
-                        Basler_StopStreamGrabber(BaslerCam);
-                    }
-                    BaslerCam.Close();
-                }
-            }
-
-            // 重製 & 關閉所有光源
-            if (LightCtrls != null)
-            {
-                foreach (LightSerial ctrl in LightCtrls)
-                {
-                    if (ctrl.IsComOpen)
-                    {
-                        _ = ctrl.TryResetAllChannel(out _);
-                        ctrl.ComClose();
+                        if (BaslerCam.IsGrabbing)
+                        {
+                            Basler_StopStreamGrabber(BaslerCam);
+                        }
+                        BaslerCam.Close();
                     }
                 }
-            }
 
-            // 與資料庫斷線
-            if (MongoAccess != null && MongoAccess.Connected)
-            {
-                // 若為自動模式，紀錄自動模式運行時間和檢驗數量
-                if (InitMode == InitModes.AUTO)
+                // 重製 & 關閉所有光源
+                if (LightCtrls != null)
                 {
-                    MCAJawInfo info = new MCAJawInfo()
+                    foreach (LightSerial ctrl in LightCtrls)
                     {
-                        Type = MCAJawInfo.InfoTypes.System,
-                        Data = SystemInfoTab.Env.ToBsonDocument(),
-                        UpdateTime = DateTime.Now,
-                        InsertTime = DateTime.Now,
-                    };
-                    MongoAccess.InsertOne(nameof(JawCollection.Info), info);
+                        if (ctrl.IsComOpen)
+                        {
+                            _ = ctrl.TryResetAllChannel(out _);
+                            ctrl.ComClose();
+                        }
+                    }
                 }
 
-                MongoAccess.Disconnect();
+                // 與資料庫斷線
+                if (MongoAccess != null && MongoAccess.Connected)
+                {
+                    // 若為自動模式，紀錄自動模式運行時間和檢驗數量
+                    if (InitMode == InitModes.AUTO)
+                    {
+                        MCAJawInfo info = new MCAJawInfo()
+                        {
+                            Type = MCAJawInfo.InfoTypes.System,
+                            Data = SystemInfoTab.Env.ToBsonDocument(),
+                            UpdateTime = DateTime.Now,
+                            InsertTime = DateTime.Now,
+                        };
+                        MongoAccess.InsertOne(nameof(JawCollection.Info), info);
+                    }
+
+                    MongoAccess.Disconnect();
+                }
+
+                _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
+                _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
+
+                Close();
             }
-
-            _ = SpinWait.SpinUntil(() => BaslerCams == null || BaslerCams.All(cam => !cam.IsConnected), 3000);
-            _ = SpinWait.SpinUntil(() => LightCtrls == null || LightCtrls.All(ctrl => !ctrl.IsComOpen), 3000);
-
-            Close();
         }
     }
 

@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:MCAJawIns" 
         mc:Ignorable="d"
         
@@ -53,6 +54,7 @@
         <!--#endregion-->
     </Window.Resources>
     <!--#endregion-->
+    
     <!--#region InputBindings -->
     <Window.InputBindings>
         <!--Appbar-->
@@ -93,6 +95,7 @@
         <KeyBinding Modifiers="Ctrl" Key="G" Command="{StaticResource GlobalTest}" />
     </Window.InputBindings>
     <!--#endregion-->
+    
     <!--#region CommandBindings -->
     <Window.CommandBindings>
         <!--Appbar-->
@@ -179,7 +182,7 @@
                 </StackPanel>
             </Grid>
             <!--#endregion-->
-            <!--//-->
+
             <!--#region TabControl -->
             <TabControl x:Name="AppTabControl" Grid.Row="1" VerticalAlignment="Stretch" Style="{StaticResource MaterialDesignNavigatilRailTabControl}"
                     materialDesign:ColorZoneAssist.Mode="Custom" materialDesign:ColorZoneAssist.Background="{StaticResource ColorBrownTransparent}"
@@ -397,12 +400,42 @@
                             </Button>
 
                             <Button Click="AppFullClose_Click">
+                                <!--#region CommandParameter -->
+                                <Button.CommandParameter>
+                                    <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
+                                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 0 0 12" FontSize="{StaticResource Header}"
+                                                TextWrapping="WrapWithOverflow">
+                                            <materialDesign:PackIcon Width="24" Height="24" Margin="0 0 8 0" Kind="AlertCircleOutline" Foreground="{StaticResource ColorWarning}" />
+                                            <Run Text="該批資料尚未結批，是否確定結束程式？" />
+                                        </TextBlock>
+
+                                        <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
+                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                            <Button.CommandParameter>
+                                                <sys:Boolean>False</sys:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+
+                                        <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定"
+                                                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
+                                                BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                            <Button.CommandParameter>
+                                                <sys:Boolean>True</sys:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+                                    </DockPanel>
+                                </Button.CommandParameter>
+                                <!--#endregion-->
+
+                                <!--#region Content -->
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <materialDesign:PackIcon Width="24" Height="18" Kind="Shutdown" VerticalAlignment="Center" />
                                         <TextBlock MinWidth="80" Margin="8 0 0 0" Text="關閉程式" VerticalAlignment="Center" TextAlignment="Right" />
                                     </StackPanel>
                                 </Button.Content>
+                                <!--#endregion-->
                             </Button>
                         </StackPanel>
                     </materialDesign:PopupBox>
@@ -414,12 +447,7 @@
             <!--#region Dialog，考慮建立物件來 Binding -->
             <materialDesign:DialogHost Grid.Row="1" x:Name="LoginDialog" Identifier="MainDialog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CloseOnClickAway="False"
                     OverlayBackground="{DynamicResource ColorBlueGrayTranparent}" KeyUp="LoginDialog_KeyUp" DialogTheme="Dark" DialogOpened="DialogHost_DialogOpened"
-                    DialogClosing="DialogHost_DialogClosing">
-                <!--#region DialogContent -->
-                <!--<materialDesign:DialogHost.DialogContent>
-                </materialDesign:DialogHost.DialogContent>-->
-                <!--#endregion-->
-            </materialDesign:DialogHost>
+                    DialogClosing="DialogHost_DialogClosing" />
             <!--#endregion-->
 
             <!--#region FooterBar -->
@@ -587,6 +615,7 @@
                 <!--#endregion-->
 
                 <!--內部資料，Binding 進 MsgInformer-->
+                <!--#region Progress Bar -->
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <StackPanel.Style>
                         <Style TargetType="StackPanel">
@@ -615,6 +644,7 @@
                             Text="{Binding Value, ElementName=MainProgress, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue=0, StringFormat={}{0:0} %}" />
                     <!--#endregion-->
                 </StackPanel>
+                <!--#endregion-->
             </DockPanel>
             <!--#endregion-->
         </Grid>

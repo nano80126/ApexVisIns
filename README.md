@@ -126,7 +126,7 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] Systeminfo 資訊取得改為內置 
 	* 新增 TCP server
 
-* [ ] 盡量在命名空間下宣告 enum
+* [x] 盡量在命名空間下宣告 enum
 
 * [x] Set MainWindow value when each Tab/Panel initializing
 

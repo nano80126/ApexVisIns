@@ -460,7 +460,6 @@
                                                         <Run Text="該批資料尚未儲存，是否確定歸零數量？" />
                                                     </TextBlock>
 
-
                                                     <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
                                                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
                                                             BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">

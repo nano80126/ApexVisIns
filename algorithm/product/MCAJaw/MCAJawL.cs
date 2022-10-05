@@ -682,8 +682,8 @@ namespace MCAJawIns.Algorithm
                     double c_005 = (Math.Abs((subContourPts[0].Y + subContourPts[1].Y) / 2 - (subContourPts[2].Y + subContourPts[3].Y) / 2) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005);
                     }
                 }
                 else if (results == null)
@@ -699,8 +699,8 @@ namespace MCAJawIns.Algorithm
                     double c_005R = (Math.Abs(subContourPts[0].Y - subContourPts[1].Y) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005R);
                     }
                 }
                 else if (results == null)
@@ -716,8 +716,8 @@ namespace MCAJawIns.Algorithm
                     double c_005L = (Math.Abs(subContourPts[2].Y - subContourPts[3].Y) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(c_005L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(c_005L);
                     }
                 }
                 else if (results == null)
@@ -728,46 +728,41 @@ namespace MCAJawIns.Algorithm
 
                 #endregion
 
-                #region 計算 013
-                spec = specList?[5];    // 013R 
+                #region 計算 012
+                spec = specList?[5];    // 012R 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_012R);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_013R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_012R);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
-                    Debug.WriteLine($"013R: {d_013R:F5}");
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_012R);
+                    Debug.WriteLine($"{nameof(d_012R)}: {d_012R:F5}");
                 }
 
-                spec = specList?[6];    // 013L 
+                spec = specList?[6];    // 012L 
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_012L);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_013L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_012L);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
-                    Debug.WriteLine($"013L: {d_013L:F5}");
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_012L);
+                    Debug.WriteLine($"{nameof(d_012L)}: {d_012L:F5}");
                 }
                 #endregion
 
-                #region 取得影像上方角點 (計算 024 用)
-                /// 
-                /// 先過驗證
-                /// 在中、大 JAW 重寫啟用、關閉邏輯
-                ///
-
+                #region 取得影像上方角點 (計算  用)
                 // 取得角點 左 (實際為右)
                 GetCornerPoint(src, baseL, LX, JawPos.Left, out cornerPts[0], out cornerPts[1]);
                 // 取得角點 右 (實際為左)
@@ -775,6 +770,7 @@ namespace MCAJawIns.Algorithm
                 // 取得亞像素點
                 Point2f[] subCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
 #if DEBUG || debug
+                // 畫角點
                 foreach (Point2f item in subCornerPts)
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
@@ -783,7 +779,7 @@ namespace MCAJawIns.Algorithm
 #endif
                 #endregion
 
-                #region 計算 024
+                #region 計算 024 (0405 ~ 0435)
                 spec = specList?[7];    // 024R // 輪廓角點 - 角點 (影像上方)
                 if (spec?.Enable == true && results != null)
                 {
@@ -793,8 +789,8 @@ namespace MCAJawIns.Algorithm
 
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_024R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_024R);
                     }
                 }
                 else if (results == null)
@@ -803,7 +799,7 @@ namespace MCAJawIns.Algorithm
                     double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
                     double d_024R = Math.Abs(d_024Rb - d_024Rt) * Cam1Unit;
 
-                    Debug.WriteLine($"024R: {d_024R:F5}");
+                    Debug.WriteLine($"{nameof(d_024R)}: {d_024R:F5}");
                 }
 
                 spec = specList?[8];    // 024L // 輪廓角點 - 角點
@@ -815,8 +811,8 @@ namespace MCAJawIns.Algorithm
 
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_024L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_024L);
                     }
                 }
                 else if (results == null)
@@ -825,39 +821,47 @@ namespace MCAJawIns.Algorithm
                     double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
                     double d_024L = Math.Abs(d_024Lb - d_024Lt) * Cam1Unit;
 
-                    Debug.WriteLine($"024L: {d_024L:F5}");
+                    Debug.WriteLine($"{nameof(d_024L)}: {d_024L:F5}");
                 }
                 #endregion  
 
-                #region 計算 0.008 左 (實際上是右)
+                #region 計算 0.013 左牙齒厚 (實際上是右)
                 spec = specList?[3];
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal008DistanceValue(src, baseL, LX, out double LX008, out double d_008R, spec.Correction + spec.CorrectionSecret);
+                    Cal008DistanceValue(src, baseL, LX, out double LX013, out double d_013R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_008R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_013R);
                     }
+                }
+                else if (results == null)
+                {
+                    Cal008DistanceValue(src, baseL, LX, out double LX013, out double d_013R);
+                    Debug.WriteLine($"{nameof(d_013R)}: {d_013R:F5}, {nameof(LX013)}: {LX013}");
                 }
                 #endregion
 
-                #region 計算 0.008 右 (實際上是左)
+                #region 計算 0.013 右牙齒厚 (實際上是左)
                 spec = specList?[4];
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal008DistanceValue(src, baseR, RX, out double RX008, out double d_008L, spec.Correction + spec.CorrectionSecret);
+                    Cal008DistanceValue(src, baseR, RX, out double RX013, out double d_013L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_008L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_013L);
                     }
+                }
+                else if (results == null)
+                {
+                    Cal008DistanceValue(src, baseR, RX, out double RX013, out double d_013L);
+                    Debug.WriteLine($"{nameof(d_013L)}: {d_013L:F5}, {nameof(RX013)}: {RX013}");
                 }
                 #endregion
 
-
-
-#if false
+#if Deprecated  // 上線前移除
                 #region 計算 0.013 左 (實際上是右) (待廢)
                 spec = specList?[5];
                 Cal013DistanceValue(src, baseL, JawPos.Left, LX, out double LtopY013, out double LbotY013, out double d_013R, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
@@ -974,6 +978,11 @@ namespace MCAJawIns.Algorithm
                         results[spec.Item].Add(d_088R);
                     }
                 }
+                else if (results == null)
+                {
+                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
+                    Debug.WriteLine($"{nameof(d_088R)}: {d_088R:F5}");
+                }
                 #endregion
 
                 #region 計算 0.088-L
@@ -989,6 +998,11 @@ namespace MCAJawIns.Algorithm
                         results[spec.Item].Add(d_088L);
                     }
                 }
+                else if (results == null)
+                {
+                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
+                    Debug.WriteLine($"{nameof(d_088L)}: {d_088L:F5}");
+                }
                 #endregion
 
                 #region 計算 0.176
@@ -1002,7 +1016,7 @@ namespace MCAJawIns.Algorithm
                     }
                 }
                 #endregion
-                // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
                 spec = null;
             }
             catch (Exception ex)

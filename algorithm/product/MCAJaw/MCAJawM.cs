@@ -762,7 +762,7 @@ namespace MCAJawIns.Algorithm
                 }
                 #endregion
 
-                #region 取得影像上方角點 (計算 024 用)
+                #region 取得影像上方角點 (計算 0330 ~ 0315 用)
                 // 取得角點 左 (實際為右)
                 GetCornerPoint(src, baseL, LX, JawPos.Left, out cornerPts[0], out cornerPts[1]);
                 // 取得角點 右 (實際為左)
@@ -779,7 +779,7 @@ namespace MCAJawIns.Algorithm
 #endif
                 #endregion
 
-                #region 計算 0330 ~ 0315
+                #region 計算 024 (0330 ~ 0315)
                 spec = specList?[7];    // 024R // 輪廓角點 - 角點 (影像上方)
                 if (spec?.Enable == true && results != null)
                 {
@@ -829,17 +829,17 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[3];
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal014ThinknessValue(src, baseL, LX, out double LX008, out double d_008R, spec.Correction + spec.CorrectionSecret);
+                    Cal014ThinknessValue(src, baseL, LX, out double LX014, out double d_014R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
-                        results[spec.Key].Add(d_008R);
+                        results[spec.Key].Add(d_014R);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal014ThinknessValue(src, baseL, LX, out double LX014, out double d_008R);
-                    Debug.WriteLine($"{nameof(d_008R)}: {d_008R:F5}, {nameof(LX014)}: {LX014}");
+                    Cal014ThinknessValue(src, baseL, LX, out double LX014, out double d_014R);
+                    Debug.WriteLine($"{nameof(d_014R)}: {d_014R:F5}, {nameof(LX014)}: {LX014}");
                 }
                 #endregion
 
@@ -847,17 +847,17 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[4];
                 if (spec?.Enable == true && results != null)
                 {
-                    Cal014ThinknessValue(src, baseR, RX, out double RX008, out double d_008L, spec.Correction + spec.CorrectionSecret);
+                    Cal014ThinknessValue(src, baseR, RX, out double RX014, out double d_014L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
-                        results[spec.Key].Add(d_008L);
+                        results[spec.Key].Add(d_014L);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal014ThinknessValue(src, baseR, RX, out double RX014, out double d_008L);
-                    Debug.WriteLine($"{nameof(d_008L)}: {d_008L:F5}, {nameof(RX014)}: {RX014}");
+                    Cal014ThinknessValue(src, baseR, RX, out double RX014, out double d_014L);
+                    Debug.WriteLine($"{nameof(d_014L)}: {d_014L:F5}, {nameof(RX014)}: {RX014}");
                 }
                 #endregion
 
@@ -941,8 +941,8 @@ namespace MCAJawIns.Algorithm
             // 3. 2 x 0.088 4. 0.176
 
             JawSpecSetting spec;
-            double d_088R = 0;
-            double d_088L = 0;
+            double d_1195R = 0;
+            double d_1195L = 0;
 
             try
             {
@@ -965,58 +965,58 @@ namespace MCAJawIns.Algorithm
                 }
                 #endregion
 
-                #region 計算 0.088-R
+                #region 計算 0.1195-R
                 spec = specList?[0];    // 
                 // Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
                 // 088 右 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction + spec.CorrectionSecret);
+                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_1195R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
-                        results[spec.Key].Add(d_088R);
+                        results[spec.Key].Add(d_1195R);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
-                    Debug.WriteLine($"{nameof(d_088R)}: {d_088R:F5}");
+                    Cal088DistanceValue(src, JigPosY, RX, JawPos.Right, out d_1195R);
+                    Debug.WriteLine($"{nameof(d_1195R)}: {d_1195R:F5}");
                 }
                 #endregion
 
-                #region 計算 0.088-L
+                #region 計算 0.1195-L
                 spec = specList?[1];    // 
                 // Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
                 // 088 左 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction + spec.CorrectionSecret);
+                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_1195L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
-                        results[spec.Key].Add(d_088L);
+                        results[spec.Key].Add(d_1195L);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
-                    Debug.WriteLine($"{nameof(d_088L)}: {d_088L:F5}");
+                    Cal088DistanceValue(src, JigPosY, LX, JawPos.Left, out d_1195L);
+                    Debug.WriteLine($"{nameof(d_1195L)}: {d_1195L:F5}");
                 }
                 #endregion
 
-                #region 計算 0.176
+                #region 計算 0.236 ~ 0.243
                 spec = specList?[2];
                 if (spec?.Enable == true && results != null)
                 {
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
-                        results[spec.Key].Add(d_088R + d_088L);
+                        results[spec.Key].Add(d_1195R + d_1195L);
                     }
                 }
                 #endregion
-                // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
+
                 spec = null;
             }
             catch (Exception ex)
