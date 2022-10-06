@@ -549,7 +549,7 @@ namespace MCAJawIns
         /// <summary>
         ///
         /// </summary>
-        public LensConfig LensConfig { get; set; }
+        public LensConfig LensConfig { get; set; } = new LensConfig();
         #endregion
 
         #region Property Changed Event

@@ -199,7 +199,7 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] Test Socket in Systeminfo 
 
-* [ ] 確認結批、歸零邏輯
+* [x] 確認結批、歸零邏輯
 
 * [ ] UpdateProperty Triiger Edit to LostFocus in CameraTab.xaml
 
