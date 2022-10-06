@@ -335,7 +335,6 @@ namespace MCAJawIns
             else
             {
                 throw new MongoException("MongoDB connection is not established");
-                //Console.WriteLine("MongoDB Client is not initialized");
             }
         }
 
@@ -380,7 +379,6 @@ namespace MCAJawIns
             }
         }
 
-
         public void FindOneSort<T>(string cName, FilterDefinition<T> filter, SortDefinition<T> sort, out T data)
         {
             if (client != null)
@@ -395,7 +393,6 @@ namespace MCAJawIns
                 throw new MongoException("MongoDB connection is not established");
             }
         }
-
 
         /// <summary>
         /// 搜尋符合條件 Document
@@ -455,6 +452,14 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cName">集合名稱</param>
+        /// <param name="filter"></param>
+        /// <param name="update"></param>
+        /// <returns></returns>
         public UpdateResult UpsertOne<T>(string cName, FilterDefinition<T> filter, UpdateDefinition<T> update)
         {
             if (client != null)
@@ -466,6 +471,40 @@ namespace MCAJawIns
                 {
                     IsUpsert = true,
                 });
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        [Obsolete("此方法須確認後才能使用")]
+        public UpdateResult UpsertMany<T>(string cName, FilterDefinition<T> filter, UpdateDefinition<T> update)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
+                return collection.UpdateMany(filter, update, new UpdateOptions()
+                {
+                    IsUpsert = true,
+                });
+            }
+            else
+            {
+                throw new MongoException("MongoDB connection is not established");
+            }
+        }
+
+        [Obsolete("待完成")]
+        public void BulkWrite<T>(string cName)
+        {
+            if (client != null)
+            {
+                IMongoDatabase db = client.GetDatabase(Database);
+                IMongoCollection<T> collection = db.GetCollection<T>(cName);
+
             }
             else
             {

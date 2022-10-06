@@ -281,8 +281,6 @@ namespace MCAJawIns
             // });
             // Debug.WriteLine(jsonStr);
 
-            // AppTabControl.Items[]
-
             #region 開啟 Mode Dialog
             ModeWindow modeWindow = new() { Owner = this };
             if (modeWindow.ShowDialog() == true) { Debug.WriteLine($"Init Mode: {InitMode}, MainWindow.xaml Line: 280"); }
@@ -293,10 +291,9 @@ namespace MCAJawIns
             SystemInfoTab?.Env.SetStartTime();
             // 設定是否為自動模式
             SystemInfoTab?.Env.SetMode(InitMode == InitModes.AUTO);
-            // 啟動 TcpListener
-            // SystemInfoTab?.SystemInfo.SetTcpListener();
+            // 啟動 Socker Server
             SystemInfoTab?.Env.SetSocketServer();
-            // 啟動 Timer
+            // 啟動 UI 刷新 Timer
             SystemInfoTab?.Env.EnableTimer();
             #endregion
         }
@@ -405,7 +402,7 @@ namespace MCAJawIns
             MsgInformer.ResetErrorCount();
         }
 
-        private void MessageClearBtn_Click(object sender, RoutedEventArgs e)
+        private void ErrClearBtn_Click(object sender, RoutedEventArgs e)
         {
             MsgInformer.ClearError();
         }

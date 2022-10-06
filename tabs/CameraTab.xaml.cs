@@ -161,7 +161,7 @@ namespace MCAJawIns.Tab
                     if (cfg != null)
                     {
                         // 資料庫儲存之相機
-                        CameraConfigBaseWithTarget[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseWithTarget>(x.ToBsonDocument())).ToArray();
+                        CameraConfigBaseExtension[] cameras = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseExtension>(x.ToBsonDocument())).ToArray();
 
                         // 目前有連線的相機
                         CameraConfigBase[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
@@ -171,17 +171,17 @@ namespace MCAJawIns.Tab
 
                         if (cameras.Length > cameraConfig.Length)
                         {
-                            foreach (CameraConfigBaseWithTarget d in cameras)
+                            foreach (CameraConfigBaseExtension cam in cameras)
                             {
-                                if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                                if (!cameraConfig.Any(e => e.SerialNumber == cam.SerialNumber))
                                 {
-                                    CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                    CameraConfig config = new(cam.FullName, cam.Model, cam.IP, cam.MAC, cam.SerialNumber)
                                     {
-                                        VendorName = d.VendorName,
-                                        CameraType = d.CameraType,
-                                        TargetFeature = d.TargetFeature,
+                                        VendorName = cam.VendorName,
+                                        CameraType = cam.CameraType,
+                                        TargetFeature = cam.TargetFeature,
                                         // 
-                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == cam.SerialNumber)
                                     };
                                     MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                                 }
@@ -215,7 +215,7 @@ namespace MCAJawIns.Tab
                     if (jsonStr != string.Empty)
                     {
                         // 反序列化，載入JSON FILE
-                        CameraConfigBaseWithTarget[] cameras = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
+                        CameraConfigBaseExtension[] cameras = JsonSerializer.Deserialize<CameraConfigBaseExtension[]>(jsonStr);
 
                         // 目前有連線的相機
                         CameraConfigBase[] cams = MainWindow?.CameraEnumer.CamsSource.ToArray();
@@ -225,7 +225,7 @@ namespace MCAJawIns.Tab
 
                         if (cameras.Length > cameraConfig.Length)
                         {
-                            foreach (CameraConfigBaseWithTarget d in cameras)
+                            foreach (CameraConfigBaseExtension d in cameras)
                             {
                                 if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
                                 {
@@ -401,7 +401,7 @@ namespace MCAJawIns.Tab
         {
             string path = $@"{Directory.GetCurrentDirectory()}\{camerasDirectory}\{camerasPath}";
 
-            CameraConfigBaseWithTarget[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBaseWithTarget()
+            CameraConfigBaseExtension[] infos = MainWindow.CameraEnumer.CameraConfigs.Select(item => new CameraConfigBaseExtension()
             {
                 VendorName = item.VendorName,
                 FullName = item.FullName,
@@ -410,7 +410,8 @@ namespace MCAJawIns.Tab
                 CameraType = item.CameraType,
                 IP = item.IP,
                 MAC = item.MAC,
-                TargetFeature = item.TargetFeature
+                TargetFeature = item.TargetFeature,
+                PixelSize = item.PixelSize
             }).ToArray();
 
             #region 寫入本地JSON
@@ -433,7 +434,7 @@ namespace MCAJawIns.Tab
             try
             {
                 BsonArray bsonArray = new BsonArray(infos.Length);
-                foreach (CameraConfigBaseWithTarget item in infos)
+                foreach (CameraConfigBaseExtension item in infos)
                 {
                     _ = bsonArray.Add(item.ToBsonDocument());
                 }

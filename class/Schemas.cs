@@ -31,6 +31,27 @@ namespace MCAJawIns.Mongo
         Measurements
     }
 
+
+    public enum AuthRoles
+    {
+        /// <summary>
+        /// 一般使用者
+        /// </summary>
+        User,
+        /// <summary>
+        /// 品保
+        /// </summary>
+        Quaiity,
+        /// <summary>
+        /// 工程師
+        /// </summary>
+        Engineer,
+        /// <summary>
+        /// 管理者
+        /// </summary>
+        Admin
+    }
+
     /// <summary>
     /// 應用程式權限
     /// </summary>
@@ -38,6 +59,12 @@ namespace MCAJawIns.Mongo
     {
         [BsonId]
         public ObjectId ObjID { get; set; }
+
+        /// <summary>
+        /// 角色
+        /// </summary>
+        [BsonElement(nameof(Role))]
+        public string Role { get; set; }
 
         /// <summary>
         /// 密碼
@@ -50,6 +77,18 @@ namespace MCAJawIns.Mongo
         /// </summary>
         [BsonElement(nameof(Level))]
         public int Level { get; set; }
+
+        /// <summary>
+        /// 資料插入時間
+        /// </summary>
+        [BsonElement(nameof(InsertTime))]
+        public DateTime InsertTime { get; set; }
+
+        /// <summary>
+        /// 資料更新時間
+        /// </summary>
+        [BsonElement(nameof(UpdateTime))]
+        public DateTime UpdateTime { get; set; }
     }
 
     /// <summary>

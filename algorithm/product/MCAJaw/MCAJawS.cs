@@ -391,8 +391,6 @@ namespace MCAJawIns.Algorithm
                         }
                         avg = cam1results[key].Average();
 
-                        // Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
-                        // Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
                     else
                     {
@@ -400,7 +398,7 @@ namespace MCAJawIns.Algorithm
                     }
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
                     // 若使用 Item 會有 bug (Item 不為唯一值)
-                    spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == key);
+                    spec = specList.First(s => s.Key == key);
                     JawSpec jawSpec = new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
                     if (group == JawSpecGroups.None)
                     {
@@ -438,7 +436,7 @@ namespace MCAJawIns.Algorithm
                     // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
-                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    // spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
                     spec = specList.First(s => s.Key == key);
                     JawSpec jawSpec = new(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
                     if (group == JawSpecGroups.None)
@@ -505,7 +503,6 @@ namespace MCAJawIns.Algorithm
                 #endregion
 
                 #region 加入群組結果
-                //IEnumerable<JawSpec> arr = MCAJaw.JawResultGroup.Collection1.Where(x => x.IsGroup);
                 IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] groupArr = new IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] {
                     cam1groupResult.GroupBy(x => x.Group),
                     cam2groupResult.GroupBy(x => x.Group)
@@ -2524,7 +2521,18 @@ namespace MCAJawIns.Algorithm
                         }
 #endif
                     }
-                    else { listY.Add(listY[^1]); }
+                    else
+                    {
+                        listY.Add(listY[^1]);
+#if DEBUG || debug
+
+                        b[(srcWidth * tmpY) + i] = 255;
+                        b[(srcWidth * (tmpY + 1)) + i] = 255;
+                        b[(srcWidth * (tmpY + 2)) + i] = 255;
+                        b[(srcWidth * (tmpY - 1)) + i] = 255;
+                        b[(srcWidth * (tmpY - 2)) + i] = 255;
+#endif
+                    }
 
                     if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
                 }

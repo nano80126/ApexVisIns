@@ -58,8 +58,8 @@ namespace MCAJawIns.Algorithm
             { "有料檢知3", new Rect(1080, 200, 400, 60) },
             { "粗定位左", new Rect(250, 240, 230, 300) },
             { "粗定位右", new Rect(600, 240, 230, 300) },
-            { "治具定位", new Rect(650, 1480, 300, 80) },
-            { "後開位置", new Rect(450, 1030, 700, 40) },
+            { "治具定位", new Rect(650, 1235, 300, 80) },
+            { "後開位置", new Rect(450, 800, 700, 40) },
             { "側面定位", new Rect(1160, 90, 240, 120) }
         };
         #endregion
@@ -391,8 +391,6 @@ namespace MCAJawIns.Algorithm
                         }
                         avg = cam1results[key].Average();
 
-                        // Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
-                        // Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
                     else
                     {
@@ -438,7 +436,7 @@ namespace MCAJawIns.Algorithm
                     // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
-                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    // spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
                     spec = specList.First(s => s.Key == key);
                     JawSpec jawSpec = new(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
                     if (group == JawSpecGroups.None)
@@ -1790,7 +1788,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, JigRoi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             canny.Dispose();
 
-            // Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
 
             double sumLength = lineH.Sum(line => line.Length());
             JigPosY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
@@ -1875,7 +1873,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 20, 10, 3);
 
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             double sumLength = lineV.Sum(line => line.Length());
             double X = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);

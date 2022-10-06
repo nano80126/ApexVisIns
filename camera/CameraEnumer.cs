@@ -247,6 +247,8 @@ namespace MCAJawIns
 
         private void Item_BasicPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine(e.PropertyName);
+
             CameraCofingSaved = false;
         }
 

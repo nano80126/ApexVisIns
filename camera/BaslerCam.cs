@@ -524,16 +524,14 @@ namespace MCAJawIns
 
     /// <summary>
     /// CameraConfigs 儲存用基底
-    /// <para>繼承 Basler Camera 基本屬性，並加上 Target Feature Type</para>
+    /// <para>繼承 Camera Config Base 基本屬性，並加上 Target Feature Type 與 鏡頭參數</para>
     /// </summary>
-    public class CameraConfigBaseWithTarget : CameraConfigBase
+    public class CameraConfigBaseExtension : CameraConfigBase
     {
         #region 建構子
-        public CameraConfigBaseWithTarget() { }
+        public CameraConfigBaseExtension() { }
 
-        public CameraConfigBaseWithTarget(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
-        {
-        }
+        public CameraConfigBaseExtension(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber) { }
         #endregion
 
         #region Properties
@@ -542,6 +540,16 @@ namespace MCAJawIns
         /// <para>綁定到相機 UserData</para>
         /// </summary>
         public virtual TargetFeature TargetFeature { get; set; }
+
+        /// <summary>
+        /// Sensor Pixel Size
+        /// </summary>
+        public virtual double PixelSize { get; set; }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public LensConfig LensConfig { get; set; }
         #endregion
 
         #region Property Changed Event
@@ -559,13 +567,52 @@ namespace MCAJawIns
     }
 
     /// <summary>
+    /// 鏡頭 Config
+    /// </summary>
+    public class LensConfig : INotifyPropertyChanged
+    {
+        #region Fields
+        private double _magnification;
+        #endregion
+
+        #region Properties
+        public string Model { get; set; }
+
+        public string Manufacturer { get; set; }
+
+        public double FocalLength { get; set; }
+
+        public double Magnification
+        {
+            get => _magnification;
+            set
+            {
+                if (value != _magnification)
+                {
+                    _magnification = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region Property Changed Event
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+    }
+
+    /// <summary>
     /// Camera 組態，CameraTab 內使用
     /// <para>Basic Properties</para>
     /// <para>AOI Controls</para>
     /// <para>Acquistion Controls</para>
     /// <para>Analog Controls</para>
     /// </summary>
-    public class CameraConfig : CameraConfigBaseWithTarget, INotifyPropertyChanged
+    public class CameraConfig : CameraConfigBaseExtension, INotifyPropertyChanged
     {
         #region Fields
         //private TargetFeature _targetFeature;
@@ -649,6 +696,20 @@ namespace MCAJawIns
                 if (value != base.TargetFeature)
                 {
                     base.TargetFeature = value;
+                    OnBasicPropertyChanged();
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public override double PixelSize
+        {
+            get => base.PixelSize;
+            set
+            {
+                if (value != base.PixelSize)
+                {
+                    base.PixelSize = value;
                     OnBasicPropertyChanged();
                     OnPropertyChanged();
                 }

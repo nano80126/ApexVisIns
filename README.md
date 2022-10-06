@@ -201,6 +201,8 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] 確認結批、歸零邏輯
 
+* [ ] UpdateProperty Triiger Edit to LostFocus in CameraTab.xaml
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

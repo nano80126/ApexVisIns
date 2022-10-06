@@ -661,12 +661,13 @@ namespace MCAJawIns.Tab
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.Env.SetMongoVersion(version);
 
-#if insertAuth          // 新增使用者、組態
+#if InsertAuth          // 新增使用者、組態
 
+                        DateTime dt = DateTime.Now;
                         AuthLevel[] authLevels = new AuthLevel[] {
-                            new AuthLevel() { Password = "intai", Level = 1 },
-                            new AuthLevel() { Password = "qc", Level = 2 },
-                            new AuthLevel() { Password = "eng", Level = 5 },
+                            new AuthLevel() { Role= nameof(AuthRoles.User), Password = "intai", Level = 1, InsertTime = dt, UpdateTime = dt },
+                            new AuthLevel() { Role= nameof(AuthRoles.Quaiity), Password = "qc", Level = 2, InsertTime = dt, UpdateTime = dt  },
+                            new AuthLevel() { Role= nameof(AuthRoles.Engineer), Password = "eng", Level = 5 , InsertTime = dt, UpdateTime = dt },
                         };
                         MongoAccess.InsertMany(nameof(JawCollection.Auth), authLevels);
 #endif
@@ -678,16 +679,8 @@ namespace MCAJawIns.Tab
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
 
-#if LoadSpecList
 
-                        // 讀取 Size Spec 設定
-                        LoadSpecList();
-
-                        // 讀取 Size Group Spec 設定
-                        LoadSpecGroupList(); 
-#endif
-
-#if DeleteOldData  // 移除過期資料
+#if DeleteOldData       // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)
                         {
@@ -744,7 +737,7 @@ namespace MCAJawIns.Tab
                 try
                 {
                     string path = $@"{Directory.GetCurrentDirectory()}\{CamerasDirectory}\{CamerasPath}";
-                    CameraConfigBaseWithTarget[] configs = Array.Empty<CameraConfigBaseWithTarget>();
+                    CameraConfigBaseExtension[] configs = Array.Empty<CameraConfigBaseExtension>();
 
                     // 載入相機組態
                     if (MongoAccess?.Connected == true)
@@ -755,7 +748,7 @@ namespace MCAJawIns.Tab
                         if (cfg != null)
                         {
                             // 反序列化
-                            configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseWithTarget>(x.ToBsonDocument())).ToArray();
+                            configs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<CameraConfigBaseExtension>(x.ToBsonDocument())).ToArray();
                         }
                         else
                         {
@@ -767,7 +760,7 @@ namespace MCAJawIns.Tab
                                 if (jsonStr != string.Empty)
                                 {
                                     // 反序列化
-                                    configs = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
+                                    configs = JsonSerializer.Deserialize<CameraConfigBaseExtension[]>(jsonStr);
                                 }
                                 else
                                 {
@@ -784,7 +777,7 @@ namespace MCAJawIns.Tab
                         if (jsonStr != string.Empty)
                         {
                             // 反序列化
-                            configs = JsonSerializer.Deserialize<CameraConfigBaseWithTarget[]>(jsonStr);
+                            configs = JsonSerializer.Deserialize<CameraConfigBaseExtension[]>(jsonStr);
                         }
                         else
                         {
@@ -1475,11 +1468,11 @@ namespace MCAJawIns.Tab
             #endregion
 #else
             #region Production
-            //(sender as Button).IsEnabled = false;
-            //Task.Run(async () =>
-            //{
-            //    for (int i = 0; i < 150; i++)
-            //    {
+            (sender as Button).IsEnabled = false;
+            Task.Run(async () =>
+            {
+                for (int i = 0; i < 150; i++)
+                {
                     if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
                     DateTime t1 = DateTime.Now;
 
@@ -1491,7 +1484,7 @@ namespace MCAJawIns.Tab
                     JawResultGroup.Collection3.Clear();
 
                     // bool b = await
-                    Task.Run(() =>
+                    await Task.Run(() =>
                     {
                         JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
                         // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
@@ -1551,15 +1544,15 @@ namespace MCAJawIns.Tab
                         return data.OK;
                     });
 
-                    //SpinWait.SpinUntil(() => false, 3000);
-                //}
-            //}).ContinueWith(t =>
-            //{
-            //    Dispatcher.Invoke(() =>
-            //    {
-            //        (sender as Button).IsEnabled = true;
-            //    });
-            //});
+                    SpinWait.SpinUntil(() => false, 3000);
+                }
+            }).ContinueWith(t =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    (sender as Button).IsEnabled = true;
+                });
+            });
             #endregion
 #endif
         }

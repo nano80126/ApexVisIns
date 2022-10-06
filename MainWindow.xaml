@@ -526,7 +526,7 @@
                             </ListView.View>
                         </ListView>
                         <!--//-->
-                        <Button x:Name="MessageClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="MessageClearBtn_Click" Focusable="False" Foreground="Gray"
+                        <Button x:Name="MessageClearBtn" Margin="0 12 0 0" HorizontalAlignment="Right" Click="ErrClearBtn_Click" Focusable="False" Foreground="Gray"
                                 Style="{StaticResource MaterialDesignFlatButton}">
                             <materialDesign:PackIcon Kind="TrashCan" Width="30" Height="26" />
                         </Button>

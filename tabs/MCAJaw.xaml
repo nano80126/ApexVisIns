@@ -300,17 +300,17 @@
                             <DockPanel Background="Transparent" MouseDown="DockPanel_MouseDown">
                                 <!--Panel Header-->
                                 <DockPanel x:Name="Header" DockPanel.Dock="Top">
-                                    <materialDesign:PackIcon Kind="ControllerClassic" Width="30" Height="26" Background="Transparent" VerticalAlignment="Bottom" />
+                                    <materialDesign:PackIcon Kind="ControllerClassic" Width="28" Height="24" Background="Transparent" VerticalAlignment="Bottom" />
                                     <!--  -->
                                     <TextBlock FontWeight="Bold" VerticalAlignment="Bottom" FontSize="{StaticResource Title-sm}" Text="主控板" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
                                     <!--  -->
                                     <!--<TextBlock Text="{x:Null}" />-->
                                     <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="{StaticResource Header-xl}"
-                                            FontWeight="Normal"
+                                            FontWeight="SemiBold" FontFamily="consolas"
                                             DataContext="{Binding SystemInfoTab.Env, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}}"
                                             d:DataContext="{d:DesignInstance Type={x:Type Sysinfo:Env}}">
-                                        <Run Text="{Binding SystemDate, Mode=OneWay, StringFormat={}{0} }" />
-                                        <Run Text="{Binding SystemTime, Mode=OneWay}" />
+                                        <Run Text="{Binding SystemDate, Mode=OneWay, StringFormat={}{0}}" />
+                                        <Run Text="{Binding SystemTime, Mode=OneWay, StringFormat={}{0}}" />
                                     </TextBlock>
                                 </DockPanel>
                                 <!-- Seperator -->
