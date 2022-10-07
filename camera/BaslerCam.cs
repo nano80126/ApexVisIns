@@ -547,7 +547,7 @@ namespace MCAJawIns
         public virtual double PixelSize { get; set; }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         public LensConfig LensConfig { get; set; } = new LensConfig();
         #endregion

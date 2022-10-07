@@ -12,9 +12,10 @@ using OpenCvSharp;
 
 namespace MCAJawIns.Algorithm
 {
-    public class MCAJawS
+    public class MCAJawS : MCAJawAlgorithm
     {
         #region 單位換算
+#if deprecated
         private readonly double Cam1PixelSize = 2.2 * 1e-3;
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
@@ -23,11 +24,12 @@ namespace MCAJawIns.Algorithm
         // private readonly double cam2Mag = 0.25461;
         private readonly double cam1Mag = 0.21839;
         private readonly double cam2Mag = 0.25431;
-        private readonly double cam3Mag = 0.1063;
+        private readonly double cam3Mag = 0.1063; 
+#endif
 
-        private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
-        private double Cam2Unit => Cam2PixelSize / 25.4 / cam2Mag;
-        private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
+        private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
+        private double Cam2Unit => Cam2PixelSize / 25.4 / Cam2Mag;
+        private double Cam3Unit => Cam3PixelSize / 25.4 / Cam3Mag;
         #endregion
 
         #region 光源參數
@@ -44,7 +46,7 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region Properties
-        public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
+        //public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
         #region 演算法使用 ROIs
@@ -69,6 +71,7 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region 單元測試 Methods
+#if deprecated
         /// <summary>
         /// 顯示換算單位
         /// </summary>
@@ -77,9 +80,10 @@ namespace MCAJawIns.Algorithm
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
             Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
-        }
+        } 
+#endif
 
-        public void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
+        public override void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
         {
             MainWindow.Dispatcher.Invoke(() =>
             {
@@ -153,7 +157,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="cam2">相機 2</param>
         /// <param name="cam3">相機 3</param>
         /// <param name="jawFullSpecIns">檢驗結果物件</param>
-        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
+        public override void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
         {
             // 0. 各項物件、變數初始化
             // 1. 擷取影像 
@@ -1814,7 +1818,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
 
             // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
-            
+
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
             int r = lineV.Max(line => (line.P1.X + line.P2.X) / 2);
             double c = (l + r) / 2;

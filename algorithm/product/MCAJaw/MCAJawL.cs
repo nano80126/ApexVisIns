@@ -12,9 +12,10 @@ using OpenCvSharp;
 
 namespace MCAJawIns.Algorithm
 {
-    public class MCAJawL
+    public class MCAJawL : MCAJawAlgorithm
     {
         #region 單位換算
+#if deprecated
         private readonly double Cam1PixelSize = 2.2 * 1e-3;
         private readonly double Cam2PixelSize = 2.2 * 1e-3;
         private readonly double Cam3PixelSize = 4.5 * 1e-3;
@@ -23,11 +24,12 @@ namespace MCAJawIns.Algorithm
         // private readonly double cam2Mag = 0.25461;
         private readonly double cam1Mag = 0.21839;
         private readonly double cam2Mag = 0.25431;
-        private readonly double cam3Mag = 0.1063;
+        private readonly double cam3Mag = 0.1063; 
+#endif
 
-        private double Cam1Unit => Cam1PixelSize / 25.4 / cam1Mag;
-        private double Cam2Unit => Cam2PixelSize / 25.4 / cam2Mag;
-        private double Cam3Unit => Cam3PixelSize / 25.4 / cam3Mag;
+        private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
+        private double Cam2Unit => Cam2PixelSize / 25.4 / Cam2Mag;
+        private double Cam3Unit => Cam3PixelSize / 25.4 / Cam3Mag;
         #endregion
 
         #region 光源參數
@@ -44,7 +46,7 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region Properties
-        public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
+        // public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
         #region 演算法使用
@@ -65,10 +67,11 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region 建構子
-        public MCAJawL() { } 
+        public MCAJawL() { }
         #endregion
 
         #region 單元測試 Methods
+#if deprecated
         /// <summary>
         /// 顯示換算單位
         /// </summary>
@@ -77,9 +80,10 @@ namespace MCAJawIns.Algorithm
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
             Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
-        }
+        } 
+#endif
 
-        public void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
+        public override void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
         {
             MainWindow.LightCtrls[1].SetAllChannelValue(Cam1Light[0], Cam1Light[1]);
             _ = SpinWait.SpinUntil(() => false, 30);
@@ -153,7 +157,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="cam2">相機 2</param>
         /// <param name="cam3">相機 3</param>
         /// <param name="jawFullSpecIns">檢驗結果物件</param>
-        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
+        public override void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
         {
             // 0. 各項物件、變數初始化
             // 1. 擷取影像 
@@ -391,8 +395,6 @@ namespace MCAJawIns.Algorithm
                         }
                         avg = cam1results[key].Average();
 
-                        // Debug.WriteLine($"{string.Join(",", cam1results[key])}, max: {max} min: {min}");
-                        // Debug.WriteLine($"Count: {count - cam1results[key].Count} ");
                     }
                     else
                     {
@@ -1108,10 +1110,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetContours(LeftMat, LeftRoi.Location, 75, 150, out Point[][] _, out Point[] LeftCon);
             Methods.GetContours(RightMat, RightROi.Location, 75, 150, out Point[][] _, out Point[] RightCon);
 
-            //Cv2.ImShow($"leftMat", LeftMat);
-            //Cv2.ImShow($"rightMat", RightMat);
-            // Debug.WriteLine($"LeftCon Length: {LeftCon.Length}");
-            // Debug.WriteLine($"RightCon Length: {RightCon.Length}");
+            // Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, RightROi, Scalar.Black, 1);
 
             int maxX_L = LeftCon.Max(c => c.X);
             int maxY_L = LeftCon.Max(c => c.Y);
@@ -1120,8 +1120,8 @@ namespace MCAJawIns.Algorithm
             int maxY_R = RightCon.Max(c => c.Y);
 
             // Debug.WriteLine($"{minX_R} { maxY_R}");
-            LeftPoint = new OpenCvSharp.Point(maxX_L, maxY_L);
-            RightPoint = new OpenCvSharp.Point(minX_R, maxY_R);
+            LeftPoint = new Point(maxX_L, maxY_L);
+            RightPoint = new Point(minX_R, maxY_R);
             // LeftPoint = new OpenCvSharp.Point(0, 0);
             // RightPoint = new OpenCvSharp.Point(0, 0);
 
@@ -1319,8 +1319,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, leftRoi, 75, 150, out Mat leftCanny);
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
-            // Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
-            // Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);
+            //Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 
             // 左
             Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 2, 3);
@@ -1472,6 +1472,8 @@ namespace MCAJawIns.Algorithm
             // 取得輪廓點
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+
             #region 計算中心值
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
 
@@ -1547,6 +1549,16 @@ namespace MCAJawIns.Algorithm
             //double sumLength = 0;
             Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 0);
+
+#if DEBUG || debug
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            //Debug.WriteLine($"-------------------------------------------");
+            //foreach (LineSegmentPoint item in lineV)
+            //{
+            //    Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
+            //}
+#endif
+
             // 總長
             double sumLength = lineV.Sum(line => line.Length());
             // 計算平均 X 座標
@@ -1572,6 +1584,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
+        [Obsolete("deprecated")]
         public bool Cal013DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, out double topY, out double botY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
@@ -1635,7 +1648,8 @@ namespace MCAJawIns.Algorithm
         }
 
         /// <summary>
-        /// 計算 0.013 距離 (左右分開呼叫)
+        /// 計算 0.013 距離 (牙齒寬度)
+        /// <para>左右分開呼叫</para>
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
@@ -1704,6 +1718,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU"></param>
         /// <returns></returns>
+        [Obsolete("deprecated")]
         public bool Cal024DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, double refY, out double botY, out double distance, double correction, double limitL = 0.0225, double limitU = 0.0255)
         {
             Rect roi;
@@ -1776,6 +1791,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, JigRoi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             canny.Dispose();
 
+            Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
+
             double sumLength = lineH.Sum(line => line.Length());
             JigPosY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
         }
@@ -1798,6 +1815,8 @@ namespace MCAJawIns.Algorithm
 
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
+
+            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
             int r = lineV.Max(line => (line.P1.X + line.P2.X) / 2);

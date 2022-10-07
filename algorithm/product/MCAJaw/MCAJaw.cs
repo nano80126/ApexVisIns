@@ -19,6 +19,104 @@ namespace MCAJawIns.Algorithm
         Left = 1,
         Right = 2,
     }
+
+    public interface IMCAJawAlgorithm
+    {
+        #region Properties
+        public double Cam1PixelSize { get; set; }
+        public double Cam2PixelSize { get; set; }
+        public double Cam3PixelSize { get; set; }
+
+        public double Cam1Mag { get; set; }
+        public double Cam2Mag { get; set; }
+        public double Cam3Mag { get; set; }
+
+        public MainWindow MainWindow { get; set; }
+        #endregion
+
+        #region Methods
+        public void ListVisionParam();
+
+        public void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3);
+
+        public void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null);
+        #endregion
+    }
+
+    public abstract class MCAJawAlgorithm : IMCAJawAlgorithm
+    {
+        #region Properties
+        public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
+        public double Cam1PixelSize { get; set; } = 2.2;
+        public double Cam2PixelSize { get; set; } = 2.2;
+        public double Cam3PixelSize { get; set; } = 3.45;
+        public double Cam1Mag { get; set; } = 1;
+        public double Cam2Mag { get; set; } = 1;
+        public double Cam3Mag { get; set; } = 1;
+        #endregion
+
+        #region Methods
+        public virtual void ListVisionParam()
+        {
+            Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1PixelSize / 25.4 / Cam1Mag} inch");
+            Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2PixelSize / 25.4 / Cam2Mag} inch");
+            Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3PixelSize / 25.4 / Cam3Mag} inch");
+        }
+
+        public virtual void SetVisionParam(int cam, double pxSize, double mag)
+        {
+            switch (cam)
+            {
+                case 1:
+                    Cam1PixelSize = pxSize * 1e-3;
+                    Cam1Mag = mag;
+                    break;
+                case 2:
+                    Cam2PixelSize = pxSize * 1e-3;
+                    Cam2Mag = mag;
+                    break;
+                case 3:
+                    Cam3PixelSize = pxSize * 1e-3;
+                    Cam3Mag = mag;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public virtual void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+    }
+
+
+    [Obsolete("deprecated")]
+    public class VisionUnitTransfer
+    {
+        #region Properties
+        /// <summary>
+        /// Pixel Size
+        /// </summary>
+        public double PixelSize = 2.2 * 1e-3;
+        /// <summary>
+        /// 放大倍率
+        /// </summary>
+        public double Magnification = 0.2;
+        #endregion
+
+        public VisionUnitTransfer(double pixelSize, double magnification)
+        {
+            PixelSize = pixelSize;
+            Magnification = magnification;
+        }
+    }
 }
 
 namespace MCAJawIns

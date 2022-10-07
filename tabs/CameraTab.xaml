@@ -517,7 +517,7 @@
                                             <Setter Property="Padding" Value="0 4" />
                                             <Setter Property="MinWidth" Value="120" />
                                             <Setter Property="Height" Value="24" />
-                                            <Setter Property="Background" Value="Red" />
+                                            <!--<Setter Property="Background" Value="{StaticResource ColorErrorTransparent}" />-->
                                         </Style>
                                         <!-- // -->
                                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -714,8 +714,8 @@
 
                                     <!--量測用-->
                                     <!--<TextBlock Grid.Row="0" Grid.RowSpan="100" Grid.Column="6" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center"
-                                                FontSize="24" Foreground="Blue" Background="{StaticResource ColorPurpleTransparent}"
-                                                Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" />-->
+                                            FontSize="24" Foreground="Blue" Background="{StaticResource ColorPurpleTransparent}"
+                                            Text="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}, UpdateSourceTrigger=PropertyChanged}" />-->
                                     <!--#endregion-->
 
                                     <!--#region Separators -->
@@ -766,7 +766,7 @@
                                             <Setter Property="Padding" Value="0 4" />
                                             <Setter Property="MinWidth" Value="120" />
                                             <Setter Property="Height" Value="24" />
-                                            <Setter Property="Background" Value="Red" />
+                                            <!--<Setter Property="Background" Value="{StaticResource ColorErrorTransparent}" />-->
                                         </Style>
                                         <!--//-->
                                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -833,20 +833,22 @@
                                     <TextBox Grid.Row="3" Grid.Column="1" Padding="8 3" Text="{Binding LensConfig.Manufacturer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />
                                     <TextBox Grid.Row="4" Grid.Column="1" Padding="8 3"
-                                            Text="{Binding LensConfig.FocalLength, Mode=TwoWay, StringFormat={}{0:##.##}, UpdateSourceTrigger=LostFocus}" GotFocus="TextBox_GotFocus"
-                                            GotMouseCapture="TextBox_GotMouseCapture" />
-                                    <TextBox Grid.Row="5" Grid.Column="1" Padding="8 3"
+                                            Text="{Binding LensConfig.FocalLength, Mode=TwoWay, StringFormat={}{0:##.##}, UpdateSourceTrigger=LostFocus}"
+                                            materialDesign:TextFieldAssist.SuffixText="mm" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />
+                                    <TextBox Grid.Row="5" Grid.Column="1" Padding="8 3" FontWeight="SemiBold"
                                             Text="{Binding LensConfig.Magnification, Mode=TwoWay, StringFormat={}{0:0.#####}, UpdateSourceTrigger=LostFocus}"
-                                            Foreground="{StaticResource ColorSuccess}" GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />
+                                            materialDesign:TextFieldAssist.SuffixText="x" Foreground="{StaticResource ColorSuccess}" GotFocus="TextBox_GotFocus"
+                                            GotMouseCapture="TextBox_GotMouseCapture" />
+
                                     <!--<TextBox Grid.Row="6" Grid.Column="1" Padding="8 3" Text="{Binding LensConfig.Model, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             GotFocus="TextBox_GotFocus" GotMouseCapture="TextBox_GotMouseCapture" />-->
 
                                     <!--
-                                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Null}" />
-                                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Null}" />
-                                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Null}" />
-                                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Null}" />
-                                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Null}" />
+                                        <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Null}" />
+                                        <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Null}" />
+                                        <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Null}" />
+                                        <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Null}" />
+                                        <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Null}" />
                                     -->
 
                                     <!--#region Separators -->
@@ -862,8 +864,6 @@
                         <!--#endregion-->
                     </TabControl>
                     <!--#endregion-->
-                    <!--//-->
-                    <!--<Separator DockPanel.Dock="Top" Margin="0 5 0 0 " />-->
                 </DockPanel>
 
                 <!--// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // -->

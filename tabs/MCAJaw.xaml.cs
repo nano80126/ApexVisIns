@@ -671,14 +671,12 @@ namespace MCAJawIns.Tab
                         };
                         MongoAccess.InsertMany(nameof(JawCollection.Auth), authLevels);
 #endif
-
                         // 載入使用者權限
                         MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
                         }
-
 
 #if DeleteOldData       // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
@@ -811,16 +809,21 @@ namespace MCAJawIns.Tab
                     // 排序 Devices
                     Array.Sort(configs, (a, b) => a.TargetFeature - b.TargetFeature);
 
-                    _ = Parallel.ForEach(configs, (dev) =>
+                    double Cam1PxSize = 0, Cam2PxSize = 0, Cam3PxSize = 0;
+                    double Cam1Mg = 1, Cam2Mg = 1, Cam3Mg = 1;
+
+                    Parallel.ForEach(configs, (dev, index) =>
                     {
                         // 確認 Device 為在線上之 Camera 
                         if (cams.Exists(cam => cam.SerialNumber == dev.SerialNumber))
                         {
-                            // Debug.WriteLine($"{dev.IP} {dev.TargetFeature}");
-                            // SpinWait.SpinUntil(() => false, );
+                            Debug.WriteLine($"{dev.IP} {dev.TargetFeature} {dev.PixelSize} {dev.LensConfig.Magnification}");
+#if true
                             switch (dev.TargetFeature)
                             {
                                 case TargetFeature.MCA_Front:
+                                    Cam1PxSize = dev.PixelSize;
+                                    Cam1Mg = dev.LensConfig.Magnification;
                                     if (!MainWindow.BaslerCams[0].IsConnected)
                                     {
                                         BaslerCam1 = MainWindow.BaslerCams[0];
@@ -832,6 +835,8 @@ namespace MCAJawIns.Tab
                                     }
                                     break;
                                 case TargetFeature.MCA_Bottom:
+                                    Cam2PxSize = dev.PixelSize;
+                                    Cam2Mg = dev.LensConfig.Magnification;
                                     if (!MainWindow.BaslerCams[1].IsConnected)
                                     {
                                         BaslerCam2 = MainWindow.BaslerCams[1];
@@ -843,6 +848,8 @@ namespace MCAJawIns.Tab
                                     }
                                     break;
                                 case TargetFeature.MCA_SIDE:
+                                    Cam3PxSize = dev.PixelSize;
+                                    Cam3Mg = dev.LensConfig.Magnification;
                                     if (!MainWindow.BaslerCams[2].IsConnected)
                                     {
                                         BaslerCam3 = MainWindow.BaslerCams[2];
@@ -860,8 +867,30 @@ namespace MCAJawIns.Tab
                                     MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.CAMERA, "相機目標特徵設置有誤");
                                     break;
                             }
+#endif
                         }
                     });
+
+                    switch (MainWindow.JawType)
+                    {
+                        case JawTypes.S:
+                            MCAJawS.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJawS.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJawS.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            break;
+                        case JawTypes.M:
+                            MCAJawM.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJawM.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            break;
+                        case JawTypes.L:
+                            MCAJawM.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJawM.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            break;
+                        default:
+                            break;
+                    }
 
                     if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
                     {
@@ -1468,11 +1497,11 @@ namespace MCAJawIns.Tab
             #endregion
 #else
             #region Production
-            (sender as Button).IsEnabled = false;
-            Task.Run(async () =>
-            {
-                for (int i = 0; i < 150; i++)
-                {
+            //(sender as Button).IsEnabled = false;
+            //Task.Run(async () =>
+            //{
+            //    for (int i = 0; i < 150; i++)
+            //    {
                     if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
                     DateTime t1 = DateTime.Now;
 
@@ -1484,7 +1513,7 @@ namespace MCAJawIns.Tab
                     JawResultGroup.Collection3.Clear();
 
                     // bool b = await
-                    await Task.Run(() =>
+                    Task.Run(() =>
                     {
                         JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
                         // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
@@ -1543,16 +1572,15 @@ namespace MCAJawIns.Tab
 
                         return data.OK;
                     });
-
-                    SpinWait.SpinUntil(() => false, 3000);
-                }
-            }).ContinueWith(t =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    (sender as Button).IsEnabled = true;
-                });
-            });
+            //        SpinWait.SpinUntil(() => false, 3000);
+            //    }
+            //}).ContinueWith(t =>
+            //{
+            //    Dispatcher.Invoke(() =>
+            //    {
+            //        (sender as Button).IsEnabled = true;
+            //    });
+            //});
             #endregion
 #endif
         }

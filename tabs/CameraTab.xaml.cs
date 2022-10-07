@@ -180,6 +180,8 @@ namespace MCAJawIns.Tab
                                         VendorName = cam.VendorName,
                                         CameraType = cam.CameraType,
                                         TargetFeature = cam.TargetFeature,
+                                        PixelSize = cam.PixelSize,
+                                        LensConfig = cam.LensConfig,
                                         // 
                                         Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == cam.SerialNumber)
                                     };
@@ -225,17 +227,19 @@ namespace MCAJawIns.Tab
 
                         if (cameras.Length > cameraConfig.Length)
                         {
-                            foreach (CameraConfigBaseExtension d in cameras)
+                            foreach (CameraConfigBaseExtension cam in cameras)
                             {
-                                if (!cameraConfig.Any(e => e.SerialNumber == d.SerialNumber))
+                                if (!cameraConfig.Any(e => e.SerialNumber == cam.SerialNumber))
                                 {
-                                    CameraConfig config = new(d.FullName, d.Model, d.IP, d.MAC, d.SerialNumber)
+                                    CameraConfig config = new(cam.FullName, cam.Model, cam.IP, cam.MAC, cam.SerialNumber)
                                     {
-                                        VendorName = d.VendorName,
-                                        CameraType = d.CameraType,
-                                        TargetFeature = d.TargetFeature,
+                                        VendorName = cam.VendorName,
+                                        CameraType = cam.CameraType,
+                                        TargetFeature = cam.TargetFeature,
+                                        PixelSize = cam.PixelSize,
+                                        LensConfig = cam.LensConfig,
                                         // 
-                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == d.SerialNumber)
+                                        Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == cam.SerialNumber)
                                     };
                                     MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                                 }
@@ -411,7 +415,8 @@ namespace MCAJawIns.Tab
                 IP = item.IP,
                 MAC = item.MAC,
                 TargetFeature = item.TargetFeature,
-                PixelSize = item.PixelSize
+                PixelSize = item.PixelSize,
+                LensConfig = item.LensConfig
             }).ToArray();
 
             #region 寫入本地JSON
