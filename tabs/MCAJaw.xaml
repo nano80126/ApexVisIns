@@ -446,24 +446,35 @@
                                             <!--#region CommandParameter -->
                                             <Button.CommandParameter>
                                                 <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
+                                                    <DockPanel.Resources>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                                            <Setter Property="Foreground" Value="{StaticResource ColorInfo}" />
+                                                            <Setter Property="BorderBrush" Value="{StaticResource ColorInfo}" />
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsFocused" Value="True">
+                                                                    <Setter Property="Foreground" Value="{StaticResource ColorCyan}" />
+                                                                    <Setter Property="BorderBrush" Value="{StaticResource ColorCyan}" />
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </DockPanel.Resources>
+
                                                     <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 0 0 12">
                                                         <materialDesign:PackIcon VerticalAlignment="Center" Height="28" Width="28" Margin="0 0 8 0" Kind="AlertCircleOutline"
                                                                 Foreground="{StaticResource ColorWarning}" />
-                                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="{StaticResource Header}" Text="該批資料尚未儲存，是否確定歸零數量？" 
-                                                                   TextWrapping="WrapWithOverflow" Width="260" />
+                                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="{StaticResource Header}"
+                                                                Text="該批資料尚未儲存，是否確定歸零數量？" TextWrapping="WrapWithOverflow" Width="260" />
                                                     </WrapPanel>
 
                                                     <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
-                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
-                                                            BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                                         <Button.CommandParameter>
                                                             <sys:Boolean>False</sys:Boolean>
                                                         </Button.CommandParameter>
                                                     </Button>
 
-                                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定"
-                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
-                                                            BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定" TabIndex="0"
+                                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                                         <Button.CommandParameter>
                                                             <sys:Boolean>True</sys:Boolean>
                                                         </Button.CommandParameter>
@@ -928,11 +939,25 @@
                                     -->
 
                                     <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Style="{StaticResource MainPanelButton}"
-                                            IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
+                                            Foreground="{StaticResource ColorInfo}" IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}"
                                             BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
                                         <!--#region CommandParameter -->
                                         <Button.CommandParameter>
                                             <DockPanel MaxWidth="300" Margin="16" Background="Transparent">
+                                                <DockPanel.Resources>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                                        <Setter Property="Foreground" Value="{StaticResource ColorInfo}" />
+                                                        <Setter Property="BorderBrush" Value="{StaticResource ColorInfo}" />
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsFocused" Value="True">
+                                                                <!--<Setter Property="Background" Value="{StaticResource col}" />-->
+                                                                <Setter Property="Foreground" Value="{StaticResource ColorCyan}" />
+                                                                <Setter Property="BorderBrush" Value="{StaticResource ColorCyan}" />
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DockPanel.Resources>
+
                                                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 0 0 12">
                                                     <materialDesign:PackIcon VerticalAlignment="Center" Height="28" Width="28" Margin="0 0 8 0" Kind="InfoCircleOutline"
                                                             Foreground="{StaticResource ColorInfo}" />
@@ -940,16 +965,14 @@
                                                 </StackPanel>
 
                                                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Content="取消"
-                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
-                                                        BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                                     <Button.CommandParameter>
                                                         <sys:Boolean>False</sys:Boolean>
                                                     </Button.CommandParameter>
                                                 </Button>
 
-                                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定"
-                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Foreground="{StaticResource ColorInfo}"
-                                                        BorderBrush="{StaticResource ColorInfo}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                                                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="12 0" Content="確定" TabIndex="0"
+                                                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                                     <Button.CommandParameter>
                                                         <sys:Boolean>True</sys:Boolean>
                                                     </Button.CommandParameter>
@@ -963,19 +986,7 @@
                                             <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
                                         </StackPanel>
                                     </Button>
-
-                                    <!--
-                                    <Button x:Name="FinishLot" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="32"
-                                            materialDesign:ButtonAssist.CornerRadius="5" Style="{StaticResource MaterialDesignOutlinedButton}"
-                                            IsEnabled="{Binding LotNumberChecked, Source={StaticResource JawInspection}, Mode=OneWay}" Foreground="{StaticResource ColorInfo}"
-                                            BorderBrush="{StaticResource ColorInfo}" Click="FinishLot_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Padding="0 2 0 0" Text="結批" FontSize="{StaticResource BasicFont-lg}" FontWeight="SemiBold" />
-                                            <materialDesign:PackIcon Margin="4 0 0 0" VerticalAlignment="Center" Kind="DatabaseImport" />
-                                        </StackPanel>
-                                    </Button>
-                                    -->
-
+                                    
                                     <!--#endregion-->
                                 </Grid>
                             </DockPanel>

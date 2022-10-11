@@ -406,6 +406,9 @@ namespace MCAJawIns.Tab
                             return InitFlags.INIT_TIMEOUT_FAILED | t.Result;
                         }
 
+                        // 初始化 Media Player
+                        InitMediaPlayer();
+
                         return t.Result;
                     }, token)
                     .ContinueWith(t =>
@@ -448,19 +451,27 @@ namespace MCAJawIns.Tab
                             }
 
                             #region 確認相機鏡頭蓋取下
-                            foreach (BaslerCam cam in MainWindow.BaslerCams)
+                            byte[] threholds = new byte[MainWindow.BaslerCams.Length];
+                            for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                             {
+                                BaslerCam cam = MainWindow.BaslerCams[i];
                                 OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
                                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
-                                Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out byte threshold);
+                                Methods.GetRoiOtsu(mat, roi, 0, 255, out _, out threholds[i]);
 
                                 mat.Dispose();
-                                otsu.Dispose();
+                            }
 
-                                if (50 < threshold)
+
+                            if (threholds.Any(threhold => threhold < 5))
+                            {
+                                Dispatcher.InvokeAsync(() =>
                                 {
                                     MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.CAMERA, "相機鏡頭蓋未取下或有遮蔽物");
-                                }
+
+                                    PlayerAlarm.Position = TimeSpan.Zero;
+                                    PlayerAlarm.Play();
+                                });
                             }
                             #endregion
                         }
@@ -474,27 +485,27 @@ namespace MCAJawIns.Tab
                             case InitFlags.OK:
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
-                                InitMediaPlayer();
+                                //InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設之尺寸規格設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
-                                InitMediaPlayer();
+                                //InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_AP_INFO_FAILED:
                                 // 若僅有此錯誤，不影響運作
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用初始設定");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
-                                InitMediaPlayer();
+                                //InitMediaPlayer();
                                 break;
                             case InitFlags.LOAD_SPEC_DATA_FAILED | InitFlags.LOAD_AP_INFO_FAILED:
                                 MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, $"初始化過程發生錯誤: Error Code {t.Result}, 使用預設設定與初始值");
                                 _ = MainWindow.Dispatcher.Invoke(() => Status = INS_STATUS.READY);
                                 SetIdleTimer(60);
-                                InitMediaPlayer();
+                                //InitMediaPlayer();
                                 break;
                             default:
                                 MainWindow.MsgInformer.AddError(MsgInformer.Message.MsgCode.APP, $"初始化過程失敗: Error Code {t.Result}");
@@ -1375,7 +1386,11 @@ namespace MCAJawIns.Tab
             if (JawInspection.LotNumberChecked && !JawInspection.LotInserted)
             {
                 // Debug Mode or Check Dialog
-                bool result = MainWindow.DebugMode || (bool)await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog");
+                bool result = MainWindow.DebugMode || (bool)(await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog", (sender, e) =>
+                {
+                    Keyboard.ClearFocus();
+                    _ = MainWindow.TitleGrid.Focus();
+                }, null) ?? false);
 
                 if (result)
                 {
@@ -1587,25 +1602,38 @@ namespace MCAJawIns.Tab
 
         private async void FinishLot_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog"))
+            try
             {
-                // if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-                // {
-                // 給予新 ID
-                JawInspection.ObjID = new ObjectId();
-                // 刷新時間
-                JawInspection.DateTime = DateTime.Now;
-                // 插入資料庫
-                // MongoAccess.InsertOne("Lots", JawInspection);
-                // Upsert 資料庫
-                FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Eq(nameof(JawInspection.LotNumber), JawInspection.LotNumber);
-                UpdateDefinition<JawInspection> update = Builders<JawInspection>.Update
-                    .Set(nameof(JawInspection.DateTime), JawInspection.DateTime)
-                    .Set(nameof(JawInspection.LotResults), JawInspection.LotResults);
+                bool insert = (bool)(await MaterialDesignThemes.Wpf.DialogHost.Show((sender as Button).CommandParameter, "MainDialog", (sender, e) =>
+                {
+                    Keyboard.ClearFocus();
+                    _ = MainWindow.TitleGrid.Focus();
+                }, null) ?? false);
 
-                MongoAccess.UpsertOne(nameof(JawCollection.Lots), filter, update);
-                // 標記這批已插入資料庫
-                JawInspection.SetLotInserted(true);
+                if (insert)
+                {
+                    // if (MessageBox.Show("是否確認寫入資料庫？", "通知", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                    // {
+                    // 給予新 ID
+                    JawInspection.ObjID = new ObjectId();
+                    // 刷新時間
+                    JawInspection.DateTime = DateTime.Now;
+                    // 插入資料庫
+                    // MongoAccess.InsertOne("Lots", JawInspection);
+                    // Upsert 資料庫
+                    FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Eq(nameof(JawInspection.LotNumber), JawInspection.LotNumber);
+                    UpdateDefinition<JawInspection> update = Builders<JawInspection>.Update
+                        .Set(nameof(JawInspection.DateTime), JawInspection.DateTime)
+                        .Set(nameof(JawInspection.LotResults), JawInspection.LotResults);
+
+                    MongoAccess.UpsertOne(nameof(JawCollection.Lots), filter, update);
+                    // 標記這批已插入資料庫
+                    JawInspection.SetLotInserted(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.MsgInformer.AddWarning(MsgInformer.Message.MsgCode.APP, ex.Message);
             }
         }
 

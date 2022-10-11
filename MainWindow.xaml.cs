@@ -516,6 +516,8 @@ namespace MCAJawIns
 
         private void LoginDialog_KeyUp(object sender, KeyEventArgs e)
         {
+            Debug.WriteLine(e.Key);
+
             if (e.Key == Key.Return)
             {
                 LoginBtn.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
@@ -527,6 +529,7 @@ namespace MCAJawIns
             else if (e.Key == Key.Escape)
             {
                 (sender as DialogHost).IsOpen = false;
+                e.Handled = true;
             }
         }
 
