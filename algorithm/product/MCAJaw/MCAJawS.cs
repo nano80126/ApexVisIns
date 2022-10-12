@@ -950,6 +950,7 @@ namespace MCAJawIns.Algorithm
             {
                 // 取得基準線
                 GetJigPos(src, out double JigPosY);
+                // 佔位用，因為大 Jaw 未抓取治具邊緣
 
                 #region 計算後開
                 spec = specList?[9];
@@ -1375,7 +1376,7 @@ namespace MCAJawIns.Algorithm
             // 取得輪廓點
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
-            //Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, roi, Scalar.Black, 1);
 
             #region 計算中心值
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
@@ -1390,7 +1391,7 @@ namespace MCAJawIns.Algorithm
             //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
             //}
 
-            Debug.WriteLine($"center: {center} {min} {max} {roiPos}");
+            Debug.WriteLine($"輪廓度 中心: {center} {min} {max} {roiPos}");
 
             #region 尋找轉角點
             // 連接輪廓點
@@ -1865,6 +1866,7 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public bool Cal088DistanceValue(Mat src, double baseJigY, double compareX, JawPos leftRight, out double distance, double correction = 0, double limitL = 0.0855, double limitU = 0.0905)
         {
+            // src Width
             int srcWidth = src.Width;
             // roi 距離影像邊緣 X
             int roiX = 80;
@@ -1887,7 +1889,7 @@ namespace MCAJawIns.Algorithm
             switch (leftRight)
             {
                 case JawPos.Left:
-                    subCorrection = (src.Width / 2 - X - 400) * 0.00004 + 0.0014;
+                    subCorrection = (((src.Width / 2) - X - 400) * 0.00004) + 0.0014;
                     break;
                 case JawPos.Right:
                     subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
@@ -1898,8 +1900,6 @@ namespace MCAJawIns.Algorithm
 
             // 計算 0.088 距離
             distance = (Math.Abs(compareX - X) * Cam2Unit) + correction + subCorrection;
-            // Debug.WriteLine($"088 {leftRight} : {Math.Abs(compareX - X)}, {compareX}, {X}");
-            // Debug.WriteLine($"Distance: {distance}, {subCorrection}");
             // 銷毀 canny
             canny.Dispose();
 
@@ -1918,8 +1918,8 @@ namespace MCAJawIns.Algorithm
             // ROI 
             Rect roi = JawROIs["有料檢知3"];
 
-            // Cv2.Rectangle(src, roi, Scalar.Black, 1);
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out threshold);
+            // Cv2.Rectangle(src, roi, Scalar.Black, 1);
             return threshold is > 50 and < 180;
         }
 
@@ -2478,7 +2478,7 @@ namespace MCAJawIns.Algorithm
                     tmpY = 0;
                     for (int j = 0; j < roiMat.Height; j++)
                     {
-                        double avg = (b[srcWidth * j + i] + b[srcWidth * j + i + 1] + b[srcWidth * j + i + 2]) / 3;
+                        double avg = (b[(srcWidth * j) + i] + b[(srcWidth * j) + i + 1] + b[(srcWidth * j) + i + 2]) / 3;
                         grayArr[j] = avg;
                         int k = j - 1;
                         if (j == 0) { continue; }
