@@ -185,6 +185,8 @@ namespace MCAJawIns.Tab
                                         // 
                                         Online = cams.Length > 0 && cams.Any(e => e.SerialNumber == cam.SerialNumber)
                                     };
+                                    //config.LensConfig.Magnification = cam.LensConfig.Magnification;
+
                                     MainWindow?.CameraEnumer.CameraConfigs.Add(config);
                                 }
                             }

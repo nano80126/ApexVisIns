@@ -30,7 +30,7 @@
     <!--#endregion-->
 
     <!--#region Toolbar -->
-    <DockPanel x:Name="ToolbarPanel" HorizontalAlignment="Stretch" Background="#22969696">
+    <DockPanel x:Name="ToolbarPanel" HorizontalAlignment="Stretch" Background="#EAEAEA">
         <!--#region MainToolbar-->
         <ToolBarTray DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True" UseLayoutRounding="False" Background="{x:Null}" Margin="0 -1">
             <!-- DataContext 動態變更, CamSelectort SelectedIndex Changed 觸發 -->
@@ -65,6 +65,7 @@
                 <!--相機選擇-->
                 <ComboBox x:Name="CamSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 12 0" Padding="8 3" MinWidth="135" FontWeight="Bold"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                        materialDesign:HintAssist.Background="{Binding Background, RelativeSource={RelativeSource AncestorType=DockPanel, Mode=FindAncestor, AncestorLevel=1}}"
                         IsEnabled="{Binding ElementName=CamConnect, Path=IsChecked, Converter={StaticResource BooleanInverter}}"
                         ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                         SelectionChanged="CamSelector_SelectionChanged" MouseRightButtonUp="CamSelector_MouseRightButtonUp">

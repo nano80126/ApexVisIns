@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Basler.Pylon;
 //using MCAJawIns._Camera;
+using Debug = System.Diagnostics.Debug;
+
 
 namespace MCAJawIns
 {
@@ -528,10 +531,20 @@ namespace MCAJawIns
     /// </summary>
     public class CameraConfigBaseExtension : CameraConfigBase
     {
-        #region 建構子
-        public CameraConfigBaseExtension() { }
+        #region Fields
+        private readonly LensConfig _lensConfig = new();
+        #endregion
 
-        public CameraConfigBaseExtension(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber) { }
+        #region 建構子
+        public CameraConfigBaseExtension()
+        {
+         
+        }
+
+        public CameraConfigBaseExtension(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
+        {
+
+        }
         #endregion
 
         #region Properties
@@ -547,9 +560,24 @@ namespace MCAJawIns
         public virtual double PixelSize { get; set; }
 
         /// <summary>
-        /// 
+        /// 鏡頭參數
+        /// <para>set 存取子內建 DeepCopy</para>
         /// </summary>
-        public LensConfig LensConfig { get; set; } = new LensConfig();
+        public LensConfig LensConfig
+        {
+            get => _lensConfig;
+            set
+            {
+                Type t = value.GetType();
+                // object o = Activator.CreateInstance(t);
+                PropertyInfo[] pi = t.GetProperties();
+                for (int i = 0; i < pi.Length; i++)
+                {
+                    PropertyInfo p = pi[i];
+                    p.SetValue(_lensConfig, p.GetValue(value));
+                }
+            }
+        }
         #endregion
 
         #region Property Changed Event
@@ -572,15 +600,50 @@ namespace MCAJawIns
     public class LensConfig : INotifyPropertyChanged
     {
         #region Fields
+        private string _model;
+        private string _manufacturer;
+        private double _focalLength;
         private double _magnification;
         #endregion
 
         #region Properties
-        public string Model { get; set; }
+        public string Model
+        {
+            get => _model;
+            set
+            {
+                if (value != _model)
+                {
+                    _model = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
-        public string Manufacturer { get; set; }
+        public string Manufacturer {
+            get => _manufacturer;
+            set
+            {
+                if (value != _manufacturer)
+                {
+                    _manufacturer = value;
+                    OnPropertyChanged();
+                }
+            } 
+        }
 
-        public double FocalLength { get; set; }
+        public double FocalLength
+        {
+            get => _focalLength;
+            set
+            {
+                if (value != _focalLength)
+                {
+                    _focalLength = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public double Magnification
         {
@@ -1376,7 +1439,10 @@ namespace MCAJawIns
         /// <summary>
         /// .xaml 使用 (一般不使用)
         /// </summary>
-        public CameraConfig() { }
+        public CameraConfig()
+        {
+
+        }
 
         /// <summary>
         /// 正式建構子
@@ -1388,6 +1454,7 @@ namespace MCAJawIns
         /// <param name="serialNumber">相機S/N</param>
         public CameraConfig(string fullName, string model, string ip, string mac, string serialNumber) : base(fullName, model, ip, mac, serialNumber)
         {
+
         }
         #endregion
 

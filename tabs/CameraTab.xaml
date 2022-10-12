@@ -35,6 +35,7 @@
                 <DockPanel HorizontalAlignment="Stretch">
                     <ComboBox x:Name="CameraSelector" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4 4" Padding="8 3" MinWidth="180" Height="24" FontWeight="Bold"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Camera" materialDesign:ComboBoxAssist.ShowSelectedItem="False"
+                            materialDesign:HintAssist.Background="{Binding Background,RelativeSource={RelativeSource AncestorType=ctrl:CustomCard}, UpdateSourceTrigger=PropertyChanged}"
                             ItemsSource="{Binding CamsSource, Source={StaticResource CameraEnumer}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                             MouseRightButtonUp="CameraSelector_MouseRightButtonUp">
                         <ComboBox.ItemTemplate>

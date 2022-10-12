@@ -228,12 +228,14 @@ namespace MCAJawIns
                     //System.Diagnostics.Debug.WriteLine($"{newItem.VendorName} {newItem.Model} {newItem.Name}");
                     //newItem.PropertyChanged += Item_PropertyChanged;
                     newItem.BasicPropertyChanged += Item_BasicPropertyChanged;
+                    newItem.LensConfig.PropertyChanged += LensConfig_PropertyChanged;
                     CameraCofingSaved = false;
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
                     CameraConfig oldItem = e.OldItems[0] as CameraConfig;
                     //System.Diagnostics.Debug.WriteLine($"{oldItem.VendorName} {oldItem.Model} {oldItem.Name}");
                     //oldItem.PropertyChanged -= Item_PropertyChanged;
+                    oldItem.LensConfig.PropertyChanged -= LensConfig_PropertyChanged;
                     oldItem.BasicPropertyChanged -= Item_BasicPropertyChanged;
                     CameraCofingSaved = false;
                     break;
@@ -245,12 +247,19 @@ namespace MCAJawIns
             }
         }
 
+
         private void Item_BasicPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine(e.PropertyName);
-
+            //System.Diagnostics.Debug.WriteLine(e.PropertyName);
             CameraCofingSaved = false;
         }
+
+        private void LensConfig_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            //System.Diagnostics.Debug.WriteLine($"{e.PropertyName} line: 259");
+            CameraCofingSaved = false;
+        }
+
 
         /// <summary>
         /// 工作結束

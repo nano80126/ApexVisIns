@@ -895,9 +895,9 @@ namespace MCAJawIns.Tab
                             MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
                             break;
                         case JawTypes.L:
-                            MCAJawM.SetVisionParam(1, Cam1PxSize, Cam1Mg);
-                            MCAJawM.SetVisionParam(2, Cam2PxSize, Cam2Mg);
-                            MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            MCAJawL.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJawL.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJawL.SetVisionParam(3, Cam3PxSize, Cam3Mg);
                             break;
                         default:
                             break;
@@ -1314,12 +1314,10 @@ namespace MCAJawIns.Tab
                 #endregion
                 #region Jaw L
                 case JawTypes.L:
-#if WaitChange
                     items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                     center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
                     lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
                     upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 }; 
-#endif
                     break;
                 #endregion
                 default:
@@ -1551,8 +1549,8 @@ namespace MCAJawIns.Tab
                         JawMeasurements data = t.Result;
                         data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
                         data.DateTime = DateTime.Now;
-                        //MongoAccess.InsertOne("Measurements", data);
-                        //MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+                        // MongoAccess.InsertOne("Measurements", data);
+                        // MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
 
                         // 檢驗失敗，發出 Alarm
                         if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)

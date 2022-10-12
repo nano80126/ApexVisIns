@@ -681,9 +681,10 @@ namespace MCAJawIns.Tab
 
             try
             {
+                cam.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.ThrowException);
                 cam.Camera.ExecuteSoftwareTrigger();
 
-                using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(500, TimeoutHandling.ThrowException);
+                using IGrabResult grabResult = cam.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.ThrowException);
                 Mat mat = BaslerFunc.GrabResultToMatMono(grabResult);
 
 
@@ -785,13 +786,18 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24413077":
-                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam1(mat, out byte th1);
+                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam1(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam1(mat);
                                         break;
                                     case "24413099":
-                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam2(mat, out byte th2);
+                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam2(mat, out byte th2);
+                                        //Debug.WriteLine($"threshold: {th2}");
+                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam2(mat);
                                         break;
                                     case "40168508":
-                                        MainWindow.MCAJaw.MCAJawL.CheckPartCam3(mat, out byte th3);
+                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam3(mat, out byte th3);
+                                        //Debug.WriteLine($"threshold {th3}");
+                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam3(mat);
                                         break;
                                 }
                                 break;
