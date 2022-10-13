@@ -249,17 +249,6 @@ namespace MCAJawIns.Algorithm
                             else { j--; }
                         }
                     });
-
-                    // DateTime t1 = DateTime.Now;
-                    // foreach (string key in cam1results.Keys)
-                    // {
-                    //     double avg = cam1results[key].Average();
-                    //     JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                    //     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-
-                    //     if (key == "前開") { d_front = avg; }
-                    // }
-                    // Debug.WriteLine($"t1 takes: {(DateTime.Now - t1).TotalMilliseconds}");
                     #endregion
 
                     #region CAMERA 2 
@@ -473,7 +462,6 @@ namespace MCAJawIns.Algorithm
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
-                // spec = MCAJaw.JawSizeSpecList.Source.First(s => s.Key == "bfDiff");
                 spec = specList.First(s => s.Key == "bfDiff");
                 if (spec.Enable)
                 {
@@ -531,21 +519,6 @@ namespace MCAJawIns.Algorithm
                 foreach (string key in cam3results.Keys)
                 {
                     Debug.WriteLine($"平直度 {string.Join(",", cam3results[key])}");
-
-#if false
-                    Dictionary<double, int> dict = new Dictionary<double, int>();
-                    foreach (double value in cam3results[item])
-                    {
-                        if (!dict.ContainsKey(value))
-                        {
-                            dict.Add(value, 1);
-                        }
-                        else
-                        {
-                            dict[value]++;
-                        }
-                    } 
-#endif
 
                     double avg = cam3results[key].Average();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
@@ -609,7 +582,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // SIP
             // 1. 取得基準點 2. 1 x 前開 3. 2 x 輪廓度
@@ -867,7 +840,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // SIP
             // 1. 後開 (2. 計算開度差)
@@ -969,7 +942,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             JawSpecSetting spec;
@@ -1725,7 +1698,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, JigRoi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             canny.Dispose();
 
-            //Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
 
             double sumLength = lineH.Sum(line => line.Length());
             JigPosY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
@@ -1859,7 +1832,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             datumY = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
 
-            // Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             canny.Dispose();
         }
@@ -2419,7 +2392,7 @@ namespace MCAJawIns.Algorithm
 
                     // listY.Add(tmpY);
 
-                    //if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
+                    // if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     if (listY.Count == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     {
                         listY.Add(tmpY);
@@ -2516,9 +2489,8 @@ namespace MCAJawIns.Algorithm
             Cv2.Rectangle(src, roi, Scalar.Gray, 1);
 
             Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
-            //  Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+            // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif
-
             return false;
         }
         #endregion

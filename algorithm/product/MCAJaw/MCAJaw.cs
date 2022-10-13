@@ -93,6 +93,21 @@ namespace MCAJawIns.Algorithm
         {
             throw new NotImplementedException();
         }
+
+        public virtual void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 
@@ -121,6 +136,7 @@ namespace MCAJawIns.Algorithm
 
 namespace MCAJawIns
 {
+#if deprecated || true
     public partial class MainWindow : System.Windows.Window
     {
         #region 單位換算
@@ -181,7 +197,7 @@ namespace MCAJawIns
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
             Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
-        } 
+        }
         #endregion
 
         #region 主要進入點
@@ -222,7 +238,7 @@ namespace MCAJawIns
                 #region 平行處理 Task 初始化
                 List<Task> task1 = new();
                 List<Task> task2 = new();
-                List<Task> task3 = new(); 
+                List<Task> task3 = new();
                 #endregion
 
                 #region results 記錄用物件初始化
@@ -2531,5 +2547,6 @@ namespace MCAJawIns
             return false;
         }
         #endregion
-    }
+    } 
+#endif
 }

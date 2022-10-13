@@ -16,15 +16,15 @@ namespace MCAJawIns.Algorithm
     {
         #region 單位換算
 #if deprecated
-        private readonly double Cam1PixelSize = 2.2 * 1e-3;
-        private readonly double Cam2PixelSize = 2.2 * 1e-3;
-        private readonly double Cam3PixelSize = 4.5 * 1e-3;
+        //private readonly double Cam1PixelSize = 2.2 * 1e-3;
+        //private readonly double Cam2PixelSize = 2.2 * 1e-3;
+        //private readonly double Cam3PixelSize = 4.5 * 1e-3;
 
         // private readonly double cam1Mag = 0.21867;
         // private readonly double cam2Mag = 0.25461;
-        private readonly double cam1Mag = 0.21839;
-        private readonly double cam2Mag = 0.25431;
-        private readonly double cam3Mag = 0.1063; 
+        //private readonly double cam1Mag = 0.21839;
+        //private readonly double cam2Mag = 0.25431;
+        //private readonly double cam3Mag = 0.1063; 
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -35,7 +35,7 @@ namespace MCAJawIns.Algorithm
         #region 光源參數
         readonly ushort[] Cam1Light = new ushort[] { 96, 0 };
         readonly ushort[] Cam2Light = new ushort[] { 0, 128 };
-        readonly ushort[] Cam3Light = new ushort[] { 320, 256 };
+        readonly ushort[] Cam3Light = new ushort[] { 320, 320 };
         #endregion
 
         #region Private
@@ -49,7 +49,7 @@ namespace MCAJawIns.Algorithm
         // public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
         #endregion
 
-        #region 演算法使用
+        #region 演算法使用 ROIs
         /// <summary>
         /// ROIs
         /// </summary>
@@ -57,7 +57,7 @@ namespace MCAJawIns.Algorithm
         {
             { "有料檢知", new Rect(200, 265, 800, 30) },
             { "有料檢知2", new Rect(720, 940, 1000, 30) },
-            { "有料檢知3", new Rect(1800 , 310, 400, 60) },
+            { "有料檢知3", new Rect(1800, 310, 400, 60) },
             { "粗定位左", new Rect(180, 115, 250, 340) },
             { "粗定位右", new Rect(770, 115, 250, 340) },
             { "治具定位", new Rect(460, 900, 160, 100) },
@@ -75,7 +75,7 @@ namespace MCAJawIns.Algorithm
         /// <summary>
         /// 顯示換算單位
         /// </summary>
-        public void ListJawParam()
+        public override void ListVisionParam()
         {
             Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
             Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
@@ -206,7 +206,7 @@ namespace MCAJawIns.Algorithm
                 {
                     #region CAMERA 1
                     // COM2 光源控制器 (24V, 2CH)
-                    MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+                    MainWindow.LightCtrls[1].SetAllChannelValue(Cam1Light[0], Cam1Light[1]);
                     // 等待光源
                     _ = SpinWait.SpinUntil(() => false, 30);
 
@@ -249,22 +249,11 @@ namespace MCAJawIns.Algorithm
                             else { j--; }
                         }
                     });
-
-                    // DateTime t1 = DateTime.Now;
-                    // foreach (string key in cam1results.Keys)
-                    // {
-                    //     double avg = cam1results[key].Average();
-                    //     JawSpecSetting spec = MCAJaw.JawSpecGroup.SpecList.First(s => s.Item == key);
-                    //     MCAJaw.JawSpecGroup.Collection1.Add(new JawSpec(key, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
-
-                    //     if (key == "前開") { d_front = avg; }
-                    // }
-                    // Debug.WriteLine($"t1 takes: {(DateTime.Now - t1).TotalMilliseconds}");
                     #endregion
 
                     #region CAMERA 2 
                     // COM2 光源控制器 (24V, 2CH)
-                    MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+                    MainWindow.LightCtrls[1].SetAllChannelValue(Cam2Light[0], Cam2Light[1]);
                     // 等待光源
                     _ = SpinWait.SpinUntil(() => false, 30);
 
@@ -313,7 +302,7 @@ namespace MCAJawIns.Algorithm
 
                 #region CAMERA 3 平直度
                 // COM2 光源控制器 (24V, 2CH)
-                MainWindow.LightCtrls[1].SetAllChannelValue(256, 96);
+                MainWindow.LightCtrls[1].SetAllChannelValue(Cam3Light[0], Cam3Light[1]);
                 // 等待光源
                 _ = SpinWait.SpinUntil(() => false, 30);
 
@@ -360,7 +349,7 @@ namespace MCAJawIns.Algorithm
 
                 if (!partExist)
                 {
-                    SoundAlarm.Play();
+                    // SoundAlarm.Play();
                     throw new MCAJawException("未檢測到料件");
                 }
 
@@ -420,7 +409,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 ok
                         bool ok = jawSpec.OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標記這 piece 為 NG品，避免重複計算NG
                         isNG = !ok;
@@ -437,10 +426,10 @@ namespace MCAJawIns.Algorithm
                 foreach (string key in cam2results.Keys)
                 {
                     JawSpecGroups group = specList.Find(x => x.Key == key)?.Group ?? JawSpecGroups.None;
-                    // Debug.WriteLine($"{key} {cam2results[key].Count}");
+                    // Debug.WriteLine($"{specList.Find(x => x.Key == key)?.Group}");
                     //
                     double avg = cam2results[key].Min();
-                    //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
+                    // spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == key);
                     spec = specList.First(s => s.Key == key);
                     JawSpec jawSpec = new(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg, group);
                     if (group == JawSpecGroups.None)
@@ -459,7 +448,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = jawSpec.OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -473,7 +462,6 @@ namespace MCAJawIns.Algorithm
                 #endregion
 
                 #region 開度差 (先確認是否啟用)
-                // spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == "開度差");
                 spec = specList.First(s => s.Key == "bfDiff");
                 if (spec.Enable)
                 {
@@ -493,7 +481,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection1[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -508,8 +496,8 @@ namespace MCAJawIns.Algorithm
 
                 #region 加入群組結果
                 IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] groupArr = new IEnumerable<IGrouping<JawSpecGroups, JawSpec>>[] {
-                    cam1groupResult.GroupBy(x=>x.Group),
-                    cam2groupResult.GroupBy(x=>x.Group),
+                    cam1groupResult.GroupBy(x => x.Group),
+                    cam2groupResult.GroupBy(x => x.Group)
                 };
                 for (int i = 0; i < groupArr.Length; i++)
                 {
@@ -528,28 +516,13 @@ namespace MCAJawIns.Algorithm
                 #region Camera 3 結果
                 // 若平直度未檢測到，播放警告
                 if (cam3results.Keys.Count == 0) { SoundAlarm.Play(); }
-                foreach (string item in cam3results.Keys)
+                foreach (string key in cam3results.Keys)
                 {
-                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[item])}");
+                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[key])}");
 
-#if false
-                    Dictionary<double, int> dict = new Dictionary<double, int>();
-                    foreach (double value in cam3results[item])
-                    {
-                        if (!dict.ContainsKey(value))
-                        {
-                            dict.Add(value, 1);
-                        }
-                        else
-                        {
-                            dict[value]++;
-                        }
-                    } 
-#endif
-
-                    double avg = cam3results[item].Average();
+                    double avg = cam3results[key].Average();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);
-                    spec = specList.First(s => s.Key == item);
+                    spec = specList.First(s => s.Key == key);
                     MCAJaw.JawResultGroup.Collection3.Add(new JawSpec(spec.Item, spec.CenterSpec, spec.LowerCtrlLimit, spec.UpperCtrlLimit, avg));
                     // MCAJaw.JawInspection.LotResults[spec.Key].Count += MCAJaw.JawSpecGroup.Collection3[^1].OK ? 0 : 1;   // 保留
 
@@ -558,7 +531,7 @@ namespace MCAJawIns.Algorithm
                     {
                         // 判斷是否 OK
                         bool ok = MCAJaw.JawResultGroup.Collection3[^1].OK;
-                        // ok => Count 不加 0
+                        // ok => Count 不加 1
                         MCAJaw.JawInspection.LotResults[spec.Key].Count += ok ? 0 : 1;
                         // 若不 ok => 標示這 pc 為 NG 品
                         isNG = !ok;
@@ -609,7 +582,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // SIP
             // 1. 取得基準點 2. 1 x 前開 3. 2 x 輪廓度
@@ -751,7 +724,7 @@ namespace MCAJawIns.Algorithm
                 }
                 #endregion
 
-                #region 取得影像上方角點 (計算  用)
+                #region 取得影像上方角點 (計算 0435 ~ 0405 用)
                 // 取得角點 左 (實際為右)
                 GetCornerPoint(src, baseL, LX, JawPos.Left, out cornerPts[0], out cornerPts[1]);
                 // 取得角點 右 (實際為左)
@@ -867,7 +840,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // SIP
             // 1. 後開 (2. 計算開度差)
@@ -875,8 +848,8 @@ namespace MCAJawIns.Algorithm
             // 3. 2 x 0.088 4. 0.176
 
             JawSpecSetting spec;
-            double d_088R = 0;
-            double d_088L = 0;
+            double d_174R = 0;
+            double d_174L = 0;
 
             try
             {
@@ -893,8 +866,8 @@ namespace MCAJawIns.Algorithm
                     {
                         lock (results)
                         {
-                            if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                            results[spec.Item].Add(d_back);
+                            if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                            results[spec.Key].Add(d_back);
                         }
                     }
                 }
@@ -906,17 +879,17 @@ namespace MCAJawIns.Algorithm
                 // 088 右 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R, spec.Correction + spec.CorrectionSecret);
+                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_174R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088R);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_174R);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_088R);
-                    Debug.WriteLine($"{nameof(d_088R)}: {d_088R:F5}");
+                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_174R);
+                    Debug.WriteLine($"{nameof(d_174R)}: {d_174R:F5}");
                 }
                 #endregion
 
@@ -926,17 +899,17 @@ namespace MCAJawIns.Algorithm
                 // 088 左 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L, spec.Correction + spec.CorrectionSecret);
+                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_174L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_174L);
                     }
                 }
                 else if (results == null)
                 {
-                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_088L);
-                    Debug.WriteLine($"{nameof(d_088L)}: {d_088L:F5}");
+                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_174L);
+                    Debug.WriteLine($"{nameof(d_174L)}: {d_174L:F5}");
                 }
                 #endregion
 
@@ -946,8 +919,8 @@ namespace MCAJawIns.Algorithm
                 {
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(d_088R + d_088L);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(d_174R + d_174L);
                     }
                 }
                 #endregion
@@ -969,7 +942,7 @@ namespace MCAJawIns.Algorithm
         /// <param name="src">來源影像</param>
         /// <param name="specList">規格列表</param>
         /// <param name="results">檢驗結果</param>
-        public void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
+        public override void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
         {
             // Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
             JawSpecSetting spec;
@@ -989,8 +962,8 @@ namespace MCAJawIns.Algorithm
                     Cal007FlatnessValue4(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
-                        if (!results.ContainsKey(spec.Item)) { results[spec.Item] = new List<double>(); }
-                        results[spec.Item].Add(f_007);
+                        if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
+                        results[spec.Key].Add(f_007);
                     }
                 }
                 else if (results == null)
@@ -1044,8 +1017,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetContours(LeftMat, LeftRoi.Location, 75, 150, out Point[][] _, out Point[] LeftCon);
             Methods.GetContours(RightMat, RightROi.Location, 75, 150, out Point[][] _, out Point[] RightCon);
 
-            //Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
-            //Cv2.Rectangle(src, RightROi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, RightROi, Scalar.Black, 1);
 
             int maxX_L = LeftCon.Max(c => c.X);
             int maxY_L = LeftCon.Max(c => c.Y);
@@ -1308,7 +1281,7 @@ namespace MCAJawIns.Algorithm
             // 取得輪廓點
             Cv2.FindContours(canny, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
 
-            //Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, roi, Scalar.Black, 2);
 
             #region 計算中心值
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 2, 5);
@@ -1412,8 +1385,8 @@ namespace MCAJawIns.Algorithm
 
             min = lineH.Min(line => Math.Min(line.P1.Y, line.P2.Y));
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
-
-            center = Math.Abs(max - min) > 10 ? (min + max) / 2 : min;  // 計算中心值或是使用最小值
+            // 計算中心值或是使用最小值
+            center = Math.Abs(max - min) > 10 ? (min + max) / 2 : min;
             #endregion
 
             #region 尋找轉角點
@@ -1615,11 +1588,11 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
 #if DEBUG || debug
-            //Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, roi, Scalar.Black, 1);
             // 這邊要確認 lineH 重複性
             foreach (LineSegmentPoint item in lineH)
             {
-                Cv2.Line(src, item.P1, item.P2, Scalar.LightGray, 2);
+                // Cv2.Line(src, item.P1, item.P2, Scalar.LightGray, 2);
             }
 #endif
 
@@ -1708,7 +1681,7 @@ namespace MCAJawIns.Algorithm
             Rect roi = JawROIs["有料檢知2"];
 
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out threshold);
-            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
             return threshold is > 50 and < 180;
         }
 
@@ -1725,7 +1698,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, JigRoi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             canny.Dispose();
 
-            Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, JigRoi, Scalar.Gray, 2);
 
             double sumLength = lineH.Sum(line => line.Length());
             JigPosY = lineH.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength);
@@ -1750,7 +1723,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
 
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
             int r = lineV.Max(line => (line.P1.X + line.P2.X) / 2);
@@ -1844,7 +1817,7 @@ namespace MCAJawIns.Algorithm
             Rect roi = JawROIs["有料檢知3"];
 
             Methods.GetRoiOtsu(src, roi, 0, 255, out _, out threshold);
-            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
             return threshold is > 50 and < 180;
         }
 
@@ -1859,7 +1832,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             datumY = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
 
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             canny.Dispose();
         }
@@ -2376,8 +2349,8 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
-            // 使用完刪除
-            DateTime t1 = DateTime.Now;
+            //// 使用完刪除
+            //DateTime t1 = DateTime.Now;
             // ROI
             Rect roi = new(350, (int)(baseDatumY + 40), 2700, 45);
             // 
@@ -2494,11 +2467,11 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
                         // 著色
-                        b[srcWidth * tmpY + i2] = 50;
-                        b[srcWidth * (tmpY + 1) + i2] = 50;
-                        b[srcWidth * (tmpY + 2) + i2] = 50;
-                        b[srcWidth * (tmpY - 1) + i2] = 50;
-                        b[srcWidth * (tmpY - 2) + i2] = 50;
+                        b[(srcWidth * tmpY) + i2] = 50;
+                        b[(srcWidth * (tmpY + 1)) + i2] = 50;
+                        b[(srcWidth * (tmpY + 2)) + i2] = 50;
+                        b[(srcWidth * (tmpY - 1)) + i2] = 50;
+                        b[(srcWidth * (tmpY - 2)) + i2] = 50;
 #endif
                     }
                     else { listY.Insert(0, listY[0]); }
@@ -2516,7 +2489,7 @@ namespace MCAJawIns.Algorithm
             Cv2.Rectangle(src, roi, Scalar.Gray, 1);
 
             Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
-            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+            // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif
             return false;
         }
