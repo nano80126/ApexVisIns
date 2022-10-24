@@ -196,6 +196,7 @@ namespace MCAJawIns.Tab
             if (mat == null) { return; }
             Indicator.OriImage = mat.Clone();
 
+#if test337
             if (AssistRect.Enable && AssistRect.Area > 0)
             {
                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect((int)AssistRect.X, (int)AssistRect.Y, (int)AssistRect.Width, (int)AssistRect.Height);
@@ -257,13 +258,13 @@ namespace MCAJawIns.Tab
                 Mat roiMat = new Mat(mat, roi);
 
 
-                #region 範圍設定
+            #region 範圍設定
                 bool b1 = int.TryParse(FromText.Text, out int fromAngle);
                 bool b2 = int.TryParse(ToText.Text, out int toAngle);
 
                 FromText.Text = fromAngle.ToString();
                 ToText.Text = toAngle.ToString();
-                #endregion
+            #endregion
 
                 if (b1 && b2)
                 {
@@ -274,7 +275,7 @@ namespace MCAJawIns.Tab
                         // 圓中心指標idx
                         int c = (pt.Y * width) + pt.X;
 
-                        #region 
+            #region 
 #if false
 
                         // from angle1 to angle2 
@@ -292,7 +293,7 @@ namespace MCAJawIns.Tab
                                 int x = (int)(r * Math.Cos(-Math.PI * angle / 180));
                                 int y = (int)(r * Math.Sin(-Math.PI * angle / 180));
 
-                                #region Draw Chart Lines
+            #region Draw Chart Lines
                                 gray = b[c + (y * width) + x];
                                 if (r == 0) { grayLast = gray; }
 
@@ -301,7 +302,7 @@ namespace MCAJawIns.Tab
                                 //{
                                 //}
                                 Cv2.Line(chart, r + 25, chart.Height - grayLast - 25, r + 25, chart.Height - gray - 25, Scalar.Red, 1);
-                                #endregion
+            #endregion
 
                                 // 畫標記線
                                 if (angle == fromAngle || angle == toAngle)
@@ -320,11 +321,11 @@ namespace MCAJawIns.Tab
                                 grayLast = gray;
                             }
 
-                            #region Draw Chart Axis and Text
+            #region Draw Chart Axis and Text
                             if (fromAngle <= angle && angle <= toAngle)
                             // if (angle % 90 == 0)
                             {
-                                #region Draw Axis
+            #region Draw Axis
                                 Cv2.Line(chart, 0 + 25, chart.Height, 0 + 25, 0, Scalar.Black, 1);
 
                                 for (int x = 25; x < chart.Width; x += 10)
@@ -340,15 +341,15 @@ namespace MCAJawIns.Tab
 
                                 Cv2.PutText(chart, "R", new OpenCvSharp.Point(chart.Width - 25, chart.Height - 5), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
                                 Cv2.PutText(chart, "gray", new OpenCvSharp.Point(30, 25), HersheyFonts.HersheySimplex, 0.75, Scalar.DarkBlue, 1);
-                                #endregion
+            #endregion
 
                                 Cv2.ImShow($"Chart {angle}", chart);
                                 Cv2.MoveWindow($"Chart {angle}", 50 + angle, angle + 40);
                             }
-                            #endregion
+            #endregion
                         }  
 #endif
-                        #endregion
+            #endregion
 
                         // radius
                         for (int r = roiMat.Width / 3; r <= roiMat.Width / 2; r += 10)
@@ -367,14 +368,14 @@ namespace MCAJawIns.Tab
                                 int y = (int)Math.Round(r * Math.Sin(-Math.PI * angle / 180), 0);
 
 
-                                #region Draw Chart Lines
+            #region Draw Chart Lines
                                 gray = b[c + (y * width) + x];
                                 if (angle == fromAngle) { grayLast = gray; }
 
 
                                 //if (fromAngle <= angle && )
                                 Cv2.Line(chart2, (int)((angle * 2) + 25), chart2.Height - grayLast - 25, (int)((angle * 2) + 25), chart2.Height - gray - 25, Scalar.Red, 1);
-                                #endregion
+            #endregion
 
 
                                 if (true)
@@ -386,9 +387,9 @@ namespace MCAJawIns.Tab
                             }
 
 
-                            #region Draw Chart Axis and Text
+            #region Draw Chart Axis and Text
 
-                            Cv2.Line(chart2, 0 + 25, chart2.Height, 0 + 25, 0,Scalar.Black, 1);
+                            Cv2.Line(chart2, 0 + 25, chart2.Height, 0 + 25, 0, Scalar.Black, 1);
                             for (int x = 25; x < chart2.Width; x += 10)
                             {
                                 //Cv2.Line(chart2, x, chart2.Height - 25 - 3, x, chart2.Height - 25 + 3, Scalar.Black, 1);
@@ -417,7 +418,7 @@ namespace MCAJawIns.Tab
 
                             Cv2.ImShow($"{nameof(chart2)} {r}", chart2);
                             Cv2.MoveWindow($"{nameof(chart2)} {r}", 10 + r, 20 + (r / 2));
-                            #endregion
+            #endregion
                         }
 
                         // 中心上黑點
@@ -436,9 +437,13 @@ namespace MCAJawIns.Tab
 
                 Indicator.Image = mat;
             }
+#endif
 
-            // MainWindow.JawInsSequenceCam1(mat);
-            // Indicator.Image = mat;
+
+#if true
+            MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam1(mat);
+            Indicator.Image = mat;
+#endif
 
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
@@ -741,19 +746,16 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24214356":    // 前相機
-                                        //MainWindow.CheckPartCam1(mat);
-                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam1(mat, out byte th1);
-                                        // MainWindow.JawInsSequenceCam1(mat);
+                                        //MainWindow.MCAJaw.MCAJawS.CheckPartCam1(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam1(mat);
                                         break;
                                     case "24214384":    // 下相機
-                                        //MainWindow.CheckPartCam2(mat);
-                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam2(mat, out byte th2);
-                                        //MainWindow.JawInsSequenceCam2(mat);
+                                        //MainWindow.MCAJaw.MCAJawS.CheckPartCam2(mat, out byte th2);
+                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam2(mat);
                                         break;
                                     case "24115540":    // 側相機
-                                        //MainWindow.CheckPartCam3(mat);
-                                        MainWindow.MCAJaw.MCAJawS.CheckPartCam3(mat, out byte th3);
-                                        //MainWindow.JawInsSequenceCam3(mat);
+                                        //MainWindow.MCAJaw.MCAJawS.CheckPartCam3(mat, out byte th3);
+                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam3(mat);
                                         break;
                                     default:
                                         break;

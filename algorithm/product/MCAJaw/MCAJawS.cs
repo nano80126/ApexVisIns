@@ -623,7 +623,9 @@ namespace MCAJawIns.Algorithm
                 GetContourCornerPoint(src, baseR, RX, JawPos.Right, out contourPts[2], out contourPts[3]);
                 // 取得亞像素點
                 Point2f[] subContourPts = Cv2.CornerSubPix(src, new Point2f[] { contourPts[0], contourPts[1], contourPts[2], contourPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
-
+                // 處理 角點未抓到 Bug
+                subContourPts[1] = subContourPts[1].X == 0 && subContourPts[1].Y == 0 ? subContourPts[0] : subContourPts[1];
+                subContourPts[3] = subContourPts[3].X == 0 && subContourPts[3].Y == 0 ? subContourPts[2] : subContourPts[3];
 #if DEBUG || debug
                 // 畫角點
                 foreach (Point2f item in subContourPts)
@@ -731,6 +733,9 @@ namespace MCAJawIns.Algorithm
                 GetCornerPoint(src, baseR, RX, JawPos.Right, out cornerPts[2], out cornerPts[3]);
                 // 取得亞像素點
                 Point2f[] subCornerPts = Cv2.CornerSubPix(src, new Point2f[] { cornerPts[0], cornerPts[1], cornerPts[2], cornerPts[3] }, new Size(11, 11), new Size(-1, -1), TermCriteria.Both(40, 0.01));
+                // 處理 角點未抓到 Bug
+                subCornerPts[1] = subCornerPts[1].X == 0 && subCornerPts[1].Y == 0 ? subCornerPts[0] : subCornerPts[1];
+                subCornerPts[3] = subCornerPts[3].X == 0 && subCornerPts[3].Y == 0 ? subCornerPts[2] : subCornerPts[3];
 #if DEBUG || debug
                 // 畫角點
                 foreach (Point2f item in subCornerPts)
@@ -1017,8 +1022,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetContours(LeftMat, LeftRoi.Location, 75, 150, out Point[][] _, out Point[] LeftCon);
             Methods.GetContours(RightMat, RightROi.Location, 75, 150, out Point[][] _, out Point[] RightCon);
 
-            //Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
-            //Cv2.Rectangle(src, RightPoint, Scalar.Black, 1);
+            // Cv2.Rectangle(src, LeftRoi, Scalar.Black, 1);
+            // Cv2.Rectangle(src, RightROi, Scalar.Black, 1);
 
             int maxX_L = LeftCon.Max(c => c.X);
             int maxY_L = LeftCon.Max(c => c.Y);
@@ -1224,8 +1229,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
 #if DEBUG || debug
-            // Cv2.Rectangle(src, leftRoi, Scalar.Black, 2);
-            // Cv2.Rectangle(src, rightRoi, Scalar.Black, 2);  
+            // Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
+            // Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 #endif
 
             // 左
@@ -1264,10 +1269,10 @@ namespace MCAJawIns.Algorithm
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)baseX + 2, basePt.Y - 45, 20, 60);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 45, 25, 60);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)baseX - 22, basePt.Y - 45, 20, 60);
+                    roi = new Rect((int)baseX - 27, basePt.Y - 45, 25, 60);
                     break;
                 default:
                     roi = new Rect();
@@ -1343,6 +1348,8 @@ namespace MCAJawIns.Algorithm
             #endregion
 
             p1 = filter[0];
+
+            Debug.WriteLine($"points: {p1} {p2}");
         }
 
         /// <summary>
@@ -1361,10 +1368,10 @@ namespace MCAJawIns.Algorithm
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)baseX + 2, basePt.Y - 130, 20, 50);
+                    roi = new Rect((int)baseX + 2, basePt.Y - 130, 25, 50);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)baseX - 22, basePt.Y - 130, 20, 50);
+                    roi = new Rect((int)baseX - 27, basePt.Y - 130, 25, 50);
                     break;
                 default:
                     roi = new Rect();
@@ -1433,6 +1440,8 @@ namespace MCAJawIns.Algorithm
             #endregion
 
             p1 = filter[0];
+
+            Debug.WriteLine($"points: {p1} {p2}");
         }
 
         /// <summary>
@@ -2369,7 +2378,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 590 or >= 650 && i < roiMat.Width)
+                if ((i is < 590 or >= 650) && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2439,7 +2448,7 @@ namespace MCAJawIns.Algorithm
                 }
 
 
-                if (i2 > 0)
+                if (i2 > 0 && (i2 is < 90 or >= 140))
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;

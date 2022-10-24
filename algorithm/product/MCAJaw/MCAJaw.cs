@@ -111,7 +111,6 @@ namespace MCAJawIns.Algorithm
         #endregion
     }
 
-
     [Obsolete("deprecated")]
     public class VisionUnitTransfer
     {
@@ -737,7 +736,7 @@ namespace MCAJawIns
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R, spec.Correction + spec.CorrectionSecret);
+                    Cal013DistanceValue2(src, baseL, JawPos.Left, LX, (subContourPts[0].Y + subContourPts[1].Y) / 2, out double d_013R);
                     Debug.WriteLine($"013R: {d_013R:F5}");
                 }
 
@@ -753,7 +752,7 @@ namespace MCAJawIns
                 }
                 else if (results == null)
                 {
-                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L, spec.Correction + spec.CorrectionSecret);
+                    Cal013DistanceValue2(src, baseR, JawPos.Right, RX, (subContourPts[2].Y + subContourPts[3].Y) / 2, out double d_013L);
                     Debug.WriteLine($"013L: {d_013L:F5}");
                 }
                 #endregion
@@ -2547,6 +2546,6 @@ namespace MCAJawIns
             return false;
         }
         #endregion
-    } 
+    }
 #endif
 }
