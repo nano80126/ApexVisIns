@@ -454,14 +454,28 @@ namespace MCAJawIns.Tab
                             byte[] threholds = new byte[MainWindow.BaslerCams.Length];
                             for (int i = 0; i < MainWindow.BaslerCams.Length; i++)
                             {
+                                switch (i)
+                                {
+                                    case 0:
+                                        MainWindow.LightCtrls[1].SetAllChannelValue(96, 0);
+                                        break;
+                                    case 1:
+                                        MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
+                                        break;
+                                    case 2:
+                                        MainWindow.LightCtrls[1].SetAllChannelValue(256, 96);
+                                        break;
+                                }
+                                _ = SpinWait.SpinUntil(() => false, 30);
+
                                 BaslerCam cam = MainWindow.BaslerCams[i];
                                 OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
                                 OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
-                                Methods.GetRoiOtsu(mat, roi, 0, 255, out _, out threholds[i]);
+                                Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out threholds[i]);
 
                                 mat.Dispose();
                             }
-
+                            MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
 
                             if (threholds.Any(threhold => threhold < 5))
                             {
