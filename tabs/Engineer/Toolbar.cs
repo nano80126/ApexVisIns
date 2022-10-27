@@ -739,6 +739,11 @@ namespace MCAJawIns.Tab
                         Debug.WriteLine($"SN: {sn}");
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
 
+                        ///
+                        /// 這邊 暫時保留 
+                        /// 下一版 移除 switch (JawType)
+                        /// 
+
                         switch (MainWindow.JawType)
                         {
                             #region Jaw S
@@ -747,15 +752,24 @@ namespace MCAJawIns.Tab
                                 {
                                     case "24214356":    // 前相機
                                         //MainWindow.MCAJaw.MCAJawS.CheckPartCam1(mat, out byte th1);
-                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam1(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam1(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam1(mat);
                                         break;
                                     case "24214384":    // 下相機
                                         //MainWindow.MCAJaw.MCAJawS.CheckPartCam2(mat, out byte th2);
-                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam2(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam2(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam2(mat);
                                         break;
                                     case "24115540":    // 側相機
                                         //MainWindow.MCAJaw.MCAJawS.CheckPartCam3(mat, out byte th3);
-                                        MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam3(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam3(mat, out byte th3);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
                                         break;
                                     default:
                                         break;
@@ -767,16 +781,28 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24214359":
-                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam1(mat, out byte th1);
-                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam1(mat);
+                                        // MainWindow.MCAJaw.MCAJawM.CheckPartCam1(mat, out byte th1);
+                                        // MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam1(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam1(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam1(mat);
                                         break;
                                     case "24413078":
-                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam2(mat, out byte th2);
-                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam2(mat);
+                                        // MainWindow.MCAJaw.MCAJawM.CheckPartCam2(mat, out byte th2);
+                                        // MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam2(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam2(mat, out byte th2);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam2(mat);
                                         break;
                                     case "40168495":
-                                        //MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat, out byte th3);
-                                        MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam3(mat);
+                                        // MainWindow.MCAJaw.MCAJawM.CheckPartCam3(mat, out byte th3);
+                                        // MainWindow.MCAJaw.MCAJawM.JawInsSequenceCam3(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam3(mat, out byte th3);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
                                         break;
                                     default:
                                         break;
@@ -788,18 +814,28 @@ namespace MCAJawIns.Tab
                                 switch (sn)
                                 {
                                     case "24413077":
-                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam1(mat, out byte th1);
-                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam1(mat);
+                                        // MainWindow.MCAJaw.MCAJawL.CheckPartCam1(mat, out byte th1);
+                                        //MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam1(mat);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam1(mat, out byte th1);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam1(mat);
                                         break;
                                     case "24413099":
-                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam2(mat, out byte th2);
-                                        //Debug.WriteLine($"threshold: {th2}");
-                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam2(mat);
+                                        // MainWindow.MCAJaw.MCAJawL.CheckPartCam2(mat, out byte th2);
+                                        // above deprecated
+
+                                        //MainWindow.MCAJaw.MCAJawPart.CheckPartCam2(mat, out byte th2);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam2(mat);
                                         break;
                                     case "40168508":
-                                        //MainWindow.MCAJaw.MCAJawL.CheckPartCam3(mat, out byte th3);
-                                        //Debug.WriteLine($"threshold {th3}");
-                                        MainWindow.MCAJaw.MCAJawL.JawInsSequenceCam3(mat);
+                                        // MainWindow.MCAJaw.MCAJawL.CheckPartCam3(mat, out byte th3);
+                                        // above deprecated
+
+                                        MainWindow.MCAJaw.MCAJawPart.CheckPartCam3(mat, out byte th3);
+                                        MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
+                                        break;
+                                    default:
                                         break;
                                 }
                                 break;

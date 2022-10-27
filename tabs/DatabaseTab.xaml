@@ -36,6 +36,7 @@
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                     <Setter Property="Height" Value="24" />
+                    <Setter Property="SnapsToDevicePixels" Value="True" />
                     <Style.Triggers>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource ColorTeal}" />

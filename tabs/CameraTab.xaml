@@ -155,6 +155,7 @@
                 <!--#region Footer -->
                 <ctrl:CustomCard.Footer>
                     <Button x:Name="CameraConfigSave" HorizontalAlignment="Right" Margin="4 4" Height="24" Focusable="False" materialDesign:ButtonAssist.CornerRadius="12"
+                            SnapsToDevicePixels="True"
                             Click="CameraConfigSave_Click">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">

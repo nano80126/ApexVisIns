@@ -113,6 +113,8 @@ namespace MCAJawIns.Tab
         public MCAJawS MCAJawS { get; set; }
         public MCAJawM MCAJawM { get; set; }
         public MCAJawL MCAJawL { get; set; }
+
+        public MCAJawAlgorithm MCAJawPart { get; set; }
         /// <summary>
         /// 啟用之Tab (檢驗用 or 尺寸設定用)
         /// </summary>
@@ -264,18 +266,23 @@ namespace MCAJawIns.Tab
                 switch (MainWindow.JawType)
                 {
                     case JawTypes.S:
-                        MCAJawS = new();
+                        //MCAJawS = new();
+                        MCAJawPart = new MCAJawS();
                         break;
                     case JawTypes.M:
-                        MCAJawM = new();
+                        //MCAJawM = new();
+                        MCAJawPart = new MCAJawM();
                         break;
                     case JawTypes.L:
-                        MCAJawL = new();
+                        //MCAJawL = new();
+                        MCAJawPart = new MCAJawL();
                         break;
                     default:
                         // 保留
                         break;
                 }
+
+                Debug.WriteLine($"Type:  {MCAJawPart.GetType()} line: 285");
             }
 
 #if false
@@ -463,19 +470,25 @@ namespace MCAJawIns.Tab
                                         MainWindow.LightCtrls[1].SetAllChannelValue(0, 128);
                                         break;
                                     case 2:
-                                        MainWindow.LightCtrls[1].SetAllChannelValue(256, 96);
+                                        MainWindow.LightCtrls[1].SetAllChannelValue(320, 256);
                                         break;
                                 }
                                 _ = SpinWait.SpinUntil(() => false, 30);
 
                                 BaslerCam cam = MainWindow.BaslerCams[i];
                                 OpenCvSharp.Mat mat = MainWindow.Basler_RetrieveResult(cam);
-                                OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
-                                Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out threholds[i]);
+                                // OpenCvSharp.Rect roi = new OpenCvSharp.Rect(mat.Width / 3, mat.Height / 3, mat.Width / 3, mat.Height / 3);
+                                // Methods.GetRoiOtsu(mat, roi, 0, 255, out OpenCvSharp.Mat otsu, out threholds[i]);
+                                threholds[i] = mat.At<byte>(mat.Height / 2, mat.Width / 2);
+
+                                // Dispatcher.Invoke(() => {
+                                // OpenCvSharp.Cv2.ImShow($"otsu{i}", otsu.Clone());
+                                // });
 
                                 mat.Dispose();
                             }
                             MainWindow.LightCtrls[1].SetAllChannelValue(0, 0);
+                            Debug.WriteLine($"Threshold: {string.Join(",", threholds)}");
 
                             if (threholds.Any(threhold => threhold < 5))
                             {
@@ -896,26 +909,43 @@ namespace MCAJawIns.Tab
                         }
                     });
 
+#if false
                     switch (MainWindow.JawType)
                     {
                         case JawTypes.S:
-                            MCAJawS.SetVisionParam(1, Cam1PxSize, Cam1Mg);
-                            MCAJawS.SetVisionParam(2, Cam2PxSize, Cam2Mg);
-                            MCAJawS.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            //MCAJawS.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            //MCAJawS.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            //MCAJawS.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+
+                            MCAJaw_.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJaw_.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJaw_.SetVisionParam(3, Cam3PxSize, Cam3Mg);
                             break;
                         case JawTypes.M:
-                            MCAJawM.SetVisionParam(1, Cam1PxSize, Cam1Mg);
-                            MCAJawM.SetVisionParam(2, Cam2PxSize, Cam2Mg);
-                            MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            //MCAJawM.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            //MCAJawM.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            //MCAJawM.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+
+                            MCAJaw_.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJaw_.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJaw_.SetVisionParam(3, Cam3PxSize, Cam3Mg);
                             break;
                         case JawTypes.L:
-                            MCAJawL.SetVisionParam(1, Cam1PxSize, Cam1Mg);
-                            MCAJawL.SetVisionParam(2, Cam2PxSize, Cam2Mg);
-                            MCAJawL.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+                            //MCAJawL.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            //MCAJawL.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            //MCAJawL.SetVisionParam(3, Cam3PxSize, Cam3Mg);
+
+                            MCAJaw_.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                            MCAJaw_.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                            MCAJaw_.SetVisionParam(3, Cam3PxSize, Cam3Mg);
                             break;
                         default:
                             break;
-                    }
+                    } 
+#endif
+                    MCAJawPart.SetVisionParam(1, Cam1PxSize, Cam1Mg);
+                    MCAJawPart.SetVisionParam(2, Cam2PxSize, Cam2Mg);
+                    MCAJawPart.SetVisionParam(3, Cam3PxSize, Cam3Mg);
 
                     if (MainWindow.BaslerCams.All(cam => cam.IsConnected))
                     {
@@ -1505,18 +1535,19 @@ namespace MCAJawIns.Tab
             //MCAJawM M = new();
             Task.Run(() =>
             {
-                switch (MainWindow.JawType)
-                {
-                    case JawTypes.S:
-                        MCAJawS.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
-                        break;
-                    case JawTypes.M:
-                        MCAJawM.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
-                        break;
-                    case JawTypes.L:
-                        MCAJawL.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
-                        break;
-                }
+                //switch (MainWindow.JawType)
+                //{
+                //    case JawTypes.S:
+                //        MCAJawS.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                //        break;
+                //    case JawTypes.M:
+                //        MCAJawM.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                //        break;
+                //    case JawTypes.L:
+                //        MCAJawL.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
+                //        break;
+                //}
+                MCAJaw_.CaptureImage(BaslerCam1, BaslerCam2, BaslerCam3);
             }).ContinueWith(t =>
             {
                 Debug.WriteLine($"It takes {(DateTime.Now - t1).TotalMilliseconds} ms");
@@ -1529,76 +1560,79 @@ namespace MCAJawIns.Tab
             //{
             //    for (int i = 0; i < 150; i++)
             //    {
-                    if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
-                    DateTime t1 = DateTime.Now;
+            if (Status != INS_STATUS.READY && Status != INS_STATUS.IDLE) { return; }
+            DateTime t1 = DateTime.Now;
 
-                    Status = INS_STATUS.INSPECTING;
+            Status = INS_STATUS.INSPECTING;
 
-                    // 清空當下 Collection
-                    JawResultGroup.Collection1.Clear();
-                    JawResultGroup.Collection2.Clear();
-                    JawResultGroup.Collection3.Clear();
+            // 清空當下 Collection
+            JawResultGroup.Collection1.Clear();
+            JawResultGroup.Collection2.Clear();
+            JawResultGroup.Collection3.Clear();
 
-                    // bool b = await
-                    Task.Run(() =>
+            // bool b = await
+            Task.Run(() =>
+            {
+                JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
+                // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
+                // switch (MainWindow.JawType)
+                // {
+                //     case JawTypes.S:
+                //         //MainWindow.MCAJaw.MCAJawS.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                //         MainWindow.MCAJaw.MCAJaw_.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                //         break;
+                //     case JawTypes.M:
+                //         MainWindow.MCAJaw.MCAJawM.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                //         break;
+                //     case JawTypes.L:
+                //         MainWindow.MCAJaw.MCAJawL.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+                //         break;
+                // }
+                MainWindow.MCAJaw.MCAJawPart.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
+
+                return _jawFullSpecIns;
+            }).ContinueWith(t =>
+            {
+                // 判斷是否插入資料庫
+                JawMeasurements data = t.Result;
+                data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
+                data.DateTime = DateTime.Now;
+                // MongoAccess.InsertOne("Measurements", data);
+                // MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+
+                // 檢驗失敗，發出 Alarm
+                if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
+                {
+                    Dispatcher.Invoke(() =>
                     {
-                        JawMeasurements _jawFullSpecIns = new(JawInspection.LotNumber);
-                        // MainWindow.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);  // deprecated
-                        switch (MainWindow.JawType)
-                        {
-                            case JawTypes.S:
-                                MainWindow.MCAJaw.MCAJawS.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                                break;
-                            case JawTypes.M:
-                                MainWindow.MCAJaw.MCAJawM.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                                break;
-                            case JawTypes.L:
-                                MainWindow.MCAJaw.MCAJawL.JawInsSequence(BaslerCam1, BaslerCam2, BaslerCam3, _jawFullSpecIns);
-                                break;
-                        }
-                        return _jawFullSpecIns;
-                    }).ContinueWith(t =>
-                    {
-                        // 判斷是否插入資料庫
-                        JawMeasurements data = t.Result;
-                        data.OK = JawResultGroup.Col1Result && JawResultGroup.Col2Result && JawResultGroup.Col3Result;
-                        data.DateTime = DateTime.Now;
-                        // MongoAccess.InsertOne("Measurements", data);
-                        // MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
-
-                        // 檢驗失敗，發出 Alarm
-                        if (JawResultGroup.Collection1.Count == 0 && JawResultGroup.Collection2.Count == 0 && JawResultGroup.Collection3.Count == 0)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                PlayerAlarm.Position = TimeSpan.FromSeconds(0);
-                                PlayerAlarm.Play();
-                            });
-                        }
-                        // 檢驗成功，插入資料庫
-                        else
-                        {
-                            MainWindow.SystemInfoTab.Env.PlusTotalParts();
-                            MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
-                        }
-
-                        // 檢驗工件 NG，發出 NG 音效
-                        if (!data.OK)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                PlayerNG.Position = TimeSpan.FromSeconds(0);
-                                PlayerNG.Play();
-                            });
-                        }
-
-                        // 變更狀態為準備檢驗
-                        Status = INS_STATUS.READY;
-
-                        Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
-
-                        return data.OK;
+                        PlayerAlarm.Position = TimeSpan.FromSeconds(0);
+                        PlayerAlarm.Play();
                     });
+                }
+                // 檢驗成功，插入資料庫
+                else
+                {
+                    MainWindow.SystemInfoTab.Env.PlusTotalParts();
+                    MongoAccess.InsertOne(nameof(JawCollection.Measurements), data);
+                }
+
+                // 檢驗工件 NG，發出 NG 音效
+                if (!data.OK)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        PlayerNG.Position = TimeSpan.FromSeconds(0);
+                        PlayerNG.Play();
+                    });
+                }
+
+                // 變更狀態為準備檢驗
+                Status = INS_STATUS.READY;
+
+                Debug.WriteLine($"One pc takes {(DateTime.Now - t1).TotalMilliseconds} ms");
+
+                return data.OK;
+            });
             //        SpinWait.SpinUntil(() => false, 3000);
             //    }
             //}).ContinueWith(t =>
