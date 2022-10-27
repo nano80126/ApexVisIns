@@ -203,6 +203,13 @@ MCA Jaw CCD 尺寸量測設備
 
 * [ ] UpdateProperty Triiger Edit to LostFocus in CameraTab.xaml
 
+* [ ] SystemInfo 改為單例模式
+	* Lazy<T>
+
+* [ ] InsResultView 有沒有可能優化?
+	* 不用 Clear 而是重複利用現有 Object
+
+
 ### Config Logic
 
 * Camera connected => Updata camera property => update camera config property

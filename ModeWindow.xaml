@@ -98,7 +98,7 @@
                 </RadioButton>
 
                 <RadioButton x:Name="TypeMRadio" GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}"
-                        CommandParameter="{x:Static local:JawTypes.M}" IsEnabled="False">
+                        CommandParameter="{x:Static local:JawTypes.M}" IsEnabled="True">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
@@ -108,7 +108,7 @@
                 </RadioButton>
 
                 <RadioButton x:Name="TypeLRadio" GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}"
-                        CommandParameter="{x:Static local:JawTypes.L}" IsEnabled="False">
+                        CommandParameter="{x:Static local:JawTypes.L}" IsEnabled="True">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
