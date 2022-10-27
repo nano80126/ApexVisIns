@@ -47,12 +47,12 @@ namespace MCAJawIns.Algorithm
     {
         #region Properties
         public MainWindow MainWindow { get; set; } = (MainWindow)System.Windows.Application.Current.MainWindow;
-        public double Cam1PixelSize { get; set; } = 2.2;
-        public double Cam2PixelSize { get; set; } = 2.2;
-        public double Cam3PixelSize { get; set; } = 3.45;
-        public double Cam1Mag { get; set; } = 1;
-        public double Cam2Mag { get; set; } = 1;
-        public double Cam3Mag { get; set; } = 1;
+        public double Cam1PixelSize { get; set; } = 2.2 * 1e-3;
+        public double Cam2PixelSize { get; set; } = 2.2 * 1e-3;
+        public double Cam3PixelSize { get; set; } = 3.45 * 1e-3;
+        public virtual double Cam1Mag { get; set; } = 1;
+        public virtual double Cam2Mag { get; set; } = 1;
+        public virtual double Cam3Mag { get; set; } = 1;
         #endregion
 
         #region Methods
@@ -84,30 +84,21 @@ namespace MCAJawIns.Algorithm
             }
         }
 
-        public virtual void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3);
 
-        public virtual void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null);
 
-        public virtual void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void JawInsSequenceCam1(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null);
 
-        public virtual void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void JawInsSequenceCam2(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null);
 
-        public virtual void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void JawInsSequenceCam3(Mat src, List<JawSpecSetting> specList = null, Dictionary<string, List<double>> results = null);
+
+        public abstract bool CheckPartCam1(Mat src, out byte threshold);
+
+        public abstract bool CheckPartCam2(Mat src, out byte threshold);
+
+        public abstract bool CheckPartCam3(Mat src, out byte threshold);
         #endregion
     }
 
@@ -132,6 +123,7 @@ namespace MCAJawIns.Algorithm
         }
     }
 }
+
 
 namespace MCAJawIns
 {

@@ -15,16 +15,10 @@ namespace MCAJawIns.Algorithm
     public class MCAJawS : MCAJawAlgorithm
     {
         #region 單位換算
-#if deprecated
-        //private readonly double Cam1PixelSize = 2.2 * 1e-3;
-        //private readonly double Cam2PixelSize = 2.2 * 1e-3;
-        //private readonly double Cam3PixelSize = 4.5 * 1e-3;
+#if true
+         
 
-        // private readonly double cam1Mag = 0.21867;
-        // private readonly double cam2Mag = 0.25461;
-        //private readonly double cam1Mag = 0.21839;
-        //private readonly double cam2Mag = 0.25431;
-        //private readonly double cam3Mag = 0.1063; 
+
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -643,7 +637,7 @@ namespace MCAJawIns.Algorithm
                 if (spec?.Enable == true && results != null)
                 {
                     // double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
-                    double c_005 = (Math.Abs((subContourPts[0].Y + subContourPts[1].Y) / 2 - (subContourPts[2].Y + subContourPts[3].Y) / 2) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
+                    double c_005 = (Math.Abs(((subContourPts[0].Y + subContourPts[1].Y) / 2) - ((subContourPts[2].Y + subContourPts[3].Y) / 2)) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -995,7 +989,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam1(Mat src, out byte threshold)
+        public override bool CheckPartCam1(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知"];
@@ -1348,8 +1342,6 @@ namespace MCAJawIns.Algorithm
             #endregion
 
             p1 = filter[0];
-
-            Debug.WriteLine($"points: {p1} {p2}");
         }
 
         /// <summary>
@@ -1440,8 +1432,6 @@ namespace MCAJawIns.Algorithm
             #endregion
 
             p1 = filter[0];
-
-            Debug.WriteLine($"points: {p1} {p2}");
         }
 
         /// <summary>
@@ -1684,7 +1674,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam2(Mat src, out byte threshold)
+        public override bool CheckPartCam2(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知2"];
@@ -1752,7 +1742,7 @@ namespace MCAJawIns.Algorithm
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
-            Debug.WriteLine($"Right: {rightX} Left: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
+            Debug.WriteLine($"後開: {Math.Abs(leftX - rightX)} px, Distance: {distance:0.00000}");
             // 銷毀 canny");
             canny.Dispose();
 
@@ -1789,7 +1779,7 @@ namespace MCAJawIns.Algorithm
             // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             double sumLength = lineV.Sum(line => line.Length());
-            double X = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
+            double X = lineV.Aggregate(0.0, (sum, next) => sum + ((next.P1.X + next.P2.X) / 2 * next.Length() / sumLength));
 
             // 隱藏 correction
             double subCorrection = 0;
@@ -1820,7 +1810,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam3(Mat src, out byte threshold)
+        public override bool CheckPartCam3(Mat src, out byte threshold)
         {
             // ROI 
             Rect roi = JawROIs["有料檢知3"];

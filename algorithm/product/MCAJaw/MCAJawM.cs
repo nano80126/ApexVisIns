@@ -15,16 +15,10 @@ namespace MCAJawIns.Algorithm
     public class MCAJawM : MCAJawAlgorithm
     {
         #region 單位換算
-#if deprecated
-        //private double Cam1PixelSize = 2.2 * 1e-3;
-        //private double Cam2PixelSize = 2.2 * 1e-3;
-        //private double Cam3PixelSize = 3.45 * 1e-3;
-
-        // private readonly double cam1Mag = 0.21867;
-        // private readonly double cam2Mag = 0.25461;
-        //private double cam1Mag = 0.21839;
-        //private double cam2Mag = 0.25431;
-        //private double cam3Mag = 0.12915;  
+#if true
+        public override double Cam1Mag { get; set; } = 0.21689;
+        public override double Cam2Mag { get; set; } = 0.24475;
+        public override double Cam3Mag { get; set; } = 0.09704;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -61,7 +55,7 @@ namespace MCAJawIns.Algorithm
             { "粗定位左", new Rect(250, 240, 230, 300) },
             { "粗定位右", new Rect(600, 240, 230, 300) },
             { "治具定位", new Rect(650, 1235, 300, 80) },
-            { "後開位置", new Rect(450, 800, 700, 40) },
+            { "後開位置", new Rect(450, 850, 700, 60) },
             { "側面定位", new Rect(1160, 90, 240, 120) }
         };
         #endregion
@@ -643,7 +637,7 @@ namespace MCAJawIns.Algorithm
                 if (spec?.Enable == true && results != null)
                 {
                     // double c_005 = Math.Abs(subPtsArr[0].Y - subPtsArr[2].Y) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
-                    double c_005 = (Math.Abs((subContourPts[0].Y + subContourPts[1].Y) / 2 - (subContourPts[2].Y + subContourPts[3].Y) / 2) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
+                    double c_005 = (Math.Abs(((subContourPts[0].Y + subContourPts[1].Y) / 2) - ((subContourPts[2].Y + subContourPts[3].Y) / 2)) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -995,7 +989,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam1(Mat src, out byte threshold)
+        public override bool CheckPartCam1(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知"];
@@ -1230,7 +1224,7 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
             // Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
-            // Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);  
+            // Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 #endif
 
             // 左
@@ -1680,7 +1674,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam2(Mat src, out byte threshold)
+        public override bool CheckPartCam2(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知2"];
@@ -1728,27 +1722,61 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
 
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
             int r = lineV.Max(line => (line.P1.X + line.P2.X) / 2);
             double c = (l + r) / 2;
 
             // 開度左
-            IEnumerable<LineSegmentPoint> lineL = lineV.Where(line => line.P1.X < c);
+            IEnumerable<LineSegmentPoint> lineL = lineV.Where(line => line.P1.X < c).OrderBy(line => line.P1.Y);
+            double maxL = lineL.Max(l => l.Length());
+            // 保留主成分與垂直線
+            lineL = lineL.Where(line => line.Length() == maxL || Math.Abs(line.P1.X - line.P2.X) <= 2);
 
+            // 計算總長
             double sumL = lineL.Sum(line => line.Length());
+            // 計算 開度左位置
+            double lX = lineL.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumL);
+
+            // 第二次剔除極端值
+            lineL = lineL.Where(line => Math.Abs(line.P1.X - lX) < 2);
+            sumL = lineL.Sum(line => line.Length());
             leftX = lineL.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumL);
 
-            //開度右
-            IEnumerable<LineSegmentPoint> lineR = lineV.Where(line => line.P1.X > c);
+            // 開度右
+            IEnumerable<LineSegmentPoint> lineR = lineV.Where(line => line.P1.X > c).OrderBy(line => line.P1.Y);
+            double maxR = lineR.Max(l => l.Length());
+            // 保留主成分與垂直線
+            lineR = lineR.Where(line => line.Length() == maxR || Math.Abs(line.P1.X - line.P2.X) <= 2);
 
+            // 計算總長
             double sumR = lineR.Sum(line => line.Length());
+            // 計算 開度右位置
+            double rX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumR);
+
+            // 第二次剔除極端值
+            lineR = lineR.Where(line => Math.Abs(line.P2.X - rX) < 2);
+            sumR = lineR.Sum(line => line.Length());
             rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumR);
+
+            #region develop
+            foreach (LineSegmentPoint item in lineL)
+            {
+                Debug.WriteLine($"{item} {item.Length()}");
+            }
+            Debug.WriteLine($"===========================================================================================");
+            foreach (LineSegmentPoint item in lineR)
+            {
+                Debug.WriteLine($"{item} {item.Length()}");
+            }
+            #endregion
+
+            Debug.WriteLine($"Left: {leftX}; Right {rightX}");
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
-            Debug.WriteLine($"Right: {rightX} Left: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
+            Debug.WriteLine($"後開: {Math.Abs(leftX - rightX)} px, Distance: {distance:0.00000}");
             // 銷毀 canny");
             canny.Dispose();
 
@@ -1816,7 +1844,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam3(Mat src, out byte threshold)
+        public override bool CheckPartCam3(Mat src, out byte threshold)
         {
             // ROI 
             Rect roi = JawROIs["有料檢知3"];

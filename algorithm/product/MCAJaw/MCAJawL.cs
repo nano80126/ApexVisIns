@@ -990,7 +990,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam1(Mat src, out byte threshold)
+        public override bool CheckPartCam1(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知"];
@@ -1675,7 +1675,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam2(Mat src, out byte threshold)
+        public override bool CheckPartCam2(Mat src, out byte threshold)
         {
             // ROI
             Rect roi = JawROIs["有料檢知2"];
@@ -1811,7 +1811,7 @@ namespace MCAJawIns.Algorithm
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <returns>是否有料件</returns>
-        public bool CheckPartCam3(Mat src, out byte threshold)
+        public override bool CheckPartCam3(Mat src, out byte threshold)
         {
             // ROI 
             Rect roi = JawROIs["有料檢知3"];
