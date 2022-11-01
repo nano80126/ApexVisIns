@@ -1980,11 +1980,10 @@ namespace MCAJawIns
     public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         //private IDictionary<TKey, TValue> dictionary;
-
         //public ObservableDictionary() : this(new Dictionary<TKey, TValue>())
         //{
-
         //}
+
 
         public ObservableDictionary() : base() { }
 
@@ -2017,6 +2016,21 @@ namespace MCAJawIns
         }
 
         /// <summary>
+        /// 新增一個 Item
+        /// </summary>
+        /// <param name="newItem"></param>
+        private void OnCollectionAdd(KeyValuePair<TKey, TValue> newItem)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, null));
+
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
+        }
+            
+
+        /// <summary>
         /// Used by Update
         /// </summary>
         /// <param name="action"></param>
@@ -2045,19 +2059,21 @@ namespace MCAJawIns
             OnPropertyChanged("Item[]");
         }
 
-        public new bool ContainsKey(TKey key)
-        {
-            return base.ContainsKey(key);
-        }
+        //public new bool ContainsKey(TKey key)
+        //{
+        //    return base.ContainsKey(key);
+        //}
 
-        public new ICollection<TKey> Keys => base.Keys;
+        //public new ICollection<TKey> Keys => base.Keys;
+
+        //public Dictionary<TKey, TValue>.KeyCollection Keys => base.Keys;
+
 
         public new ICollection<TValue> Values => base.Values;
 
         public new TValue this[TKey key]
         {
             get => ContainsKey(key) ? base[key] : default;
-            //get => base[key];
             set => Update(key, value);
         }
 
@@ -2073,15 +2089,13 @@ namespace MCAJawIns
             //if (!base.ContainsKey(key))
             KeyValuePair<TKey, TValue> item = new(key, value);
             base.Add(key, value);
-            OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
-            OnPropertyChanged(nameof(Count));
+            //OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+            OnCollectionAdd(item);
         }
 
         public new bool Remove(TKey key)
         {
-            TValue value;
-
-            if (base.TryGetValue(key, out value) && base.Remove(key))
+            if (base.TryGetValue(key, out TValue value) && base.Remove(key))
             {
                 KeyValuePair<TKey, TValue> item = new(key, value);
                 OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
