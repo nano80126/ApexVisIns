@@ -209,6 +209,7 @@ MCA Jaw CCD 尺寸量測設備
 * [ ] InsResultView 有沒有可能優化?
 	* 不用 Clear 而是重複利用現有 Object
 
+* [ ] 重構 ObservableStack, ObservableQueue, ObservableDictionary
 
 ### Config Logic
 

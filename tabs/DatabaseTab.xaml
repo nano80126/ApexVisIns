@@ -308,6 +308,9 @@
                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                 <Setter Property="VerticalAlignment" Value="Center" />
                             </Style>
+
+                            <local:TextBindngProxy x:Key="Header1" Text="{Binding JawSpecHeaders, Converter={StaticResource DictionaryGetStringConverter}, ConverterParameter=0.088R}" />
+                            <local:TextBindngProxy x:Key="Header2" Text="{Binding JawSpecHeaders[0.088L], FallbackValue=0}" />
                         </DataGrid.Resources>
                         <!--#endregion-->
 
@@ -345,12 +348,15 @@
                             <!--//-->
                             <DataGridTextColumn Header="良品" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[good].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridSuccessColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-                            <!--//-->
-                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088R].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.088L].Count}"
-                                    HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
+                            <!--//-->
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Header1}}" MinWidth="70" IsReadOnly="True"
+                                    Binding="{Binding LotResults[0.088R].Count}" HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
+
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Header2}}" MinWidth="70" IsReadOnly="True"
+                                    Binding="{Binding LotResults[0.088L].Count}" HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
+                                    ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.176].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />

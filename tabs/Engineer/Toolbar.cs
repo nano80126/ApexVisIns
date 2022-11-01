@@ -439,6 +439,7 @@ namespace MCAJawIns.Tab
             }
 #endif
 
+             
 
 #if true
             MainWindow.MCAJaw.MCAJawS.JawInsSequenceCam1(mat);
@@ -704,32 +705,35 @@ namespace MCAJawIns.Tab
                     //Debug.WriteLine($"SN:{sn}");
                     if (AssistRect.Area > 0)
                     {
-#if false   // for test
-                        OpenCvSharp.Rect roi = AssistRect.GetRect();
-                        Mat roiMat = new(mat, roi);
-                        Cv2.ImShow($"roi", new Mat(mat, roi));
 
-                        Methods.GetRoiCanny(mat, roi, 75, 150, out Mat canny);
-                        // Methods.GetContours(roiMat, roi.Location, 75, 150, out OpenCvSharp.Point[][] cons, out OpenCvSharp.Point[] con);
-                        Methods.GetContoursFromCanny(canny, roi.Location, out _, out OpenCvSharp.Point[] con);
+                        Methods.GetRoiCanny(mat, AssistRect.GetRect(), 50, 120, out Mat canny);
+                        Methods.GetHoughLinesHFromCanny(canny, AssistRect.GetRect().Location, out LineSegmentPoint[] lineH, 5, 3, 5);
 
-                        Methods.GetHoughHorizonalYPos(canny, roi.Top, out int YCount, out double[] Ypos, 5, 0);
+                        foreach (LineSegmentPoint line in lineH)
+                        {
+                            Debug.WriteLine($"{line}");
+                            Cv2.Line(mat, line.P1, line.P2, Scalar.Gray, 2);
+                        }
 
-                        int maxX = con.Min(c => c.X);
-                        int maxY = con.Max(c => c.Y);
+                        int t = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
+                        int b = lineH.Max(line => (line.P1.Y + line.P2.Y) / 2);
+                        double c = (t + b) / 2;
 
-                        Debug.WriteLine($"X: {maxX} Y: {maxY}");
-                        Debug.WriteLine($"{string.Join(",", Ypos)}");
+                        IEnumerable<LineSegmentPoint> lineT = lineH.Where(line => line.P1.Y < c).OrderBy(line => line.P1.X);
+                        // double minT = lineT.Max(l => l.Length());
 
+                        double sumT = lineT.Sum(line => line.Length());
+                        double topY = lineT.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumT);
 
-                        //Methods.GetHoughVerticalXPos(canny, roi.Left, out int count, out double[] XPos);
-                        //Methods.GetBottomHorizontalLine(canny, out double Ypos);
+                        IEnumerable<LineSegmentPoint> lineB = lineH.Where(line => line.P1.Y > c).OrderBy(line => line.P1.X);
+                        // double maxT = lineB.Max(l => l.Length());
 
-                        //Debug.WriteLine($"{XPos.Length} {string.Join(",", XPos)}");
-                        //Cv2.ImShow($"roi", roiMat);
-                        Cv2.ImShow($"canny", canny); 
+                        double sumB = lineB.Sum(line => line.Length());
+                        double botY = lineB.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumB);
 
-#endif
+                        Debug.WriteLine($"{t} {b} {Math.Abs(b - t)}");
+                        Debug.WriteLine($"{topY} {botY}");
+                        Debug.WriteLine($"{Math.Abs(botY - topY)}");
                     }
                     else
                     {

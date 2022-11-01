@@ -568,6 +568,22 @@ namespace MCAJawIns.Converter
         }
     }
 
+    [ValueConversion(typeof(Dictionary<string, string>), typeof(string))]
+    public class DictionaryGetStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            System.Diagnostics.Debug.WriteLine($"{value} ");
+            return (value as Dictionary<string, string>).TryGetValue(parameter as string, out string v) ? v : string.Empty;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 
     [ValueConversion(typeof(object), typeof(object))]
     public class ObjectGetValueConverter : IValueConverter

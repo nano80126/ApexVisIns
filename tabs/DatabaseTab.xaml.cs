@@ -35,14 +35,21 @@ namespace MCAJawIns.Tab
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
         /// <summary>
-        /// 批號查詢結果
+        /// 批號查詢結果，紀錄批號各尺寸 NG 數量
         /// </summary>
         public ObservableCollection<JawInspection> JawInspections { get; set; } = new();
 
         /// <summary>
-        /// 量測查詢結果
+        /// 量測查詢結果，紀錄每一次量測每個尺寸的量測值
         /// </summary>
         public ObservableCollection<JawMeasurements> JawFullSpecInsCol { get; set; } = new();
+
+
+        /// <summary>
+        /// 表格各尺寸 Header
+        /// </summary>
+        public ObservableDictionary<string, string> JawSpecHeaders { get; set; } = new ObservableDictionary<string, string>();
+
 
         public DateTime StartDate
         {
@@ -111,7 +118,23 @@ namespace MCAJawIns.Tab
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            //LoadDatabaseConfig(recycled);
+            // LoadDatabaseConfig(recycled);
+
+            foreach (JawSpecSetting item in MainWindow.MCAJaw.JawSizeSpecList.Source)
+            {
+                if (!JawSpecHeaders.ContainsKey(item.Key))
+                {
+                    JawSpecHeaders.Add(item.Key, item.Item);
+                }
+                Debug.WriteLine($"{item.Key} {item.Item}");
+            }
+            //OnPropertyChanged(nameof(JawSpecHeaders));
+
+
+            if (JawSpecHeaders.ContainsKey("0.088R"))
+            {
+                Debug.WriteLine($"{JawSpecHeaders["0.088R"]}");
+            }
 
             if (!loaded)
             {
@@ -185,10 +208,6 @@ namespace MCAJawIns.Tab
             {
                 JawInspections.Clear();
 
-                //DateTime date = DatePicker.SelectedDate.Value;
-                //string[] stTime = StartTimePicker.SelectedItem.ToString().Split(':');
-                //string[] endTime = EndTimePicker.SelectedItem.ToString().Split(':');
-
                 DateTime st = new(StartDate.Year, StartDate.Month, StartDate.Day, 0, 0, 0); // 00:00:00
                 DateTime end = new(EndDate.Year, EndDate.Month, EndDate.Day, 23, 59, 59);   // 23:59:59
 
@@ -201,7 +220,11 @@ namespace MCAJawIns.Tab
                 foreach (JawInspection item in data)
                 {
                     JawInspections.Add(item);
-                    // Debug.WriteLine($"{item.ObjID} {item.DateTime}");
+
+                    foreach (string key in item.LotResults.Keys)
+                    {
+                        Debug.WriteLine($"{item.LotResults[key].Name} {item.LotResults[key].Count}");
+                    }
                 }
             }
             catch (Exception ex)

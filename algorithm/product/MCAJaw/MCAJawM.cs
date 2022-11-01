@@ -18,7 +18,7 @@ namespace MCAJawIns.Algorithm
 #if true
         public override double Cam1Mag { get; set; } = 0.21689;
         public override double Cam2Mag { get; set; } = 0.24475;
-        public override double Cam3Mag { get; set; } = 0.09704;
+        public override double Cam3Mag { get; set; } = 0.12306;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -2385,7 +2385,7 @@ namespace MCAJawIns.Algorithm
             //// 使用完刪除
             //DateTime t1 = DateTime.Now;
             // ROI
-            Rect roi = new(150, (int)(baseDatumY + 60), 1920, 45);
+            Rect roi = new(140, (int)(baseDatumY + 60), 2040, 45);
             // 
             Mat roiMat = new(src, roi);
             int srcWidth = src.Width;
@@ -2402,7 +2402,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 1465 or >= 1595 && i < roiMat.Width)
+                if (i is < 1475 or >= 1605 && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2472,7 +2472,7 @@ namespace MCAJawIns.Algorithm
                 }
 
 
-                if (i2 > 0)
+                if (i2 > 0 && (i2 is < 120 or >= 190))
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2519,8 +2519,8 @@ namespace MCAJawIns.Algorithm
             roiMat.Dispose();
 
 #if DEBUG || debug
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
-
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            Debug.WriteLine($"flatness: {flatValue:0.00000} {listY2.Max()} {listY2.Min()} {Cam3Mag}");
             Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
             // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif

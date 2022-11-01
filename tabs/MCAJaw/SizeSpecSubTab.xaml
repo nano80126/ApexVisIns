@@ -161,14 +161,14 @@
                     <Setter Property="BorderBrush" Value="{StaticResource ColorPrimaryTransparent}" />
                 </Style>
                 <!--//-->
-                <local:BindingProxy x:Key="proxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
+                <local:VisibilityBindingProxcy x:Key="VisibilityProxy" Visibility="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}, AncestorLevel=1},
                     Converter={StaticResource NumberGreaterConvertToVisibility}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}" />
 
-                <local:BindingProxy x:Key="backgroundProxy1" Background="{Binding Groups[0].Color, FallbackValue=#00FFFFFF}" />
-                <local:BindingProxy x:Key="backgroundProxy2" Background="{Binding Groups[1].Color, FallbackValue=#00FFFFFF}" />
-                <local:BindingProxy x:Key="backgroundProxy3" Background="{Binding Groups[2].Color, FallbackValue=#00FFFFFF}" />
-                <local:BindingProxy x:Key="backgroundProxy4" Background="{Binding Groups[3].Color, FallbackValue=#00FFFFFF}" />
-                <local:BindingProxy x:Key="backgroundProxy5" Background="{Binding Groups[4].Color, FallbackValue=#00FFFFFF}" />
+                <local:ColorBindingProxy x:Key="ColorProxy1" Color="{Binding Groups[0].Color, FallbackValue=#00FFFFFF}" />
+                <local:ColorBindingProxy x:Key="ColorProxy2" Color="{Binding Groups[1].Color, FallbackValue=#00FFFFFF}" />
+                <local:ColorBindingProxy x:Key="ColorProxy3" Color="{Binding Groups[2].Color, FallbackValue=#00FFFFFF}" />
+                <local:ColorBindingProxy x:Key="ColorProxy4" Color="{Binding Groups[3].Color, FallbackValue=#00FFFFFF}" />
+                <local:ColorBindingProxy x:Key="ColorProxy5" Color="{Binding Groups[4].Color, FallbackValue=#00FFFFFF}" />
             </DataGrid.Resources>
             <!--#endregion-->
 
@@ -178,23 +178,23 @@
                     <!--<Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=Background}" />-->
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Group}" Value="Group1">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy1}}" />
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy1}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group2">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy2}}" />
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy2}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group3">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy3}}" />
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy3}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group4">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy4}}" />
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy4}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group5">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource backgroundProxy5}}" />
+                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy5}}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -242,7 +242,7 @@
                 <!--//-->
                 <DataGridTextColumn Header="校正值（開發）" MinWidth="150" Binding="{Binding CorrectionSecret}" HeaderStyle="{StaticResource TextRightDataGridColumeHeader}"
                         ElementStyle="{StaticResource DataGridAlignRightTextColume}" EditingElementStyle="{StaticResource TextRightDataGridEditColumn}"
-                        Visibility="{Binding Visibility, Source={StaticResource proxy}}">
+                        Visibility="{Binding Visibility, Source={StaticResource VisibilityProxy}}">
                 </DataGridTextColumn>
 
                 <!--//-->

@@ -58,6 +58,7 @@
             <cvt:DateTimeToLocalConverter x:Key="DateTimeToLocalConverter"/>
 
             <cvt:DictionaryGetValueConverter x:Key="DictionaryGetValueConverter" />
+            <cvt:DictionaryGetStringConverter x:Key="DictionaryGetStringConverter" />
             <cvt:ObjectGetValueConverter x:Key="ObjectGetValueConverter" />
             <!--#endregion-->
 
