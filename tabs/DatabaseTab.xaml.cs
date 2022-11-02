@@ -495,7 +495,7 @@ namespace MCAJawIns.Tab
                 // 尋找在特定 filter 之前的資料
                 FilterDefinition<JawInspection> filter = Builders<JawInspection>.Filter.Lt("DateTime", dateTime);
 
-                DeleteResult result =  MainWindow.MongoAccess.DeleteMany("Lots", filter);
+                DeleteResult result = MainWindow.MongoAccess.DeleteMany("Lots", filter);
 
 
                 //MainWindow.MongoAccess.FindAll("Lots", filter, out List<JawFullSpecIns> config);

@@ -1866,7 +1866,6 @@ namespace MCAJawIns
     /// <typeparam name="T"></typeparam>
     public class ObservableStack<T> : Stack<T>, ICollection<T>, INotifyPropertyChanged, INotifyCollectionChanged
     {
-
         public ObservableStack() : base() { }
 
         public ObservableStack(IEnumerable<T> collection) : base(collection) { }
