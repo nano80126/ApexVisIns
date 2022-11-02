@@ -263,6 +263,27 @@
                 <!--#endregion-->
 
                 <StackPanel Background="Transparent">
+                    <StackPanel.Resources>
+                        <!--#region Colume Headers -->
+                        <local:TextBindngProxy x:Key="Colume1Header" Text="{Binding JawSpecHeaders[0.088R]}" />
+                        <local:TextBindngProxy x:Key="Colume2Header" Text="{Binding JawSpecHeaders[0.088L]}" />
+                        <local:TextBindngProxy x:Key="Colume3Header" Text="{Binding JawSpecHeaders[0.176]}" />
+                        <local:TextBindngProxy x:Key="Colume4Header" Text="{Binding JawSpecHeaders[0.008R]}" />
+                        <local:TextBindngProxy x:Key="Colume5Header" Text="{Binding JawSpecHeaders[0.008L]}" />
+                        <local:TextBindngProxy x:Key="Colume6Header" Text="{Binding JawSpecHeaders[0.013R]}" />
+                        <local:TextBindngProxy x:Key="Colume7Header" Text="{Binding JawSpecHeaders[0.013L]}" />
+                        <local:TextBindngProxy x:Key="Colume8Header" Text="{Binding JawSpecHeaders[0.024R]}" />
+                        <local:TextBindngProxy x:Key="Colume9Header" Text="{Binding JawSpecHeaders[0.024L]}" />
+                        <local:TextBindngProxy x:Key="Colume10Header" Text="{Binding JawSpecHeaders[back]}" />
+                        <local:TextBindngProxy x:Key="Colume11Header" Text="{Binding JawSpecHeaders[front]}" />
+                        <local:TextBindngProxy x:Key="Colume12Header" Text="{Binding JawSpecHeaders[bfDiff]}" />
+                        <local:TextBindngProxy x:Key="Colume13Header" Text="{Binding JawSpecHeaders[contour]}" />
+                        <local:TextBindngProxy x:Key="Colume14Header" Text="{Binding JawSpecHeaders[contourR]}" />
+                        <local:TextBindngProxy x:Key="Colume15Header" Text="{Binding JawSpecHeaders[contourL]}" />
+                        <local:TextBindngProxy x:Key="Colume16Header" Text="{Binding JawSpecHeaders[flatness]}" />
+                        <!--#endregion-->
+                    </StackPanel.Resources>
+
                     <!--#region 批號紀錄 -->
                     <DataGrid Margin="4 4 4 0" Height="200" MaxHeight="200" Background="Transparent" CanUserSortColumns="False" CanUserAddRows="False" AutoGenerateColumns="False"
                             CanUserReorderColumns="False" materialDesign:DataGridAssist.CellPadding="8 4" materialDesign:DataGridAssist.ColumnHeaderPadding="8 4 8 5"
@@ -309,8 +330,26 @@
                                 <Setter Property="VerticalAlignment" Value="Center" />
                             </Style>
 
-                            <local:TextBindngProxy x:Key="Header1" Text="{Binding JawSpecHeaders, Converter={StaticResource DictionaryGetStringConverter}, ConverterParameter=0.088R}" />
-                            <local:TextBindngProxy x:Key="Header2" Text="{Binding JawSpecHeaders[0.088L], FallbackValue=0}" />
+                            <!--#region Colume Headers -->
+                            <!--
+                            <local:TextBindngProxy x:Key="Colume1Header" Text="{Binding JawSpecHeaders[0.088R]}" />
+                            <local:TextBindngProxy x:Key="Colume2Header" Text="{Binding JawSpecHeaders[0.088L]}" />
+                            <local:TextBindngProxy x:Key="Colume3Header" Text="{Binding JawSpecHeaders[0.176]}" />
+                            <local:TextBindngProxy x:Key="Colume4Header" Text="{Binding JawSpecHeaders[0.008R]}" />
+                            <local:TextBindngProxy x:Key="Colume5Header" Text="{Binding JawSpecHeaders[0.008L]}" />
+                            <local:TextBindngProxy x:Key="Colume6Header" Text="{Binding JawSpecHeaders[0.013R]}" />
+                            <local:TextBindngProxy x:Key="Colume7Header" Text="{Binding JawSpecHeaders[0.013L]}" />
+                            <local:TextBindngProxy x:Key="Colume8Header" Text="{Binding JawSpecHeaders[0.024R]}" />
+                            <local:TextBindngProxy x:Key="Colume9Header" Text="{Binding JawSpecHeaders[0.024L]}" />
+                            <local:TextBindngProxy x:Key="Colume10Header" Text="{Binding JawSpecHeaders[back]}" />
+                            <local:TextBindngProxy x:Key="Colume11Header" Text="{Binding JawSpecHeaders[front]}" />
+                            <local:TextBindngProxy x:Key="Colume12Header" Text="{Binding JawSpecHeaders[bfDiff]}" />
+                            <local:TextBindngProxy x:Key="Colume13Header" Text="{Binding JawSpecHeaders[contour]}" />
+                            <local:TextBindngProxy x:Key="Colume14Header" Text="{Binding JawSpecHeaders[contourR]}" />
+                            <local:TextBindngProxy x:Key="Colume15Header" Text="{Binding JawSpecHeaders[contourL]}" />
+                            <local:TextBindngProxy x:Key="Colume16Header" Text="{Binding JawSpecHeaders[flatness]}" />
+                            -->
+                            <!--#endregion-->
                         </DataGrid.Resources>
                         <!--#endregion-->
 
@@ -350,51 +389,51 @@
                                     HeaderStyle="{StaticResource TextRightDataGridSuccessColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Header1}}" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume1Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding LotResults[0.088R].Count}" HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Header2}}" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume2Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding LotResults[0.088L].Count}" HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}"
                                     ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.176].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume3Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.176].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008R].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume4Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008R].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008L].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume5Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.008L].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013R].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume6Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013R].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013L].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume7Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.013L].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024R].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume8Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024R].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024L].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume9Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[0.024L].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[back].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume10Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[back].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[bfDiff].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume12Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[bfDiff].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contour].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume13Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contour].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourR].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume14Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourR].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourL].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume15Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[contourL].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
-                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume16Header}}" MinWidth="70" IsReadOnly="True" Binding="{Binding LotResults[flatness].Count}"
                                     HeaderStyle="{StaticResource TextRightDataGridErrorColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
                         </DataGrid.Columns>
                         <!--#endregion-->
@@ -507,82 +546,81 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <!--//-->
-                            <DataGridTextColumn Header="0.088R" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume1Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088R}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
                             <!--//-->
-                            <DataGridTextColumn Header="0.088L" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume2Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.088L}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.088合" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume3Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.176}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.008R" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume4Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008R}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.008L" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume5Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.008L}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.013R" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume6Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013R}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.013L" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume7Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.013L}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.024R" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume8Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024R}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="0.024L" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume9Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=0.024L}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="後開" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume10Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=back}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="前開" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume11Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=front}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="開度差" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume12Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=bfDiff}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--// -->
-                            <DataGridTextColumn Header="輪廓度" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume13Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contour}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
 
                             <!--//-->
-                            <DataGridTextColumn Header="輪廓度R" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume14Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contourR}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
                             <!--//-->
-                            <DataGridTextColumn Header="輪廓度L" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume15Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=contourL}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
                             <!--//-->
-                            <DataGridTextColumn Header="平直度" MinWidth="70" IsReadOnly="True"
+                            <DataGridTextColumn Header="{Binding Text, Source={StaticResource Colume16Header}}" MinWidth="70" IsReadOnly="True"
                                     Binding="{Binding Results, StringFormat={}{0:0.00000}, Converter={StaticResource DictionaryGetValueConverter}, ConverterParameter=flatness}"
                                     HeaderStyle="{StaticResource TextRightDataGridColumeHeader}" ElementStyle="{StaticResource DataGridAlignRighTextColume}" />
-
                         </DataGrid.Columns>
                         <!--#endregion-->
                     </DataGrid>

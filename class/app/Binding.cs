@@ -1979,11 +1979,11 @@ namespace MCAJawIns
 
     public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        //private IDictionary<TKey, TValue> dictionary;
-        //public ObservableDictionary() : this(new Dictionary<TKey, TValue>())
-        //{
-        //}
+        // private IDictionary<TKey, TValue> dictionary;
+        // public ObservableDictionary() : this(new Dictionary<TKey, TValue>())
+        // {
 
+        // }
 
         public ObservableDictionary() : base() { }
 
@@ -2005,6 +2005,7 @@ namespace MCAJawIns
         /// </summary>
         /// <param name="action"></param>
         /// <param name="newItem"></param>
+        [Obsolete]
         private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem)
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, base.Keys.ToList().IndexOf(newItem.Key)));
@@ -2019,16 +2020,55 @@ namespace MCAJawIns
         /// 新增一個 Item
         /// </summary>
         /// <param name="newItem"></param>
-        private void OnCollectionAdd(KeyValuePair<TKey, TValue> newItem)
+        private void OnCollectionAdded(KeyValuePair<TKey, TValue> newItem)
         {
-            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, null));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
 
             OnPropertyChanged(nameof(Keys));
             OnPropertyChanged(nameof(Values));
             OnPropertyChanged(nameof(Count));
             OnPropertyChanged("Item[]");
         }
-            
+
+        /// <summary>
+        /// 移除一個 Item
+        /// </summary>
+        /// <param name="oldItem"></param>
+        private void OnCollectionRemoved(KeyValuePair<TKey, TValue> oldItem)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem));
+
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
+        }
+
+        /// <summary>
+        /// 變更一個 Item
+        /// </summary>
+        private void OnCollectionReplaced(KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem));
+
+            // Keys 不會變更
+            OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
+        }
+
+        /// <summary>
+        /// 重置 Dictionary
+        /// </summary>
+        private void OnCollectionReset()
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            OnPropertyChanged(nameof(Keys));
+            OnPropertyChanged(nameof(Values));
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged("Item[]");
+        }
 
         /// <summary>
         /// Used by Update
@@ -2037,6 +2077,7 @@ namespace MCAJawIns
         /// <param name="key"></param>
         /// <param name="newValue"></param>
         /// <param name="oldValue"></param>
+        [Obsolete]
         private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem, base.Keys.ToList().IndexOf(newItem.Key)));
@@ -2049,6 +2090,7 @@ namespace MCAJawIns
         /// Used By Clear
         /// </summary>
         /// <param name="action"></param>
+        [Obsolete]
         private void OnCollectionChanged(NotifyCollectionChangedAction action)
         {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
@@ -2059,47 +2101,75 @@ namespace MCAJawIns
             OnPropertyChanged("Item[]");
         }
 
-        //public new bool ContainsKey(TKey key)
-        //{
-        //    return base.ContainsKey(key);
-        //}
+        // public new bool ContainsKey(TKey key)
+        // {
+        //     return base.ContainsKey(key);
+        // }
 
-        //public new ICollection<TKey> Keys => base.Keys;
-
-        //public Dictionary<TKey, TValue>.KeyCollection Keys => base.Keys;
-
-
-        public new ICollection<TValue> Values => base.Values;
+        // public new ICollection<TKey> Keys => base.Keys;
+        // public Dictionary<TKey, TValue>.KeyCollection Keys => base.Keys;
+        // public new ICollection<TValue> Values => base.Values;
 
         public new TValue this[TKey key]
         {
-            get => ContainsKey(key) ? base[key] : default;
-            set => Update(key, value);
+            get => ContainsKey(key) ? base[key] : default; // 避免拋出錯誤
+            set
+            {
+                if (ContainsKey(key))
+                {
+                    Update(key, value);
+                }
+                else
+                {
+                    Add(key, value);
+                }
+            }
         }
 
-        //public new void Add(TKey key, TValue value)
-        //{
-        //    KeyValuePair<TKey, TValue> item = new(key, value);
-        //    dictionary.Add(item);
-        //    OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
-        //    //OnPropertyChanged("Item[]");
-        //}
+        /// <summary>
+        /// 新增一個 Item
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public new void Add(TKey key, TValue value)
         {
-            //if (!base.ContainsKey(key))
             KeyValuePair<TKey, TValue> item = new(key, value);
             base.Add(key, value);
-            //OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
-            OnCollectionAdd(item);
+            // OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
+            OnCollectionAdded(item);
         }
 
+        /// <summary>
+        /// 嘗試新增一個 Item
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public new bool TryAdd(TKey key, TValue value)
+        {
+            if (ContainsKey(key))
+            {
+                return false;
+            }
+            else
+            {
+                Add(key, value);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 移除一個 Item
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
         public new bool Remove(TKey key)
         {
-            if (base.TryGetValue(key, out TValue value) && base.Remove(key))
+            if (ContainsKey(key))
             {
-                KeyValuePair<TKey, TValue> item = new(key, value);
-                OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
-                return true;
+                KeyValuePair<TKey, TValue> item = new KeyValuePair<TKey, TValue>(key, base[key]);
+                OnCollectionRemoved(item);
+                return base.Remove(key);
             }
             else
             {
@@ -2107,33 +2177,35 @@ namespace MCAJawIns
             }
         }
 
+        /// <summary>
+        /// 清除 Dictionary
+        /// </summary>
         public new void Clear()
         {
             base.Clear();
-            OnCollectionChanged(NotifyCollectionChangedAction.Reset);
+            OnCollectionReset();
         }
 
+        /// <summary>
+        /// Replace one item
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         private void Update(TKey key, TValue value)
         {
-            if (base.TryGetValue(key, out TValue existing))
-            {
-                base[key] = value;
-                //OnCollectionChanged(NotifyCollectionChangedAction.Replace, key, value, existing);
-                KeyValuePair<TKey, TValue> newItem = new(key, value);
-                KeyValuePair<TKey, TValue> oldItem = new(key, existing);
-                OnCollectionChanged(NotifyCollectionChangedAction.Replace, newItem, oldItem);
-            }
-            else
-            {
-                Add(key, value);
-            }
+            TValue oldValue = base[key];
+
+            base[key] = value;
+            KeyValuePair<TKey, TValue> newItem = new(key, value);
+            KeyValuePair<TKey, TValue> oldItem = new(key, oldValue);
+            OnCollectionReplaced(newItem, oldItem);
         }
 
-        public new bool TryGetValue(TKey key, out TValue value)
-        {
-            return base.TryGetValue(key, out value);
-        }
+        //public new bool TryGetValue(TKey key, out TValue value)
+        //{
+        //    return base.TryGetValue(key, out value);
+        //}
 
-        public new int Count => base.Count;
+        //public new int Count => base.Count;
     }
 }

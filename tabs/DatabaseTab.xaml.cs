@@ -118,22 +118,9 @@ namespace MCAJawIns.Tab
         /// <param name="e"></param>
         private void StackPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // LoadDatabaseConfig(recycled);
-
             foreach (JawSpecSetting item in MainWindow.MCAJaw.JawSizeSpecList.Source)
             {
-                if (!JawSpecHeaders.ContainsKey(item.Key))
-                {
-                    JawSpecHeaders.Add(item.Key, item.Item);
-                }
-                Debug.WriteLine($"{item.Key} {item.Item}");
-            }
-            //OnPropertyChanged(nameof(JawSpecHeaders));
-
-
-            if (JawSpecHeaders.ContainsKey("0.088R"))
-            {
-                Debug.WriteLine($"{JawSpecHeaders["0.088R"]}");
+                _ = JawSpecHeaders.TryAdd(item.Key, item.Item);
             }
 
             if (!loaded)
@@ -220,11 +207,6 @@ namespace MCAJawIns.Tab
                 foreach (JawInspection item in data)
                 {
                     JawInspections.Add(item);
-
-                    foreach (string key in item.LotResults.Keys)
-                    {
-                        Debug.WriteLine($"{item.LotResults[key].Name} {item.LotResults[key].Count}");
-                    }
                 }
             }
             catch (Exception ex)

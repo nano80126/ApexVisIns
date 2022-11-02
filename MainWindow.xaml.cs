@@ -272,70 +272,44 @@ namespace MCAJawIns
             // 若不為 DebugMode，設為全螢幕
             WindowState = !DebugMode ? WindowState.Maximized : WindowState.Normal;
 
-
             #region 測試用
-            //ObservableDictionary<int, int> dict = new ObservableDictionary<int, int>();
+#if false
+            ObservableDictionary<int, int> dict = new ObservableDictionary<int, int>();
 
-            //dict.CollectionChanged += (sneder, e) =>
-            //{
-            //    switch (e.Action)
-            //    {
-            //        case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-            //            Debug.WriteLine($"{e.NewItems[0]} {e.NewStartingIndex}");
-            //            break;
-            //        case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-            //            Debug.WriteLine($"{e.OldItems[0]} {e.OldStartingIndex}");
-            //            break;
-            //        case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
-            //            break;
-            //        case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
-
-            //            break;
-            //        case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-
-            //            break;
-            //    }
-
-            //    Debug.WriteLine($"{e.Action} {e.NewItems} {e.OldItems}");
-            //};
-
-            //dict.PropertyChanged += (sender, e) =>
-            //{
-            //    Debug.WriteLine($"{e.PropertyName}");
-            //};
-
-
-            ObservableCollection<int> collection = new ObservableCollection<int>();
-
-            collection.CollectionChanged += (sender, e) =>
+            dict.CollectionChanged += (sneder, e) =>
             {
-                Debug.WriteLine($"{e.Action} {string.Join(",", e.NewItems)} {e.NewStartingIndex} {string.Join(",", e.OldItems)} {e.OldStartingIndex}");
-
-
-                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+                switch (e.Action)
                 {
-                    Debug.WriteLine($"{e.Action} {string.Join(",", e.NewItems[0])} {e.NewStartingIndex} {string.Join(",", e.OldItems[0])} {e.OldStartingIndex}");
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                        Debug.WriteLine($"{e.NewItems[0]} {e.NewStartingIndex}");
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                        Debug.WriteLine($"{e.OldItems[0]} {e.OldStartingIndex}");
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                        Debug.WriteLine($"{e.NewItems[0]} {e.OldItems[0]}");
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                        break;
                 }
+                Debug.WriteLine($"{e.Action}");
             };
 
-            collection.Add(1);
-            collection.Remove(1);
-            collection.Add(5);
+            dict.PropertyChanged += (sender, e) =>
+            {
+                Debug.WriteLine($"{e.PropertyName}");
+            };
 
-            collection[0] = 6;
+            dict.Add(1, 1);
+            dict.Add(2, 2);
+            dict.Remove(1);
+            dict[2] = 3;
 
-            collection.Add(2);
-            collection.Add(3);
-            collection.Move(0, 2);
-
-            collection.Clear();
-            //Dictionary<int, int> dict2 = new Dictionary<int, int>();
-            //dict2.Add(1, 2);
-            //dict2.Add(2, 3);
-            //dict2.Remove(1);
-
+            Debug.WriteLine($"dict[2]: {dict[3]}"); 
+#endif
             #endregion
-
 
             #region 開啟 Mode Dialog
             ModeWindow modeWindow = new() { Owner = this };

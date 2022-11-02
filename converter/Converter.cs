@@ -573,7 +573,13 @@ namespace MCAJawIns.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            System.Diagnostics.Debug.WriteLine($"{value} ");
+            System.Diagnostics.Debug.WriteLine($"sssssss {value}");
+            bool success= (value as ObservableDictionary<string, string>).TryGetValue(parameter as string, out string v2);
+            System.Diagnostics.Debug.WriteLine($"sssssss {v2} {parameter} {success} {value.GetType()}");
+
+            System.Diagnostics.Debug.WriteLine($"{string.Join(",", (value as ObservableDictionary<string, string>).Keys)}");
+
+
             return (value as Dictionary<string, string>).TryGetValue(parameter as string, out string v) ? v : string.Empty;
         }
 
@@ -582,8 +588,6 @@ namespace MCAJawIns.Converter
             throw new NotImplementedException();
         }
     }
-
-
 
     [ValueConversion(typeof(object), typeof(object))]
     public class ObjectGetValueConverter : IValueConverter
