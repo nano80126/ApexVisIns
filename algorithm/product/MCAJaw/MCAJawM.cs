@@ -914,7 +914,7 @@ namespace MCAJawIns.Algorithm
                 else if (results == null)
                 {
                     Cal1195DistanceValue(src, JigPosY, RX, JawPos.Right, out d_1195R);
-                    Debug.WriteLine($"{nameof(d_1195R)}: {d_1195R:F5}");
+                    Debug.WriteLine($"{nameof(d_1195R)}: {d_1195R - 0.00749:F5}");
                 }
                 #endregion
 
@@ -934,7 +934,7 @@ namespace MCAJawIns.Algorithm
                 else if (results == null)
                 {
                     Cal1195DistanceValue(src, JigPosY, LX, JawPos.Left, out d_1195L);
-                    Debug.WriteLine($"{nameof(d_1195L)}: {d_1195L:F5}");
+                    Debug.WriteLine($"{nameof(d_1195L)}: {d_1195L - 0.00762:F5}");
                 }
                 #endregion
 
@@ -1838,6 +1838,7 @@ namespace MCAJawIns.Algorithm
             rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumR);
 
             #region develop
+#if false
             foreach (LineSegmentPoint item in lineL)
             {
                 Debug.WriteLine($"{item} {item.Length()}");
@@ -1846,10 +1847,11 @@ namespace MCAJawIns.Algorithm
             foreach (LineSegmentPoint item in lineR)
             {
                 Debug.WriteLine($"{item} {item.Length()}");
-            }
+            } 
+#endif
             #endregion
 
-            Debug.WriteLine($"Left: {leftX}; Right {rightX}");
+            Debug.WriteLine($"後開 Left: {leftX}; Right {rightX}");
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
@@ -1882,29 +1884,52 @@ namespace MCAJawIns.Algorithm
             int roiWidth = 150;
 
             // roi
-            Rect roi = leftRight == JawPos.Left ? new Rect(roiX, (int)(baseJigY - 150), roiWidth, 140) : new Rect(srcWidth - roiX - roiWidth, (int)(baseJigY - 150), roiWidth, 140);
+            Rect roi = leftRight == JawPos.Left ? new Rect(roiX, (int)(baseJigY - 150), roiWidth, 80) : new Rect(srcWidth - roiX - roiWidth, (int)(baseJigY - 150), roiWidth, 80);
 
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 20, 10, 3);
 
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
-            double sumLength = lineV.Sum(line => line.Length());
-            double X = lineV.Aggregate(0.0, (sum, next) => sum + ((next.P1.X + next.P2.X) / 2 * next.Length() / sumLength));
+            //foreach (LineSegmentPoint item in lineV)
+            //{
+            //    Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
+            //}
 
-            // 隱藏 correction
-            double subCorrection = 0;
+            //double sumLength = lineV.Sum(line => line.Length());
+            //double X = lineV.Aggregate(0.0, (sum, next) => sum + ((next.P1.X + next.P2.X) / 2 * next.Length() / sumLength));
+
+            //Debug.WriteLine($"lineV Count {lineV.Length}, X1: {X}");
+            #region 過濾
             switch (leftRight)
             {
                 case JawPos.Left:
-                    subCorrection = (((src.Width / 2) - X - 400) * 0.00004) + 0.0014;
+                    double min = lineV.Min(line => ((double)(line.P1.X + line.P2.X)) / 2);
+                    lineV = lineV.Where(line => Math.Abs(((double)(line.P1.X + line.P2.X)) / 2 - min) <= 1.0).ToArray();
                     break;
                 case JawPos.Right:
-                    subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
-                    break;
-                default:
+                    double max = lineV.Max(line => ((double)(line.P1.X + line.P2.X)) / 2);
+                    lineV = lineV.Where(line => Math.Abs(((double)(line.P1.X + line.P2.X)) / 2 - max) <= 1.0).ToArray();
                     break;
             }
+            double sumLength = lineV.Sum(line => line.Length());
+            double X = lineV.Aggregate(0.0, (sum, next) => sum + ((next.P1.X + next.P2.X) / 2 * next.Length() / sumLength));
+            #endregion
+            Debug.WriteLine($"lineV Count {lineV.Length}, X2: {X}");
+
+            // 隱藏 correction
+            double subCorrection = 0;
+            // switch (leftRight)
+            // {
+            //     case JawPos.Left:
+            //         subCorrection = (((src.Width / 2) - X - 400) * 0.00004) + 0.0014;
+            //         break;
+            //     case JawPos.Right:
+            //         subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
+            //         break;
+            //     default:
+            //         break;
+            // }
 
             // 計算 0.1195 距離
             distance = (Math.Abs(compareX - X) * Cam2Unit) + correction + subCorrection;
