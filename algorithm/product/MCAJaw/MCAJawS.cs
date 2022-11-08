@@ -1295,8 +1295,6 @@ namespace MCAJawIns.Algorithm
             //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
             //}
 
-            Debug.WriteLine($"輪廓度 中心: {center} {min} {max} {roiPos}");
-
             #region 尋找轉角點
             // 連接輪廓點
             Point[] pts = contours.SelectMany(pts => pts).ToArray();
@@ -1513,10 +1511,10 @@ namespace MCAJawIns.Algorithm
 #if DEBUG || debug
             // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             // 這邊要確認 lineH 重複性
-            foreach (LineSegmentPoint item in lineH)
-            {
-                // Cv2.Line(src, item.P1, item.P2, Scalar.LightGray, 2);
-            }
+            //foreach (LineSegmentPoint item in lineH)
+            //{
+            //    Cv2.Line(src, item.P1, item.P2, Scalar.LightGray, 2);
+            //}
 #endif
 
             // 線段計算總長
@@ -2486,8 +2484,8 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
             // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
-
-            Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
+            // 
+            // Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
             // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif
             return false;
