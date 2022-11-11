@@ -27,9 +27,9 @@ namespace MCAJawIns.Tab
         /// </summary>
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
 
-        public Env Env { get; set; } = new Env();
+        public Env Env { get; set; } = Env.GetInstance();
 
-        public NetWorkInfoCollection NetworkInfos { get; set; } = new NetWorkInfoCollection();
+        // public NetWorkInfoCollection NetworkInfos { get; set; } = new NetWorkInfoCollection();
         #endregion
 
         #region Flags

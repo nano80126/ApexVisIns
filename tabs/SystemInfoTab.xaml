@@ -169,7 +169,7 @@
                 <Separator Grid.RowSpan="100" Grid.Column="1" Width="1" Margin="0 4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 <Separator Grid.RowSpan="100" Grid.Column="3" Width="1" Margin="0 4" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
-                <ItemsControl Grid.ColumnSpan="100" ItemsSource="{Binding NetworkInfos}" AlternationCount="{Binding NetworkInfos.Count}">
+                <ItemsControl Grid.ColumnSpan="100" ItemsSource="{Binding Env.NetworkInfos}" AlternationCount="{Binding Env.NetworkInfos.Count}">
                     <!--#region Resources -->
                     <ItemsControl.Resources />
                     <!--#endregion-->

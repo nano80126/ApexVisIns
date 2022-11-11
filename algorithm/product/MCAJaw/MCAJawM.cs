@@ -1438,7 +1438,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
 #if DEBUG || debug
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 1); 0
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             //foreach (LineSegmentPoint line in lineH)
             //{
             //    Debug.WriteLine($"{roiPos} {line.P1.Y} {line.P2.Y} {line.Length()}");
