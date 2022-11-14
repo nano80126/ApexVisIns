@@ -291,6 +291,12 @@ namespace MCAJawIns.Product
             Note = note ?? string.Empty;
         }
 
+
+        public JawSpecSetting Clone()
+        {
+            return (JawSpecSetting)MemberwiseClone();
+        }
+
         /// <summary>
         /// 檢驗群組，同一群組
         /// </summary>

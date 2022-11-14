@@ -253,8 +253,9 @@ namespace MCAJawIns.Tab
                         break;
                     case InitModes.EDIT:
                         // 編輯模式初始化 (只連線 MongoDB)
-                        if (!initializing) { InitDevelopment(); }
+                        //if (!initializing) { InitDevelopment(); }
 
+                        InitSizeSpec(MainWindow.JawType);
                         // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                         break;
@@ -281,8 +282,6 @@ namespace MCAJawIns.Tab
                         // 保留
                         break;
                 }
-
-                Debug.WriteLine($"Type:  {MCAJawPart.GetType()} line: 285");
             }
 
 #if false
@@ -1382,8 +1381,11 @@ namespace MCAJawIns.Tab
             Array.Fill(correc2, 0);
 
             JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+
+            
             for (int i = 0; i < keys.Length; i++)
             {
+                //Debug.WriteLine($"{JawSizeSpecList.Source.Count}");
                 // 調用 Dispacher 變更集合
                 Dispatcher.Invoke(() =>
                 {
