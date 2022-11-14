@@ -253,9 +253,8 @@ namespace MCAJawIns.Tab
                         break;
                     case InitModes.EDIT:
                         // 編輯模式初始化 (只連線 MongoDB)
-                        //if (!initializing) { InitDevelopment(); }
-
-                        InitSizeSpec(MainWindow.JawType);
+                        if (!initializing) { InitDevelopment(); }
+                        // InitSizeSpec(MainWindow.JawType);
                         // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                         break;
@@ -1171,12 +1170,12 @@ namespace MCAJawIns.Tab
 
                     if (cfg != null)
                     {
+                        JawSpecSetting[] jawSpecs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<JawSpecSetting>(x.ToBsonDocument())).ToArray();
+                        JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+
                         // 調用 Dispacher 變更集合
                         Dispatcher.Invoke(() =>
                         {
-                            JawSpecSetting[] jawSpecs = cfg.DataArray.Select(x => BsonSerializer.Deserialize<JawSpecSetting>(x.ToBsonDocument())).ToArray();
-
-                            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                             foreach (JawSpecSetting item in jawSpecs)
                             {
                                 // 加入尺寸規格列表
@@ -1213,19 +1212,18 @@ namespace MCAJawIns.Tab
 
                     if (jsonStr != string.Empty)
                     {
+                        // 反序列化，載入 JSON FILE
+                        JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
+                        {
+                            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                        });
+
+                        JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                         // 調用 Dispacher 變更集合
                         Dispatcher.Invoke(() =>
                         {
-                            // 反序列化，載入 JSON FILE
-                            JawSpecSetting[] list = JsonSerializer.Deserialize<JawSpecSetting[]>(jsonStr, new JsonSerializerOptions
-                            {
-                                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
-                            });
-
-                            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
                             foreach (JawSpecSetting item in list)
                             {
-
                                 // 加入尺寸規格列表
                                 JawSizeSpecList.Source.Add(item);
                                 // 加入批號檢驗結果 (初始化)
@@ -1240,7 +1238,6 @@ namespace MCAJawIns.Tab
                     {
                         // 初始化尺寸規格
                         InitSizeSpec(MainWindow.JawType);
-
                         // 回傳 false
                         return false;
                     }
@@ -1249,7 +1246,6 @@ namespace MCAJawIns.Tab
                 {
                     // 初始化尺寸規格
                     InitSizeSpec(MainWindow.JawType);
-
                     // 回傳 false
                     return false;
                 }
@@ -1331,50 +1327,43 @@ namespace MCAJawIns.Tab
         /// </summary>
         private void InitSizeSpec(JawTypes type)
         {
+#if false
             string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
             string[] items = Array.Empty<string>();
             double[] center = Array.Empty<double>();
-            double[] lowerc = Array.Empty<double>(); ;
-            double[] upperc = Array.Empty<double>(); ;
+            double[] lowerc = Array.Empty<double>();
+            double[] upperc = Array.Empty<double>();
 
             switch (type)
             {
-                #region Jaw S
+            #region Jaw S
                 case JawTypes.S:
                     items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                     center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
                     lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0.000, 0.000, 0.000, 0.000 };
                     upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.0110, 0.005, 0.005, 0.005, 0.007 };
                     break;
-                #endregion
-                #region Jaw M
+            #endregion
+            #region Jaw M
                 case JawTypes.M:
                     items = new string[] { "0.1195-R", "0.1195-L", "0.2395", "0.014-R", "0.014-L", "0.014-R", "0.014-L", "0.03225-R", "0.03225-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                     center = new double[] { 0.1195, 0.1195, 0.2395, 0.014, 0.014, 0.014, 0.014, 0.03225, 0.03225, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
                     lowerc = new double[] { 0.1170, 0.1170, 0.2360, 0.012, 0.012, 0.013, 0.013, 0.03150, 0.03150, 0.183, double.NaN, 0.0050, 0.000, 0.000, 0.000, 0.000 };
                     upperc = new double[] { 0.1220, 0.1220, 0.2430, 0.016, 0.016, 0.015, 0.015, 0.03300, 0.03300, 0.205, double.NaN, 0.0110, 0.005, 0.005, 0.005, 0.007 };
                     break;
-                #endregion
-                #region Jaw L
+            #endregion
+            #region Jaw L
                 case JawTypes.L:
                     items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
                     center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
                     lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
                     upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
                     break;
-                #endregion
+            #endregion
                 default:
                     break;
             }
 
-#if false
-            items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
-            center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
-            lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
-            upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 }; 
-#endif
-
-            // double[] correc = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             double[] correc = new double[keys.Length];
             Array.Fill(correc, 0);
             double[] correc2 = new double[keys.Length];
@@ -1382,7 +1371,6 @@ namespace MCAJawIns.Tab
 
             JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
 
-            
             for (int i = 0; i < keys.Length; i++)
             {
                 //Debug.WriteLine($"{JawSizeSpecList.Source.Count}");
@@ -1396,7 +1384,33 @@ namespace MCAJawIns.Tab
                     // 加入批號檢驗結果 (初始化)
                     JawInspection.LotResults.Add(keys[i], new JawInspection.ResultElement(items[i], "", 0, true));
                 });
+            } 
+#endif
+            JawInspection.LotResults.Add("good", new JawInspection.ResultElement("良品", "", 0, true));
+
+            JawSpecSettingProductor productor = new JawSpecSettingProductor();
+            JawSpecSetting[] arr = null;
+            switch (type)
+            {
+                case JawTypes.S:
+                    arr = productor.CreateMCAJawS();
+                    break;
+                case JawTypes.M:
+                    arr = productor.CreateMCAJawM();
+                    break;
+                case JawTypes.L:
+                    arr = productor.CreateMCAJawL();
+                    break;
             }
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (JawSpecSetting spec in arr)
+                {
+                    JawSizeSpecList.AddNew(spec);
+                    JawInspection.LotResults.Add(spec.Key, new JawInspection.ResultElement(spec.Item, "", 0, true));
+                }
+            });
         }
         #endregion
 

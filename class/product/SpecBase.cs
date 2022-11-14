@@ -19,13 +19,12 @@ namespace MCAJawIns.Product
 
     public class SpecBase : ISpecBase, INotifyPropertyChanged
     {
-        //private int _key;
+        // private int _key;
         private double _cl;
         private double _lsl;
         private double _usl;
         private double _lcl;
         private double _ucl;
-
 
         /// <summary>
         /// ID (自動遞增)

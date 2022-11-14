@@ -178,23 +178,23 @@
                     <!--<Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=Background}" />-->
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Group}" Value="Group1">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy1}}" />
+                            <Setter Property="Background" Value="{Binding Color, Source={StaticResource ColorProxy1}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group2">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy2}}" />
+                            <Setter Property="Background" Value="{Binding Color, Source={StaticResource ColorProxy2}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group3">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy3}}" />
+                            <Setter Property="Background" Value="{Binding Color, Source={StaticResource ColorProxy3}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group4">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy4}}" />
+                            <Setter Property="Background" Value="{Binding Color, Source={StaticResource ColorProxy4}}" />
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Group}" Value="Group5">
-                            <Setter Property="Background" Value="{Binding Background, Source={StaticResource ColorProxy5}}" />
+                            <Setter Property="Background" Value="{Binding Color, Source={StaticResource ColorProxy5}}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

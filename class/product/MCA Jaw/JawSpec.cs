@@ -291,11 +291,63 @@ namespace MCAJawIns.Product
             Note = note ?? string.Empty;
         }
 
+        /// <summary>
+        /// 設定 Enable
+        /// </summary>
+        /// <param name="enable"></param>
+        /// <returns></returns>
+
+        public JawSpecSetting SetEnable(bool enable)
+        {
+            _enable = enable;
+            return this;
+        }
+
+        /// <summary>
+        /// 設定 Key值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public JawSpecSetting SetKey(string key)
+        {
+            Key = key;
+            return this;
+        }
+
+        /// <summary>
+        /// 設定項目名稱
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public JawSpecSetting SetItem(string item)
+        {
+            Item = item;
+            return this;
+        }
+
+        /// <summary>
+        /// 設定規格
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="lcl"></param>
+        /// <param name="ucl"></param>
+        /// <returns></returns>
+        public JawSpecSetting SetSpec(double center, double lcl, double ucl)
+        {
+            CenterSpec = center;
+            LowerCtrlLimit = lcl;
+            UpperCtrlLimit = ucl;
+            return this;
+        }
 
         public JawSpecSetting Clone()
         {
             return (JawSpecSetting)MemberwiseClone();
         }
+
+        //public JawSizeSpecList SetSpec(string key) {
+        //    return this;
+        //}
 
         /// <summary>
         /// 檢驗群組，同一群組
@@ -314,6 +366,194 @@ namespace MCAJawIns.Product
         //    [Description("群組 5")]
         //    Group5 = 5
         //};
+    }
+
+#if builderPattern
+    /// <summary>
+    /// Jaw Spec Setting 抽象 Builder
+    /// </summary>
+    public abstract class JawSpecSettingBuilder
+    {
+        protected JawSpecSetting jawSpecSetting;
+
+        public abstract JawSpecSettingBuilder SetID(int id);
+        public abstract JawSpecSettingBuilder SetEnable(bool enable);
+        public abstract JawSpecSettingBuilder SetKey(string key);
+        public abstract JawSpecSettingBuilder SetItem(string item);
+        public abstract JawSpecSettingBuilder SetCenter(double center);
+        public abstract JawSpecSettingBuilder SetLCL(double lcl);
+        public abstract JawSpecSettingBuilder SetUCL(double ucl);
+        public abstract JawSpecSettingBuilder SetCorretion(double correction);
+        public abstract JawSpecSettingBuilder SetCorrection2(double correction2);
+        public abstract JawSpecSettingBuilder SetNote(string note);
+
+        public abstract JawSpecSetting Build();
+    }
+
+    /// <summary>
+    /// Jaw Spec Setting 實體 Builder
+    /// </summary>
+    public class JawSpecSettingCreator : JawSpecSettingBuilder
+    {
+        #region Field
+        private int _id;
+        private bool _enable;
+
+        private string _key;
+        private string _item;
+        private double _center;
+        private double _lcl;
+        private double _ucl;
+        private double _correction;
+        private double _correction2;
+        private string _note;
+        #endregion
+
+        #region Methods
+        public override JawSpecSetting Build()
+        {
+            return new JawSpecSetting(_id, _enable, _key, _item, _center, _lcl, _ucl, _correction, _correction2, _note);
+        }
+
+        public override JawSpecSettingBuilder SetID(int id)
+        {
+            _id = id;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetEnable(bool enable)
+        {
+            _enable = enable;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetKey(string key)
+        {
+            _key = key;
+            return this;
+        }
+        public override JawSpecSettingBuilder SetItem(string item)
+        {
+            _item = item;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetCenter(double center)
+        {
+            _center = center;
+            return this;
+        }
+        public override JawSpecSettingBuilder SetLCL(double lcl)
+        {
+            _lcl = lcl;
+            return this;
+            //throw new NotImplementedException();
+        }
+        public override JawSpecSettingBuilder SetUCL(double ucl)
+        {
+            _ucl = ucl;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetCorretion(double correction)
+        {
+            _correction = correction;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetCorrection2(double correction2)
+        {
+            _correction2 = correction2;
+            return this;
+        }
+
+        public override JawSpecSettingBuilder SetNote(string note)
+        {
+            _note = note;
+            return this;
+        }
+        #endregion
+    } 
+#endif
+
+    /// <summary>
+    /// Jaw Spec Setting 生產者
+    /// </summary>
+    public class JawSpecSettingProductor
+    {
+        private JawSpecSetting _prototype;
+
+        private readonly string[] keys = new string[] { "0.088R", "0.088L", "0.176", "0.008R", "0.008L", "0.013R", "0.013L", "0.024R", "0.024L", "back", "front", "bfDiff", "contour", "contourR", "contourL", "flatness" };
+        private string[] items;
+        private double[] center;
+        private double[] lowerc;
+        private double[] upperc;
+
+        /// <summary>
+        /// 建構子，初始化原型物件
+        /// </summary>
+        public JawSpecSettingProductor()
+        {
+            _prototype = new JawSpecSetting();
+        }
+
+        /// <summary>
+        /// 規格小 Jaw
+        /// </summary>
+        /// <returns></returns>
+        public JawSpecSetting[] CreateMCAJawS()
+        {
+            items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+            center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+            lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0.000, 0.000, 0.000, 0.000 };
+            upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.0110, 0.005, 0.005, 0.005, 0.007 };
+
+            return CreateArray();
+        }
+
+        /// <summary>
+        /// 規格中 Jaw
+        /// </summary>
+        /// <returns></returns>
+        public JawSpecSetting[] CreateMCAJawM()
+        {
+            items = new string[] { "0.1195-R", "0.1195-L", "0.2395", "0.014-R", "0.014-L", "0.014-R", "0.014-L", "0.03225-R", "0.03225-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+            center = new double[] { 0.1195, 0.1195, double.NaN, 0.014, 0.014, 0.014, 0.014, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+            lowerc = new double[] { 0.1170, 0.1170, 0.2360, 0.012, 0.012, 0.013, 0.013, 0.03150, 0.03150, 0.183, double.NaN, 0.0050, 0.000, 0.000, 0.000, 0.000 };
+            upperc = new double[] { 0.1220, 0.1220, 0.2430, 0.016, 0.016, 0.015, 0.015, 0.03300, 0.03300, 0.205, double.NaN, 0.0110, 0.005, 0.005, 0.005, 0.007 };
+
+            return CreateArray();
+        }
+
+        /// <summary>
+        /// 規格大 Jaw
+        /// </summary>
+        /// <returns></returns>
+        public JawSpecSetting[] CreateMCAJawL()
+        {
+            items = new string[] { "0.088-R", "0.088-L", "0.176", "0.008-R", "0.008-L", "0.013-R", "0.013-L", "0.024-R", "0.024-L", "後開", "前開", "開度差", "輪廓度", "輪廓度R", "輪廓度L", "平直度" };
+            center = new double[] { 0.0880, 0.0880, 0.176, 0.008, 0.008, 0.013, 0.013, 0.0240, 0.0240, double.NaN, double.NaN, double.NaN, 0, 0, 0, 0 };
+            lowerc = new double[] { 0.0855, 0.0855, 0.173, 0.006, 0.006, 0.011, 0.011, 0.0225, 0.0225, 0.098, double.NaN, 0.0025, 0, 0, 0, 0 };
+            upperc = new double[] { 0.0905, 0.0905, 0.179, 0.010, 0.010, 0.015, 0.015, 0.0255, 0.0255, 0.101, double.NaN, 0.011, 0.005, 0.005, 0.005, 0.007 };
+
+            return CreateArray();
+        }
+
+        private JawSpecSetting[] CreateArray()
+        {
+            JawSpecSetting[] array = new JawSpecSetting[16];
+            for (int i = 0; i < 16; i++)
+            {
+                JawSpecSetting spec = _prototype.Clone();
+
+                spec.SetEnable(true).SetKey(keys[i]).SetItem(items[i]).SetSpec(center[i], lowerc[i], upperc[i]);
+
+                array[i] = spec;
+            }
+            // 釋放 prototype
+            _prototype = null;
+            return array;
+        }
     }
 
     /// <summary>
@@ -586,10 +826,7 @@ namespace MCAJawIns.Product
         {
             int id = Source.Count + 1;
             item.ID = id;
-            //lock (_srcLock)
-            //{
             Source.Add(item);
-            //}
         }
 
         /// <summary>
