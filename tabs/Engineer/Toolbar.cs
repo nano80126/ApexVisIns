@@ -742,11 +742,7 @@ namespace MCAJawIns.Tab
                         Debug.WriteLine($"SN: {sn}");
                         //Methods.GetRoiCanny(mat, AssistRect.GetRect(), 75, 150, out Mat canny);
 
-                        ///
-                        /// 這邊 暫時保留 
-                        /// 下一版 移除 switch (JawType)
-                        /// 
-
+#if false
                         switch (MainWindow.JawType)
                         {
                             #region Jaw S
@@ -823,7 +819,28 @@ namespace MCAJawIns.Tab
                             #endregion
                             default:
                                 break;
+                        } 
+#endif
+
+                        switch(sn)
+                        {
+                            case "24214356":
+                            case "24214359":
+                            case "24413077":
+                                MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam1(mat);
+                                break;
+                            case "24214384":
+                            case "24413078":
+                            case "24413099":
+                                MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam2(mat);
+                                break;
+                            case "24115540":
+                            case "40168495":
+                            case "40168508":
+                                MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
+                                break;
                         }
+
                         #endregion
                     }
 
