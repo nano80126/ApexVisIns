@@ -17,7 +17,7 @@ namespace MCAJawIns.Algorithm
         #region 單位換算
 #if true
         public override double Cam1Mag { get; set; } = 0.21689;
-        public override double Cam2Mag { get; set; } = 0.24475;
+        public override double Cam2Mag { get; set; } = 0.25066;
         public override double Cam3Mag { get; set; } = 0.12306;
 #endif
 
@@ -1848,7 +1848,7 @@ namespace MCAJawIns.Algorithm
             IEnumerable<LineSegmentPoint> lineL = lineV.Where(line => line.P1.X < c).OrderBy(line => line.P1.Y);
             double maxL = lineL.Max(l => l.Length());
             // 保留主成分與垂直線
-            lineL = lineL.Where(line => line.Length() == maxL || Math.Abs(line.P1.X - line.P2.X) <= 2);
+            lineL = lineL.Where(line => line.Length() == maxL || Math.Abs(line.P1.X - line.P2.X) < 2);
 
             // 計算總長
             double sumL = lineL.Sum(line => line.Length());
@@ -1858,13 +1858,13 @@ namespace MCAJawIns.Algorithm
             // 第二次剔除極端值
             lineL = lineL.Where(line => Math.Abs(line.P1.X - lX) < 2);
             sumL = lineL.Sum(line => line.Length());
-            leftX = lineL.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumL);
+            leftX = lineL.Aggregate(0.0, (sum, next) => sum + (next.P2.X * next.Length() / sumL));
 
             // 開度右
             IEnumerable<LineSegmentPoint> lineR = lineV.Where(line => line.P1.X > c).OrderBy(line => line.P1.Y);
             double maxR = lineR.Max(l => l.Length());
             // 保留主成分與垂直線
-            lineR = lineR.Where(line => line.Length() == maxR || Math.Abs(line.P1.X - line.P2.X) <= 2);
+            lineR = lineR.Where(line => line.Length() == maxR || Math.Abs(line.P1.X - line.P2.X) < 2);
 
             // 計算總長
             double sumR = lineR.Sum(line => line.Length());
@@ -1873,18 +1873,21 @@ namespace MCAJawIns.Algorithm
 
             // 第二次剔除極端值
             lineR = lineR.Where(line => Math.Abs(line.P2.X - rX) < 2);
+            
             sumR = lineR.Sum(line => line.Length());
-            rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumR);
+            rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X * next.Length() / sumR));
 
             #region develop
 #if false
             foreach (LineSegmentPoint item in lineL)
             {
+            Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
                 Debug.WriteLine($"{item} {item.Length()}");
             }
             Debug.WriteLine($"===========================================================================================");
             foreach (LineSegmentPoint item in lineR)
             {
+             Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
                 Debug.WriteLine($"{item} {item.Length()}");
             }
             Debug.WriteLine($"===========================================================================================");
@@ -1924,12 +1927,12 @@ namespace MCAJawIns.Algorithm
             int roiWidth = 150;
 
             // roi
-            Rect roi = leftRight == JawPos.Left ? new Rect(roiX, (int)(baseJigY - 150), roiWidth, 80) : new Rect(srcWidth - roiX - roiWidth, (int)(baseJigY - 150), roiWidth, 80);
+            Rect roi = leftRight == JawPos.Left ?
+                new Rect(roiX, (int)(baseJigY - 150), roiWidth, 80) :
+                new Rect(srcWidth - roiX - roiWidth, (int)(baseJigY - 150), roiWidth, 80);
 
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 20, 10, 3);
-
-            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             //foreach (LineSegmentPoint item in lineV)
             //{
@@ -1943,11 +1946,11 @@ namespace MCAJawIns.Algorithm
             {
                 case JawPos.Left:
                     double min = lineV.Min(line => ((double)(line.P1.X + line.P2.X)) / 2);
-                    lineV = lineV.Where(line => Math.Abs(((double)(line.P1.X + line.P2.X)) / 2 - min) <= 1.0).ToArray();
+                    lineV = lineV.Where(line => Math.Abs((((double)(line.P1.X + line.P2.X)) / 2) - min) <= 1.0).ToArray();
                     break;
                 case JawPos.Right:
                     double max = lineV.Max(line => ((double)(line.P1.X + line.P2.X)) / 2);
-                    lineV = lineV.Where(line => Math.Abs(((double)(line.P1.X + line.P2.X)) / 2 - max) <= 1.0).ToArray();
+                    lineV = lineV.Where(line => Math.Abs((((double)(line.P1.X + line.P2.X)) / 2) - max) <= 1.0).ToArray();
                     break;
             }
 
@@ -1955,10 +1958,13 @@ namespace MCAJawIns.Algorithm
             double X = lineV.Aggregate(0.0, (sum, next) => sum + ((double)(next.P1.X + next.P2.X) / 2 * (next.Length() / sumLength)));
             #endregion
 
-            //foreach (LineSegmentPoint item in lineV)
-            //{
-            //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 1);
-            //}
+#if DEBUG
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            foreach (LineSegmentPoint item in lineV)
+            {
+                Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
+            }
+#endif
             //Debug.WriteLine($"lineV Count {lineV.Length}, Sum Length {sumLength}, X2: {X} {compareX}");
 
             #region deprecated
@@ -1976,6 +1982,8 @@ namespace MCAJawIns.Algorithm
             //         break;
             // } 
             #endregion
+
+            //Debug.WriteLine($"{compareX} {X}");
 
             // 計算 0.1195 距離
             distance = (Math.Abs(compareX - X) * Cam2Unit) + correction + subCorrection;
