@@ -16,7 +16,7 @@ namespace MCAJawIns.Algorithm
     {
         #region 單位換算
 #if true
-        public override double Cam1Mag { get; set; } = 0.21689;
+        public override double Cam1Mag { get; set; } = 0.21783;
         public override double Cam2Mag { get; set; } = 0.25066;
         public override double Cam3Mag { get; set; } = 0.12306;
 #endif
@@ -2566,7 +2566,7 @@ namespace MCAJawIns.Algorithm
 
             List<double> listY = new();
             List<double> listY2 = new();
-
+            
             double[] grayArr;
             double tmpGrayAbs = 0;
             int tmpY = 0;
@@ -2574,7 +2574,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 1475 or >= 1605 && i < roiMat.Width)
+                if (i is < 1475 or >= 1610 && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2644,7 +2644,7 @@ namespace MCAJawIns.Algorithm
                 }
 
 
-                if (i2 > 0 && (i2 is < 120 or >= 190))
+                if (i2 > 0 && (i2 is < 115 or >= 190))
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
