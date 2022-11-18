@@ -1832,7 +1832,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             datumY = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
 
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             canny.Dispose();
         }

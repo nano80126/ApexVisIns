@@ -56,7 +56,7 @@ namespace MCAJawIns.Algorithm
             { "粗定位右", new Rect(600, 240, 230, 300) },
             { "治具定位", new Rect(650, 1235, 300, 80) },
             { "後開位置", new Rect(450, 850, 700, 60) },
-            { "側面定位", new Rect(1160, 90, 240, 120) }
+            { "側面定位", new Rect(1160, 90, 240, 120) },
         };
         #endregion
 
@@ -1018,8 +1018,8 @@ namespace MCAJawIns.Algorithm
             try
             {
                 // 取得 背景 POM 基準 Y
-                GetPomDatum(src, out double datumY);
-                // Debug.WriteLine($"datumY: {datumY}");
+                GetPomDatum(src, out double datumY, out double datumX);
+                Debug.WriteLine($"datumY: {datumY} datumX: {datumX}");
 
                 #region 計算 平直度
                 spec = specList?[15];
@@ -1027,7 +1027,7 @@ namespace MCAJawIns.Algorithm
                 if (spec != null && spec.Enable && results != null)
                 {
                     //Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
-                    Cal007FlatnessValue4(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    Cal007FlatnessValue4(src, datumX, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -1036,7 +1036,7 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal007FlatnessValue4(src, datumY, out double f_007);
+                    Cal007FlatnessValue4(src, datumX, datumY, out double f_007);
                     Debug.WriteLine($"f007: {f_007}");
                 }
                 #endregion
@@ -2013,7 +2013,7 @@ namespace MCAJawIns.Algorithm
         /// <summary>
         /// Camera 3 取得 POM 基準
         /// </summary>
-        public void GetPomDatum(Mat src, out double datumY)
+        public void GetPomDatum(Mat src, out double datumY, out double datumX)
         {
             Rect roi = JawROIs["側面定位"];
 
@@ -2021,9 +2021,25 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 25, 10, 3);
             datumY = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
 
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+
+            roi = new Rect(100, (int)(datumY + 90), 300, 20);
+
+            Methods.GetRoiCanny(src, roi, 60, 150, out Mat canny2);
+
+            Cv2.FindContours(canny2, out Point[][] points, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple, roi.Location);
+
+            // 取得最小點
+            int min = int.MaxValue;
+            foreach (Point[] item in points)
+            {
+                int temp = item.Min(pt => pt.X);
+                min = Math.Min(temp, min);
+            }
+            datumX = min;
 
             canny.Dispose();
+            canny2.Dispose();
         }
 
         /// <summary>
@@ -2536,12 +2552,12 @@ namespace MCAJawIns.Algorithm
         /// <param name="correction">校正值</param>
         /// <param name="limitU">規格上限</param>
         /// <returns></returns>
-        public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
+        public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumX, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
             //// 使用完刪除
             //DateTime t1 = DateTime.Now;
             // ROI
-            Rect roi = new(140, (int)(baseDatumY + 60), 2040, 45);
+            Rect roi = new((int)(baseDatumX + 20), (int)(baseDatumY + 55), 2040, 45);
             // 
             Mat roiMat = new(src, roi);
             int srcWidth = src.Width;
@@ -2675,7 +2691,7 @@ namespace MCAJawIns.Algorithm
             roiMat.Dispose();
 
 #if DEBUG || debug
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             // Debug.WriteLine($"flatness: {flatValue:0.00000} {listY2.Max()} {listY2.Min()} {Cam3Mag}");
             // Debug.WriteLine($"Y: {listY.Count} Y2:{listY2.Count}");
             // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");

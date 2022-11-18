@@ -110,11 +110,19 @@ namespace MCAJawIns.Tab
 
         #region Properties
         public MainWindow MainWindow { get; } = (MainWindow)Application.Current.MainWindow;
-        public MCAJawS MCAJawS { get; set; }
-        public MCAJawM MCAJawM { get; set; }
-        public MCAJawL MCAJawL { get; set; }
+        //public MCAJawS MCAJawS { get; set; }
+        //public MCAJawM MCAJawM { get; set; }
+        //public MCAJawL MCAJawL { get; set; }
 
+        /// <summary>
+        /// 檢驗用演算法物件
+        /// </summary>
         public MCAJawAlgorithm MCAJawPart { get; set; }
+        /// <summary>
+        /// 相機要載入的 UserSet
+        /// </summary>
+        public string CamerasUserSet { get; set; }
+
         /// <summary>
         /// 啟用之Tab (檢驗用 or 尺寸設定用)
         /// </summary>
@@ -239,6 +247,31 @@ namespace MCAJawIns.Tab
             // 先確認已初始化旗標
             if (!initialized)
             {
+                #region 初始化檢驗物件
+                switch (MainWindow.JawType)
+                {
+                    case JawTypes.S:
+                        //MCAJawS = new();
+                        MCAJawPart = new MCAJawS();
+                        CamerasUserSet = PLGigECamera.UserSetSelector.UserSet1;
+                        break;
+                    case JawTypes.M:
+                        //MCAJawM = new();
+                        MCAJawPart = new MCAJawM();
+                        CamerasUserSet = PLGigECamera.UserSetSelector.UserSet2;
+                        break;
+                    case JawTypes.L:
+                        //MCAJawL = new();
+                        MCAJawPart = new MCAJawL();
+                        CamerasUserSet = PLGigECamera.UserSetSelector.UserSet3;
+                        break;
+                    default:
+                        // 保留
+                        break;
+                }
+                #endregion
+
+                #region 初始化外設 || 開發模式
                 switch (MainWindow.InitMode)
                 {
                     case InitModes.AUTO:
@@ -254,7 +287,9 @@ namespace MCAJawIns.Tab
                     case InitModes.EDIT:
                         // 編輯模式初始化 (只連線 MongoDB)
                         if (!initializing) { InitDevelopment(); }
+
                         // InitSizeSpec(MainWindow.JawType);
+
                         // 設定為編輯模式 (轉至 MainWindow.xaml.cs)
                         // MainWindow.SystemInfoTab.SystemInfo.SetMode(false);
                         break;
@@ -262,25 +297,7 @@ namespace MCAJawIns.Tab
                         // 保留
                         break;
                 }
-
-                switch (MainWindow.JawType)
-                {
-                    case JawTypes.S:
-                        //MCAJawS = new();
-                        MCAJawPart = new MCAJawS();
-                        break;
-                    case JawTypes.M:
-                        //MCAJawM = new();
-                        MCAJawPart = new MCAJawM();
-                        break;
-                    case JawTypes.L:
-                        //MCAJawL = new();
-                        MCAJawPart = new MCAJawL();
-                        break;
-                    default:
-                        // 保留
-                        break;
-                }
+                #endregion
             }
 
 #if false
@@ -291,7 +308,7 @@ namespace MCAJawIns.Tab
 #endif
             #endregion
 
-            #region All Tab basic info
+            #region Add Tab basic info
             if (!loaded)
             {
                 MainWindow.MsgInformer.AddInfo(MsgInformer.Message.MsgCode.APP, "主頁面已載入");
@@ -395,8 +412,7 @@ namespace MCAJawIns.Tab
                     }, token)
                     .ContinueWith(t =>
                     {
-                        // 等待進度條 等待進度條 等待進度條
-
+                        #region 等待進度條
                         // 終止初始化，狀態變更為未知
                         if (token.IsCancellationRequested)
                         {
@@ -414,7 +430,8 @@ namespace MCAJawIns.Tab
                         // 初始化 Media Player
                         InitMediaPlayer();
 
-                        return t.Result;
+                        return t.Result; 
+                        #endregion
                     }, token)
                     .ContinueWith(t =>
                     {
@@ -436,9 +453,9 @@ namespace MCAJawIns.Tab
                                 #region 載入 UserSet => 大、中、小
                                 if (!cam.IsGrabbing)
                                 {
-                                    // 這邊要防呆
-                                    // cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue("UserSet1");
-                                    // cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
+                                    // 配合 S M L 載入特定 UserSet
+                                    cam.Camera.Parameters[PLGigECamera.UserSetSelector].SetValue(CamerasUserSet);
+                                    cam.Camera.Parameters[PLGigECamera.UserSetLoad].Execute();
 
                                     // 確認為 UserSet1 (已經設為預設)
                                     // string userSet = cam.Camera.Parameters[PLGigECamera.UserSetSelector].GetValue();
