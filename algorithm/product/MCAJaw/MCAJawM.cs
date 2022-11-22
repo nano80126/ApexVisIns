@@ -16,7 +16,7 @@ namespace MCAJawIns.Algorithm
     {
         #region 單位換算
 #if true
-        public override double Cam1Mag { get; set; } = 0.21689;
+        public override double Cam1Mag { get; set; } = 0.21783;
         public override double Cam2Mag { get; set; } = 0.25066;
         public override double Cam3Mag { get; set; } = 0.09685;
 #endif
@@ -2563,7 +2563,7 @@ namespace MCAJawIns.Algorithm
 
             List<double> listY = new();
             List<double> listY2 = new();
-
+            
             double[] grayArr;
             double tmpGrayAbs = 0;
             int tmpY = 0;
