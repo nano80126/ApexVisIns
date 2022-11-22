@@ -18,7 +18,7 @@ namespace MCAJawIns.Algorithm
 #if true
         public override double Cam1Mag { get; set; } = 0.21689;
         public override double Cam2Mag { get; set; } = 0.25066;
-        public override double Cam3Mag { get; set; } = 0.12306;
+        public override double Cam3Mag { get; set; } = 0.09685;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -76,7 +76,6 @@ namespace MCAJawIns.Algorithm
             Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
         } 
 #endif
-
         public override void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
         {
             MainWindow.LightCtrls[1].SetAllChannelValue(Cam1Light[0], Cam1Light[1]);
@@ -594,8 +593,6 @@ namespace MCAJawIns.Algorithm
             // 角點
             Point[] cornerPts = new Point[] { new Point(), new Point(), new Point(), new Point() };
 
-
-
             try
             {
                 #region 取得基礎點
@@ -807,10 +804,10 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[7];    // 024R // 輪廓角點 - 角點 (影像上方)
                 if (spec?.Enable == true && results != null)
                 {
-                    //double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
-                    //double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
-                    double d_024Rt = subCornerPts[2].Y;
-                    double d_024Rb = subContourPts[2].Y;
+                    double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
+                    double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
+                    //double d_024Rt = subCornerPts[2].Y;
+                    //double d_024Rb = subContourPts[2].Y;
                     double d_024R = (Math.Abs(d_024Rb - d_024Rt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
                     lock (results)
@@ -821,10 +818,10 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    //double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
-                    //double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
-                    double d_024Rt = subCornerPts[2].Y;
-                    double d_024Rb = subContourPts[2].Y;
+                    double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
+                    double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
+                    //double d_024Rt = subCornerPts[2].Y;
+                    //double d_024Rb = subContourPts[2].Y;
                     double d_024R = Math.Abs(d_024Rb - d_024Rt) * Cam1Unit;
 
                     Debug.WriteLine($"---\n{nameof(d_024R)}: {d_024R:F5}");
@@ -833,10 +830,10 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[8];    // 024L // 輪廓角點 - 角點
                 if (spec?.Enable == true && results != null)
                 {
-                    //double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
-                    //double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
-                    double d_024Lt = subCornerPts[0].Y;
-                    double d_024Lb = subContourPts[0].Y;
+                    double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
+                    double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
+                    //double d_024Lt = subCornerPts[0].Y;
+                    //double d_024Lb = subContourPts[0].Y;
                     double d_024L = (Math.Abs(d_024Lb - d_024Lt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
                     lock (results)
@@ -847,8 +844,10 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    double d_024Lt = subCornerPts[0].Y;
-                    double d_024Lb = subContourPts[0].Y;
+                    double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
+                    double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
+                    //double d_024Lt = subCornerPts[0].Y;
+                    //double d_024Lb = subContourPts[0].Y;
                     double d_024L = Math.Abs(d_024Lb - d_024Lt) * Cam1Unit;
 
                     Debug.WriteLine($"{nameof(d_024L)}: {d_024L:F5}\n---");
@@ -1050,7 +1049,7 @@ namespace MCAJawIns.Algorithm
                 });
             }
         }
-        #endregion
+        #endregion 
 
         #region 前面相機 Front
         /// <summary>
@@ -1873,7 +1872,7 @@ namespace MCAJawIns.Algorithm
 
             // 第二次剔除極端值
             lineR = lineR.Where(line => Math.Abs(line.P2.X - rX) < 2);
-            
+
             sumR = lineR.Sum(line => line.Length());
             rightX = lineR.Aggregate(0.0, (sum, next) => sum + (next.P1.X * next.Length() / sumR));
 
@@ -2554,8 +2553,6 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumX, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
-            //// 使用完刪除
-            //DateTime t1 = DateTime.Now;
             // ROI
             Rect roi = new((int)(baseDatumX + 20), (int)(baseDatumY + 55), 2040, 45);
             // 
@@ -2574,7 +2571,7 @@ namespace MCAJawIns.Algorithm
             for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
             {
                 // 避開 pin
-                if (i is < 1475 or >= 1605 && i < roiMat.Width)
+                if (i is < 1475 or >= 1610 && i < roiMat.Width)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2595,13 +2592,10 @@ namespace MCAJawIns.Algorithm
                         if (grayArr[j] - grayArr[k] > 10) { break; }
                     }
 
-                    // listY.Add(tmpY);
-
                     // if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     if (listY.Count == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     {
                         listY.Add(tmpY);
-
 #if DEBUG || debug
                         // 著色
                         if (i == roiMat.Width / 2)
@@ -2643,8 +2637,7 @@ namespace MCAJawIns.Algorithm
                     if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
                 }
 
-
-                if (i2 > 0 && (i2 is < 120 or >= 190))
+                if (i2 > 0 && (i2 is < 115 or >= 190))
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
@@ -2664,7 +2657,6 @@ namespace MCAJawIns.Algorithm
 
                         if (grayArr[j] - grayArr[k] > 10) { break; }
                     }
-
 
                     if (Math.Abs(tmpY - listY[0]) < 3)
                     {
@@ -2687,6 +2679,10 @@ namespace MCAJawIns.Algorithm
             }
 
             flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
+
+
+            Debug.WriteLine($"{listY.Max()} {listY.Min()}");
+            Debug.WriteLine($"{listY2.Max()} {listY2.Min()}");
 
             roiMat.Dispose();
 
