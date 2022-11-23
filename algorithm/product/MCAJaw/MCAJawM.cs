@@ -1291,21 +1291,22 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
 #if DEBUG || debug
-            // Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
-            // Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 #endif
 
             // 左
             Methods.GetHoughLinesVFromCanny(leftCanny, leftRoi.Location, out lineV, 5, 2, 3);
             sumLength = lineV.Sum(line => line.Length());
             leftX = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
-            leftX = lineV.Max(x => Math.Max(x.P1.X, x.P2.X));
+            //leftX = lineV.Max(x => Math.Max(x.P1.X, x.P2.X));
+
 
             // 右
             Methods.GetHoughLinesVFromCanny(rightCanny, rightRoi.Location, out lineV, 5, 2, 3);
             sumLength = lineV.Sum(line => line.Length());
             rightX = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
-            rightX = lineV.Min(x => Math.Min(x.P1.X, x.P2.X));
+            //rightX = lineV.Min(x => Math.Min(x.P1.X, x.P2.X));
 
             // 計算前開距離
             distance = (Math.Abs(leftX - rightX) * Cam1Unit) + correction;
@@ -1426,10 +1427,10 @@ namespace MCAJawIns.Algorithm
             switch (roiPos)
             {
                 case JawPos.Left:
-                    roi = new Rect((int)X - 5, basePoint.Y - 10, 30, 20);
+                    roi = new Rect((int)X - 10, basePoint.Y - 10, 30, 20);
                     break;
                 case JawPos.Right:
-                    roi = new Rect((int)X - 29, basePoint.Y - 10, 30, 20);
+                    roi = new Rect((int)X - 20, basePoint.Y - 10, 30, 20);
                     break;
             }
 
@@ -1437,7 +1438,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
 #if DEBUG || debug
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             //foreach (LineSegmentPoint line in lineH)
             //{
             //    Debug.WriteLine($"{roiPos} {line.P1.Y} {line.P2.Y} {line.Length()}");
@@ -1837,7 +1838,7 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 50, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 5, 3, 5);
 
-            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             int l = lineV.Min(line => (line.P1.X + line.P2.X) / 2);
             int r = lineV.Max(line => (line.P1.X + line.P2.X) / 2);
@@ -1880,20 +1881,18 @@ namespace MCAJawIns.Algorithm
 #if false
             foreach (LineSegmentPoint item in lineL)
             {
-            Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
+                Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
                 Debug.WriteLine($"{item} {item.Length()}");
             }
             Debug.WriteLine($"===========================================================================================");
             foreach (LineSegmentPoint item in lineR)
             {
-             Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
+                Cv2.Line(src, item.P1, item.P2, Scalar.Black, 2);
                 Debug.WriteLine($"{item} {item.Length()}");
             }
             Debug.WriteLine($"===========================================================================================");
 #endif
             #endregion
-
-            // Debug.WriteLine($"後開 Left: {leftX}; Right {rightX}");
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;

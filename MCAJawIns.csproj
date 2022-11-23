@@ -27,7 +27,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;NOPROCESS0;JawS;</DefineConstants>
+    <DefineConstants>TRACE;NOPROCESS0;JawM;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
