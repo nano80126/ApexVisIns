@@ -16,9 +16,9 @@ namespace MCAJawIns.Algorithm
     {
         #region 單位換算
 #if true
-        public override double Cam1Mag { get; set; } = 0.21783;
-        public override double Cam2Mag { get; set; } = 0.25066;
-        public override double Cam3Mag { get; set; } = 0.09685;
+        public override double Cam1Mag { get; set; } = 0.21677;
+        public override double Cam2Mag { get; set; } = 0.25904;
+        public override double Cam3Mag { get; set; } = 0.12524;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -868,7 +868,7 @@ namespace MCAJawIns.Algorithm
                 else if (results == null)
                 {
                     Cal014ThinknessValue(src, baseL, LX, out double LX014, out double d_014R);
-                    Debug.WriteLine($"{nameof(d_014R)}: {d_014R:F5}, {nameof(LX014)}: {LX014}");
+                    Debug.WriteLine($"溝深 {nameof(d_014R)}: {d_014R:F5}, {nameof(LX014)}: {LX014}");
                 }
                 #endregion
 
@@ -886,7 +886,7 @@ namespace MCAJawIns.Algorithm
                 else if (results == null)
                 {
                     Cal014ThinknessValue(src, baseR, RX, out double RX014, out double d_014L);
-                    Debug.WriteLine($"{nameof(d_014L)}: {d_014L:F5}, {nameof(RX014)}: {RX014}");
+                    Debug.WriteLine($"溝深 {nameof(d_014L)}: {d_014L:F5}, {nameof(RX014)}: {RX014}");
                 }
                 #endregion
 
@@ -1438,11 +1438,12 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
 #if DEBUG || debug
-            // Cv2.Rectangle(src, roi, Scalar.Gray, 1);
-            //foreach (LineSegmentPoint line in lineH)
-            //{
-            //    Debug.WriteLine($"{roiPos} {line.P1.Y} {line.P2.Y} {line.Length()}");
-            //}
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            foreach (LineSegmentPoint line in lineH)
+            {
+                Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
+                Debug.WriteLine($"{roiPos} {line.P1.Y} {line.P2.Y} {line.Length()}");
+            }
 #endif
             // 線段計算總長
             double sumLength = lineH.Sum(line => line.Length());
