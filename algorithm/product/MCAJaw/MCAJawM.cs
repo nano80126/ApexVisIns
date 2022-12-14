@@ -65,17 +65,6 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region 單元測試 Methods
-#if deprecated
-        /// <summary>
-        /// 顯示換算單位
-        /// </summary>
-        public override void ListVisionParam()
-        {
-            Debug.WriteLine($"Camera 1 Unit: 1px = {Cam1Unit} inch");
-            Debug.WriteLine($"Camera 2 Unit: 1px = {Cam2Unit} inch");
-            Debug.WriteLine($"Camera 3 Unit: 1px = {Cam3Unit} inch");
-        } 
-#endif
         public override void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3)
         {
             MainWindow.LightCtrls[1].SetAllChannelValue(Cam1Light[0], Cam1Light[1]);
@@ -613,7 +602,7 @@ namespace MCAJawIns.Algorithm
                 }
                 #endregion
 
-                #region 取得輪廓度點 (new)
+                #region 取得輪廓度點 (影像下方角點)
                 // 取得輪廓度點 2 左 (實際上是右) 
                 GetContourCornerPoint(src, baseL, LX, JawPos.Left, out contourPts[0], out contourPts[1]);
                 // 取得輪廓度點 2 右 (實際上是左)
@@ -629,7 +618,6 @@ namespace MCAJawIns.Algorithm
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
                 }
-                // Debug.WriteLine($"{string.Join(", ", subContourPts)}");
 #endif
                 #endregion
 
@@ -637,7 +625,6 @@ namespace MCAJawIns.Algorithm
 
                 #region 抓取共面度
                 spec = specList?[12];
-
                 if (spec?.Enable == true && results != null)
                 {
                     GetContourPlanarY(src, baseL, JawPos.Left, LX, out PlanarR);
@@ -654,6 +641,7 @@ namespace MCAJawIns.Algorithm
                 {
                     GetContourPlanarY(src, baseL, JawPos.Left, LX, out PlanarR);
                     GetContourPlanarY(src, baseR, JawPos.Right, RX, out PlanarL);
+
                     Debug.WriteLine($"c_005 : {Math.Abs(PlanarR - PlanarL) * Cam1Unit}");
                 }
                 #endregion
@@ -796,7 +784,6 @@ namespace MCAJawIns.Algorithm
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
                 }
-                //Debug.WriteLine($"{string.Join(", ", subCornerPts)}");
 #endif
                 #endregion
 
@@ -1291,8 +1278,8 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, rightRoi, 75, 150, out Mat rightCanny);
 
 #if DEBUG || debug
-            Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
-            Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, leftRoi, Scalar.Gray, 2);
+            //Cv2.Rectangle(src, rightRoi, Scalar.Gray, 2);
 #endif
 
             // 左
@@ -1421,6 +1408,8 @@ namespace MCAJawIns.Algorithm
         /// <param name="PosY">平面 Y 座標</param>
         public void GetContourPlanarY(Mat src, Point basePoint, JawPos roiPos, double X, out double PosY)
         {
+            DateTime t1 = DateTime.Now;
+
             // 計算 roi
             Rect roi = new Rect();
 
@@ -1438,13 +1427,18 @@ namespace MCAJawIns.Algorithm
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
 #if DEBUG || debug
-            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            //Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             foreach (LineSegmentPoint line in lineH)
             {
                 Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
-                Debug.WriteLine($"{roiPos} {line.P1.Y} {line.P2.Y} {line.Length()}");
+                Debug.WriteLine($"{roiPos} ({line.P1.X}, {line.P1.Y}) ({line.P2.X}, {line.P2.Y}) {line.Length()}");
             }
 #endif
+            // 取得最下緣
+            int maxY = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
+            // 過濾不為邊緣的線段
+            lineH = lineH.Where(line => Math.Abs((line.P1.Y + line.P2.Y) / 2 - maxY) <= 1).ToArray();
+
             // 線段計算總長
             double sumLength = lineH.Sum(line => line.Length());
             // 計算 BotY 
@@ -1459,6 +1453,8 @@ namespace MCAJawIns.Algorithm
             PosY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
             // 銷毀 Canny
             canny.Dispose();
+
+            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
         }
 
         /// <summary>
