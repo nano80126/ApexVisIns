@@ -38,6 +38,8 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="TabIndex" Value="-1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
