@@ -456,7 +456,8 @@ namespace MCAJawIns.Tab
 
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
-            Mat mat = Indicator.Image;
+            //Mat mat = Indicator.Image;
+            Mat mat = Indicator.OriImage;
 
             // if (mat != null)
             // {
