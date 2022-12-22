@@ -308,7 +308,6 @@ namespace MCAJawIns.Algorithm
                     {
                         Debug.WriteLine($"camera3: count: {j}");
                         bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
-                        //Debug.WriteLine($"{ready}");
                         if (!ready)
                         {
                             j--;
@@ -512,7 +511,7 @@ namespace MCAJawIns.Algorithm
                 if (cam3results.Keys.Count == 0) { SoundAlarm.Play(); }
                 foreach (string key in cam3results.Keys)
                 {
-                    Debug.WriteLine($"平直度 {string.Join(",", cam3results[key])}");
+                    // Debug.WriteLine($"平直度 {string.Join(",", cam3results[key])}");
 
                     double avg = cam3results[key].Average();
                     //spec = MCAJaw.JawResultGroup.SizeSpecList.First(s => s.Item == item);

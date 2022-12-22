@@ -670,7 +670,6 @@ namespace MCAJawIns.Tab
                             break;
                     }
                     // MongoAccess.Connect("MCAJawS", "intaiUser", "mcajaw", 1500);
-
                     if (MongoAccess.Connected)
                     {
                         // 建立權限集合
@@ -695,7 +694,6 @@ namespace MCAJawIns.Tab
                             CreateIndexModel<JawMeasurements> indexModel = new CreateIndexModel<JawMeasurements>(Builders<JawMeasurements>.IndexKeys.Ascending(x => x.DateTime));
                             MongoAccess.CreateIndexOne(nameof(JawCollection.Measurements), indexModel);
                         }
-
 #if false               // Show indexes
                         MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Auth), out List<BsonDocument> list);
                         Debug.WriteLine($"{string.Join(", ", list)}");
@@ -708,29 +706,30 @@ namespace MCAJawIns.Tab
                         MongoAccess.GetIndexes<JawInspection>(nameof(JawCollection.Measurements), out list);
                         Debug.WriteLine($"{string.Join(", ", list)}"); 
 #endif
-
                         // 取得 Mongo 版本
                         string version = MongoAccess.GetVersion();
                         // 設定 Mongo 版本
                         MainWindow.SystemInfoTab.Env.SetMongoVersion(version);
 
-#if InsertAuth          // 新增使用者、組態
-
-                        DateTime dt = DateTime.Now;
-                        AuthLevel[] authLevels = new AuthLevel[] {
-                            new AuthLevel() { Role= nameof(AuthRoles.User), Password = "intai", Level = 1, InsertTime = dt, UpdateTime = dt },
-                            new AuthLevel() { Role= nameof(AuthRoles.Quaiity), Password = "qc", Level = 2, InsertTime = dt, UpdateTime = dt  },
-                            new AuthLevel() { Role= nameof(AuthRoles.Engineer), Password = "eng", Level = 5 , InsertTime = dt, UpdateTime = dt },
-                        };
-                        MongoAccess.InsertMany(nameof(JawCollection.Auth), authLevels);
-#endif
                         // 載入使用者權限
                         MongoAccess.FindAll(nameof(JawCollection.Auth), Builders<AuthLevel>.Filter.Empty, out List<AuthLevel> levels);
+                        if (levels.Count == 0)
+                        {
+                            // 新增使用者、組態
+                            DateTime dt = DateTime.Now;
+                            AuthLevel[] authLevels = new AuthLevel[] {
+                                new AuthLevel() { Role= nameof(AuthRoles.User), Password = "intai", Level = 1, InsertTime = dt, UpdateTime = dt },
+                                new AuthLevel() { Role= nameof(AuthRoles.Quaiity), Password = "qc", Level = 2, InsertTime = dt, UpdateTime = dt  },
+                                new AuthLevel() { Role= nameof(AuthRoles.Engineer), Password = "eng", Level = 5 , InsertTime = dt, UpdateTime = dt },
+                            };
+                            MongoAccess.InsertMany(nameof(JawCollection.Auth), authLevels);
+                        }
+
                         foreach (AuthLevel item in levels)
                         {
                             MainWindow.PasswordDict.Add(item.Password, item.Level);
+                            Debug.WriteLine($"{item.Role} {item.Password}");
                         }
-
 #if DeleteOldData       // 移除過期資料
                         MongoAccess.FindOne("Configs", Builders<MCAJawConfig>.Filter.Empty, out MCAJawConfig config);
                         if (config != null)

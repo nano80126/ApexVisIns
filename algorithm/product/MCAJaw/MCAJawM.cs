@@ -713,7 +713,7 @@ namespace MCAJawIns.Algorithm
                     }
                     else
                     {
-                        d_014R = Math.Abs((subContourPts[0].Y + subContourPts[1].Y) / 2 - PlanarR) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                        d_014R = (Math.Abs(((subContourPts[0].Y + subContourPts[1].Y) / 2) - PlanarR) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     }
                     lock (results)
                     {
@@ -745,7 +745,7 @@ namespace MCAJawIns.Algorithm
                     }
                     else
                     {
-                        d_014L = Math.Abs((subContourPts[2].Y + subContourPts[3].Y) / 2 - PlanarL) * Cam1Unit + spec.Correction + spec.CorrectionSecret;
+                        d_014L = (Math.Abs(((subContourPts[2].Y + subContourPts[3].Y) / 2) - PlanarL) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     }
                     lock (results)
                     {
@@ -762,7 +762,7 @@ namespace MCAJawIns.Algorithm
                     }
                     else
                     {
-                        d_014L = Math.Abs((subContourPts[2].Y + subContourPts[3].Y) / 2 - PlanarL) * Cam1Unit;
+                        d_014L = Math.Abs(((subContourPts[2].Y + subContourPts[3].Y) / 2) - PlanarL) * Cam1Unit;
                     }
                     Debug.WriteLine($"{nameof(d_014L)}: {d_014L:F5}");
                 }
@@ -793,8 +793,6 @@ namespace MCAJawIns.Algorithm
                 {
                     double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
                     double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
-                    //double d_024Rt = subCornerPts[2].Y;
-                    //double d_024Rb = subContourPts[2].Y;
                     double d_024R = (Math.Abs(d_024Rb - d_024Rt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
                     lock (results)
@@ -807,11 +805,9 @@ namespace MCAJawIns.Algorithm
                 {
                     double d_024Rt = (subCornerPts[2].Y + subCornerPts[3].Y) / 2;
                     double d_024Rb = (subContourPts[2].Y + subContourPts[3].Y) / 2;
-                    //double d_024Rt = subCornerPts[2].Y;
-                    //double d_024Rb = subContourPts[2].Y;
                     double d_024R = Math.Abs(d_024Rb - d_024Rt) * Cam1Unit;
 
-                    Debug.WriteLine($"---\n{nameof(d_024R)}: {d_024R:F5}");
+                    Debug.WriteLine($"{nameof(d_024R)}: {d_024R:F5}");
                 }
 
                 spec = specList?[8];    // 024L // 輪廓角點 - 角點
@@ -819,8 +815,6 @@ namespace MCAJawIns.Algorithm
                 {
                     double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
                     double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
-                    //double d_024Lt = subCornerPts[0].Y;
-                    //double d_024Lb = subContourPts[0].Y;
                     double d_024L = (Math.Abs(d_024Lb - d_024Lt) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
 
                     lock (results)
@@ -833,11 +827,9 @@ namespace MCAJawIns.Algorithm
                 {
                     double d_024Lt = (subCornerPts[0].Y + subCornerPts[1].Y) / 2;
                     double d_024Lb = (subContourPts[0].Y + subContourPts[1].Y) / 2;
-                    //double d_024Lt = subCornerPts[0].Y;
-                    //double d_024Lb = subContourPts[0].Y;
                     double d_024L = Math.Abs(d_024Lb - d_024Lt) * Cam1Unit;
 
-                    Debug.WriteLine($"{nameof(d_024L)}: {d_024L:F5}\n---");
+                    Debug.WriteLine($"{nameof(d_024L)}: {d_024L:F5}");
                 }
                 #endregion  
 
@@ -1005,7 +997,7 @@ namespace MCAJawIns.Algorithm
             {
                 // 取得 背景 POM 基準 Y
                 GetPomDatum(src, out double datumY, out double datumX);
-                Debug.WriteLine($"datumY: {datumY} datumX: {datumX}");
+                // Debug.WriteLine($"datumY: {datumY} datumX: {datumX}");
 
                 #region 計算 平直度
                 spec = specList?[15];
@@ -1288,7 +1280,6 @@ namespace MCAJawIns.Algorithm
             leftX = lineV.Aggregate(0.0, (sum, next) => sum + (next.P1.X + next.P2.X) / 2 * next.Length() / sumLength);
             //leftX = lineV.Max(x => Math.Max(x.P1.X, x.P2.X));
 
-
             // 右
             Methods.GetHoughLinesVFromCanny(rightCanny, rightRoi.Location, out lineV, 5, 2, 3);
             sumLength = lineV.Sum(line => line.Length());
@@ -1345,11 +1336,6 @@ namespace MCAJawIns.Algorithm
             max = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
             center = Math.Abs(max - min) > 10 ? (min + max) / 2 : max;    // 計算中心值或是使用最大值
             #endregion
-
-            //foreach (LineSegmentPoint item in lineH)
-            //{
-            //    Cv2.Line(src, item.P1, item.P2, Scalar.Gray, 2);
-            //}
 
             #region 尋找轉角點
             // 連接輪廓點
@@ -1602,7 +1588,9 @@ namespace MCAJawIns.Algorithm
         /// <param name="correction">校正值</param>
         /// <param name="limitL">管制下限</param>
         /// <param name="limitU">管制上限</param>
-        /// <returns><strong>是否合格</strong></returns>
+        /// <returns>
+        ///     <strong>是否合格</strong>
+        /// </returns>
         public bool Cal014DistanceValue(Mat src, Point basePoint, JawPos roiPos, double X, double cY, out double distance, double correction = 0, double limitL = 0.011, double limitU = 0.015)
         {
             // 計算 roi
@@ -1647,11 +1635,12 @@ namespace MCAJawIns.Algorithm
         }
 
         /// <summary>
-        /// 計算 0.013 距離 (左右分開呼叫)
+        /// 計算 0.013 距離
+        /// <para>左右分開呼叫</para>
         /// </summary>
         /// <param name="src">來源影像</param>
         /// <param name="basePoint">基準點</param>
-        /// <param name="roiPos">Jaw 左、右</param>
+        /// <param name="roiPos">Jaw 左 or 右 ROI</param>
         /// <param name="X">ROI X (從前開取得)</param>
         /// <param name="topY">上邊緣</param>
         /// <param name="botY">下邊緣</param>
