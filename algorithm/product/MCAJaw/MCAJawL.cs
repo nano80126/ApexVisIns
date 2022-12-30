@@ -16,9 +16,9 @@ namespace MCAJawIns.Algorithm
     {
         #region 單位換算
 #if true
-        public override double Cam1Mag { get; set; } = 0.21677;
-        public override double Cam2Mag { get; set; } = 0.25904;
-        public override double Cam3Mag { get; set; } = 0.12524;
+        public override double Cam1Mag { get; set; } = 0.21741;
+        public override double Cam2Mag { get; set; } = 0.25433;
+        public override double Cam3Mag { get; set; } = 0.12469;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -27,7 +27,7 @@ namespace MCAJawIns.Algorithm
         #endregion
 
         #region 光源參數
-        readonly ushort[] Cam1Light = new ushort[] { 96, 0 };
+        readonly ushort[] Cam1Light = new ushort[] { 128, 0 };
         readonly ushort[] Cam2Light = new ushort[] { 0, 160 };
         readonly ushort[] Cam3Light = new ushort[] { 320, 320 };
         #endregion
@@ -627,8 +627,8 @@ namespace MCAJawIns.Algorithm
                 spec = specList?[12];
                 if (spec?.Enable == true && results != null)
                 {
-                    GetContourPlanarY(src, baseL, JawPos.Left, LX, out PlanarR);
-                    GetContourPlanarY(src, baseR, JawPos.Right, RX, out PlanarL);
+                    GetContourPlanarY2(src, baseL, JawPos.Left, LX, out PlanarR);
+                    GetContourPlanarY2(src, baseR, JawPos.Right, RX, out PlanarL);
 
                     double c_005 = (Math.Abs(PlanarR - PlanarL) * Cam1Unit) + spec.Correction + spec.CorrectionSecret;
                     lock (results)
@@ -639,8 +639,8 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    GetContourPlanarY(src, baseL, JawPos.Left, LX, out PlanarR);
-                    GetContourPlanarY(src, baseR, JawPos.Right, RX, out PlanarL);
+                    GetContourPlanarY2(src, baseL, JawPos.Left, LX, out PlanarR);
+                    GetContourPlanarY2(src, baseR, JawPos.Right, RX, out PlanarL);
 
                     Debug.WriteLine($"c_005 : {Math.Abs(PlanarR - PlanarL) * Cam1Unit}");
                 }
@@ -732,6 +732,7 @@ namespace MCAJawIns.Algorithm
                     else
                     {
                         d_012R = Math.Abs(((subContourPts[0].Y + subContourPts[1].Y) / 2) - PlanarR) * Cam1Unit;
+                        Debug.WriteLine($"{subContourPts[0]} {subContourPts[1]}");
                     }
                     Debug.WriteLine($"{nameof(d_012R)}: {d_012R:F5}");
                 }
@@ -927,7 +928,7 @@ namespace MCAJawIns.Algorithm
                 // 088 右 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_174R, spec.Correction + spec.CorrectionSecret);
+                    Cal174DistanceValue2(src, JigPosY, RX, JawPos.Right, out d_174R, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -936,7 +937,7 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal174DistanceValue(src, JigPosY, RX, JawPos.Right, out d_174R);
+                    Cal174DistanceValue2(src, JigPosY, RX, JawPos.Right, out d_174R);
                     Debug.WriteLine($"{nameof(d_174R)}: {d_174R:F5}");
                 }
                 #endregion
@@ -947,7 +948,7 @@ namespace MCAJawIns.Algorithm
                 // 088 左 或 176 開啟
                 if ((spec?.Enable == true || specList?[2].Enable == true) && results != null)
                 {
-                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_174L, spec.Correction + spec.CorrectionSecret);
+                    Cal174DistanceValue2(src, JigPosY, LX, JawPos.Left, out d_174L, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -956,7 +957,7 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal174DistanceValue(src, JigPosY, LX, JawPos.Left, out d_174L);
+                    Cal174DistanceValue2(src, JigPosY, LX, JawPos.Left, out d_174L);
                     Debug.WriteLine($"{nameof(d_174L)}: {d_174L:F5}");
                 }
                 #endregion
@@ -1410,21 +1411,22 @@ namespace MCAJawIns.Algorithm
                     break;
             }
 
-            Methods.GetRoiCanny(src, roi, 75, 150, out Mat canny);
+            Methods.GetRoiCanny(src, roi, 75, 140, out Mat canny);
             Methods.GetHoughLinesHFromCanny(canny, roi.Location, out LineSegmentPoint[] lineH, 2, 1, 5);
 
+            // 取得最下緣
+            int maxY = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
+            // 過濾不為邊緣的線段
+            lineH = lineH.Where(line => Math.Abs((line.P1.Y + line.P2.Y) / 2 - maxY) <= 1).ToArray();
+
 #if DEBUG || debug
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 1);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 1);
             foreach (LineSegmentPoint line in lineH)
             {
                 Cv2.Line(src, line.P1, line.P2, Scalar.Black, 1);
                 // Debug.WriteLine($"{roiPos} ({line.P1.X}, {line.P1.Y}) ({line.P2.X}, {line.P2.Y}) {line.Length()}");
             }
 #endif
-            // 取得最下緣
-            int maxY = lineH.Max(line => Math.Max(line.P1.Y, line.P2.Y));
-            // 過濾不為邊緣的線段
-            lineH = lineH.Where(line => Math.Abs((line.P1.Y + line.P2.Y) / 2 - maxY) <= 1).ToArray();
 
             // 線段計算總長
             double sumLength = lineH.Sum(line => line.Length());
@@ -1440,6 +1442,109 @@ namespace MCAJawIns.Algorithm
             PosY = lineH.Aggregate(0.0, (sum, next) => sum + ((next.P1.Y + next.P2.Y) / 2 * next.Length() / sumLength));
             // 銷毀 Canny
             canny.Dispose();
+        }
+
+        /// <summary>
+        /// 取得輪廓平面 Y (指標法)
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="basePoint">基準點</param>
+        /// <param name="roiPos">Jaw 左右</param>
+        /// <param name="X">ROI X (從前開取得)</param>
+        /// <param name="PosY">平面 Y 座標</param>
+        public unsafe void GetContourPlanarY2(Mat src, Point basePoint, JawPos roiPos, double X, out double PosY)
+        {
+            // 計算 ROI
+            Rect roi = new Rect();
+            //
+
+            int iStart = 0;
+            int iStep = 0;
+
+            switch (roiPos)
+            {
+                case JawPos.Left:
+                    roi = new Rect((int)X - 10, basePoint.Y - 10, 30, 20);
+                    iStart = 0;
+                    iStep = 3;
+                    break;
+                case JawPos.Right:
+                    roi = new Rect((int)X - 20, basePoint.Y - 10, 30, 20);
+                    iStart = roi.Width - 1;
+                    iStep = -3;
+                    break;
+            }
+            // 新增Mat 物件
+            Mat roiMat = new Mat(src, roi);
+            int srcWidth = src.Width;
+
+            // 取得指標起點
+            byte* b = roiMat.DataPointer;
+            // 計算平均值使用
+            List<double> listY = new List<double>();
+            double[] grayArr;   // dp 紀錄灰階值
+            double grayAbs;     // 紀錄斜率最大時的灰階
+            int tempY = 0;      // 斜率最大的 Y 座標 
+            // ? : 切換往左或往右掃描
+            for (int i = iStart; roiPos == JawPos.Left ? i < roiMat.Width : i >= 0; i += iStep)
+            {
+                grayArr = new double[roiMat.Height];
+                grayAbs = 0;
+                tempY = 0;
+
+                for (int j = 0; j < roiMat.Height; j++)
+                {
+                    double avg = (b[srcWidth * j + i] + b[srcWidth * j + i + 1] + b[srcWidth * j + i + 2]) / 3;
+                    grayArr[j] = avg;
+
+                    int k = j - 1;
+                    if (j == 0) { continue; }
+
+                    if (grayArr[j] > grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > grayAbs)
+                    {
+                        tempY = j;
+                        grayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                    }
+
+                    if (avg > 200) { break; }
+                }
+
+#if DEBUG || debug
+                if (listY.Count == 0 || Math.Abs(tempY - listY[^1]) < 3)
+                {
+                    listY.Add(tempY);
+
+                    b[srcWidth * tempY + i] = 0;
+                    b[srcWidth * (tempY + 1) + i] = 0;
+                    b[srcWidth * (tempY + 2) + i] = 0;
+                    b[srcWidth * (tempY + 3) + i] = 0;
+                    b[srcWidth * (tempY - 1) + i] = 0;
+                    b[srcWidth * (tempY - 2) + i] = 0;
+                    b[srcWidth * (tempY - 3) + i] = 0;
+                }
+                else
+                {
+                    listY.Add(listY[^1]);
+
+                    b[srcWidth * tempY + i] = 150;
+                    b[srcWidth * (tempY + 1) + i] = 150;
+                    b[srcWidth * (tempY + 2) + i] = 150;
+                    b[srcWidth * (tempY + 3) + i] = 150;
+                    b[srcWidth * (tempY - 1) + i] = 150;
+                    b[srcWidth * (tempY - 2) + i] = 150;
+                    b[srcWidth * (tempY - 3) + i] = 150;
+                }
+#endif
+            }
+
+            if (roiPos == JawPos.Left)
+            {
+                Cv2.Rectangle(src, roi, Scalar.Black, 1);
+            }
+
+            roiMat.Dispose();
+
+            PosY = listY.Average() + roi.Y;
         }
 
         /// <summary>
@@ -1614,7 +1719,7 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
             Cv2.Rectangle(src, roi, Scalar.Gray, 2);
-            //這邊要確認 lineH 重複性
+            // 這邊要確認 lineH 重複性
             // foreach (LineSegmentPoint item in lineH)
             // {
             //     //Cv2.Line(src, item.P1, item.P2, Scalar.LightGray, 2);
@@ -1629,7 +1734,6 @@ namespace MCAJawIns.Algorithm
             distance = (Math.Abs(cY - botY) * Cam1Unit) + correction;
             // 銷毀 canny
             canny.Dispose();
-
             // Debug.WriteLine($"{roiPos} 012 botY: {botY}");
 
             return limitL <= distance && distance <= limitU;
@@ -1861,30 +1965,146 @@ namespace MCAJawIns.Algorithm
             Methods.GetRoiCanny(src, roi, 60, 120, out Mat canny);
             Methods.GetHoughLinesVFromCanny(canny, roi.Location, out LineSegmentPoint[] lineV, 20, 10, 3);
 
-            //Cv2.Rectangle(src, roi, Scalar.Gray, 2);
+            Cv2.Rectangle(src, roi, Scalar.Gray, 2);
 
             double sumLength = lineV.Sum(line => line.Length());
             double X = lineV.Aggregate(0.0, (sum, next) => sum + ((next.P1.X + next.P2.X) / 2 * next.Length() / sumLength));
 
+            // foreach (var line in lineV)
+            //{
+            //    Cv2.Line(src, line.P1, line.P2, Scalar.Gray, 2);
+            //}
+
             // 隱藏 correction
-            double subCorrection = 0;
-            switch (leftRight)
-            {
-                case JawPos.Left:
-                    subCorrection = (((src.Width / 2) - X - 400) * 0.00004) + 0.0014;
-                    break;
-                case JawPos.Right:
-                    subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
-                    break;
-                default:
-                    break;
-            }
+            //double subCorrection = 0;
+            //switch (leftRight)
+            //{
+            //    case JawPos.Left:
+            //        subCorrection = (((src.Width / 2) - X - 400) * 0.00004) + 0.0014;
+            //        break;
+            //    case JawPos.Right:
+            //        subCorrection = ((X - (src.Width / 2) - 400) * 0.00004) + 0.0014;
+            //        break;
+            //    default:
+            //        break;
+            //}
 
             // 計算 0.174 距離
-            distance = (Math.Abs(compareX - X) * Cam2Unit) + correction + subCorrection;
+            distance = (Math.Abs(compareX - X) * Cam2Unit) + correction;
+            // + subCorrection;
             // 銷毀 canny
             canny.Dispose();
 
+            return limitL <= distance && distance <= limitU;
+        }
+
+        /// <summary>
+        /// 計算0.174 距離 (左右分開)
+        /// <para>左右分開呼叫</para>
+        /// </summary>
+        /// <param name="src">來源影像</param>
+        /// <param name="baseJigY">治具邊緣</param>
+        /// <param name="compareX">比較基準 (量測後開取得)</param>
+        /// <param name="pos">左: Left, 右: Right</param>
+        /// <param name="distance">(out) 0.174 距離</param>
+        /// <param name="correction">校正值</param>
+        /// <param name="limitL">管制下限</param>
+        /// <param name="limitU">管制上限</param>
+        /// <returns>是否合格</returns>
+        public unsafe bool Cal174DistanceValue2(Mat src, double baseJigY, double compareX, JawPos pos, out double distance, double correction = 0, double limitL = 0.170, double limitU = 0.178)
+        {
+            // src Width
+            int srcWidth = src.Width;
+            // roi 距離影像邊緣 X
+            int roiX = 240;
+            // roi Width 
+            int roiWidth = 150;
+            // roi 
+            Rect roi = Rect.Empty;
+            //
+            int iStart = 0;
+            int iStep = 0;
+
+            switch (pos)
+            {
+                case JawPos.Left:
+                    roi = new Rect(roiX, (int)(baseJigY - 150), roiWidth, 140);
+                    iStart = 0;
+                    iStep = 1;
+                    break;
+                case JawPos.Right:
+                    roi = new Rect(srcWidth - roiX - roiWidth, (int)(baseJigY - 150), roiWidth, 140);
+                    iStart = roi.Width - 1;
+                    iStep = -1;
+                    break;
+            }
+
+            // 新增 ROI Mat
+            Mat roiMat = new Mat(src, roi);
+            // 取得 roi 起始位址
+            byte* b = roiMat.DataPointer;
+
+            List<double> listX = new List<double>();
+
+            double[] grayArr;
+            double grayAbs = 0;
+            int tempX = 0;
+
+            for (int j = 0; j < roiMat.Height; j += 3)
+            {
+                grayArr = new double[roiMat.Width];
+                grayAbs = 0;
+                tempX = 0;
+
+                for (int i = iStart; pos == JawPos.Left ? j < roiMat.Height : j >= 0; i += iStep)
+                {
+                    double avg = (b[srcWidth * j + i] + b[srcWidth * (j + 1) + i] + b[srcWidth * (j + 2) + i]) / 3;
+                    grayArr[i] = avg;
+
+                    int k = pos == JawPos.Left ? i - 1 : i + 1;
+                    if (i == 0 || i == roiWidth - 1) { continue; }
+
+                    if (grayArr[i] < grayArr[k] && Math.Abs(grayArr[i] - grayArr[k]) > grayAbs)
+                    {
+                        tempX = i;
+                        grayAbs = Math.Abs(grayArr[i] - grayArr[k]);
+                    }
+
+                    if (avg < 20) { break; }
+                }
+
+                if (listX.Count == 0 || Math.Abs(tempX - listX[^1]) < 3)
+                {
+                    listX.Add(tempX);
+
+#if DEBUG || debug
+                    b[srcWidth * j + tempX] = 0;
+                    b[srcWidth * j + tempX + 1] = 0;
+                    b[srcWidth * j + tempX + 2] = 0;
+                    b[srcWidth * j + tempX - 1] = 0;
+                    b[srcWidth * j + tempX - 2] = 0;
+#endif
+                }
+                else
+                {
+                    listX.Add(listX[^1]);
+
+#if DEBUG || debug
+                    b[srcWidth * j + tempX] = 150;
+                    b[srcWidth * j + tempX + 1] = 150;
+                    b[srcWidth * j + tempX + 2] = 150;
+                    b[srcWidth * j + tempX - 1] = 150;
+                    b[srcWidth * j + tempX - 2] = 150;
+#endif
+                }
+            }
+
+            // 計算平均 x
+            double x = listX.Average() + roi.X;
+            // 計算 0.174 距離
+            distance = (Math.Abs(compareX - x) * Cam2Unit) + correction;
+            // 消除 roi Mat
+            roiMat.Dispose();
             return limitL <= distance && distance <= limitU;
         }
         #endregion
@@ -2377,7 +2597,7 @@ namespace MCAJawIns.Algorithm
                 int tmpY = 0;
                 for (int j = 0; j < roiMat.Height; j++)
                 {
-                    double avg = ((b[1200 * j] + b[1200 * j + 1] + b[1200 * j + 2]) / 3);
+                    double avg = (b[1200 * j] + b[1200 * j + 1] + b[1200 * j + 2]) / 3;
                     grayArr[j] = avg;
                     int k = j - 1;
                     if (j == 0) continue;
