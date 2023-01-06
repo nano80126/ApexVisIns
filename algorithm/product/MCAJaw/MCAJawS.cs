@@ -2489,6 +2489,11 @@ namespace MCAJawIns.Algorithm
 #endif
             return false;
         }
+
+        //public override unsafe void DrawFlatReference(byte* mat, int width, int xPos, int yPos, byte color, byte length)
+        //{
+        //    throw new NotImplementedException();
+        //}
         #endregion
     }
 }

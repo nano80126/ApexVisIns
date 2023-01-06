@@ -1007,8 +1007,8 @@ namespace MCAJawIns.Algorithm
                 // Cal007FlatnessValue(src, datumY, out double f_007, spec != null ? spec.Correction + spec.CorrectionSecret : 0);
                 if (spec != null && spec.Enable && results != null)
                 {
-                    //Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
-                    Cal007FlatnessValue4(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    // Cal007FlatnessValue2(src, datumY, out double[] arrayY, out double f_007, spec.Correction + spec.CorrectionSecret);
+                    Cal007FlatnessValue5(src, datumY, out double f_007, spec.Correction + spec.CorrectionSecret);
                     lock (results)
                     {
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
@@ -1017,7 +1017,7 @@ namespace MCAJawIns.Algorithm
                 }
                 else if (results == null)
                 {
-                    Cal007FlatnessValue4(src, datumY, out double f_007);
+                    Cal007FlatnessValue5(src, datumY, out double f_007);
                     Debug.WriteLine($"f007: {f_007}");
                 }
                 #endregion
@@ -2653,8 +2653,6 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public unsafe bool Cal007FlatnessValue4(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
-            //// 使用完刪除
-            //DateTime t1 = DateTime.Now;
             // ROI
             Rect roi = new(350, (int)(baseDatumY + 30), 2710, 45);
             // 
@@ -2678,6 +2676,7 @@ namespace MCAJawIns.Algorithm
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
                     tmpY = 0;
+                    
                     for (int j = 0; j < roiMat.Height; j++)
                     {
                         double avg = (b[(srcWidth * j) + i] + b[(srcWidth * j) + i + 1] + b[(srcWidth * j) + i + 2]) / 3;
@@ -2694,13 +2693,9 @@ namespace MCAJawIns.Algorithm
                         if (grayArr[j] - grayArr[k] > 10) { break; }
                     }
 
-                    // listY.Add(tmpY);
-
-                    // if (i == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     if (listY.Count == 0 || Math.Abs(tmpY - listY[^1]) < 3)
                     {
                         listY.Add(tmpY);
-
 #if DEBUG || debug
                         // 著色
                         if (i == roiMat.Width / 2)
@@ -2742,12 +2737,12 @@ namespace MCAJawIns.Algorithm
                     if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
                 }
 
-
                 if (i2 > 0)
                 {
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
                     tmpY = 0;
+
                     for (int j = 0; j < roiMat.Height; j++)
                     {
                         double avg = (b[srcWidth * j + i2] + b[srcWidth * j + i2 + 1] + b[srcWidth * j + i2 + 2]) / 3;
@@ -2764,11 +2759,9 @@ namespace MCAJawIns.Algorithm
                         if (grayArr[j] - grayArr[k] > 10) { break; }
                     }
 
-
                     if (Math.Abs(tmpY - listY[0]) < 3)
                     {
                         listY.Insert(0, tmpY);
-
 #if DEBUG || debug
                         // 著色
                         b[(srcWidth * tmpY) + i2] = 50;
@@ -2791,12 +2784,326 @@ namespace MCAJawIns.Algorithm
 
 #if DEBUG || debug
             Cv2.Rectangle(src, roi, Scalar.Black, 1);
-             
-            // Debug.WriteLine($"Y2:{string.Join(",", listY2)}");
-            // Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
 #endif
             return false;
         }
+
+        /// <summary>
+        /// 計算平直度 (指標法), 取前、中、後三區間
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="baseDatumY"></param>
+        /// <param name="flatValue"></param>
+        /// <param name="correction"></param>
+        /// <param name="limitU"></param>
+        /// <returns></returns>
+        public unsafe bool Cal007FlatnessValue5(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
+        {
+            DateTime t1 = DateTime.Now;
+
+            // ROI 
+            Rect roi = new Rect(350, (int)(baseDatumY + 30), 2710, 45);
+            // 
+            Mat roiMat = new(src, roi);
+            int srcWidth = src.Width;
+
+            byte* b = roiMat.DataPointer;
+
+            List<double> listY = new();
+            List<double>[] list = new List<double>[] {
+                new List<double>(),
+                new List<double>(),
+                new List<double>(),
+                new List<double>()
+            };
+
+            Queue<double>[] queue = new Queue<double>[]
+            {
+                new Queue<double>(),
+                new Queue<double>(),
+                new Queue<double>(),
+                new Queue<double>()
+            };
+
+            List<double> listY2 = new();
+            List<double>[] list2 = new List<double>[]
+            {
+                new List<double>(),
+                new List<double>()
+            };
+
+            double[] grayArr;
+            double tmpGrayAbs = 0;
+            int tmpY = 0;
+
+            int min = int.MaxValue;
+            int max = 0;
+
+            for (int i = roiMat.Width / 2, i2 = roiMat.Width / 2 - 3; i < roiMat.Width || i2 >= 0; i += 3, i2 -= 3)
+            {
+                // 避開 pin
+                if (i < (roiMat.Width / 2) + 340 || ((roiMat.Width / 2) + 980 < i && i < roiMat.Width))
+                {
+                    if (i < roiMat.Width / 2 + 340)
+                    {
+                        #region 白 => 黑
+                        grayArr = new double[roiMat.Height];
+                        tmpGrayAbs = 0;
+                        tmpY = 0;
+
+                        for (int j = 0; j < roiMat.Height; j++)
+                        {
+                            double avg = (b[(srcWidth * j) + i] + b[(srcWidth * j) + i + 1] + b[(srcWidth * j) + i + 2]) / 3;
+                            grayArr[j] = avg;
+                            int k = j - 1;
+                            if (j == 0) { continue; }
+
+                            if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                            {
+                                tmpY = j;
+                                tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                            }
+
+                            if (grayArr[j] - grayArr[k] > 10) { break; }
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        #region 黑 => 白
+                        grayArr = new double[roiMat.Height];
+                        tmpGrayAbs = 0;
+                        tmpY = 0;
+
+                        for (int j = 0; j < roiMat.Height; j++)
+                        {
+                            double avg = (b[(srcWidth * j) + i] + b[(srcWidth * j) + i + 1] + b[(srcWidth * j) + i + 2]) / 3;
+                            grayArr[j] = avg;
+                            int k = j - 1;
+                            if (j == 0) { continue; }
+
+                            if (grayArr[j] > grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                            {
+                                tmpY = j;
+                                tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                            }
+
+                            if (grayArr[j] - grayArr[k] > 10) { break; }
+                        }
+                        #endregion
+                    }
+
+                    #region 畫圖 & 紀錄
+                    if (i < ((roiMat.Width / 2) + 340))
+                    {
+                        //if ((list[2].Count == 0 || Math.Abs(tmpY - list[2][^1]) < 3))
+                        if (queue[2].Count == 0 || Math.Abs(tmpY - queue[2].ElementAt(queue[2].Count - 1)) < 3)
+                        {
+                            max = Math.Max(max, tmpY);
+                            min = Math.Min(min, tmpY);
+
+                            list[2].Add(tmpY);
+                            queue[2].Enqueue(tmpY);
+#if DEBUG || debug
+                            if (i == roiMat.Width / 2)
+                            {
+                                // 著色，工件中心 參考點
+                                DrawFlatReference(b, srcWidth, i, tmpY, 255, 11);
+                            }
+                            else
+                            {
+                                // 著色，工件表面 參考點
+                                DrawFlatReference(b, srcWidth, i, tmpY, 150, 7);
+                            }
+#endif
+                        }
+                        else
+                        {
+                            // 著色，抓取錯誤點
+                            DrawFlatReference(b, srcWidth, i, tmpY, 0, 5);
+                        }
+                    }
+                    else if ((roiMat.Width / 2) + 1180 < i && i < roiMat.Width)
+                    {
+                        if (queue[3].Count == 0 || Math.Abs(tmpY - queue[3].ElementAt(queue[3].Count - 1)) < 3)
+                        {
+                            max = Math.Max(max, tmpY);
+                            min = Math.Min(min, tmpY);
+
+                            list[3].Add(tmpY);
+                            queue[3].Enqueue(tmpY);
+#if DEBUG || debug
+                            // 著色，工件表面 參考點
+                            DrawFlatReference(b, srcWidth, i, tmpY, 150, 7);
+#endif
+                        }
+                        else
+                        {
+                            // 著色，抓取錯誤點 
+                            DrawFlatReference(b, srcWidth, i, tmpY, 0, 5);
+                        }
+                    }
+                    #endregion
+
+                    // if (listY.Count > 4) { listY2.Add((listY[^1] + listY[^2] + listY[^3] + listY[^4] + listY[^5]) / 5); }
+
+                    if (queue[2].Count >= 10)
+                    {
+                        list2[1].Add(queue[2].Average());
+                        queue[2].Dequeue();
+                    }
+
+                    if (queue[3].Count >= 10)
+                    {
+                        list2[1].Add(queue[3].Average());
+                        queue[3].Dequeue();
+                    }
+                }
+
+                // 200 ~ 245 避開PIN
+                if ((i2 < 200 || i2 >= 245) && (roiMat.Width / 2 - 340 < i2 || (0 <= i2 && i2 < roiMat.Width / 2 - 980)))
+                {
+                    if (roiMat.Width / 2 - 340 < i2)
+                    {
+                        #region 白 => 黑
+                        grayArr = new double[roiMat.Height];
+                        tmpGrayAbs = 0;
+                        tmpY = 0;
+
+                        for (int j = 0; j < roiMat.Height; j++)
+                        {
+                            double avg = (b[srcWidth * j + i2] + b[srcWidth * j + i2 + 1] + b[srcWidth * j + i2] + 2) / 3;
+                            grayArr[j] = avg;
+                            int k = j - 1;
+                            if (j == 0) { continue; }
+
+                            if (grayArr[j] < grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                            {
+                                tmpY = j;
+                                tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                            }
+
+                            if (grayArr[j] - grayArr[k] > 10) { break; }
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        #region 白 => 黑
+                        grayArr = new double[roiMat.Height];
+                        tmpGrayAbs = 0;
+                        tmpY = 0;
+
+                        for (int j = 0; j < roiMat.Height; j++)
+                        {
+                            double avg = (b[srcWidth * j + i2] + b[srcWidth * j + i2 + 1] + b[srcWidth * j + i2] + 2) / 3;
+                            grayArr[j] = avg;
+                            int k = j - 1;
+                            if (j == 0) { continue; }
+
+                            if (grayArr[j] > grayArr[k] && Math.Abs(grayArr[j] - grayArr[k]) > tmpGrayAbs)
+                            {
+                                tmpY = j;
+                                tmpGrayAbs = Math.Abs(grayArr[j] - grayArr[k]);
+                            }
+
+                            if (grayArr[j] - grayArr[k] > 10) { break; }
+                        }
+                        #endregion
+                    }
+
+                    #region 畫圖 & 紀錄
+                    if ((roiMat.Width / 2 - 340) < i2)
+                    {
+                        // if ((list[1].Count == 0 && Math.Abs(tmpY - list[2][0]) < 3) || Math.Abs(tmpY - list[1][0]) < 3)
+                        if (queue[1].Count == 0 || Math.Abs(tmpY - queue[1].ElementAt(queue[1].Count - 1)) < 3)
+                        {
+                            max = Math.Max(max, tmpY);
+                            min = Math.Min(min, tmpY);
+
+                            list[1].Insert(0, tmpY);
+                            queue[1].Enqueue(tmpY);
+
+                            DrawFlatReference(b, srcWidth, i2, tmpY, 180, 7);
+                        }
+                        else
+                        {
+                            DrawFlatReference(b, srcWidth, i2, tmpY, 0, 5);
+                        }
+                    }
+                    else if (0 <= i2 && i2 < (roiMat.Width / 2 - 980))
+                    {
+                        if (list[0].Count == 0 || Math.Abs(tmpY - queue[0].ElementAt(queue[0].Count - 1)) < 3)
+                        {
+                            max = Math.Max(max, tmpY);
+                            min = Math.Min(min, tmpY);
+
+                            list[0].Insert(0, tmpY);
+                            queue[0].Enqueue(tmpY);
+
+                            DrawFlatReference(b, srcWidth, i2, tmpY, 150, 7);
+                        }
+                        else
+                        {
+                            DrawFlatReference(b, srcWidth, i2, tmpY, 0, 5);
+                        }
+                    }
+                    #endregion
+
+                    if (queue[1].Count >= 10)
+                    {
+                        list2[0].Add(queue[1].Average());
+                        queue[1].Dequeue();
+                    }
+
+                    if (queue[0].Count >= 10)
+                    {
+                        list2[0].Add(queue[0].Average());
+                        queue[0].Dequeue();
+                    }
+
+                    // if (listY.Count > 4) { listY2.Insert(0, (listY[0] + listY[1] + listY[2] + listY[3] + listY[4]) / 5); }
+                }
+            }
+
+            flatValue = 0;
+
+            IEnumerable<double> concat = list2[0].Concat(list2[1]);
+            flatValue = (concat.Max() - concat.Min()) * Cam3Unit + correction;
+
+            roiMat.Dispose();
+
+#if DEBUG || debug
+            Cv2.Rectangle(src, roi, Scalar.Black, 1);
+
+
+            Debug.WriteLine($"{list[0].Max()} {list[1].Max()} {list[2].Max()} {list[3].Max()}");
+            Debug.WriteLine($"{list[0].Min()} {list[1].Min()} {list[2].Min()} {list[3].Min()}");
+            Debug.WriteLine($"{concat.Max()} {concat.Min()}");
+            Debug.WriteLine($"{max} {min}");
+            // Debug.WriteLine($"{listY.Max()} {listY.Min()}");
+            // Debug.WriteLine($"{string.Join(",", queue[2].ToList())}");
+            // Debug.WriteLine($"{string.Join(",", list2[0])}");
+            // Debug.WriteLine($"{string.Join(",", list2[1])}");
+
+            Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+#endif
+            return false;
+        } 
+
+        // public override unsafe void DrawFlatReference(byte* b, int width, int xPos, int yPos, byte color, byte length)
+        // {
+        //     Debug.WriteLine((width * yPos) + xPos);
+         
+        //     return;
+        //     // byte* b = mat.DataPointer;
+        //     for (int i = -length / 2; i < length / 2; i++)
+        //     {
+        //         // Debug.WriteLine($"{i}");
+        //         b[(width * (yPos + i)) + xPos] = color;
+        //     }
+        //     // throw new NotImplementedException();
+        // }
         #endregion
     }
 }

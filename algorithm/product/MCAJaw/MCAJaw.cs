@@ -84,6 +84,21 @@ namespace MCAJawIns.Algorithm
             }
         }
 
+        public unsafe virtual void DrawFlatReference(byte* b, int width, int xPos, int yPos, byte color, byte length)
+        {
+            for (int i = -length / 2; i < length / 2; i++)
+            {
+                if (i == 0)
+                {
+                    b[(width * yPos) + xPos] = 0;
+                }
+                else
+                {
+                    b[(width * (yPos + i)) + xPos] = color;
+                }
+            }
+        } 
+
         public abstract void CaptureImage(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3);
 
         public abstract void JawInsSequence(BaslerCam cam1, BaslerCam cam2, BaslerCam cam3, JawMeasurements jawFullSpecIns = null);
@@ -101,6 +116,7 @@ namespace MCAJawIns.Algorithm
         public abstract bool CheckPartCam3(Mat src, out byte threshold);
         #endregion
     }
+     
 
     [Obsolete("deprecated")]
     public class VisionUnitTransfer
