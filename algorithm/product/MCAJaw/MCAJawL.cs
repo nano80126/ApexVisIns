@@ -1537,11 +1537,6 @@ namespace MCAJawIns.Algorithm
 #endif
             }
 
-            if (roiPos == JawPos.Left)
-            {
-                Cv2.Rectangle(src, roi, Scalar.Black, 1);
-            }
-
             roiMat.Dispose();
 
             PosY = listY.Average() + roi.Y;

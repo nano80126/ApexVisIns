@@ -2548,7 +2548,7 @@ namespace MCAJawIns.Algorithm
 
             List<double> listY = new();
             List<double> listY2 = new();
-            
+
             double[] grayArr;
             double tmpGrayAbs = 0;
             int tmpY = 0;
@@ -2668,6 +2668,37 @@ namespace MCAJawIns.Algorithm
 
             Debug.WriteLine($"{listY.Max()} {listY.Min()}");
             Debug.WriteLine($"{listY2.Max()} {listY2.Min()}");
+
+            Dictionary<double, int> d1 = new Dictionary<double, int>();
+            Dictionary<double, int> d2 = new Dictionary<double, int>();
+
+
+            foreach (var item in listY.OrderBy(x => x))
+            {
+                if (!d1.ContainsKey(item))
+                {
+                    d1.Add(item, 1);
+                }
+                else
+                {
+                    d1[item]++;
+                }
+            }
+
+            foreach (var item in listY2.OrderBy(x => x))
+            {
+                if (!d2.ContainsKey(item))
+                {
+                    d2.Add(item, 1);
+                }
+                else
+                {
+                    d2[item]++;
+                }
+            }
+
+            Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
+            Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
 
             roiMat.Dispose();
 
