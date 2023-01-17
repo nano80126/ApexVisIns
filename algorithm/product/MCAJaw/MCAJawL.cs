@@ -3085,20 +3085,6 @@ namespace MCAJawIns.Algorithm
 #endif
             return false;
         } 
-
-        // public override unsafe void DrawFlatReference(byte* b, int width, int xPos, int yPos, byte color, byte length)
-        // {
-        //     Debug.WriteLine((width * yPos) + xPos);
-         
-        //     return;
-        //     // byte* b = mat.DataPointer;
-        //     for (int i = -length / 2; i < length / 2; i++)
-        //     {
-        //         // Debug.WriteLine($"{i}");
-        //         b[(width * (yPos + i)) + xPos] = color;
-        //     }
-        //     // throw new NotImplementedException();
-        // }
         #endregion
     }
 }

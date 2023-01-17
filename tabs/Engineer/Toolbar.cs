@@ -439,8 +439,8 @@ namespace MCAJawIns.Tab
             }
 #endif
 
-
-
+            MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
+            Indicator.Image = mat;
 
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }

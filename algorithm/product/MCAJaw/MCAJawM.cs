@@ -2663,17 +2663,19 @@ namespace MCAJawIns.Algorithm
                 }
             }
 
+#if false
             flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
 
-
             Debug.WriteLine($"{listY.Max()} {listY.Min()}");
-            Debug.WriteLine($"{listY2.Max()} {listY2.Min()}");
+            Debug.WriteLine($"{listY2.Max()} {listY2.Min()}"); 
+#endif
 
+            #region 確認比重
+#if false // 暫時保留
             Dictionary<double, int> d1 = new Dictionary<double, int>();
             Dictionary<double, int> d2 = new Dictionary<double, int>();
 
-
-            foreach (var item in listY.OrderBy(x => x))
+            foreach (var item in listY)
             {
                 if (!d1.ContainsKey(item))
                 {
@@ -2685,7 +2687,8 @@ namespace MCAJawIns.Algorithm
                 }
             }
 
-            foreach (var item in listY2.OrderBy(x => x))
+            //.OrderBy(x => x) 
+            foreach (var item in listY2)
             {
                 if (!d2.ContainsKey(item))
                 {
@@ -2695,10 +2698,24 @@ namespace MCAJawIns.Algorithm
                 {
                     d2[item]++;
                 }
-            }
+            } 
+#endif
 
-            Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
-            Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
+            //Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
+            //Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
+            //Debug.WriteLine($"Mag {Cam3Unit}");
+
+            // 過濾非主要點 (可能只是雜訊)
+            IEnumerable<double> gp1 = listY.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x=> x.ToArray());
+            IEnumerable<double> gp2 = listY2.GroupBy(x => x).Where(x => x.Count() > 5).SelectMany(x => x.ToArray());
+
+            Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp1)}");
+            Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp2)}");
+            Debug.WriteLine($"{gp1.Max()} {gp1.Min()}");
+            Debug.WriteLine($"{gp2.Max()} {gp2.Min()}");
+
+            flatValue = ((gp2.Max() - gp2.Min()) * Cam3Unit) + correction;
+            #endregion
 
             roiMat.Dispose();
 
@@ -2710,11 +2727,6 @@ namespace MCAJawIns.Algorithm
 #endif
             return false;
         }
-
-        //public override unsafe void DrawFlatReference(byte* mat, int width, int xPos, int yPos, byte color, byte length)
-        //{
-        //    throw new NotImplementedException();
-        //}
         #endregion
     }
 }
