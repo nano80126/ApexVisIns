@@ -438,9 +438,44 @@ namespace MCAJawIns.Tab
                 Indicator.Image = mat;
             }
 #endif
+            if (AssistRect.Enable && AssistRect.Area > 0)
+            {
+                Methods.GetRoiCanny(mat, AssistRect.GetRect(), 50, 120, out Mat canny);
+                Methods.GetHoughLinesHFromCanny(canny, AssistRect.GetRect().Location, out LineSegmentPoint[] lineH, 5, 3, 5);
 
-            MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
-            Indicator.Image = mat;
+                foreach (LineSegmentPoint line in lineH)
+                {
+                    Debug.WriteLine($"{line}");
+                    Cv2.Line(mat, line.P1, line.P2, Scalar.Gray, 2);
+                }
+
+                int t = lineH.Min(line => (line.P1.Y + line.P2.Y) / 2);
+                int b = lineH.Max(line => (line.P1.Y + line.P2.Y) / 2);
+                double c = (t + b) / 2;
+
+                IEnumerable<LineSegmentPoint> lineT = lineH.Where(line => line.P1.Y < c).OrderBy(line => line.P1.X);
+                // double minT = lineT.Max(l => l.Length());
+
+                double sumT = lineT.Sum(line => line.Length());
+                double topY = lineT.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumT);
+
+                IEnumerable<LineSegmentPoint> lineB = lineH.Where(line => line.P1.Y > c).OrderBy(line => line.P1.X);
+                // double maxT = lineB.Max(l => l.Length());
+
+                double sumB = lineB.Sum(line => line.Length());
+                double botY = lineB.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumB);
+
+                Debug.WriteLine($"t: {t}, b: {b}, t-b: {Math.Abs(b - t)}");
+                Debug.WriteLine($"top: {topY}, bot: {botY}");
+                Debug.WriteLine($"top - bot: {Math.Abs(botY - topY)}");
+
+                Indicator.Image = mat;
+            }
+            else
+            {
+                MainWindow.MCAJaw.MCAJawPart.JawInsSequenceCam3(mat);
+                Indicator.Image = mat;
+            }
 
             Debug.WriteLine($"{DateTime.Now:mm:ss.fff}");
         }
