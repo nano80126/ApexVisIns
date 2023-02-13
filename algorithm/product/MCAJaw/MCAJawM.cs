@@ -18,7 +18,7 @@ namespace MCAJawIns.Algorithm
 #if true
         public override double Cam1Mag { get; set; } = 0.21677;
         public override double Cam2Mag { get; set; } = 0.25904;
-        public override double Cam3Mag { get; set; } = 0.12524;
+        public override double Cam3Mag { get; set; } = 0.12469;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -2671,11 +2671,11 @@ namespace MCAJawIns.Algorithm
 #endif
 
             #region 確認比重
-#if false // 暫時保留
+#if true // 暫時保留
             Dictionary<double, int> d1 = new Dictionary<double, int>();
             Dictionary<double, int> d2 = new Dictionary<double, int>();
 
-            foreach (var item in listY)
+            foreach (var item in listY.OrderBy(x => x))
             {
                 if (!d1.ContainsKey(item))
                 {
@@ -2688,7 +2688,7 @@ namespace MCAJawIns.Algorithm
             }
 
             //.OrderBy(x => x) 
-            foreach (var item in listY2)
+            foreach (var item in listY2.OrderBy(x => x))
             {
                 if (!d2.ContainsKey(item))
                 {
@@ -2698,16 +2698,16 @@ namespace MCAJawIns.Algorithm
                 {
                     d2[item]++;
                 }
-            } 
+            }
 #endif
 
-            //Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
-            //Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
+            Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
+            Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
             //Debug.WriteLine($"Mag {Cam3Unit}");
 
             // 過濾非主要點 (可能只是雜訊)
-            IEnumerable<double> gp1 = listY.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x=> x.ToArray());
-            IEnumerable<double> gp2 = listY2.GroupBy(x => x).Where(x => x.Count() > 5).SelectMany(x => x.ToArray());
+            IEnumerable<double> gp1 = listY.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x => x.ToArray());
+            IEnumerable<double> gp2 = listY2.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x => x.ToArray());
 
             Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp1)}");
             Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp2)}");
