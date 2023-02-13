@@ -2663,15 +2663,20 @@ namespace MCAJawIns.Algorithm
                 }
             }
 
-#if false
-            flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
+#if true
+            //flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
 
+
+            Debug.WriteLine($"ROI.Y {roi.Y}");
             Debug.WriteLine($"{listY.Max()} {listY.Min()}");
-            Debug.WriteLine($"{listY2.Max()} {listY2.Min()}"); 
+            Debug.WriteLine($"{listY2.Max()} {listY2.Min()}");
+
+            Debug.WriteLine($"{string.Join(",", listY)}");
+            Debug.WriteLine($"{string.Join(",", listY2)}");
 #endif
 
             #region 確認比重
-#if true // 暫時保留
+#if true    // 暫時保留
             Dictionary<double, int> d1 = new Dictionary<double, int>();
             Dictionary<double, int> d2 = new Dictionary<double, int>();
 
@@ -2702,15 +2707,15 @@ namespace MCAJawIns.Algorithm
 #endif
 
             Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1)}");
+            //Debug.WriteLine($"d1 {System.Text.Json.JsonSerializer.Serialize(d1.OrderByDescending(e => e.Key))}");
             Debug.WriteLine($"d2 {System.Text.Json.JsonSerializer.Serialize(d2)}");
-            //Debug.WriteLine($"Mag {Cam3Unit}");
 
-            // 過濾非主要點 (可能只是雜訊)
-            IEnumerable<double> gp1 = listY.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x => x.ToArray());
-            IEnumerable<double> gp2 = listY2.GroupBy(x => x).Where(x => x.Count() > 4).SelectMany(x => x.ToArray());
+            // 過濾非主要點，< 5 的點 (可能只是雜訊)
+            IEnumerable<double> gp1 = listY.GroupBy(x => x).Where(x => x.Count() > 5).SelectMany(x=> x.ToArray());
+            IEnumerable<double> gp2 = listY2.GroupBy(x => x).Where(x => x.Count() > 5).SelectMany(x => x.ToArray());
 
-            Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp1)}");
-            Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp2)}");
+            //Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp1)}");
+            //Debug.WriteLine($"{System.Text.Json.JsonSerializer.Serialize(gp2)}");
             Debug.WriteLine($"{gp1.Max()} {gp1.Min()}");
             Debug.WriteLine($"{gp2.Max()} {gp2.Min()}");
 

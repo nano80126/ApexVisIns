@@ -2792,8 +2792,6 @@ namespace MCAJawIns.Algorithm
         /// <returns></returns>
         public unsafe bool Cal007FlatnessValue5(Mat src, double baseDatumY, out double flatValue, double correction = 0, double limitU = 0.007)
         {
-            //DateTime t1 = DateTime.Now;
-
             // ROI 
             Rect roi = new Rect(350, (int)(baseDatumY + 30), 2710, 45);
             // 
@@ -3069,15 +3067,10 @@ namespace MCAJawIns.Algorithm
 #if DEBUG || debug
             Cv2.Rectangle(src, roi, Scalar.Black, 1);
 
-            //Debug.WriteLine($"{list[0].Max()} {list[1].Max()} {list[2].Max()} {list[3].Max()}");
-            //Debug.WriteLine($"{list[0].Min()} {list[1].Min()} {list[2].Min()} {list[3].Min()}");
-            //Debug.WriteLine($"{concat.Max()} {concat.Min()}");
-            //Debug.WriteLine($"{max} {min}");
-            // Debug.WriteLine($"{listY.Max()} {listY.Min()}");
-            // Debug.WriteLine($"{string.Join(",", queue[2].ToList())}");
-            // Debug.WriteLine($"{string.Join(",", list2[0])}");
-            // Debug.WriteLine($"{string.Join(",", list2[1])}");
-            //Debug.WriteLine($"{(DateTime.Now - t1).TotalMilliseconds} ms");
+            Debug.WriteLine($"{list[0].Max()} {list[1].Max()} {list[2].Max()} {list[3].Max()}");
+            Debug.WriteLine($"{list[0].Min()} {list[1].Min()} {list[2].Min()} {list[3].Min()}");
+            Debug.WriteLine($"{concat.Max()} {concat.Min()}");
+            Debug.WriteLine($"{max} {min}");
 #endif
             return false;
         } 
