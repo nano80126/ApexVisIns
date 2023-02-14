@@ -18,7 +18,7 @@ namespace MCAJawIns.Algorithm
 #if true
         public override double Cam1Mag { get; set; } = 0.21677;
         public override double Cam2Mag { get; set; } = 0.25904;
-        public override double Cam3Mag { get; set; } = 0.12524;
+        public override double Cam3Mag { get; set; } = 0.12469;
 #endif
 
         private double Cam1Unit => Cam1PixelSize / 25.4 / Cam1Mag;
@@ -2752,7 +2752,7 @@ namespace MCAJawIns.Algorithm
             Dictionary<double, int> d1 = new Dictionary<double, int>();
             Dictionary<double, int> d2 = new Dictionary<double, int>();
 
-            foreach (var item in listY)
+            foreach (var item in listY.OrderBy(x => x))
             {
                 if (!d1.ContainsKey(item))
                 {
@@ -2765,7 +2765,7 @@ namespace MCAJawIns.Algorithm
             }
 
             //.OrderBy(x => x) 
-            foreach (var item in listY2)
+            foreach (var item in listY2.OrderBy(x => x))
             {
                 if (!d2.ContainsKey(item))
                 {

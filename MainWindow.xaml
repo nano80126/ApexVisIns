@@ -274,6 +274,7 @@
                 <TabItem Width="48" Height="48" Margin="0 0 0 8" materialDesign:RippleAssist.IsDisabled="True" Style="{StaticResource MaterialDesignNavigationRailTabItem}" IsEnabled="{Binding AuthLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, 
                             Converter={StaticResource NumberGreaterConvert}, ConverterParameter=9, UpdateSourceTrigger=PropertyChanged}"
                         Visibility="{Binding DebugMode, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window, AncestorLevel=1}, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
+                    <!---->
                     <TabItem.Header>
                         <materialDesign:PackIcon Kind="HammerWrench" Width="30" Height="26" Foreground="White" Background="Transparent" ToolTipService.Placement="Right"
                                 ToolTipService.HorizontalOffset="12" ToolTipService.VerticalOffset="-3">
