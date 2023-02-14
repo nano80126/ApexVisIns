@@ -196,11 +196,12 @@ namespace MCAJawIns.Algorithm
                     // 拍照要 Dispacker
                     MainWindow.Dispatcher.Invoke(() =>
                     {
-                        for (int j = 0; j < (i == 0 ? 2 : 3); j++)
+                        //for (int j = 0; j < (i == 0 ? 2 : 2); j++)
+                        for (int j = 0; j < 2; j++)
                         {
                             Debug.WriteLine($"camera1: count: {j}");
                             // 等待 Trigger Ready
-                            bool ready = cam1.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                            bool ready = cam1.Camera.WaitForFrameTriggerReady(75, TimeoutHandling.Return);
                             if (!ready)
                             {
                                 j--;
@@ -209,7 +210,7 @@ namespace MCAJawIns.Algorithm
 
                             cam1.Camera.ExecuteSoftwareTrigger();
 
-                            using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                            using IGrabResult grabResult = cam1.Camera.StreamGrabber.RetrieveResult(100, TimeoutHandling.Return);
 
                             //if (grabResult != null && grabResult.GrabSucceeded)
                             if (grabResult?.GrabSucceeded == true)
@@ -247,7 +248,7 @@ namespace MCAJawIns.Algorithm
                         {
                             Debug.WriteLine($"camera2: count: {j}");
                             // 等待 Trigger Ready
-                            bool ready = cam2.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                            bool ready = cam2.Camera.WaitForFrameTriggerReady(75, TimeoutHandling.Return);
                             if (!ready)
                             {
                                 j--;
@@ -255,7 +256,7 @@ namespace MCAJawIns.Algorithm
                             }
 
                             cam2.Camera.ExecuteSoftwareTrigger();
-                            using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                            using IGrabResult grabResult = cam2.Camera.StreamGrabber.RetrieveResult(100, TimeoutHandling.Return);
 
                             //if (grabResult != null && grabResult.GrabSucceeded)
                             if (grabResult?.GrabSucceeded == true)
@@ -295,7 +296,7 @@ namespace MCAJawIns.Algorithm
                     for (int j = 0; j < 3; j++)
                     {
                         Debug.WriteLine($"camera3: count: {j}");
-                        bool ready = cam3.Camera.WaitForFrameTriggerReady(100, TimeoutHandling.Return);
+                        bool ready = cam3.Camera.WaitForFrameTriggerReady(75, TimeoutHandling.Return);
                         //Debug.WriteLine($"{ready}");
                         if (!ready)
                         {
@@ -304,7 +305,7 @@ namespace MCAJawIns.Algorithm
                         }
 
                         cam3.Camera.ExecuteSoftwareTrigger();
-                        IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(125, TimeoutHandling.Return);
+                        IGrabResult grabResult = cam3.Camera.StreamGrabber.RetrieveResult(100, TimeoutHandling.Return);
 
                         //if (grabResult != null && grabResult.GrabSucceeded)
                         if (grabResult?.GrabSucceeded == true)
@@ -998,6 +999,9 @@ namespace MCAJawIns.Algorithm
                 // 取得 背景 POM 基準 Y
                 GetPomDatum(src, out double datumY, out double datumX);
                 // Debug.WriteLine($"datumY: {datumY} datumX: {datumX}");
+
+                GetPartThickness(src, datumX, datumY, out _);
+
 
                 #region 計算 平直度
                 spec = specList?[15];
@@ -2525,6 +2529,74 @@ namespace MCAJawIns.Algorithm
 
             flatValue = ((listY2.Max() - listY2.Min()) * Cam3Unit) + correction;
             return false;
+        }
+
+
+
+        public void GetPartThickness(Mat src, double baseDatumX, double baseDatumY, out double thickness)
+        {
+            int srcWidth = src.Width;
+            Rect roi1 = new Rect((int)baseDatumX + 20 + 1020 - 10, (int)baseDatumY + 55, 20, 100);
+            Rect roi2 = new Rect((int)baseDatumX + 20 + 880 - 10, (int)baseDatumY + 55, 20, 100);
+            Rect roi3 = new Rect((int)baseDatumX + 20 + 1160 - 10, (int)baseDatumY + 55, 20, 100);
+
+            Methods.GetRoiCanny(src, roi1, 50, 120, out Mat canny1);
+            Methods.GetRoiCanny(src, roi2, 50, 120, out Mat canny2);
+            Methods.GetRoiCanny(src, roi3, 50, 120, out Mat canny3);
+
+            Methods.GetHoughLinesHFromCanny(canny1, roi1.Location, out LineSegmentPoint[] lineH1, 5, 3, 5);
+            Methods.GetHoughLinesHFromCanny(canny2, roi2.Location, out LineSegmentPoint[] lineH2, 5, 3, 5);
+            Methods.GetHoughLinesHFromCanny(canny3, roi3.Location, out LineSegmentPoint[] lineH3, 5, 3, 5);
+
+            int t1 = lineH1.Min(line => (line.P1.Y + line.P2.Y) / 2);
+            int t2 = lineH2.Min(line => (line.P1.Y + line.P2.Y) / 2);
+            int t3 = lineH3.Min(line => (line.P1.Y + line.P2.Y) / 2);
+
+            int b1 = lineH1.Max(line => (line.P1.Y + line.P2.Y) / 2);
+            int b2 = lineH2.Max(line => (line.P1.Y + line.P2.Y) / 2);
+            int b3 = lineH3.Max(line => (line.P1.Y + line.P2.Y) / 2);
+
+            double c1 = (t1 + b1) / 2;
+            double c2 = (t2 + b2) / 2;
+            double c3 = (t3 + b3) / 2;
+
+#if false
+            IEnumerable<LineSegmentPoint> lineT = lineH1.Where(line => line.P1.Y < c1).OrderBy(line => line.P1.X);
+            double sumT1 = lineT.Sum(line => line.Length());
+            double topY1 = lineT.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumT1);
+            IEnumerable<LineSegmentPoint> lineB = lineH1.Where(line => line.P1.Y > c1).OrderBy(line => line.P1.X);
+            double sumB1 = lineB.Sum(line => line.Length());
+            double botY1 = lineB.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumB1);
+            //
+            IEnumerable<LineSegmentPoint> lineT2 = lineH1.Where(line => line.P1.Y < c1).OrderBy(line => line.P1.X);
+            double sumT2 = lineT2.Sum(line => line.Length());
+            double topY2 = lineT2.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumT1);
+            IEnumerable<LineSegmentPoint> lineB2 = lineH1.Where(line => line.P1.Y > c1).OrderBy(line => line.P1.X);
+            double sumB2 = lineB2.Sum(line => line.Length());
+            double botY2 = lineB2.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumB1);
+            //
+            IEnumerable<LineSegmentPoint> lineT3 = lineH1.Where(line => line.P1.Y < c1).OrderBy(line => line.P1.X);
+            double sumT3 = lineT3.Sum(line => line.Length());
+            double topY3 = lineT3.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumT1);
+            IEnumerable<LineSegmentPoint> lineB3 = lineH1.Where(line => line.P1.Y > c1).OrderBy(line => line.P1.X);
+            double sumB3 = lineB3.Sum(line => line.Length());
+            double botY3 = lineB3.Aggregate(0.0, (sum, next) => sum + (next.P1.Y + next.P2.Y) / 2 * next.Length() / sumB1);
+#endif
+
+            //Debug.WriteLine($"{t1} {b1} {b1 - t1} {topY1} {botY1} {Math.Abs(botY1 - topY1)}");
+            //Debug.WriteLine($"{t2} {b2} {b2 - t2} {topY2} {botY2} {Math.Abs(botY2 - topY2)}");
+            //Debug.WriteLine($"{t3} {b3} {b3 - t3} {topY3} {botY3} {Math.Abs(botY3 - topY3)}");
+            //Debug.WriteLine($"{t1} {b1} {b1 - t1}");
+            //Debug.WriteLine($"{t2} {b2} {b1 - t1}");
+            //Debug.WriteLine($"{t3} {b3} {b1 - t1}");
+
+            //Cv2.Rectangle(src, roi1, Scalar.Black, 1);
+            //Cv2.Rectangle(src, roi2, Scalar.Black, 1);
+            //Cv2.Rectangle(src, roi3, Scalar.Black, 1);
+
+            thickness = ((b1 - t1) + (b2 - t2) + (b3 - t3)) / 3 * Cam3Unit;
+
+            Debug.WriteLine($"厚度: {thickness}");
         }
 
         /// <summary>
