@@ -618,7 +618,9 @@ namespace MCAJawIns.Algorithm
                 {
                     Cv2.Circle(src, (int)item.X, (int)item.Y, 5, Scalar.Gray, 2);
                 }
+                Debug.WriteLine($"輪廓度點: {string.Join(",", subContourPts)}");
 #endif
+                //System.Windows.MessageBox.Show($"{string.Join(",", subContourPts)}");
                 #endregion
 
                 #region 計算輪廓度 (3 項)
@@ -721,6 +723,8 @@ namespace MCAJawIns.Algorithm
                         if (!results.ContainsKey(spec.Key)) { results[spec.Key] = new List<double>(); }
                         results[spec.Key].Add(d_012R);
                     }
+
+
                 }
                 else if (results == null)
                 {
@@ -732,7 +736,6 @@ namespace MCAJawIns.Algorithm
                     else
                     {
                         d_012R = Math.Abs(((subContourPts[0].Y + subContourPts[1].Y) / 2) - PlanarR) * Cam1Unit;
-                        Debug.WriteLine($"{subContourPts[0]} {subContourPts[1]}");
                     }
                     Debug.WriteLine($"{nameof(d_012R)}: {d_012R:F5}");
                 }
@@ -1509,11 +1512,11 @@ namespace MCAJawIns.Algorithm
                     if (avg > 200) { break; }
                 }
 
-#if DEBUG || debug
+
                 if (listY.Count == 0 || Math.Abs(tempY - listY[^1]) < 3)
                 {
                     listY.Add(tempY);
-
+#if DEBUG || debug
                     b[srcWidth * tempY + i] = 0;
                     b[srcWidth * (tempY + 1) + i] = 0;
                     b[srcWidth * (tempY + 2) + i] = 0;
@@ -1521,11 +1524,12 @@ namespace MCAJawIns.Algorithm
                     b[srcWidth * (tempY - 1) + i] = 0;
                     b[srcWidth * (tempY - 2) + i] = 0;
                     b[srcWidth * (tempY - 3) + i] = 0;
+#endif
                 }
                 else
                 {
                     listY.Add(listY[^1]);
-
+#if DEBUG || debug
                     b[srcWidth * tempY + i] = 150;
                     b[srcWidth * (tempY + 1) + i] = 150;
                     b[srcWidth * (tempY + 2) + i] = 150;
@@ -1533,8 +1537,8 @@ namespace MCAJawIns.Algorithm
                     b[srcWidth * (tempY - 1) + i] = 150;
                     b[srcWidth * (tempY - 2) + i] = 150;
                     b[srcWidth * (tempY - 3) + i] = 150;
-                }
 #endif
+                }
             }
 
             roiMat.Dispose();
@@ -1923,8 +1927,8 @@ namespace MCAJawIns.Algorithm
 
             // 計算 後開距離
             distance = (Math.Abs(rightX - leftX) * Cam2Unit) + correction;
-            // Debug.WriteLine($"後開:");
-            // Debug.WriteLine($"R: {rightX} L: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
+            Debug.WriteLine($"後開:");
+            Debug.WriteLine($"R: {rightX} L: {leftX}, {rightX - leftX}, {distance} {distance:0.00000}");
             // 銷毀 canny");
             canny.Dispose();
 
@@ -2669,7 +2673,7 @@ namespace MCAJawIns.Algorithm
                     grayArr = new double[roiMat.Height];
                     tmpGrayAbs = 0;
                     tmpY = 0;
-                    
+
                     for (int j = 0; j < roiMat.Height; j++)
                     {
                         double avg = (b[(srcWidth * j) + i] + b[(srcWidth * j) + i + 1] + b[(srcWidth * j) + i + 2]) / 3;
@@ -3073,7 +3077,7 @@ namespace MCAJawIns.Algorithm
             Debug.WriteLine($"{max} {min}");
 #endif
             return false;
-        } 
+        }
         #endregion
     }
 }
