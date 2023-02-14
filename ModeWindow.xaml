@@ -108,7 +108,7 @@
                 </RadioButton>
 
                 <RadioButton x:Name="TypeLRadio" GroupName="TypeGroup" Foreground="{StaticResource ColorBrown}" Command="{StaticResource ChangeTypeAction}"
-                        CommandParameter="{x:Static local:JawTypes.L}" IsEnabled="True">
+                        CommandParameter="{x:Static local:JawTypes.L}" IsEnabled="False">
                     <RadioButton.Content>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon VerticalAlignment="Center" Style="{StaticResource TypeChoice}" />
